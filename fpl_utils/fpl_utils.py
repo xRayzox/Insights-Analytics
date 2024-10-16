@@ -1,4 +1,6 @@
 import streamlit as st
+import sys
+sys.path.append('fpl_utils')
 from fpl_utils.fpl_api_collection import get_total_fpl_players
 import requests
 
