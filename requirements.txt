@@ -1,7 +1,6 @@
 matplotlib
 pandas
 seaborn
-streamlit
 plotly
 scikit-learn
 requests
