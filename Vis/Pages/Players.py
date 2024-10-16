@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import sys
 import os
-fpl_utils_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'fpl_utils'))
+fpl_utils_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'fpl_utils'))
 sys.path.append(fpl_utils_path)
 
 from fpl_api_collection import (
