@@ -6,8 +6,7 @@ import pytz
 import datetime as datetime
 import os
 import sys
-sys.path.append('fpl_utils')
-# Use absolute imports
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))# Use absolute imports
 from fpl_utils.fpl_api_collection import (
     get_bootstrap_data,
     get_current_gw,
