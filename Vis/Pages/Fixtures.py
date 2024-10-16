@@ -6,7 +6,7 @@ import pytz
 import datetime as datetime
 import sys
 import os
-fpl_utils_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'fpl_utils'))
+fpl_utils_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..', 'fpl_utils'))
 print(fpl_utils_path)
 sys.path.append(fpl_utils_path)
 
