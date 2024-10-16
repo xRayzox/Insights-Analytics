@@ -3,7 +3,7 @@ import pandas as pd
 import altair as alt
 import sys
 import os
-sys.path.append(os.path.join(os.path.abspath(__file__),'fpl_utils'))
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fpl_utils'))
 
 from fpl_utils.fpl_api_collection import (
     get_bootstrap_data, get_total_fpl_players, get_player_id_dict, get_player_data
