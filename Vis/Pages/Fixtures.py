@@ -1,11 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Sep 29 20:18:57 2022
-
-@author: timyouell
-"""
-
 import streamlit as st
 import pandas as pd
 import seaborn as sns

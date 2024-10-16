@@ -1,12 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Sep 29 20:20:43 2022
-
-@author: timyouell
-
-"""
-
 import streamlit as st
 import datetime as dt
 import altair as alt

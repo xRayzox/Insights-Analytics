@@ -1,12 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Sep 29 20:21:38 2022
-
-@author: timyouell
-"""
-
-
 import streamlit as st
 import pandas as pd
 from fpl_utils.fpl_api_collection import (
