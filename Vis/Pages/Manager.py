@@ -5,7 +5,8 @@ import pandas as pd
 import requests
 import sys
 import os
-sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fpl_utils'))
+fpl_utils_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'fpl_utils')
+sys.path.append(fpl_utils_path)
 
 from fpl_utils.fpl_api_collection import (
     get_bootstrap_data, get_manager_history_data, get_manager_team_data,
