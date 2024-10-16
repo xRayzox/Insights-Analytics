@@ -3,11 +3,11 @@ import datetime as dt
 import altair as alt
 import pandas as pd
 import requests
-from fpl_utils.fpl_api_collection import (
+from ...fpl_utils.fpl_api_collection import (
     get_bootstrap_data, get_manager_history_data, get_manager_team_data,
     get_manager_details, get_player_data, get_current_season
 )
-from fpl_utils.fpl_utils import (
+from ...fpl_utils.fpl_utils import (
     define_sidebar, chip_converter
 )
 
