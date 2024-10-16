@@ -7,11 +7,6 @@ import datetime as datetime
 import os
 import sys
 
-# Set the path to the fpl_utils directory
-fpl_utils_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'fpl_utils'))
-print(fpl_utils_path)
-sys.path.append(fpl_utils_path)
-
 # Use absolute imports
 from fpl_utils.fpl_api_collection import (
     get_bootstrap_data,
