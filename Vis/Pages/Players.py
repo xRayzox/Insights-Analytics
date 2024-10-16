@@ -5,12 +5,12 @@ import os
 fpl_utils_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'fpl_utils'))
 sys.path.append(fpl_utils_path)
 
-from fpl_utils.fpl_api_collection import (
+from fpl_api_collection import (
     get_player_id_dict, get_bootstrap_data, get_player_data, get_league_table,
     get_fixt_dfs, get_current_gw, remove_moved_players, get_current_season
 )
 import plotly.graph_objects as go
-from fpl_utils.fpl_utils import (
+from fpl_utils import (
     define_sidebar
 )
 

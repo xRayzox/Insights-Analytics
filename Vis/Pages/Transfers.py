@@ -6,10 +6,10 @@ import os
 fpl_utils_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'fpl_utils'))
 sys.path.append(fpl_utils_path)
 
-from fpl_utils.fpl_api_collection import (
+from fpl_api_collection import (
     get_bootstrap_data, get_total_fpl_players, get_player_id_dict, get_player_data
 )
-from fpl_utils.fpl_utils import (
+from fpl_utils import (
     define_sidebar
 )
 

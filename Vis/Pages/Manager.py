@@ -8,15 +8,15 @@ import os
 fpl_utils_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'fpl_utils'))
 sys.path.append(fpl_utils_path)
 
-from fpl_utils.fpl_api_collection import (
+from fpl_api_collection import (
     get_bootstrap_data, get_manager_history_data, get_manager_team_data,
     get_manager_details, get_player_data, get_current_season
 )
-from fpl_utils.fpl_utils import (
+from fpl_utils import (
     define_sidebar, chip_converter
 )
 
-from fpl_utils.fpl_params import MY_FPL_ID, BASE_URL
+from fpl_params import MY_FPL_ID, BASE_URL
 
 
 st.set_page_config(page_title='Manager', page_icon=':necktie:', layout='wide')
