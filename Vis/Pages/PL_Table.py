@@ -1,9 +1,14 @@
 import streamlit as st
 import pandas as pd
-from ...fpl_utils.fpl_api_collection import (
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fpl_utils'))
+
+
+from fpl_utils.fpl_api_collection import (
     get_league_table, get_current_gw, get_fixt_dfs, get_bootstrap_data
 )
-from ...fpl_utils.fpl_utils import (
+from fpl_utils.fpl_utils import (
     define_sidebar
 )
 
