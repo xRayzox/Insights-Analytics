@@ -5,7 +5,7 @@ import pandas as pd
 import requests
 import sys
 import os
-
+pd.set_option('future.no_silent_downcasting', True)
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'FPL')))
 from fpl_api_collection import (
     get_bootstrap_data, get_manager_history_data, get_manager_team_data,
@@ -169,7 +169,7 @@ with col2:
         # Fill NaN values
         manager_team_df['Played'] = manager_team_df['Played'].fillna(False)
 
-        # Convert to appropriate dtypes to avoid FutureWarning
+        # Convert to appropriate dtypes after filling NaN values
         manager_team_df = manager_team_df.infer_objects()
 
         # Select relevant columns and rename them
@@ -186,7 +186,9 @@ with col2:
         manager_team_df['vs'] = manager_team_df['vs'].map(teams_df.set_index('id')['short_name'])
         manager_team_df['vs'] = manager_team_df['vs'].fillna('BLANK')
 
+        # Show DataFrame in Streamlit
         st.dataframe(manager_team_df, height=562)
+
 
 
 with col3:
