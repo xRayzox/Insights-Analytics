@@ -113,7 +113,8 @@ for col in new_fixt_cols:
         if max_length > 7:
             league_df.loc[league_df[col].str.len() <= 7, col] = league_df[col].str.pad(width=max_length+9, side='both', fillchar=' ')
 
-styled_df = st.dataframe(league_df.style.applymap(color_fixtures, subset=new_fixt_cols) \
-             .format(subset=float_cols, formatter='{:.2f}'), height=740, width=None)
+styled_df = league_df.style.applymap(color_fixtures, subset=new_fixt_cols) \
+                            .format(subset=float_cols, formatter='{:.2f}')
 
-st.write(st.dataframe(styled_df, height=740, width=None).to_html(escape=False), unsafe_allow_html=True)
+# Display the styled DataFrame in Streamlit
+st.dataframe(styled_df, height=740, use_container_width=True)
