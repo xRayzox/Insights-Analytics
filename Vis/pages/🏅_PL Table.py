@@ -150,23 +150,19 @@ else:  # "Away"
 # Display DataFrame
 rating_df = teams_df.sort_values("ovr_rating" + ("_" + model_type if model_type else ""), ascending=False)
 
-# Normalize ratings for progress columns
+# Get the maximum values for each rating without converting to percentage
 max_ovr = rating_df["ovr_rating" + ("_" + model_type if model_type else "")].max()
 max_o = rating_df["o_rating" + ("_" + model_type if model_type else "")].max()
 max_d = rating_df["d_rating" + ("_" + model_type if model_type else "")].max()
 
-rating_df["ovr_rating" + ("_" + model_type if model_type else "")] /= max_ovr
-rating_df["o_rating" + ("_" + model_type if model_type else "")] /= max_o
-rating_df["d_rating" + ("_" + model_type if model_type else "")] /= max_d
-
 # Set up columns for layout
 df_col, chart_col = st.columns([24, 24])  # Adjust the column sizes as needed
 
-# Configure progress columns for ratings
+# Configure progress columns for ratings with actual values
 column_config = {
-    "ovr_rating" + ("_" + model_type if model_type else ""): st.column_config.ProgressColumn(label="Overall Rating"),
-    "o_rating" + ("_" + model_type if model_type else ""): st.column_config.ProgressColumn(label="Offensive Rating"),
-    "d_rating" + ("_" + model_type if model_type else ""): st.column_config.ProgressColumn(label="Defensive Rating"),
+    "ovr_rating" + ("_" + model_type if model_type else ""): st.column_config.ProgressColumn(label="Overall Rating", max_value=max_ovr),
+    "o_rating" + ("_" + model_type if model_type else ""): st.column_config.ProgressColumn(label="Offensive Rating", max_value=max_o),
+    "d_rating" + ("_" + model_type if model_type else ""): st.column_config.ProgressColumn(label="Defensive Rating", max_value=max_d),
 }
 
 with df_col:
@@ -180,6 +176,8 @@ with df_col:
         use_container_width=True,  # This makes the DataFrame take full width
         column_config=column_config  # Apply the progress column configuration
     )
+
+    
 # Scatter plot setup
 x_domain = [teams_df["d_rating" + ("_" + model_type if model_type else "")].min()-0.1, teams_df["d_rating" + ("_" + model_type if model_type else "")].max() + 0.1]
 y_range = [teams_df["o_rating" + ("_" + model_type if model_type else "")].min()-100, teams_df["o_rating" + ("_" + model_type if model_type else "")].max() + 100]
