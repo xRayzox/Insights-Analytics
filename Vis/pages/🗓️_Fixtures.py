@@ -53,6 +53,12 @@ drf.rename(columns={0: 'Team'}, inplace=True)
 ga.rename(columns={0: 'Team'}, inplace=True)
 gf.rename(columns={0: 'Team'}, inplace=True)
 
+
+teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
+teams_df['logo_url'] = "https://resources.premierleague.com/premierleague/badges/70/t" + teams_df['code'].astype(str) + ".png"
+team_logo_mapping = pd.Series(teams_df.logo_url.values, index=teams_df.short_name).to_dict()
+
+
 # Create FDR matrix directly from 'val' DataFrame
 fdr_matrix = drf.copy()
 fdr_matrix = fdr_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='FDR')
@@ -143,7 +149,10 @@ if selected_display == '📊Fixture Difficulty Rating':
             filtered_gf_matrix = gf_matrix[(gf_matrix['GameWeek'] >= slider1) & (gf_matrix['GameWeek'] <= slider2)]
             pivot_gf_matrix = filtered_gf_matrix.pivot(index='Team', columns='GameWeek', values='GF') 
             pivot_gf_matrix.columns = [f'GW {col}' for col in pivot_gf_matrix.columns].copy() 
-            return pivot_gf_matrix.copy() 
+            return pivot_gf_matrix.copy()
+        pivot_gf_matrix.index = pivot_gf_matrix.index.map(lambda team: f"<img src='{team_logo_mapping[team]}' style='width:20px; height:20px; vertical-align:middle; margin-right:5px;'/> {team}")
+
+    
 
     # Get the selected data
     selected_data = get_selected_data(selected_metric)
