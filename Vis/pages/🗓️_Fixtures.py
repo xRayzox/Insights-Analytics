@@ -213,10 +213,6 @@ elif selected_display == '⚔️Premier League Fixtures':
     </script>
     """, unsafe_allow_html=True)
 
-    # Get the timezone from cookies
-    if 'timezone' not in st.session_state:
-        st.session_state['timezone'] = st.experimental_get_query_params().get('timezone', ['UTC'])[0]
-
     # Load timezone from session state
     timezone = st.session_state['timezone']
 
