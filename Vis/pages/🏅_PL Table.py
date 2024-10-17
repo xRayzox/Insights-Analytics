@@ -151,11 +151,13 @@ rating_df = teams_df.sort_values("ovr_rating" + ("_" + model_type if model_type 
 df_col, chart_col = st.columns([2, 3])  # Adjust the column sizes as needed
 
 with df_col:
+    # Display the DataFrame with full width
     st.dataframe(
         rating_df[["name", "ovr_rating" + ("_" + model_type if model_type else ""),
                     "o_rating" + ("_" + model_type if model_type else ""),
                     "d_rating" + ("_" + model_type if model_type else "")]],
         hide_index=True,
+        use_container_width=True  # This makes the DataFrame take full width
     )
 
 # Scatter plot setup
