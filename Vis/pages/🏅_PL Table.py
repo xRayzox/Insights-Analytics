@@ -157,8 +157,8 @@ st.dataframe(
 )
 
 # Scatter plot setup
-x_domain = [0, teams_df["d_rating" + ("_" + model_type if model_type else "")].max() + 0.1]
-y_range = [0, teams_df["o_rating" + ("_" + model_type if model_type else "")].max() + 100]
+x_domain = [0, teams_df["d_rating" + ("_" + model_type if model_type else "")].max() ]
+y_range = [0, teams_df["o_rating" + ("_" + model_type if model_type else "")].max() ]
 
 # Create scatter plot
 scatter_plot = (
