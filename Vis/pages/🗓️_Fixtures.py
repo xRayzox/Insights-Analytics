@@ -204,17 +204,8 @@ if selected_display == '📊Fixture Difficulty Rating':
 
 ###################################
 elif selected_display == '⚔️Premier League Fixtures':
-    timezone_script = """
-    <script>
-        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        // Streamlit's method to send data back to Python
-        Streamlit.setComponentValue(timezone);
-    </script>
-    """
-
-    # Step 2: Create a custom component to capture the timezone
-    timezone = components.html(timezone_script, height=0, key="timezone")
-    st.write(timezone)
+    time=get_user_timezone()
+    st.write(time)
     saaaa=get_fixture_data()
     fixtures_df = pd.DataFrame(saaaa)
     fixtures_df.drop(columns='stats', inplace=True)
@@ -227,9 +218,9 @@ elif selected_display == '⚔️Premier League Fixtures':
     fixtures_df['team_h'] = fixtures_df['team_h'].replace(team_name_mapping)
     fixtures_df = fixtures_df.drop(columns=['pulse_id'])
     fixtures_df['datetime'] = pd.to_datetime(fixtures_df['kickoff_time'], utc=True)
-    fixtures_df['local_time'] = fixtures_df['datetime'].dt.tz_convert(timezone).dt.strftime('%A %d %B %Y %H:%M')
-    fixtures_df['local_date'] = fixtures_df['datetime'].dt.tz_convert(timezone).dt.strftime('%d %A %B %Y')
-    fixtures_df['local_hour'] = fixtures_df['datetime'].dt.tz_convert(timezone).dt.strftime('%H:%M')
+    fixtures_df['local_time'] = fixtures_df['datetime'].dt.tz_convert(time).dt.strftime('%A %d %B %Y %H:%M')
+    fixtures_df['local_date'] = fixtures_df['datetime'].dt.tz_convert(time).dt.strftime('%d %A %B %Y')
+    fixtures_df['local_hour'] = fixtures_df['datetime'].dt.tz_convert(time).dt.strftime('%H:%M')
     gw_minn = min(fixtures_df['event'])
     gw_maxx = max(fixtures_df['event'])
     selected_gw = st.slider('Select Gameweek:', gw_minn, gw_maxx, ct_gw) 
