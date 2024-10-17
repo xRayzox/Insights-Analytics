@@ -149,6 +149,17 @@ else:  # "Away"
 
 # Display DataFrame
 rating_df = teams_df.sort_values("ovr_rating" + ("_" + model_type if model_type else ""), ascending=False)
+
+# Normalize ratings for progress columns
+max_ovr = rating_df["ovr_rating" + ("_" + model_type if model_type else "")].max()
+max_o = rating_df["o_rating" + ("_" + model_type if model_type else "")].max()
+max_d = rating_df["d_rating" + ("_" + model_type if model_type else "")].max()
+
+rating_df["ovr_rating" + ("_" + model_type if model_type else "")] /= max_ovr
+rating_df["o_rating" + ("_" + model_type if model_type else "")] /= max_o
+rating_df["d_rating" + ("_" + model_type if model_type else "")] /= max_d
+
+# Set up columns for layout
 df_col, chart_col = st.columns([24, 24])  # Adjust the column sizes as needed
 
 # Configure progress columns for ratings
