@@ -363,7 +363,7 @@ else:
     .format(subset=player1_next3.select_dtypes(include='float64') \
             .columns.values, formatter='{:.2f}')) \
             .format(subset=player1_next3.select_dtypes(include='float64') \
-                    .columns.values,formatter='{:.2f}'))
+                    .columns.values,formatter='{:.2f}')
         
         if len(id_dict) > 1:
             player2 = init_rows[2].selectbox("Choose Player Two", id_dict.values(), 1) #index=int(ind2))
@@ -377,7 +377,7 @@ else:
     .format(subset=player2_next3.select_dtypes(include='float64') \
             .columns.values, formatter='{:.2f}')) \
                 .format(subset=player2_next3.select_dtypes(include='float64') \
-                        .columns.values,formatter='{:.2f}'))
+                        .columns.values,formatter='{:.2f}')
         
         rows = st.columns(2)
         player1_df = collate_hist_df_from_name(player1)
