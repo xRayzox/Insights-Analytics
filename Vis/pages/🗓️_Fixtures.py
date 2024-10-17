@@ -69,7 +69,7 @@ with st.sidebar:
         "Select Display:", ['⚔️Premier League Fixtures', '📊Fixture Difficulty Rating']
     )
 
-if selected_display == 'Fixture Difficulty Rating':
+if selected_display == '📊Fixture Difficulty Rating':
     # Create sliders for game week selection
     slider1, slider2 = st.slider('Gameweek Range:', int(ct_gw), gw_max, [int(ct_gw), int(ct_gw + 10)], 1)
 
@@ -192,7 +192,7 @@ if selected_display == 'Fixture Difficulty Rating':
     st.write(styled_table)
 
 
-elif selected_display == 'Premier League Fixtures':
+elif selected_display == '⚔️Premier League Fixtures':
     time=get_user_timezone()
 
     saaaa=get_fixture_data()
