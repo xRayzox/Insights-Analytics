@@ -5,7 +5,7 @@ import sys
 import numpy as np
 
 # Adjust the path to your FPL API collection as necessary
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'FPL')))
+# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'FPL')))
 from fpl_api_collection import (
     get_bootstrap_data,
     get_current_gw,
@@ -44,7 +44,7 @@ st.title("FPL Fixture Analysis")
 # Create sliders for game week selection
 slider1, slider2 = st.slider('Gameweek Range:', int(ct_gw), gw_max, [int(ct_gw), int(ct_gw + 10)], 1)
 
-# Define the custom color mapping for FDR values before using it
+# Define the custom color mapping for FDR values
 fdr_colors = {
     1: ("#257d5a", "black"),
     2: ("#00ff86", "black"),
@@ -56,9 +56,19 @@ fdr_colors = {
 # Create FDR matrix and merge with fixtures
 fdr_matrix = drf.melt(id_vars="Team", var_name="GameWeek", value_name="FDR")
 fdr_matrix["FDR"] = fdr_matrix["FDR"].astype(int)
-fdr_matrix["GameWeek"] = fdr_matrix["GameWeek"].str.replace("GW", "").astype(int)
+
 merged_df = fixt.melt(id_vars="Team", var_name="GameWeek", value_name="Fixture")
-merged_df["GameWeek"] = merged_df["GameWeek"].str.replace("GW", "").astype(int)
+
+# --- Safely convert to string and replace "GW" (if necessary) ---
+if fdr_matrix['GameWeek'].dtype != object: 
+    fdr_matrix['GameWeek'] = fdr_matrix['GameWeek'].astype(str).str.replace("GW", "")
+fdr_matrix["GameWeek"] = fdr_matrix["GameWeek"].astype(int)
+
+if merged_df['GameWeek'].dtype != object:
+    merged_df['GameWeek'] = merged_df['GameWeek'].astype(str).str.replace("GW", "")
+merged_df["GameWeek"] = merged_df["GameWeek"].astype(int)
+# --- End of safe conversion ---
+
 merged_df = pd.merge(merged_df, fdr_matrix, on=["Team", "GameWeek"], how="left")
 
 # Define a function to apply styling to fixtures based on FDR
