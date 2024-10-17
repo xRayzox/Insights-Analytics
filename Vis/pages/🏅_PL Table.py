@@ -163,7 +163,7 @@ y_range = [0, teams_df["o_rating" + ("_" + model_type if model_type else "")].ma
 # Create scatter plot
 scatter_plot = (
     alt.Chart(teams_df, height=750)
-    .mark_image(width=50, height=50)  # Adjust size as needed
+    .mark_point(filled=True, size=200)
     .encode(
         x=alt.X(
             "d_rating" + ("_" + model_type if model_type else ""),
@@ -177,9 +177,9 @@ scatter_plot = (
             title="Offensive Rating",
             scale=alt.Scale(domain=y_range),
         ),
-        url="logo_url",  # Use the logo URL column directly
         tooltip=[
             alt.Tooltip("name", title="Team"),
+            alt.Tooltip("ovr_rating" + ("_" + model_type if model_type else ""), title="Overall Rating", format="d"),
             alt.Tooltip("o_rating" + ("_" + model_type if model_type else ""), title="Offensive Rating", format="d"),
             alt.Tooltip("d_rating" + ("_" + model_type if model_type else ""), title="Defensive Rating", format=".2f"),
         ],
@@ -188,13 +188,13 @@ scatter_plot = (
 
 # Mean lines
 off_mean_line = (
-    alt.Chart(pd.DataFrame({"Mean Offensive Rating": [teams_df["o_rating"].mean()]}))
+    alt.Chart(pd.DataFrame({"Mean Offensive Rating": [teams_df["o_rating" + ("_" + model_type if model_type else "")].mean()]}))
     .mark_rule(color="#60b4ff", opacity=0.66)
     .encode(y="Mean Offensive Rating")
 )
 
 def_mean_line = (
-    alt.Chart(pd.DataFrame({"Mean Defensive Rating": [teams_df["d_rating"].mean()]}))
+    alt.Chart(pd.DataFrame({"Mean Defensive Rating": [teams_df["d_rating" + ("_" + model_type if model_type else "")].mean()]}))
     .mark_rule(color="#60b4ff", opacity=0.66)
     .encode(x="Mean Defensive Rating")
 )
