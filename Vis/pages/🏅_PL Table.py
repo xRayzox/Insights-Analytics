@@ -140,17 +140,12 @@ teams_df["d_rating"] = (teams_df["d_rating_home"] + teams_df["d_rating_away"]) /
 
 # Options for ratings
 model_option = st.selectbox("Data Source", ("Overall", "Home", "Away"))
-if model_option == "Overall":
-    model_type = ""
-elif model_option == "Home":
-    model_type = "home"
-else:  # "Away"
-    model_type = "away"
+model_type = "home" if model_option == "Home" else "away" if model_option == "Away" else ""
 
 # Display DataFrame
 rating_df = teams_df.sort_values("ovr_rating" + ("_" + model_type if model_type else ""), ascending=False)
 
-# Convert rating columns to native types
+# Convert rating columns to float
 rating_df["ovr_rating" + ("_" + model_type if model_type else "")] = rating_df["ovr_rating" + ("_" + model_type if model_type else "")].astype(float)
 rating_df["o_rating" + ("_" + model_type if model_type else "")] = rating_df["o_rating" + ("_" + model_type if model_type else "")].astype(float)
 rating_df["d_rating" + ("_" + model_type if model_type else "")] = rating_df["d_rating" + ("_" + model_type if model_type else "")].astype(float)
@@ -163,7 +158,7 @@ max_d = rating_df["d_rating" + ("_" + model_type if model_type else "")].max()
 # Set up columns for layout
 df_col, chart_col = st.columns([24, 24])  # Adjust the column sizes as needed
 
-# Configure progress columns for ratings with actual values (not percentages)
+# Configure progress columns for ratings
 column_config = {
     "ovr_rating" + ("_" + model_type if model_type else ""): st.column_config.ProgressColumn(
         label="Overall Rating", max_value=max_ovr
