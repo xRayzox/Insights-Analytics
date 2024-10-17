@@ -30,9 +30,9 @@ val.rename(columns={0: 'Team'}, inplace=True)
 # Combine teams from both DataFrames
 teams = pd.concat([sui['Team'], val['Team']]).unique()
 
-# Create FDR matrix directly from 'val' DataFrame
-fdr_matrix = val.copy()
-fdr_matrix = fdr_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='FDR')
+# Create FDR matrix using 'sui' for fixtures and 'val' for FDR values
+fdr_matrix = sui.melt(id_vars='Team', var_name='GameWeek', value_name='Fixture')
+fdr_matrix['FDR'] = val.melt(id_vars='Team', var_name='GameWeek', value_name='FDR')['FDR']
 
 # Convert FDR values to integers
 fdr_matrix['FDR'] = fdr_matrix['FDR'].astype(int)
@@ -47,7 +47,8 @@ fdr_colors = {
 }
 
 # Define a coloring function based on the FDR values using the custom color mapping
-def color_fdr(value):
+def color_fdr(row):
+    value = row['FDR']
     if value in fdr_colors:
         background_color, text_color = fdr_colors[value]
         return f'background-color: {background_color}; color: {text_color}; text-align: center;'
@@ -55,13 +56,13 @@ def color_fdr(value):
         return ''  # No style for undefined values
 
 # Create a filtered FDR matrix for styling
-filtered_fdr_matrix = fdr_matrix.pivot(index='Team', columns='GameWeek', values='FDR')
+filtered_fdr_matrix = fdr_matrix.pivot(index='Team', columns='GameWeek', values='Fixture')
 
 # Rename columns for display purposes
 filtered_fdr_matrix.columns = [f'GW {col}' for col in filtered_fdr_matrix.columns]
 
 # Apply the styling to the filtered FDR matrix
-styled_filtered_fdr_table = filtered_fdr_matrix.style.applymap(color_fdr)
+styled_filtered_fdr_table = filtered_fdr_matrix.style.apply(color_fdr, axis=1)
 
 # Streamlit app to display the styled table
 st.title("Fixture Difficulty Rating (FDR) Matrix")
