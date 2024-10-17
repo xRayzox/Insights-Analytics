@@ -224,7 +224,7 @@ elif selected_display == 'Premier League Fixtures':
                     # Create a fixture box for each match
                     with st.container():
                         # Create columns with better spacing and vertical alignment
-                        col1, col2, col3 = st.columns([3, 1, 3])  
+                        col1, col2, col3 = st.columns([1, 1, 1])  
 
                         # --- Column 1: Home Team ---
                         with col1:
