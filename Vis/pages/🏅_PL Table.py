@@ -180,7 +180,7 @@ with df_col:
                     "o_rating" + ("_" + model_type if model_type else ""),
                     "d_rating" + ("_" + model_type if model_type else "")]],
         hide_index=True,
-        use_container_width=True,  
+        use_container_width=False,  
         column_config=column_config  
     )
 # Scatter plot setup
