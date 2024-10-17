@@ -6,8 +6,6 @@ from PIL import Image
 
 # Append the path for your FPL API collection
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'FPL')))
-
-# Import functions from your FPL API
 from fpl_api_collection import (
     get_league_table, get_current_gw, get_fixt_dfs, get_bootstrap_data
 )
@@ -41,16 +39,12 @@ league_df['GD'] = league_df['GD'].map('{:+}'.format)
 # Fetch bootstrap data for teams
 teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
 teams_df['logo_url'] = "https://resources.premierleague.com/premierleague/badges/70/t" + teams_df['code'].astype(str) + ".png"
-
-# Create a mapping of team logos
 team_logo_mapping = pd.Series(teams_df.logo_url.values, index=teams_df.short_name).to_dict()
 
-# Display logos and team names
-for team_name in teams_df.short_name:
-    if team_name in team_logo_mapping:
-        st.image(team_logo_mapping[team_name], caption=team_name)
+# Add logos next to team names in league_df
+league_df['Team'] = league_df['Team'].apply(lambda x: f'<img src="{team_logo_mapping[x]}" width="20" height="20" style="vertical-align:middle;"> {x}')
 
-# Function to get home/away fixture strings
+# Create function for styling fixtures
 def get_home_away_str_dict():
     new_fdr_df.columns = new_fixt_cols
     result_dict = {}
@@ -66,7 +60,7 @@ def get_home_away_str_dict():
                 value_dict[value] = []
             value_dict[value].append(string)
         result_dict[col] = value_dict
-
+    
     merged_dict = {k: [] for k in range(1, 6)}
     for k, dict1 in result_dict.items():
         for key, value in dict1.items():
@@ -113,8 +107,7 @@ for col in new_fixt_cols:
             league_df.loc[league_df[col].str.len() <= 7, col] = league_df[col].str.pad(width=max_length + 9, side='both', fillchar=' ')
 
 # Style the DataFrame
-styled_df = league_df.style.applymap(color_fixtures, subset=new_fixt_cols) \
-                            .format(subset=float_cols, formatter='{:.2f}')
+styled_df = league_df.style.applymap(color_fixtures, subset=new_fixt_cols)
 
-# Display the styled DataFrame in Streamlit
-st.dataframe(styled_df, height=740, use_container_width=True)
+# Display the styled DataFrame in Streamlit using markdown
+st.markdown(styled_df.to_html(escape=False), unsafe_allow_html=True)
