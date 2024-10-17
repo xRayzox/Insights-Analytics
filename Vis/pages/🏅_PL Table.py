@@ -150,6 +150,11 @@ else:  # "Away"
 # Display DataFrame
 rating_df = teams_df.sort_values("ovr_rating" + ("_" + model_type if model_type else ""), ascending=False)
 
+# Convert rating columns to native types
+rating_df["ovr_rating" + ("_" + model_type if model_type else "")] = rating_df["ovr_rating" + ("_" + model_type if model_type else "")].astype(float)
+rating_df["o_rating" + ("_" + model_type if model_type else "")] = rating_df["o_rating" + ("_" + model_type if model_type else "")].astype(float)
+rating_df["d_rating" + ("_" + model_type if model_type else "")] = rating_df["d_rating" + ("_" + model_type if model_type else "")].astype(float)
+
 # Get the maximum values for each rating type
 max_ovr = rating_df["ovr_rating" + ("_" + model_type if model_type else "")].max()
 max_o = rating_df["o_rating" + ("_" + model_type if model_type else "")].max()
@@ -182,7 +187,6 @@ with df_col:
         use_container_width=True,  
         column_config=column_config  
     )
-
 # Scatter plot setup
 x_domain = [teams_df["d_rating" + ("_" + model_type if model_type else "")].min()-0.1, teams_df["d_rating" + ("_" + model_type if model_type else "")].max() + 0.1]
 y_range = [teams_df["o_rating" + ("_" + model_type if model_type else "")].min()-100, teams_df["o_rating" + ("_" + model_type if model_type else "")].max() + 100]
