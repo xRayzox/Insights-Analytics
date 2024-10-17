@@ -90,7 +90,9 @@ def color_fdr(value):
 
 # Define a coloring function for GA/GF values
 def color_ga_gf(value):
-    closest_key = min(ga_gf_colors, key=lambda x: abs(x - value))
+    # Round the value to two decimal places for display and color mapping
+    rounded_value = round(value, 2)
+    closest_key = min(ga_gf_colors, key=lambda x: abs(x - rounded_value))
     background_color, text_color = ga_gf_colors[closest_key]
     return f'background-color: {background_color}; color: {text_color}; text-align: center;'
 
@@ -106,6 +108,7 @@ def get_selected_data(metric):
         return pivot_fdr_matrix.copy()  # Create a copy here
     elif metric == "Average Goals Against (GA)":
         ga_matrix = ga.melt(id_vars='Team', var_name='GameWeek', value_name='GA')
+        # Round GA values to 2 decimal places
         ga_matrix['GA'] = ga_matrix['GA'].astype(float).round(2) 
         filtered_ga_matrix = ga_matrix[(ga_matrix['GameWeek'] >= slider1) & (ga_matrix['GameWeek'] <= slider2)]
         pivot_ga_matrix = filtered_ga_matrix.pivot(index='Team', columns='GameWeek', values='GA')
@@ -113,8 +116,9 @@ def get_selected_data(metric):
         return pivot_ga_matrix.copy()  # Create a copy here
     elif metric == "Average Goals For (GF)":
         gf_matrix = gf.melt(id_vars='Team', var_name='GameWeek', value_name='GF')
+        # Round GF values to 2 decimal places
+        gf_matrix['GF'] = gf_matrix['GF'].astype(float).round(2) 
         filtered_gf_matrix = gf_matrix[(gf_matrix['GameWeek'] >= slider1) & (gf_matrix['GameWeek'] <= slider2)]
-        filtered_gf_matrix.loc[:, 'GF'] = filtered_gf_matrix['GF'].astype(float).round(2)  # Use .loc here
         pivot_gf_matrix = filtered_gf_matrix.pivot(index='Team', columns='GameWeek', values='GF') 
         pivot_gf_matrix.columns = [f'GW {col}' for col in pivot_gf_matrix.columns].copy()  # Use .copy() here
         return pivot_gf_matrix.copy()  # Create a copy here
@@ -124,7 +128,7 @@ selected_data = get_selected_data(selected_metric)
 
 # Display the styled table based on the selected metric
 if selected_metric == "Fixture Difficulty Rating (FDR)":
-    styled_table = selected_data.style.applymap(color_fdr)  # Apply color to each cell
+    styled_table = selected_data.style.map(color_fdr)  # Use map here
 
     # Display the title with the selected metric (FDR)
     st.markdown(
@@ -143,7 +147,7 @@ if selected_metric == "Fixture Difficulty Rating (FDR)":
                 unsafe_allow_html=True,
             )
 else:  # For GA and GF
-    styled_table = selected_data.style.map(color_ga_gf)  # Apply color to each cell
+    styled_table = selected_data.style.map(color_ga_gf)  # Use map here
 
     # Display the title with the selected metric (GA or GF)
     st.markdown(
