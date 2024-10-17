@@ -196,7 +196,7 @@ with df_col:
 selected_team = sss.selection.rows
 selected_team_id = (
     rating_df.sort_values("ovr_rating" + ("_" + model_type if model_type else ""), ascending=False)
-    .iloc[selected_team]["team_id"]
+    .iloc[selected_team]["id"]
     .to_list()
 )
 
