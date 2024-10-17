@@ -208,21 +208,54 @@ elif selected_display == '⚔️Premier League Fixtures':
 
     st.write("""
     <script>
-    var timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    document.cookie = "timezone=" + timezone;
+        // Function to set a cookie
+        function setCookie(name, value, days) {
+            var expires = "";
+            if (days) {
+                var date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+        }
+
+        var timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        setCookie("timezone", timezone, 365); // Store timezone for a year
     </script>
     """, unsafe_allow_html=True)
 
-    # Load timezone from session state
+
+    # Get the timezone from cookies.  We use a callback to ensure it gets
+    # read on every page load/rerun, not just the first time.
+
+    @st.cache_data(ttl=3600) # Cache for an hour to avoid excessive cookie reads
+    def get_timezone_from_cookie():
+        return st.experimental_get_query_params().get('timezone', ['UTC'])[0]
+
+
+    # Initialize timezone in session_state if not already present
+    if 'timezone' not in st.session_state:
+        st.session_state['timezone'] = get_timezone_from_cookie()
+
+
+    # Update session state timezone whenever the query parameter changes. This happens
+    # after the JavaScript sets the cookie. This approach avoids issues with the cookie
+    # not being immediately available after being set by JavaScript.
+    st.session_state['timezone'] = get_timezone_from_cookie()
+
     timezone = st.session_state['timezone']
 
-    # Display current time in user's timezone
-    user_tz = pytz.timezone(timezone)
-    current_time = datetime.now(user_tz)
-
-
-    st.write(f"Detected Timezone: {user_tz}")
-    st.write(f"Current time in {timezone}: {current_time.strftime('%Y-%m-%d %H:%M:%S')}")
+    # Handle invalid timezones gracefully
+    try:
+        user_tz = pytz.timezone(timezone)
+        current_time = datetime.now(user_tz)
+        st.write(f"Detected Timezone: {timezone}")
+        st.write(f"Current time in {timezone}: {current_time.strftime('%Y-%m-%d %H:%M:%S')}")
+    except pytz.exceptions.UnknownTimeZoneError:
+        st.error(f"Invalid timezone detected: {timezone}.  Defaulting to UTC.")
+        user_tz = pytz.utc
+        current_time = datetime.now(user_tz)
+        st.write(f"Current time in UTC: {current_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
     saaaa=get_fixture_data()
     fixtures_df = pd.DataFrame(saaaa)
