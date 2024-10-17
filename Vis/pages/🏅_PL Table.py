@@ -150,37 +150,39 @@ else:  # "Away"
 # Display DataFrame
 rating_df = teams_df.sort_values("ovr_rating" + ("_" + model_type if model_type else ""), ascending=False)
 
-# Normalize ratings for progress columns
+# Get the maximum values for each rating type
 max_ovr = rating_df["ovr_rating" + ("_" + model_type if model_type else "")].max()
 max_o = rating_df["o_rating" + ("_" + model_type if model_type else "")].max()
 max_d = rating_df["d_rating" + ("_" + model_type if model_type else "")].max()
 
-# Normalize ratings for progress bars
-rating_df["norm_ovr_rating"] = rating_df["ovr_rating" + ("_" + model_type if model_type else "")] / max_ovr if max_ovr > 0 else 0
-rating_df["norm_o_rating"] = rating_df["o_rating" + ("_" + model_type if model_type else "")] / max_o if max_o > 0 else 0
-rating_df["norm_d_rating"] = rating_df["d_rating" + ("_" + model_type if model_type else "")] / max_d if max_d > 0 else 0
-
 # Set up columns for layout
 df_col, chart_col = st.columns([24, 24])  # Adjust the column sizes as needed
 
-# Configure progress columns for ratings
+# Configure progress columns for ratings with actual values (not percentages)
 column_config = {
-    "norm_ovr_rating": st.column_config.ProgressColumn(label="Overall Rating"),
-    "norm_o_rating": st.column_config.ProgressColumn(label="Offensive Rating"),
-    "norm_d_rating": st.column_config.ProgressColumn(label="Defensive Rating"),
+    "ovr_rating" + ("_" + model_type if model_type else ""): st.column_config.ProgressColumn(
+        label="Overall Rating", max_value=max_ovr
+    ),
+    "o_rating" + ("_" + model_type if model_type else ""): st.column_config.ProgressColumn(
+        label="Offensive Rating", max_value=max_o
+    ),
+    "d_rating" + ("_" + model_type if model_type else ""): st.column_config.ProgressColumn(
+        label="Defensive Rating", max_value=max_d
+    ),
 }
 
 with df_col:
     # Display the DataFrame with full width using progress columns
     st.dataframe(
         rating_df[["name", 
-                    "norm_ovr_rating",
-                    "norm_o_rating",
-                    "norm_d_rating"]],
+                    "ovr_rating" + ("_" + model_type if model_type else ""),
+                    "o_rating" + ("_" + model_type if model_type else ""),
+                    "d_rating" + ("_" + model_type if model_type else "")]],
         hide_index=True,
         use_container_width=True,  
         column_config=column_config  
     )
+
 # Scatter plot setup
 x_domain = [teams_df["d_rating" + ("_" + model_type if model_type else "")].min()-0.1, teams_df["d_rating" + ("_" + model_type if model_type else "")].max() + 0.1]
 y_range = [teams_df["o_rating" + ("_" + model_type if model_type else "")].min()-100, teams_df["o_rating" + ("_" + model_type if model_type else "")].max() + 100]
