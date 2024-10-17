@@ -13,8 +13,8 @@ def define_sidebar():
                      ultimately pick the best Fantasy Premier League Football
                      options for your team.""")
     st.sidebar.write("""Current number of FPL Teams: """ + str('{:,.0f}'.format(total_players)))
-    st.sidebar.write('[Author](https://www.linkedin.com/in/tim-youell-616731a6)')
-    st.sidebar.write('[GitHub](https://github.com/TimYouell15)')
+    st.sidebar.write('[Author](https://www.linkedin.com/in/wael-hcine-08090b214/)')
+    st.sidebar.write('[GitHub](https://github.com/xRayzox)')
 
 
 def get_annot_size(sl1, sl2):

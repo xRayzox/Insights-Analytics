@@ -2,8 +2,8 @@ import streamlit as st
 import pandas as pd
 import sys
 import os
-fpl_utils_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'fpl_utils'))
-sys.path.append(fpl_utils_path)
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
+
 
 from fpl_api_collection import (
     get_player_id_dict, get_bootstrap_data, get_player_data, get_league_table,
