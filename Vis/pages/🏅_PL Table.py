@@ -151,33 +151,52 @@ rating_df = teams_df.sort_values("ovr_rating" + ("_" + model_type if model_type 
 df_col, chart_col = st.columns([24, 24])  # Adjust the column sizes as needed
 
 with df_col:
-    # Display the DataFrame with full width
-    st.dataframe(
-        rating_df[["name", "ovr_rating" + ("_" + model_type if model_type else ""),
-                    "o_rating" + ("_" + model_type if model_type else ""),
-                    "d_rating" + ("_" + model_type if model_type else "")]],
+        # ratings dataframe
+    sss=st.dataframe(
+        rating_df.sort_values("ovr_rating_" + model_type, ascending=False),
+        column_config={
+            "team_short": "Team",
+            "ovr_rating_"
+            + model_type: st.column_config.ProgressColumn(
+                "Overall Rating",
+                help="= Offensive Rating / Defensive Rating",
+                format="%d",
+                max_value=rating_df["ovr_rating_" + model_type].max(),
+            ),
+            "o_rating_"
+            + model_type: st.column_config.ProgressColumn(
+                "Offensive Rating",
+                help="Higher is better",
+                format="%d",
+                max_value=rating_df["o_rating_" + model_type].max(),
+            ),
+            "d_rating_"
+            + model_type: st.column_config.ProgressColumn(
+                "Defensive Rating",
+                help="Lower is better",
+                format="%.2f",
+                max_value=rating_df["d_rating_" + model_type].max(),
+            ),
+        },
+        column_order=(
+            "team_short",
+            "ovr_rating_" + model_type,
+            "o_rating_" + model_type,
+            "d_rating_" + model_type,
+        ),
         hide_index=True,
-        use_container_width=True  # This makes the DataFrame take full width
+        on_select="rerun",
+        use_container_width=True,
+        height=737,
     )
 
-    # Display progress bars for ratings
-    max_ovr_rating = rating_df["ovr_rating" + ("_" + model_type if model_type else "")].max()
-    max_o_rating = rating_df["o_rating" + ("_" + model_type if model_type else "")].max()
-    max_d_rating = rating_df["d_rating" + ("_" + model_type if model_type else "")].max()
-
-    for index, row in rating_df.iterrows():
-        # Show name and ratings
-        st.write(f"**{row['name']}**")
-        
-        # Display the progress bars
-        st.progress(row["ovr_rating" + ("_" + model_type if model_type else "")] / max_ovr_rating, 
-                     f"Overall Rating: {row['ovr_rating' + ('_' + model_type if model_type else '')]:.2f}")
-        
-        st.progress(row["o_rating" + ("_" + model_type if model_type else "")] / max_o_rating, 
-                     f"Offensive Rating: {row['o_rating' + ('_' + model_type if model_type else '')]:.2f}")
-        
-        st.progress(row["d_rating" + ("_" + model_type if model_type else "")] / max_d_rating, 
-                     f"Defensive Rating: {row['d_rating' + ('_' + model_type if model_type else '')]:.2f}")
+# identify selected teams to highlight
+selected_team = sss.selection.rows
+selected_team_id = (
+    rating_df.sort_values("ovr_rating_" + model_type, ascending=False)
+    .iloc[selected_team]["team_id"]
+    .to_list()
+)
 
 # Scatter plot setup
 x_domain = [teams_df["d_rating" + ("_" + model_type if model_type else "")].min()-0.1, teams_df["d_rating" + ("_" + model_type if model_type else "")].max() + 0.1]
