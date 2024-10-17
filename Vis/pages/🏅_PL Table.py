@@ -161,13 +161,13 @@ df_col, chart_col = st.columns([24, 24])  # Adjust the column sizes as needed
 # Configure progress columns for ratings
 column_config = {
     "ovr_rating" + ("_" + model_type if model_type else ""): st.column_config.ProgressColumn(
-        label="Overall Rating", max_value=max_ovr,format="%.0f",color="lightgreen"
+        label="Overall Rating", max_value=max_ovr,format="%.0f"
     ),
     "o_rating" + ("_" + model_type if model_type else ""): st.column_config.ProgressColumn(
         label="Offensive Rating", max_value=max_o,format="%.0f"
     ),
     "d_rating" + ("_" + model_type if model_type else ""): st.column_config.ProgressColumn(
-        label="Defensive Rating", max_value=max_d,format="%.0f"
+        label="Defensive Rating", max_value=max_d,format="%.0f",style={"progress-bar": {"background-color": "blue"}}
     ),
 }
 
