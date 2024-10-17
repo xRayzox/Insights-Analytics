@@ -27,15 +27,19 @@ gw_min = min(events_df['id'])
 gw_max = max(events_df['id'])
 
 ct_gw = get_current_gw()
-sui = team_fixt_df.reset_index()
-val = team_fdr_df.reset_index()
+fixt = team_fixt_df.reset_index()
+drf = team_fdr_df.reset_index()
+ga = team_ga_df.reset_index()
+gf = team_gf_df.reset_index()
 
 # Rename the first column to 'Team'
-sui.rename(columns={0: 'Team'}, inplace=True)
-val.rename(columns={0: 'Team'}, inplace=True)
+fixt.rename(columns={0: 'Team'}, inplace=True)
+drf.rename(columns={0: 'Team'}, inplace=True)
+ga.rename(columns={0: 'Team'}, inplace=True)
+gf.rename(columns={0: 'Team'}, inplace=True)
 
 # Create FDR matrix directly from 'val' DataFrame
-fdr_matrix = val.copy()
+fdr_matrix = drf.copy()
 fdr_matrix = fdr_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='FDR')
 
 # Convert FDR values to integers
@@ -70,16 +74,50 @@ def color_fdr(value):
     else:
         return ''  # No style for undefined values
 
-# Apply the styling to the pivoted FDR matrix
-styled_filtered_fdr_table = pivot_fdr_matrix.style.applymap(color_fdr)
+# Create a selection choice for metrics
+selected_metric = st.selectbox(
+    "Select Metric:",
+    ("Fixture Difficulty Rating (FDR)", "Average Goals Against (GA)", "Average Goals For (GF)")
+)
 
-# Display the title with the current game week
+# Create a function to get the appropriate DataFrame based on the selection
+def get_selected_data(metric):
+    if metric == "Fixture Difficulty Rating (FDR)":
+        return pivot_fdr_matrix
+    elif metric == "Average Goals Against (GA)":
+        ga_matrix = ga.melt(id_vars='Team', var_name='GameWeek', value_name='GA')
+        ga_matrix['GA'] = ga_matrix['GA'].astype(float)  # Ensure GA is float for consistency
+        filtered_ga_matrix = ga_matrix[(ga_matrix['GameWeek'] >= slider1) & (ga_matrix['GameWeek'] <= slider2)]
+        pivot_ga_matrix = filtered_ga_matrix.pivot(index='Team', columns='GameWeek', values='GA')
+        pivot_ga_matrix.columns = [f'GW {col}' for col in pivot_ga_matrix.columns]
+        return pivot_ga_matrix
+    elif metric == "Average Goals For (GF)":
+        gf_matrix = gf.melt(id_vars='Team', var_name='GameWeek', value_name='GF')
+        gf_matrix['GF'] = gf_matrix['GF'].astype(float)  # Ensure GF is float for consistency
+        filtered_gf_matrix = gf_matrix[(gf_matrix['GameWeek'] >= slider1) & (gf_matrix['GameWeek'] <= slider2)]
+        pivot_gf_matrix = filtered_gf_matrix.pivot(index='Team', columns='GameWeek', value='GF')
+        pivot_gf_matrix.columns = [f'GW {col}' for col in pivot_gf_matrix.columns]
+        return pivot_gf_matrix
+
+# Get the selected data
+selected_data = get_selected_data(selected_metric)
+
+# Display the styled table based on the selected metric
+if selected_metric == "Fixture Difficulty Rating (FDR)":
+    # Apply the styling for FDR
+    styled_table = selected_data.style.applymap(color_fdr)
+else:
+    # Default styling for GA and GF (optional, customize as needed)
+    styled_table = selected_data.style.applymap(lambda x: 'text-align: center;')
+
+# Display the title with the selected metric
 st.markdown(
-        f"**Fixture Difficulty Rating (FDR) for the Next {slider2-slider1} Gameweeks (Starting GW{slider1})**",
-        unsafe_allow_html=True)
+    f"**{selected_metric} for the Next {slider2-slider1} Gameweeks (Starting GW {slider1})**",
+    unsafe_allow_html=True
+)
 
 # Streamlit app to display the styled table
-st.write(styled_filtered_fdr_table)
+st.write(styled_table)
 
 # Sidebar for the legend
 with st.sidebar:
