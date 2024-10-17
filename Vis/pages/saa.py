@@ -229,7 +229,7 @@ elif selected_display == 'Premier League Fixtures':
                     # --- Column 1: Home Team (right-aligned) ---
                     with col1:
                         st.markdown(
-                            f"<div style='text-align: right;'>**{match['team_h']}**</div>", 
+                            f"<div style='text-align: right;'>{match['team_h']}</div>", 
                             unsafe_allow_html=True
                         )
 
@@ -249,7 +249,7 @@ elif selected_display == 'Premier League Fixtures':
                     # --- Column 3: Away Team (left-aligned) ---
                     with col3:
                         st.markdown(
-                            f"<div style='text-align: left;'>**{match['team_a']}**</div>", 
+                            f"<div style='text-align: left;'>{match['team_a']}</div>", 
                             unsafe_allow_html=True
                         )
 
