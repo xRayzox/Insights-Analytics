@@ -204,6 +204,27 @@ if selected_display == '📊Fixture Difficulty Rating':
 
 ###################################
 elif selected_display == '⚔️Premier League Fixtures':
+
+    st.write("""
+    <script>
+    var timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    document.cookie = "timezone=" + timezone;
+    </script>
+    """, unsafe_allow_html=True)
+
+    # Get the timezone from cookies
+    if 'timezone' not in st.session_state:
+        st.session_state['timezone'] = st.experimental_get_query_params().get('timezone', ['UTC'])[0]
+
+    # Load timezone from session state
+    timezone = st.session_state['timezone']
+
+    # Display current time in user's timezone
+    user_tz = pytz.timezone(timezone)
+    current_time = datetime.now(user_tz)
+
+    st.write(f"Detected Timezone: {timezone}")
+    st.write(f"Current time in {timezone}: {current_time.strftime('%Y-%m-%d %H:%M:%S')}")
     time=get_user_timezone()
     st.write(time)
     saaaa=get_fixture_data()
