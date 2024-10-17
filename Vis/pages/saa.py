@@ -34,14 +34,25 @@ teams = pd.concat([sui['Team'], val['Team']]).unique()
 fdr_matrix = val.copy()
 fdr_matrix = fdr_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='FDR')
 
-# Define a coloring function based on the FDR values
+# Convert FDR values to integers
+fdr_matrix['FDR'] = fdr_matrix['FDR'].astype(int)
+
+# Define the custom color mapping for FDR values
+fdr_colors = {
+    1: ("#257d5a", "black"),
+    2: ("#00ff86", "black"),
+    3: ("#ebebe4", "black"),
+    4: ("#ff005a", "white"),
+    5: ("#861d46", "white"),
+}
+
+# Define a coloring function based on the FDR values using the custom color mapping
 def color_fdr(value):
-    if value <= 2:
-        return 'background-color: green'  # Low difficulty
-    elif value <= 4:
-        return 'background-color: yellow'  # Medium difficulty
+    if value in fdr_colors:
+        background_color, text_color = fdr_colors[value]
+        return f'background-color: {background_color}; color: {text_color};'
     else:
-        return 'background-color: red'  # High difficulty
+        return ''  # No style for undefined values
 
 # Create a filtered FDR matrix for styling
 filtered_fdr_matrix = fdr_matrix.pivot(index='Team', columns='GameWeek', values='FDR')
