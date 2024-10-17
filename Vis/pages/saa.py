@@ -193,7 +193,7 @@ elif selected_display == 'Premier League Fixtures':
     fixtures_df = fixtures_df.drop(columns=['pulse_id'])
     fixtures_df['datetime'] = pd.to_datetime(fixtures_df['kickoff_time'], utc=True)
     fixtures_df['local_time'] = fixtures_df['datetime'].dt.tz_convert(time).dt.strftime('%A %d %B %Y %H:%M')
-    fixtures_df['local_date'] = fixtures_df['datetime'].dt.tz_convert(time).dt.strftime('%A %d %B %Y')
+    fixtures_df['local_date'] = fixtures_df['datetime'].dt.tz_convert(time).dt.strftime('%d %A %B %Y')
     fixtures_df['local_hour'] = fixtures_df['datetime'].dt.tz_convert(time).dt.strftime('%H:%M')
     gw_minn = min(fixtures_df['event'])
     gw_maxx = max(fixtures_df['event'])
