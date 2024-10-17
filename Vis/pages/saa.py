@@ -103,28 +103,43 @@ selected_metric = st.selectbox(
 # Create a function to get the appropriate DataFrame based on the selection
 def get_selected_data(metric):
     if metric == "Fixture Difficulty Rating (FDR)":
-        return pivot_fdr_matrix.copy() # Create a copy here
+        return pivot_fdr_matrix.copy() 
     elif metric == "Average Goals Against (GA)":
         ga_matrix = ga.melt(id_vars='Team', var_name='GameWeek', value_name='GA')
         ga_matrix['GA'] = ga_matrix['GA'].astype(float).round(2) 
         filtered_ga_matrix = ga_matrix[(ga_matrix['GameWeek'] >= slider1) & (ga_matrix['GameWeek'] <= slider2)]
         pivot_ga_matrix = filtered_ga_matrix.pivot(index='Team', columns='GameWeek', values='GA')
         pivot_ga_matrix.columns = [f'GW {col}' for col in pivot_ga_matrix.columns]
-        return pivot_ga_matrix.copy() # Create a copy here
+        return pivot_ga_matrix.copy() 
     elif metric == "Average Goals For (GF)":
         gf_matrix = gf.melt(id_vars='Team', var_name='GameWeek', value_name='GF')
         filtered_gf_matrix = gf_matrix[(gf_matrix['GameWeek'] >= slider1) & (gf_matrix['GameWeek'] <= slider2)]
         filtered_gf_matrix['GF'] = filtered_gf_matrix['GF'].astype(float).round(2)  
         pivot_gf_matrix = filtered_gf_matrix.pivot(index='Team', columns='GameWeek', values='GF') 
         pivot_gf_matrix.columns = [f'GW {col}' for col in pivot_gf_matrix.columns]
-        return pivot_gf_matrix.copy() # Create a copy here
+        return pivot_gf_matrix.copy() 
+
+# Create a function to generate the styled table with fixtures
+def create_fixture_table(df, gw_start, gw_end):
+    df = df[(df['GameWeek'] >= gw_start) & (df['GameWeek'] <= gw_end)]
+    table = pd.pivot_table(df, values='Fixture', index='Team', columns='GameWeek', aggfunc=lambda x: ''.join(x))
+    table.columns = [f'GW {col}' for col in table.columns]
+    return table
+
+# Display the fixture table
+st.subheader("Fixtures:")
+fixture_table = create_fixture_table(fixt.melt(id_vars='Team', var_name='GameWeek', value_name='Fixture'), slider1, slider2)
+st.write(fixture_table.style.set_table_styles([
+    {'selector': 'th', 'props': [('text-align', 'center')]},
+    {'selector': 'td', 'props': [('text-align', 'center')]}
+]))
 
 # Get the selected data
 selected_data = get_selected_data(selected_metric)
 
 # Display the styled table based on the selected metric
 if selected_metric == "Fixture Difficulty Rating (FDR)":
-    styled_table = selected_data.style.applymap(color_fdr)  # Apply color to each cell
+    styled_table = selected_data.style.applymap(color_fdr) 
 
     # Display the title with the selected metric (FDR)
     st.markdown(
@@ -143,7 +158,7 @@ if selected_metric == "Fixture Difficulty Rating (FDR)":
                 unsafe_allow_html=True,
             )
 else:  # For GA and GF
-    styled_table = selected_data.style.applymap(color_ga_gf)  # Apply color to each cell
+    styled_table = selected_data.style.applymap(color_ga_gf) 
 
     # Display the title with the selected metric (GA or GF)
     st.markdown(
