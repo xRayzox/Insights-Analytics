@@ -3,10 +3,10 @@ import streamlit as st
 from st_aggrid import GridOptionsBuilder, AgGrid, JsCode
 from st_aggrid.shared import ColumnsAutoSizeMode
 
-# Sample data
+
 products = {
     "No.": [1, 2, 3],
-    "Name": ['Chair', 'Cabinet', 'Table'],
+    "Name": [' Chair', ' Cabinet', ' Table'],
     "Price": [4, 12, 10],
     "Stocks": [100, 50, 60],
     "Details": [
@@ -16,13 +16,12 @@ products = {
     ]
 }
 
-# Create DataFrame
 df = pd.DataFrame(products)
 
-# Build grid options
 ob = GridOptionsBuilder.from_dataframe(df)
 
-# 1. Add an image next to the value under the Name column
+# 1. Add an image next to the value under the Name column.
+#    Also add a link on the label.
 image_cr = JsCode("""
     function(params) {
         var element = document.createElement("span");
@@ -32,8 +31,8 @@ image_cr = JsCode("""
 
         // Update the image element. Use the value from Details column.
         imageElement.src = params.data.Details;
-        imageElement.width="40"; // Smaller image size
-        imageElement.height="40";
+        imageElement.width="80";
+        imageElement.height="80";
         element.appendChild(imageElement);
 
         // Add a link to the Name value. The link is from the Details column.
@@ -46,14 +45,15 @@ image_cr = JsCode("""
     }""")
 ob.configure_column('Name', cellRenderer=image_cr)
 
-# 2. Configure the Details column to add a link
+# 2. Configure the column Details. Add a link to inner value.
 image_url = JsCode("""
     function(params) {
-        return `<a href=${params.value} target="_blank">${params.value}</a>`;
+        return `<a href=${params.value} target="_blank">${params.value}</a>`
     }""")
 ob.configure_column("Details", cellRenderer=image_url)
 
-# 2.1. Style the Stocks column if stocks is below 60
+# 2.1. Style the cell, if stocks is below 60, increase font-size
+#      and color it red - as a warning to supply department.
 low_supply = JsCode("""
     function(params) {
         if (params.value < 60) {
@@ -65,21 +65,21 @@ low_supply = JsCode("""
     }""")
 ob.configure_column("Stocks", cellStyle=low_supply)
 
-# 3. Update selection mode
+# 3. Update selection.
 ob.configure_selection(selection_mode="multiple", use_checkbox=True)
 
-# 4. Update row height for clearer image display
+# 4. Update row height, to make the image look clearer.
 ob.configure_grid_options(rowHeight=100)
 
-# 5. Hide the Details column
+# 5. Hide the Details column. The product name has a link already.
 ob.configure_column("Details", hide=True)
 
-# 6. Build the options
+# 6. Build the options.
 grid_options = ob.build()
 
 st.markdown('#### Streamlit-AgGrid')
 
-# 7. Add custom CSS to center the values
+# 7. Add custom css to center the values, as we adjusted the row height in step 4.
 grid_return = AgGrid(
     df,
     grid_options,
@@ -87,19 +87,19 @@ grid_return = AgGrid(
     enable_enterprise_modules=False,
     columns_auto_size_mode=ColumnsAutoSizeMode.FIT_ALL_COLUMNS_TO_VIEW,
     key='products',
-    custom_css={'.ag-row .ag-cell': {'display': 'flex', 'justify-content': 'center', 'align-items': 'center'},
+    custom_css={'.ag-row .ag-cell': {'display': 'flex',
+                                     'justify-content': 'center',
+                                     'align-items': 'center'},
                 '.ag-header-cell-label': {'justify-content': 'center'}}
 ) 
 
-# Display selected rows if any
 selected_rows = grid_return["selected_rows"]
 
-if selected_rows:
-    st.markdown('#### Selected Products')
+if len(selected_rows):
+    st.markdown('#### Selected')
     dfs = pd.DataFrame(selected_rows)
 
-    # Drop the internal columns and the Details column
-    dfsnet = dfs.drop(columns=['_selectedRowNodeInfo', 'Details'], errors='ignore')
+    dfsnet = dfs.drop(columns=['_selectedRowNodeInfo', 'Details'])
     AgGrid(
         dfsnet,
         enable_enterprise_modules=False,
