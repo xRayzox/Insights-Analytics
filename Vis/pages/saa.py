@@ -58,14 +58,17 @@ def color_fdr(value):
     else:
         return ''  # No style for undefined values
 
+# Create a color mapping for each FDR value
+color_mapping = merged_fdr_matrix.set_index(['Team', 'GameWeek'])['FDR'].map(color_fdr)
+
 # Pivot to create the filtered matrix for display
 styled_fdr_matrix = merged_fdr_matrix.pivot(index='Team', columns='GameWeek', values='DisplayValue')
 
 # Rename columns for display purposes
 styled_fdr_matrix.columns = [f'GW {col}' for col in styled_fdr_matrix.columns]
 
-# Apply the styling to the filtered FDR matrix based on FDR values
-styled_filtered_fdr_table = styled_fdr_matrix.style.applymap(lambda x: color_fdr(merged_fdr_matrix.loc[merged_fdr_matrix['DisplayValue'] == x, 'FDR'].values[0] if not merged_fdr_matrix.loc[merged_fdr_matrix['DisplayValue'] == x, 'FDR'].empty else None))
+# Apply the styling using the new mapping
+styled_filtered_fdr_table = styled_fdr_matrix.style.applymap(lambda x: color_mapping.loc[x.name])
 
 # Streamlit app to display the styled table
 st.title("Fixture Difficulty Rating (FDR) Matrix")
