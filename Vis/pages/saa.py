@@ -32,7 +32,7 @@ val.rename(columns={0: 'Team'}, inplace=True)
 fdr_matrix = val.melt(id_vars='Team', var_name='GameWeek', value_name='FDR')
 
 # Convert FDR values to integers
-fdr_matrix['FDR'] = fdr_matrix['FDR'].astype(str)
+fdr_matrix['FDR'] = fdr_matrix['FDR'].astype(int)
 
 # Create a filtered FDR matrix for styling
 filtered_fdr_matrix = sui.copy()
@@ -58,17 +58,20 @@ def color_fdr(value):
     else:
         return ''  # No style for undefined values
 
-# Create a color mapping for each FDR value
-color_mapping = merged_fdr_matrix.set_index(['Team', 'GameWeek'])['FDR'].map(color_fdr)
-
 # Pivot to create the filtered matrix for display
 styled_fdr_matrix = merged_fdr_matrix.pivot(index='Team', columns='GameWeek', values='DisplayValue')
 
 # Rename columns for display purposes
 styled_fdr_matrix.columns = [f'GW {col}' for col in styled_fdr_matrix.columns]
 
-# Apply the styling using the new mapping
-styled_filtered_fdr_table = styled_fdr_matrix.style.applymap(lambda x: color_mapping.loc[x.name])
+# Create a DataFrame for the FDR values to apply styles correctly
+fdr_values_matrix = merged_fdr_matrix.pivot(index='Team', columns='GameWeek', values='FDR')
+
+# Apply the styling using a lambda function
+styled_filtered_fdr_table = styled_fdr_matrix.style.applymap(
+    lambda x: color_fdr(fdr_values_matrix.loc[x.name]), 
+    subset=pd.IndexSlice[:, :]  # Apply to the entire table
+)
 
 # Streamlit app to display the styled table
 st.title("Fixture Difficulty Rating (FDR) Matrix")
