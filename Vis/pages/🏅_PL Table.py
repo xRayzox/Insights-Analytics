@@ -160,7 +160,7 @@ with df_col:
     sss = st.dataframe(
         rating_df.sort_values("ovr_rating" + ("_" + model_type if model_type else ""), ascending=False).copy(),
         column_config={
-            "team_short": "Team",
+            "name": "name",
             "ovr_rating_" + model_type: st.column_config.ProgressColumn(
                 "Overall Rating",
                 help="= Offensive Rating / Defensive Rating",
