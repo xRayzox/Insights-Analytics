@@ -187,8 +187,7 @@ elif selected_display == 'Premier League Fixtures':
     fixtures_df = pd.DataFrame(saaaa)
     fixtures_df.drop(columns='stats', inplace=True)
     teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
-
-    team_name_mapping = pd.Series(teams_df.team_name.values, index=teams_df.id).to_dict()
+    team_name_mapping = pd.Series(teams_df.name.values, index=teams_df.id).to_dict()
     team_short_name_mapping = pd.Series(teams_df.short_name.values, index=teams_df.id).to_dict()
     fixtures_df['team_a'] = fixtures_df['team_a'].replace(team_name_mapping)
     fixtures_df['team_h'] = fixtures_df['team_h'].replace(team_name_mapping)
