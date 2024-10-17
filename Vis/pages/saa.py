@@ -28,6 +28,10 @@ val = team_fdr_df.reset_index()
 sui.rename(columns={0: 'Team'}, inplace=True)
 val.rename(columns={0: 'Team'}, inplace=True)
 
+# Create new column names, keeping 'Team' as the first column
+sui.columns = ['Team'] + [f'GW {col}' for col in range(1, len(sui.columns))]
+val.columns = ['Team'] + [f'GW {col}' for col in range(1, len(val.columns))]
+
 # Combine FDR values from 'val' DataFrame
 fdr_matrix = val.melt(id_vars='Team', var_name='GameWeek', value_name='FDR')
 
@@ -61,15 +65,12 @@ def color_fdr(value):
 # Pivot to create the filtered matrix for display
 styled_fdr_matrix = merged_fdr_matrix.pivot(index='Team', columns='GameWeek', values='DisplayValue')
 
-# Rename columns for display purposes
-styled_fdr_matrix.columns = [f'GW {col}' for col in styled_fdr_matrix.columns]
-
 # Create a DataFrame for the FDR values to apply styles correctly
 fdr_values_matrix = merged_fdr_matrix.pivot(index='Team', columns='GameWeek', values='FDR')
 
 # Apply the styling using a lambda function
 styled_filtered_fdr_table = styled_fdr_matrix.style.applymap(
-    lambda x: color_fdr(fdr_values_matrix.loc[x.name]), 
+    lambda x: color_fdr(fdr_values_matrix.loc[x.name].get(x.name, None)), 
     subset=pd.IndexSlice[:, :]  # Apply to the entire table
 )
 
