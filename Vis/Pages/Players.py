@@ -223,7 +223,7 @@ def collate_total_df_from_name(player_name):
                  'T', 'ICT', 'Form', 'TSB%', 'element_type']
     p_t = p_t[col_order]
     p_t['Price'] = p_t['Price']/10
-    p_t['TSB%'] = p_t['TSB%'].replace('0.0', '0.09')  # Assign the result back to the column
+    p_t['TSB%'] = p_t['TSB%'].replace('0.0', '0.09') 
     p_t['TSB%'] = p_t['TSB%'].astype(float)/100
     p_t.set_index('web_name', inplace=True)
     return p_t
@@ -359,11 +359,11 @@ else:
                 max_length = player1_next3[col].str.len().max()
                 if max_length > 7:
                     player1_next3.loc[player1_next3[col].str.len() <= 7, col] = player1_next3.loc[player1_next3[col].str.len() <= 7, col].str.pad(width=max_length+9, side='both', fillchar=' ')
-        init_rows[1].dataframe(player1_next3.style.map(color_fixtures, subset=new_fixt_df.columns) \
-    .format(subset=player1_next3.select_dtypes(include='float64') \
-            .columns.values, formatter='{:.2f}')) \
+        # Apply formatting and then display the DataFrame
+        styled_player1_next3 = player1_next3.style.map(color_fixtures, subset=new_fixt_df.columns) \
             .format(subset=player1_next3.select_dtypes(include='float64') \
-                    .columns.values,formatter='{:.2f}')
+                    .columns.values, formatter='{:.2f}')
+        init_rows[1].dataframe(styled_player1_next3)
         
         if len(id_dict) > 1:
             player2 = init_rows[2].selectbox("Choose Player Two", id_dict.values(), 1) #index=int(ind2))
@@ -373,11 +373,11 @@ else:
                     max_length = player2_next3[col].str.len().max()
                     if max_length > 7:
                         player2_next3.loc[player2_next3[col].str.len() <= 7, col] = player2_next3.loc[player2_next3[col].str.len() <= 7, col].str.pad(width=max_length+9, side='both', fillchar=' ')
-            init_rows[1].dataframe(player2_next3.style.map(color_fixtures, subset=new_fixt_df.columns) \
-    .format(subset=player2_next3.select_dtypes(include='float64') \
-            .columns.values, formatter='{:.2f}')) \
+            # Apply formatting and then display the DataFrame        
+            styled_player2_next3 = player2_next3.style.map(color_fixtures, subset=new_fixt_df.columns) \
                 .format(subset=player2_next3.select_dtypes(include='float64') \
-                        .columns.values,formatter='{:.2f}')
+                        .columns.values, formatter='{:.2f}')
+            init_rows[3].dataframe(styled_player2_next3) # Display in the correct column
         
         rows = st.columns(2)
         player1_df = collate_hist_df_from_name(player1)
