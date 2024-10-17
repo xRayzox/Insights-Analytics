@@ -223,20 +223,24 @@ elif selected_display == 'Premier League Fixtures':
                 for _, match in matches.iterrows():
                     # Create a fixture box for each match
                     with st.container():
-                        col1, col2, col3 = st.columns([4, 1, 4])  # Adjust column proportions
+                        # Create columns with better spacing and vertical alignment
+                        col1, col2, col3 = st.columns([3, 1, 3])  
 
+                        # --- Column 1: Home Team ---
                         with col1:
                             st.markdown(f"**{match['team_h']}**", unsafe_allow_html=True)
+
+                        # --- Column 2: Score/VS ---
                         with col2:
                             if match['finished']:
-                                st.markdown(
-                                    f"<p class='score'>{int(match['team_h_score'])} - {int(match['team_a_score'])}</p>",
-                                    unsafe_allow_html=True
-                                )
+                                st.markdown(f"<p style='text-align: center;'>{int(match['team_h_score'])} - {int(match['team_a_score'])}</p>", unsafe_allow_html=True)
                             else:
                                 st.markdown(f"<p style='text-align: center;'>vs</p>", unsafe_allow_html=True)
+
+                        # --- Column 3: Away Team ---
                         with col3:
                             st.markdown(f"**{match['team_a']}**", unsafe_allow_html=True)
+                                                
 
                         if not match['finished']:
                             st.markdown(f"<p class='kickoff'>Kickoff: {match['local_hour']}</p>",
