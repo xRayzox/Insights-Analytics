@@ -37,21 +37,7 @@ fixt.rename(columns={0: 'Team'}, inplace=True)
 drf.rename(columns={0: 'Team'}, inplace=True)
 ga.rename(columns={0: 'Team'}, inplace=True)
 gf.rename(columns={0: 'Team'}, inplace=True)
-#######################
-merged_df = pd.merge(fixt, drf, on="Team", suffixes=('_Fixture', '_FDR'))
 
-# Convert to a format suitable for display
-merged_display_df = merged_df.copy()
-merged_display_df.columns = ["Team"] + [f"{gw}_Fixture" for gw in merged_display_df.columns[1:4]] + [f"{gw}_FDR" for gw in merged_display_df.columns[4:]]
-
-# Streamlit app
-st.title("FPL Fixture and Difficulty Rating Analysis")
-
-# Display the merged DataFrame
-st.markdown("### Fixture Details with Fixture Difficulty Ratings")
-st.dataframe(merged_display_df)
-
-####################
 # Create FDR matrix directly from 'val' DataFrame
 fdr_matrix = drf.copy()
 fdr_matrix = fdr_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='FDR')
