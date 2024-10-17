@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import os
 import sys
-
 import numpy as np
 
 # Adjust the path to your FPL API collection as necessary
@@ -28,8 +27,6 @@ val = team_fdr_df.reset_index()
 sui.rename(columns={0: 'Team'}, inplace=True)
 val.rename(columns={0: 'Team'}, inplace=True)
 
-
-
 # Combine teams from both DataFrames
 teams = pd.concat([sui['Team'], val['Team']]).unique()
 
@@ -48,6 +45,9 @@ def color_fdr(value):
 
 # Create a filtered FDR matrix for styling
 filtered_fdr_matrix = fdr_matrix.pivot(index='Team', columns='GameWeek', values='FDR')
+
+# Rename columns for display purposes
+filtered_fdr_matrix.columns = [f'GW {col}' for col in filtered_fdr_matrix.columns]
 
 # Apply the styling to the filtered FDR matrix
 styled_filtered_fdr_table = filtered_fdr_matrix.style.applymap(color_fdr)
