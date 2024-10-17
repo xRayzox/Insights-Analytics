@@ -39,7 +39,7 @@ fdr_matrix = val.melt(id_vars='Team', var_name='GameWeek', value_name='FDR')
 fdr_matrix['FDR'] = fdr_matrix['FDR'].astype(str)
 
 # Create a filtered FDR matrix for styling
-filtered_fdr_matrix = sui.copy()
+filtered_fdr_matrix = val.copy()
 filtered_fdr_matrix = filtered_fdr_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='DisplayValue')
 
 # Merge with FDR values
