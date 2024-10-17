@@ -175,9 +175,11 @@ st.write(styled_table)
 
 ###############################
 time=get_user_timezone()
+
 saaaa=get_fixture_data()
 fixtures_df = pd.DataFrame(saaaa)
 fixtures_df.drop(columns='stats', inplace=True)
+fixtures_df['datetime'] = pd.to_datetime(fixtures_df['kickoff_time'], utc=True)
 fixtures_df['local_date'] = fixtures_df['datetime'].dt.tz_convert(time).dt.strftime('%A %d %B %Y')
     # --- Display Fixtures for Selected Gameweek ---
 st.markdown(
