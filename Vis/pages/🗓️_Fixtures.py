@@ -201,6 +201,8 @@ elif selected_display == '⚔️Premier League Fixtures':
     teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
     teams_df['logo_url'] = "https://resources.premierleague.com/premierleague/badges/70/t" + teams_df['code'].astype(str) + ".png"
     team_name_mapping = pd.Series(teams_df.name.values, index=teams_df.id).to_dict()
+    fixtures_df = fixtures_df.merge(teams_df[['id', 'logo_url']], left_on='team_h', right_on='id', how='left').rename(columns={'logo_url': 'team_h_logo'})
+    fixtures_df = fixtures_df.merge(teams_df[['id', 'logo_url']], left_on='team_a', right_on='id', how='left').rename(columns={'logo_url': 'team_a_logo'})
     fixtures_df['team_a'] = fixtures_df['team_a'].replace(team_name_mapping)
     fixtures_df['team_h'] = fixtures_df['team_h'].replace(team_name_mapping)
     fixtures_df = fixtures_df.drop(columns=['pulse_id'])
@@ -208,9 +210,6 @@ elif selected_display == '⚔️Premier League Fixtures':
     fixtures_df['local_time'] = fixtures_df['datetime'].dt.tz_convert(time).dt.strftime('%A %d %B %Y %H:%M')
     fixtures_df['local_date'] = fixtures_df['datetime'].dt.tz_convert(time).dt.strftime('%d %A %B %Y')
     fixtures_df['local_hour'] = fixtures_df['datetime'].dt.tz_convert(time).dt.strftime('%H:%M')
-    fixtures_df = fixtures_df.merge(teams_df[['id', 'logo_url']], left_on='team_h', right_on='id', how='left').rename(columns={'logo_url': 'team_h_logo'})
-    fixtures_df = fixtures_df.merge(teams_df[['id', 'logo_url']], left_on='team_a', right_on='id', how='left').rename(columns={'logo_url': 'team_a_logo'})
-    fixtures_df = fixtures_df.drop(columns=['name_x', 'name_y'])
     gw_minn = min(fixtures_df['event'])
     gw_maxx = max(fixtures_df['event'])
     selected_gw = st.slider('Select Gameweek:', gw_minn, gw_maxx, ct_gw) 
