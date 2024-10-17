@@ -220,7 +220,8 @@ elif selected_display == '⚔️Premier League Fixtures':
     user_tz = pytz.timezone(timezone)
     current_time = datetime.now(user_tz)
 
-    st.write(f"Detected Timezone: {timezone}")
+
+    st.write(f"Detected Timezone: {user_tz}")
     st.write(f"Current time in {timezone}: {current_time.strftime('%Y-%m-%d %H:%M:%S')}")
 
     saaaa=get_fixture_data()
