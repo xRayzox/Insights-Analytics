@@ -155,6 +155,7 @@ if selected_display == '📊Fixture Difficulty Rating':
     # Get the selected data
     selected_data = get_selected_data(selected_metric)
     selected_data.index = selected_data.index.map(lambda team: f"<img src='{team_logo_mapping[team]}' style='width:20px; height:20px; vertical-align:middle; margin-right:5px;'/> {team}")
+    st.markdown(selected_data.to_html(escape=False), unsafe_allow_html=True)
 
     # Display the styled table based on the selected metric
     if selected_metric == "Fixture Difficulty Rating (FDR)":
@@ -197,7 +198,7 @@ if selected_display == '📊Fixture Difficulty Rating':
                 )
 
     # Streamlit app to display the styled table (outside the if/else)
-    st.write(styled_table(escape=False))
+    st.write(styled_table)
 
 
 
