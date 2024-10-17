@@ -148,7 +148,7 @@ else:  # "Away"
 
 # Display DataFrame
 rating_df = teams_df.sort_values("ovr_rating" + ("_" + model_type if model_type else ""), ascending=False)
-df_col, chart_col = st.columns([2, 3])  # Adjust the column sizes as needed
+df_col, chart_col = st.columns([24, 24])  # Adjust the column sizes as needed
 
 with df_col:
     # Display the DataFrame with full width
