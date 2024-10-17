@@ -208,6 +208,8 @@ elif selected_display == '⚔️Premier League Fixtures':
     fixtures_df['local_time'] = fixtures_df['datetime'].dt.tz_convert(time).dt.strftime('%A %d %B %Y %H:%M')
     fixtures_df['local_date'] = fixtures_df['datetime'].dt.tz_convert(time).dt.strftime('%d %A %B %Y')
     fixtures_df['local_hour'] = fixtures_df['datetime'].dt.tz_convert(time).dt.strftime('%H:%M')
+    fixtures_df = fixtures_df.merge(teams_df[['id', 'logo_url']], left_on='team_h', right_on='name', how='left').rename(columns={'logo_url': 'team_h_logo'})
+    fixtures_df = fixtures_df.merge(teams_df[['id', 'logo_url']], left_on='team_a', right_on='name', how='left').rename(columns={'logo_url': 'team_a_logo'})
     gw_minn = min(fixtures_df['event'])
     gw_maxx = max(fixtures_df['event'])
     selected_gw = st.slider('Select Gameweek:', gw_minn, gw_maxx, ct_gw) 
@@ -227,16 +229,17 @@ elif selected_display == '⚔️Premier League Fixtures':
             for _, match in matches.iterrows():
                 # Create a fixture box for each match
                 with st.container():
-                    # Create columns with NO spacing 
+                    # Create columns with NO spacing
                     col1, col2, col3 = st.columns([1, 1, 1])
 
-                    # --- Column 1: Home Team (right-aligned) ---
+                    # --- Column 1: Home Team (right-aligned with logo) ---
                     with col1:
-                         f"""
-        <div style='text-align: right;'>
-            <img src='{match['logo_url']}' alt='{match['team_h']}' style='width:100px;'><br>
-            {match['team_h']}
-        </div>
+                        st.markdown(
+                            f"<div style='text-align: right;'>"
+                            f"<img src='{match['team_h_logo']}' style='width:20px; height:20px; vertical-align:middle;'/> "
+                            f"{match['team_h']}</div>", 
+                            unsafe_allow_html=True
+                        )
 
                     # --- Column 2: Score/VS (centered) ---
                     with col2:
@@ -251,10 +254,12 @@ elif selected_display == '⚔️Premier League Fixtures':
                                 unsafe_allow_html=True
                             )
 
-                    # --- Column 3: Away Team (left-aligned) ---
+                    # --- Column 3: Away Team (left-aligned with logo) ---
                     with col3:
                         st.markdown(
-                            f"<div style='text-align: left;'>{match['team_a']}</div>", 
+                            f"<div style='text-align: left;'>"
+                            f"<img src='{match['team_a_logo']}' style='width:20px; height:20px; vertical-align:middle;'/> "
+                            f"{match['team_a']}</div>", 
                             unsafe_allow_html=True
                         )
 
