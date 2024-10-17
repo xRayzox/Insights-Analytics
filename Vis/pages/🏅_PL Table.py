@@ -173,6 +173,18 @@ column_config = {
 }
 
 with df_col:
+    st.markdown(
+        """
+        <style>
+        .streamlit-expanderHeader {
+            font-size: 14px;
+        }
+        .css-1d391kg {
+            max-width: 200px;  /* Adjust width here */
+        }
+        </style>
+        """, unsafe_allow_html=True
+    )
     # Display the DataFrame with full width using progress columns
     st.dataframe(
         rating_df[["name", 
@@ -180,7 +192,7 @@ with df_col:
                     "o_rating" + ("_" + model_type if model_type else ""),
                     "d_rating" + ("_" + model_type if model_type else "")]],
         hide_index=True,
-        use_container_width=False,  
+        use_container_width=True,  
         column_config=column_config  
     )
 # Scatter plot setup
