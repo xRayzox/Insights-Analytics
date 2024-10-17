@@ -137,6 +137,11 @@ teams_df["ovr_rating"] = (teams_df["ovr_rating_home"] + teams_df["ovr_rating_awa
 teams_df["o_rating"] = (teams_df["o_rating_home"] + teams_df["o_rating_away"]) / 2
 teams_df["d_rating"] = (teams_df["d_rating_home"] + teams_df["d_rating_away"]) / 2
 
+# Convert relevant columns to native Python types
+teams_df["ovr_rating"] = teams_df["ovr_rating"].astype(float)
+teams_df["o_rating"] = teams_df["o_rating"].astype(float)
+teams_df["d_rating"] = teams_df["d_rating"].astype(float)
+
 # Options for ratings
 model_option = st.selectbox("Data Source", ("Overall", "Home", "Away"))
 if model_option == "Overall":
@@ -153,7 +158,7 @@ df_col, chart_col = st.columns([24, 24])  # Adjust the column sizes as needed
 with df_col:
     # ratings dataframe
     sss = st.dataframe(
-        rating_df.sort_values("ovr_rating" + ("_" + model_type if model_type else ""), ascending=False),
+        rating_df.sort_values("ovr_rating" + ("_" + model_type if model_type else ""), ascending=False).copy(),
         column_config={
             "team_short": "Team",
             "ovr_rating_" + model_type: st.column_config.ProgressColumn(
@@ -194,6 +199,7 @@ selected_team_id = (
     .iloc[selected_team]["team_id"]
     .to_list()
 )
+
 
 # Scatter plot setup
 x_domain = [teams_df["d_rating" + ("_" + model_type if model_type else "")].min()-0.1, teams_df["d_rating" + ("_" + model_type if model_type else "")].max() + 0.1]
