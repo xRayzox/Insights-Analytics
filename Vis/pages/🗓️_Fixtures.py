@@ -4,6 +4,7 @@ import os
 import sys
 import numpy as np
 from datetime import datetime, timezone
+import streamlit.components.v1 as components
 
 # Adjust the path to your FPL API collection as necessary
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'FPL')))
@@ -203,7 +204,16 @@ if selected_display == '📊Fixture Difficulty Rating':
 
 ###################################
 elif selected_display == '⚔️Premier League Fixtures':
-    time=get_user_timezone()
+    timezone_script = """
+    <script>
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        // Streamlit's method to send data back to Python
+        Streamlit.setComponentValue(timezone);
+    </script>
+    """
+
+    # Step 2: Create a custom component to capture the timezone
+    timezone = components.html(timezone_script, height=0, key="timezone")
     st.write(time)
     saaaa=get_fixture_data()
     fixtures_df = pd.DataFrame(saaaa)
