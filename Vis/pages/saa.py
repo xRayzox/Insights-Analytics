@@ -168,3 +168,40 @@ else:  # For GA and GF
 
 # Streamlit app to display the styled table (outside the if/else)
 st.write(styled_table)
+
+
+
+    # --- Display Fixtures for Selected Gameweek ---
+st.markdown(
+        f"<h2 style='text-align: center;'>Premier League Fixtures - Gameweek {ct_gw}</h2>",
+        unsafe_allow_html=True,
+    )
+
+current_gameweek_fixtures = events_df[events_df['event'] == ct_gw]
+grouped_fixtures = current_gameweek_fixtures.groupby('local_date')
+
+    # Use centered container for fixtures
+with st.container():
+        for date, matches in grouped_fixtures:
+            st.markdown(f"<h3 style='text-align: center;'>{date}</h3>", unsafe_allow_html=True)
+            for _, match in matches.iterrows():
+                # Create a fixture box for each match
+                with st.container():
+                    col1, col2, col3 = st.columns([4, 1, 4])  # Adjust column proportions
+
+                    with col1:
+                        st.markdown(f"**{match['team_h']}**", unsafe_allow_html=True)
+                    with col2:
+                        if match['finished']:
+                            st.markdown(
+                                f"<p class='score'>{int(match['team_h_score'])} - {int(match['team_a_score'])}</p>",
+                                unsafe_allow_html=True
+                            )
+                        else:
+                            st.markdown(f"<p style='text-align: center;'>vs</p>", unsafe_allow_html=True)
+                    with col3:
+                        st.markdown(f"**{match['team_a']}**", unsafe_allow_html=True)
+
+                    if not match['finished']:
+                        st.markdown(f"<p class='kickoff'>Kickoff: {match['local_hour']}</p>",
+                                    unsafe_allow_html=True)
