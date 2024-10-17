@@ -117,4 +117,3 @@ for col in new_fixt_cols:
 st.dataframe(league_df.style.applymap(color_fixtures, subset=new_fixt_cols) \
              .format(subset=float_cols, formatter='{:.2f}'), height=740, width=None)
 
-league_df
