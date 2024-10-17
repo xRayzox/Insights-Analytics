@@ -164,10 +164,10 @@ column_config = {
         label="Overall Rating", max_value=max_ovr,format="%.0f",color="lightgreen"
     ),
     "o_rating" + ("_" + model_type if model_type else ""): st.column_config.ProgressColumn(
-        label="Offensive Rating", max_value=max_o,format="%.0f",bar_color="blue"
+        label="Offensive Rating", max_value=max_o,format="%.0f"
     ),
     "d_rating" + ("_" + model_type if model_type else ""): st.column_config.ProgressColumn(
-        label="Defensive Rating", max_value=max_d,format="%.0f",bar_color="blue"
+        label="Defensive Rating", max_value=max_d,format="%.0f"
     ),
 }
 
