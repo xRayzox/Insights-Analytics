@@ -7,6 +7,9 @@ import datetime as datetime
 import os
 import sys
 
+import numpy as np
+import plotly.express as px
+
 # Adjust the path to your FPL API collection as necessary
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'FPL')))
 from fpl_api_collection import (

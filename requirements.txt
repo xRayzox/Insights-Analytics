@@ -5,3 +5,5 @@ plotly
 scikit-learn
 requests
 altair
+numpy
+plotly
