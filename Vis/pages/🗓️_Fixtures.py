@@ -232,12 +232,11 @@ elif selected_display == '⚔️Premier League Fixtures':
                     # Create columns with NO spacing
                     col1, col2, col3 = st.columns([1, 1, 1])
 
-                    # --- Column 1: Home Team (right-aligned with logo) ---
                     with col1:
                         st.markdown(
                             f"<div style='text-align: right;'>"
-                            f"{match['team_h']}"
-                            f"<img src='{match['team_h_logo']}' style='width:20px; height:20px; vertical-align:middle;'/></div> ",
+                            f"{match['team_h']} "
+                            f"<img src='{match['team_h_logo']}' style='width:20px; height:20px; vertical-align:middle; margin-left:5px;'/></div>",
                             unsafe_allow_html=True
                         )
 
@@ -245,12 +244,12 @@ elif selected_display == '⚔️Premier League Fixtures':
                     with col2:
                         if match['finished']:
                             st.markdown(
-                                f"<div style='text-align: center;'>{int(match['team_h_score'])} - {int(match['team_a_score'])}</div>", 
+                                f"<div style='text-align: center;'>{int(match['team_h_score'])} - {int(match['team_a_score'])}</div>",
                                 unsafe_allow_html=True
                             )
                         else:
                             st.markdown(
-                                "<div style='text-align: center;'>vs</div>", 
+                                "<div style='text-align: center;'>vs</div>",
                                 unsafe_allow_html=True
                             )
 
@@ -258,15 +257,15 @@ elif selected_display == '⚔️Premier League Fixtures':
                     with col3:
                         st.markdown(
                             f"<div style='text-align: left;'>"
-                            f"<img src='{match['team_a_logo']}' style='width:20px; height:20px; vertical-align:middle;'/> "
-                            f"{match['team_a']}</div>", 
+                            f"<img src='{match['team_a_logo']}' style='width:20px; height:20px; vertical-align:middle; margin-right:5px;'/>"
+                            f"{match['team_a']}</div>",
                             unsafe_allow_html=True
                         )
 
                     # --- Kickoff Time (centered below) ---
                     if not match['finished']:
                         st.markdown(
-                            f"<p style='text-align: center;'>Kickoff: {match['local_hour']}</p>",
+                            f"<p style='text-align: center; margin-top: 10px;'>Kickoff: {match['local_hour']}</p>",
                             unsafe_allow_html=True
                         )
 define_sidebar()
