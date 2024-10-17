@@ -6,8 +6,6 @@ import numpy as np
 
 # Adjust the path to your FPL API collection as necessary
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'FPL')))
-
-# Import functions from your FPL API and utility modules
 from fpl_api_collection import (
     get_bootstrap_data,
     get_current_gw,
@@ -68,13 +66,30 @@ fdr_colors = {
     5: ("#861d46", "white"),
 }
 
-# Define a coloring function based on the FDR values using the custom color mapping
+# Define the custom color mapping for GA and GF
+ga_gf_colors = {
+    0.0: ("#147d1b", "white"),
+    0.5: ("#00ff78", "black"),
+    1.0: ("#caf4bd", "black"),
+    1.5: ("#eceae6", "black"),
+    2.0: ("#fa8072", "black"),
+    2.5: ("#ff0057", "white"),
+    3.0: ("#920947", "white"), 
+}
+
+# Define a coloring function based on the FDR values
 def color_fdr(value):
     if value in fdr_colors:
         background_color, text_color = fdr_colors[value]
         return f'background-color: {background_color}; color: {text_color}; text-align: center;'
     else:
-        return ''  # No style for undefined values
+        return ''
+
+# Define a coloring function for GA/GF values
+def color_ga_gf(value):
+    closest_key = min(ga_gf_colors, key=lambda x: abs(x - value))
+    background_color, text_color = ga_gf_colors[closest_key]
+    return f'background-color: {background_color}; color: {text_color}; text-align: center;'
 
 # Create a selection choice for metrics
 selected_metric = st.selectbox(
@@ -97,7 +112,6 @@ def get_selected_data(metric):
         gf_matrix = gf.melt(id_vars='Team', var_name='GameWeek', value_name='GF')
         gf_matrix['GF'] = gf_matrix['GF'].astype(float)  
         filtered_gf_matrix = gf_matrix[(gf_matrix['GameWeek'] >= slider1) & (gf_matrix['GameWeek'] <= slider2)]
-        # Correct the pivot function call for GF
         pivot_gf_matrix = filtered_gf_matrix.pivot(index='Team', columns='GameWeek', values='GF') 
         pivot_gf_matrix.columns = [f'GW {col}' for col in pivot_gf_matrix.columns]
         return pivot_gf_matrix
@@ -107,11 +121,9 @@ selected_data = get_selected_data(selected_metric)
 
 # Display the styled table based on the selected metric
 if selected_metric == "Fixture Difficulty Rating (FDR)":
-    # Apply the styling for FDR
-    styled_table = selected_data.style.map(color_fdr)  # Use .map instead of .applymap
+    styled_table = selected_data.style.map(color_fdr)
 else:
-    # Default styling for GA and GF (optional, customize as needed)
-    styled_table = selected_data.style.map(lambda x: 'text-align: center;')  # Use .map 
+    styled_table = selected_data.style.map(color_ga_gf)  
 
 # Display the title with the selected metric
 st.markdown(
@@ -122,9 +134,9 @@ st.markdown(
 # Streamlit app to display the styled table
 st.write(styled_table)
 
-# Sidebar for the legend
+# Sidebar for the legends
 with st.sidebar:
-    st.markdown("**Legend:**")
+    st.markdown("**Legend (FDR):**")
     for fdr, (bg_color, font_color) in fdr_colors.items():
         st.sidebar.markdown(
             f"<span style='background-color: {bg_color}; color: {font_color}; padding: 2px 5px; border-radius: 3px;'>"
@@ -132,3 +144,14 @@ with st.sidebar:
             f"</span>",
             unsafe_allow_html=True,
         )
+
+    st.markdown("<br>", unsafe_allow_html=True)  # Add a line break
+
+    st.markdown("**Legend (GA/GF):**")
+    for ga_gf, (bg_color, font_color) in ga_gf_colors.items():
+        st.sidebar.markdown(
+            f"<span style='background-color: {bg_color}; color: {font_color}; padding: 2px 5px; border-radius: 3px;'>"
+            f"{ga_gf:.1f} - {ga_gf + 0.4:.1f}"  # Display the range
+            f"</span>",
+            unsafe_allow_html=True,
+        ) 
