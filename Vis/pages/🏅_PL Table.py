@@ -41,9 +41,9 @@ teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
 teams_df['logo_url'] = "https://resources.premierleague.com/premierleague/badges/70/t" + teams_df['code'].astype(str) + ".png"
 team_logo_mapping = pd.Series(teams_df.logo_url.values, index=teams_df.short_name).to_dict()
 # Load the image
-im = Image.open(teams_df['logo_url'][0])  # Replace "logo url" with the actual path or URL of your image
+logo_url = "https://resources.premierleague.com/premierleague/badges/70/t3.png"
 # Display the image
-st.image(im, caption='Your Logo Caption')  # Optionally add a caption
+st.image(logo_url, caption='Team Logo')
 # Title for the app
 st.title("Sage Assistant")
 ## Very slow to load, works but needs to be sped up.
