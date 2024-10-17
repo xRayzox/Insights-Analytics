@@ -35,11 +35,11 @@ sui.rename(columns={0: 'Team'}, inplace=True)
 val.rename(columns={0: 'Team'}, inplace=True)
 
 # Create FDR matrix directly from 'val' DataFrame
-fdr_matrix = sui.copy()
+fdr_matrix = val.copy()
 fdr_matrix = fdr_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='FDR')
 
 # Convert FDR values to integers
-fdr_matrix['FDR'] = fdr_matrix['FDR'].astype(str)
+fdr_matrix['FDR'] = fdr_matrix['FDR'].astype(int)
 
 # Create sliders for game week selection
 slider1, slider2 = st.slider('Gameweek: ', int(ct_gw), gw_max, [int(ct_gw), int(ct_gw + 10)], 1)
@@ -53,23 +53,30 @@ pivot_fdr_matrix = filtered_fdr_matrix.pivot(index='Team', columns='GameWeek', v
 # Rename columns for display purposes
 pivot_fdr_matrix.columns = [f'GW {col}' for col in pivot_fdr_matrix.columns]
 
-# Define a color map for FDR values (example colors)
-flatui_rev = ['#257d5a', '#00ff86', '#ebebe4', '#ff005a', '#861d46']
+# Define the custom color mapping for FDR values
+fdr_colors = {
+    1: ("#257d5a", "black"),
+    2: ("#00ff86", "black"),
+    3: ("#ebebe4", "black"),
+    4: ("#ff005a", "white"),
+    5: ("#861d46", "white"),
+}
 
 # Define a coloring function based on the FDR values using the custom color mapping
 def color_fdr(value):
-    hash_color = map_float_to_color(value, flatui_rev, 1, 5)  # Assuming FDR values range from 1 to 5
-    text_color = get_text_color_from_hash(hash_color)
-    return f'background-color: {hash_color}; color: {text_color}; text-align: center;'
+    if value in fdr_colors:
+        background_color, text_color = fdr_colors[value]
+        return f'background-color: {background_color}; color: {text_color}; text-align: center;'
+    else:
+        return ''  # No style for undefined values
 
 # Apply the styling to the pivoted FDR matrix
 styled_filtered_fdr_table = pivot_fdr_matrix.style.applymap(color_fdr)
 
 # Display the title with the current game week
 st.markdown(
-    f"<h2 style='text-align: center;'>Premier League Fixtures - Gameweek {slider1}</h2>",
-    unsafe_allow_html=True,
-)
+        f"**Fixture Difficulty Rating (FDR) for the Next {slider2-slider1} Gameweeks (Starting GW{slider1})**",
+        unsafe_allow_html=True)
 
 # Streamlit app to display the styled table
 st.write(styled_filtered_fdr_table)
@@ -77,7 +84,7 @@ st.write(styled_filtered_fdr_table)
 # Sidebar for the legend
 with st.sidebar:
     st.markdown("**Legend:**")
-    for fdr, (bg_color, font_color) in zip(range(1, 6), flatui_rev):
+    for fdr, (bg_color, font_color) in fdr_colors.items():
         st.sidebar.markdown(
             f"<span style='background-color: {bg_color}; color: {font_color}; padding: 2px 5px; border-radius: 3px;'>"
             f"{fdr} - {'Very Easy' if fdr == 1 else 'Easy' if fdr == 2 else 'Medium' if fdr == 3 else 'Difficult' if fdr == 4 else 'Very Difficult'}"
