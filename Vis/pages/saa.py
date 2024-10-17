@@ -50,22 +50,21 @@ fdr_colors = {
 }
 
 # Define a coloring function based on the FDR values
-def color_fdr(val):
-    if val in fdr_colors:
-        background_color, text_color = fdr_colors[val]
+def color_fdr(row):
+    value = row['FDR']
+    if value in fdr_colors:
+        background_color, text_color = fdr_colors[value]
         return f'background-color: {background_color}; color: {text_color}; text-align: center;'
     else:
         return ''  # No style for undefined values
 
-# Apply styling to the 'Fixture' column based on 'FDR' *before* pivoting
-fdr_matrix['Fixture'] = fdr_matrix.apply(lambda row: f'<span style="{color_fdr(row["FDR"])}">{row["Fixture"]}</span>', axis=1)
-
-# Now, pivot the DataFrame
+# Pivot the fdr_matrix for display
 filtered_fdr_matrix = fdr_matrix.pivot(index='Team', columns='GameWeek', values='Fixture')
 filtered_fdr_matrix.columns = [f'GW {col}' for col in filtered_fdr_matrix.columns]
 
+# Apply the styling
+styled_filtered_fdr_table = filtered_fdr_matrix.style.apply(color_fdr, axis=1)
+
 # Streamlit app
 st.title("Fixture Difficulty Rating (FDR) Matrix")
-
-# Use st.markdown to render the styled HTML
-st.markdown(filtered_fdr_matrix.to_html(), unsafe_allow_html=True)
+st.write(styled_filtered_fdr_table)
