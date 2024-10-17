@@ -151,31 +151,28 @@ rating_df = teams_df.sort_values("ovr_rating" + ("_" + model_type if model_type 
 df_col, chart_col = st.columns([24, 24])  # Adjust the column sizes as needed
 
 with df_col:
-        # ratings dataframe
-    sss=st.dataframe(
-        rating_df.sort_values("ovr_rating_" + model_type, ascending=False),
+    # ratings dataframe
+    sss = st.dataframe(
+        rating_df.sort_values("ovr_rating" + ("_" + model_type if model_type else ""), ascending=False),
         column_config={
             "team_short": "Team",
-            "ovr_rating_"
-            + model_type: st.column_config.ProgressColumn(
+            "ovr_rating_" + model_type: st.column_config.ProgressColumn(
                 "Overall Rating",
                 help="= Offensive Rating / Defensive Rating",
                 format="%d",
-                max_value=rating_df["ovr_rating_" + model_type].max(),
+                max_value=rating_df["ovr_rating_" + model_type].max() if model_type else rating_df["ovr_rating"].max(),
             ),
-            "o_rating_"
-            + model_type: st.column_config.ProgressColumn(
+            "o_rating_" + model_type: st.column_config.ProgressColumn(
                 "Offensive Rating",
                 help="Higher is better",
                 format="%d",
-                max_value=rating_df["o_rating_" + model_type].max(),
+                max_value=rating_df["o_rating_" + model_type].max() if model_type else rating_df["o_rating"].max(),
             ),
-            "d_rating_"
-            + model_type: st.column_config.ProgressColumn(
+            "d_rating_" + model_type: st.column_config.ProgressColumn(
                 "Defensive Rating",
                 help="Lower is better",
                 format="%.2f",
-                max_value=rating_df["d_rating_" + model_type].max(),
+                max_value=rating_df["d_rating_" + model_type].max() if model_type else rating_df["d_rating"].max(),
             ),
         },
         column_order=(
@@ -190,10 +187,10 @@ with df_col:
         height=737,
     )
 
-# identify selected teams to highlight
+# Identify selected teams to highlight
 selected_team = sss.selection.rows
 selected_team_id = (
-    rating_df.sort_values("ovr_rating_" + model_type, ascending=False)
+    rating_df.sort_values("ovr_rating" + ("_" + model_type if model_type else ""), ascending=False)
     .iloc[selected_team]["team_id"]
     .to_list()
 )
