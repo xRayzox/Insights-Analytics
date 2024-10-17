@@ -199,6 +199,7 @@ elif selected_display == '⚔️Premier League Fixtures':
     fixtures_df = pd.DataFrame(saaaa)
     fixtures_df.drop(columns='stats', inplace=True)
     teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
+    teams_df['logo_url'] = "https://resources.premierleague.com/premierleague/badges/70/t" + teams_df['code'].astype(str) + ".png"
     team_name_mapping = pd.Series(teams_df.name.values, index=teams_df.id).to_dict()
     fixtures_df['team_a'] = fixtures_df['team_a'].replace(team_name_mapping)
     fixtures_df['team_h'] = fixtures_df['team_h'].replace(team_name_mapping)
@@ -231,10 +232,11 @@ elif selected_display == '⚔️Premier League Fixtures':
 
                     # --- Column 1: Home Team (right-aligned) ---
                     with col1:
-                        st.markdown(
-                            f"<div style='text-align: right;'>{match['team_h']}</div>", 
-                            unsafe_allow_html=True
-                        )
+                         f"""
+        <div style='text-align: right;'>
+            <img src='{match['logo_url']}' alt='{match['team_h']}' style='width:100px;'><br>
+            {match['team_h']}
+        </div>
 
                     # --- Column 2: Score/VS (centered) ---
                     with col2:
