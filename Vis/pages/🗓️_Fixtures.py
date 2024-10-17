@@ -236,8 +236,9 @@ elif selected_display == '⚔️Premier League Fixtures':
                     with col1:
                         st.markdown(
                             f"<div style='text-align: right;'>"
+                            f"{match['team_h']}"
                             f"<img src='{match['team_h_logo']}' style='width:20px; height:20px; vertical-align:middle;'/> "
-                            f"{match['team_h']}</div>", 
+                            "</div>", 
                             unsafe_allow_html=True
                         )
 
