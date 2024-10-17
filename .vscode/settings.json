@@ -1,5 +1,7 @@
 {
     "python.analysis.extraPaths": [
-        "./FPL"
+        "./FPL",
+        "./Vis",
+        "./data"
     ]
 }
