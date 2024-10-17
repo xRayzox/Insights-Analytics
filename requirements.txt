@@ -7,3 +7,4 @@ requests
 altair
 numpy
 plotly
+streamlit-aggrid
