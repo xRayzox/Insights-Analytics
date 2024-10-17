@@ -121,6 +121,7 @@ st.dataframe(league_df.style.applymap(color_fixtures, subset=new_fixt_cols) \
 
 ####################################################
 
+# Title and information
 st.title("Team Offensive / Defensive Ratings")
 st.caption("Compare overall, offensive, and defensive strengths of teams.")
 
@@ -162,10 +163,13 @@ with df_col:
 x_domain = [0, teams_df["d_rating" + ("_" + model_type if model_type else "")].max() + 0.1]
 y_range = [0, teams_df["o_rating" + ("_" + model_type if model_type else "")].max() + 100]
 
-# Create scatter plot with reduced size
+# Create scatter plot with team logos
 scatter_plot = (
     alt.Chart(teams_df, height=400, width=500)  # Adjust height and width here
-    .mark_point(filled=True, size=100)
+    .mark_image(
+        width=30,  # Adjust logo width
+        height=30  # Adjust logo height
+    )
     .encode(
         x=alt.X(
             "d_rating" + ("_" + model_type if model_type else ""),
@@ -179,6 +183,8 @@ scatter_plot = (
             title="Offensive Rating",
             scale=alt.Scale(domain=y_range),
         ),
+        # Use the logo URL for the image
+        url='logo_url',
         tooltip=[
             alt.Tooltip("name", title="Team"),
             alt.Tooltip("ovr_rating" + ("_" + model_type if model_type else ""), title="Overall Rating", format="d"),
