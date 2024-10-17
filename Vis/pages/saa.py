@@ -21,7 +21,16 @@ from fpl_utils import (
     get_rotation,
     get_user_timezone
 )
-
+st.markdown(
+    """
+    <style>
+    .kickoff {
+        text-align: center;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 # Load data
 team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
 events_df = pd.DataFrame(get_bootstrap_data()['events'])
@@ -231,4 +240,4 @@ elif selected_display == 'Premier League Fixtures':
 
                         if not match['finished']:
                             st.markdown(f"<p class='kickoff'>Kickoff: {match['local_hour']}</p>",
-                                        unsafe_allow_html=True)
+                                         unsafe_allow_html=True)
