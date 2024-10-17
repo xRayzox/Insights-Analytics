@@ -125,8 +125,8 @@ if selected_metric == "Fixture Difficulty Rating (FDR)":
 
     # Display the title with the selected metric (FDR)
     st.markdown(
-        f"<h2 style='text-align: center;'>Fixture Difficulty Rating (FDR) for the Next {slider2-slider1} Gameweeks (Starting GW {slider1})</h2>",
-        unsafe_allow_html=True
+    f"{selected_metric} for the Next {slider2-slider1} Gameweeks (Starting GW {slider1})",
+    unsafe_allow_html=True
     )
 
     # FDR Legend (only if FDR is selected)
@@ -144,8 +144,8 @@ else:  # For GA and GF
 
     # Display the title with the selected metric (GA or GF)
     st.markdown(
-        f"<h2 style='text-align: center;'>{selected_metric} for the Next {slider2-slider1} Gameweeks (Starting GW {slider1})</h2>",
-        unsafe_allow_html=True
+    f"{selected_metric} for the Next {slider2-slider1} Gameweeks (Starting GW {slider1})",
+    unsafe_allow_html=True
     )
 
     # GA/GF Legend (only if GA or GF is selected)
