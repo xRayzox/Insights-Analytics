@@ -38,29 +38,13 @@ drf.rename(columns={0: 'Team'}, inplace=True)
 ga.rename(columns={0: 'Team'}, inplace=True)
 gf.rename(columns={0: 'Team'}, inplace=True)
 
-# Create FDR matrix directly from 'val' DataFrame
-fdr_matrix = drf.copy()
-fdr_matrix = fdr_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='FDR')
-
-# Convert FDR values to integers
-fdr_matrix['FDR'] = fdr_matrix['FDR'].astype(int)
-
 # Streamlit app
 st.title("FPL Fixture Analysis")
 
 # Create sliders for game week selection
 slider1, slider2 = st.slider('Gameweek Range:', int(ct_gw), gw_max, [int(ct_gw), int(ct_gw + 10)], 1)
 
-# Filter FDR matrix based on selected game weeks
-filtered_fdr_matrix = fdr_matrix[(fdr_matrix['GameWeek'] >= slider1) & (fdr_matrix['GameWeek'] <= slider2)]
-
-# Pivot the filtered FDR matrix for styling
-pivot_fdr_matrix = filtered_fdr_matrix.pivot(index='Team', columns='GameWeek', values='FDR')
-
-# Rename columns for display purposes
-pivot_fdr_matrix.columns = [f'GW {col}' for col in pivot_fdr_matrix.columns].copy()
-
-# Define the custom color mapping for FDR values
+# Define the custom color mapping for FDR values before using it
 fdr_colors = {
     1: ("#257d5a", "black"),
     2: ("#00ff86", "black"),
@@ -69,102 +53,55 @@ fdr_colors = {
     5: ("#861d46", "white"),
 }
 
-# Define the custom color mapping for GA and GF
-ga_gf_colors = {
-    0.0: ("#147d1b", "white"),
-    0.5: ("#00ff78", "black"),
-    1.0: ("#caf4bd", "black"),
-    1.5: ("#eceae6", "black"),
-    2.0: ("#fa8072", "black"),
-    2.5: ("#ff0057", "white"),
-    3.0: ("#920947", "white"), 
-}
+# Create FDR matrix and merge with fixtures
+fdr_matrix = drf.melt(id_vars="Team", var_name="GameWeek", value_name="FDR")
+fdr_matrix["FDR"] = fdr_matrix["FDR"].astype(int)
+fdr_matrix["GameWeek"] = fdr_matrix["GameWeek"].str.replace("GW", "").astype(int)
+merged_df = fixt.melt(id_vars="Team", var_name="GameWeek", value_name="Fixture")
+merged_df["GameWeek"] = merged_df["GameWeek"].str.replace("GW", "").astype(int)
+merged_df = pd.merge(merged_df, fdr_matrix, on=["Team", "GameWeek"], how="left")
 
-# Define a coloring function based on the FDR values
-def color_fdr(value):
-    if value in fdr_colors:
-        background_color, text_color = fdr_colors[value]
-        return f'background-color: {background_color}; color: {text_color}; text-align: center;'
+# Define a function to apply styling to fixtures based on FDR
+def style_fixture(row):
+    fdr = row["FDR"]
+    fixture = row["Fixture"]
+    if fdr in fdr_colors:
+        background_color, text_color = fdr_colors[fdr]
+        return (
+            f'<span style="background-color: {background_color}; color: {text_color}; padding: 2px 5px; border-radius: 3px;">'
+            f"{fixture} ({fdr})"  # Display fixture with FDR in parentheses
+            f"</span>"
+        )
     else:
-        return ''
+        return fixture
 
-# Define a coloring function for GA/GF values
-def color_ga_gf(value):
-    # Round the value to two decimal places for display and color mapping
-    rounded_value = round(value, 2)
-    closest_key = min(ga_gf_colors, key=lambda x: abs(x - rounded_value))
-    background_color, text_color = ga_gf_colors[closest_key]
-    return f'background-color: {background_color}; color: {text_color}; text-align: center;'
+# Apply styling and create the final DataFrame for display
+merged_df["StyledFixture"] = merged_df.apply(style_fixture, axis=1)
+final_df = (
+    merged_df[
+        (merged_df["GameWeek"] >= slider1) & (merged_df["GameWeek"] <= slider2)
+    ]
+    .pivot(index="Team", columns="GameWeek", values="StyledFixture")
+    .fillna("")
+)
+final_df.columns = [f"GW {col}" for col in final_df.columns]
 
-# Create a selection choice for metrics
-selected_metric = st.selectbox(
-    "Select Metric:",
-    ("Fixture Difficulty Rating (FDR)", "Average Goals Against (GA)", "Average Goals For (GF)")
+# Display the styled table
+st.markdown(
+    f"**Fixture Difficulty Rating (FDR) for the Next {slider2-slider1+1} Gameweeks (Starting GW {slider1})**",
+    unsafe_allow_html=True,
 )
 
-# Create a function to get the appropriate DataFrame based on the selection
-def get_selected_data(metric):
-    if metric == "Fixture Difficulty Rating (FDR)":
-        return pivot_fdr_matrix.copy()  # Create a copy here
-    elif metric == "Average Goals Against (GA)":
-        ga_matrix = ga.melt(id_vars='Team', var_name='GameWeek', value_name='GA')
-        # Round GA values to 2 decimal places
-        ga_matrix['GA'] = ga_matrix['GA'].astype(float).round(2) 
-        filtered_ga_matrix = ga_matrix[(ga_matrix['GameWeek'] >= slider1) & (ga_matrix['GameWeek'] <= slider2)]
-        pivot_ga_matrix = filtered_ga_matrix.pivot(index='Team', columns='GameWeek', values='GA')
-        pivot_ga_matrix.columns = [f'GW {col}' for col in pivot_ga_matrix.columns].copy()
-        return pivot_ga_matrix.copy()  # Create a copy here
-    elif metric == "Average Goals For (GF)":
-        gf_matrix = gf.melt(id_vars='Team', var_name='GameWeek', value_name='GF')
-        # Round GF values to 2 decimal places
-        gf_matrix['GF'] = gf_matrix['GF'].astype(float).round(2) 
-        filtered_gf_matrix = gf_matrix[(gf_matrix['GameWeek'] >= slider1) & (gf_matrix['GameWeek'] <= slider2)]
-        pivot_gf_matrix = filtered_gf_matrix.pivot(index='Team', columns='GameWeek', values='GF') 
-        pivot_gf_matrix.columns = [f'GW {col}' for col in pivot_gf_matrix.columns].copy()  # Use .copy() here
-        return pivot_gf_matrix.copy()  # Create a copy here
+# Use st.write to display the DataFrame with HTML styling
+st.write(final_df.style.set_properties(**{"text-align": "center"}), unsafe_allow_html=True)
 
-# Get the selected data
-selected_data = get_selected_data(selected_metric)
-
-# Display the styled table based on the selected metric
-if selected_metric == "Fixture Difficulty Rating (FDR)":
-    styled_table = selected_data.style.map(color_fdr)  # Use map here
-
-    # Display the title with the selected metric (FDR)
-    st.markdown(
-        f"**{selected_metric} for the Next {slider2-slider1+1} Gameweeks (Starting GW {slider1})**",
-        unsafe_allow_html=True
-    )
-
-    # FDR Legend (only if FDR is selected)
-    with st.sidebar:
-        st.markdown("**Legend (FDR):**")
-        for fdr, (bg_color, font_color) in fdr_colors.items():
-            st.sidebar.markdown(
-                f"<span style='background-color: {bg_color}; color: {font_color}; padding: 2px 5px; border-radius: 3px;'>"
-                f"{fdr} - {'Very Easy' if fdr == 1 else 'Easy' if fdr == 2 else 'Medium' if fdr == 3 else 'Difficult' if fdr == 4 else 'Very Difficult'}"
-                f"</span>",
-                unsafe_allow_html=True,
-            )
-else:  # For GA and GF
-    styled_table = selected_data.style.map(color_ga_gf)  # Use map here
-
-    # Display the title with the selected metric (GA or GF)
-    st.markdown(
-        f"**{selected_metric} for the Next {slider2-slider1+1} Gameweeks (Starting GW {slider1})**",
-        unsafe_allow_html=True
-    )
-
-    # GA/GF Legend (only if GA or GF is selected)
-    with st.sidebar:
-        st.markdown("**Legend (GA/GF):**")
-        for ga_gf, (bg_color, font_color) in ga_gf_colors.items():
-            st.sidebar.markdown(
-                f"<span style='background-color: {bg_color}; color: {font_color}; padding: 2px 5px; border-radius: 3px;'>"
-                f"{ga_gf:.1f} - {ga_gf + 0.4:.1f}"  # Display the range
-                f"</span>",
-                unsafe_allow_html=True,
-            )
-
-# Streamlit app to display the styled table (outside the if/else)
-st.write(styled_table)
+# FDR Legend
+with st.sidebar:
+    st.markdown("**Legend (FDR):**")
+    for fdr, (bg_color, font_color) in fdr_colors.items():
+        st.sidebar.markdown(
+            f"<span style='background-color: {bg_color}; color: {font_color}; padding: 2px 5px; border-radius: 3px;'>"
+            f"{fdr} - {'Very Easy' if fdr == 1 else 'Easy' if fdr == 2 else 'Medium' if fdr == 3 else 'Difficult' if fdr == 4 else 'Very Difficult'}"
+            f"</span>",
+            unsafe_allow_html=True,
+        )
