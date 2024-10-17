@@ -180,7 +180,7 @@ with df_col:
             font-size: 14px;
         }
         .css-1d391kg {
-            max-width: 200px;  /* Adjust width here */
+            max-width: 1px;  /* Adjust width here */
         }
         </style>
         """, unsafe_allow_html=True
