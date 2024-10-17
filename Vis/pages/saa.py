@@ -34,45 +34,55 @@ val = team_fdr_df.reset_index()
 sui.rename(columns={0: 'Team'}, inplace=True)
 val.rename(columns={0: 'Team'}, inplace=True)
 
+# Check the structure of the `sui` DataFrame
+st.write("SUI DataFrame Columns:", sui.columns)
+
 # Create sliders for game week selection
 slider1, slider2 = st.slider('Gameweek: ', int(ct_gw), gw_max, [int(ct_gw), int(ct_gw + 10)], 1)
 
-# Filter the 'sui' DataFrame based on selected game weeks
-filtered_sui = sui[(sui['GameWeek'] >= slider1) & (sui['GameWeek'] <= slider2)]
+# Check if 'GameWeek' is in the columns
+if 'GameWeek' not in sui.columns:
+    # Assuming the GameWeek information can be extracted from another column
+    # You might need to modify this part based on your actual DataFrame structure
+    # For example, if there's a column named 'fixture_id', you may have to map it to GameWeek
+    st.error("The 'GameWeek' column is missing from the SUI DataFrame.")
+else:
+    # Filter the 'sui' DataFrame based on selected game weeks
+    filtered_sui = sui[(sui['GameWeek'] >= slider1) & (sui['GameWeek'] <= slider2)]
 
-# Pivot the filtered 'sui' DataFrame for styling
-pivot_sui_matrix = filtered_sui.pivot(index='Team', columns='GameWeek', values='FDR')
+    # Pivot the filtered 'sui' DataFrame for styling
+    pivot_sui_matrix = filtered_sui.pivot(index='Team', columns='GameWeek', values='FDR')
 
-# Rename columns for display purposes
-pivot_sui_matrix.columns = [f'GW {col}' for col in pivot_sui_matrix.columns]
+    # Rename columns for display purposes
+    pivot_sui_matrix.columns = [f'GW {col}' for col in pivot_sui_matrix.columns]
 
-# Define the custom color mapping for FDR values
-fdr_colors = {
-    1: ("#257d5a", "black"),
-    2: ("#00ff86", "black"),
-    3: ("#ebebe4", "black"),
-    4: ("#ff005a", "white"),
-    5: ("#861d46", "white"),
-}
+    # Define the custom color mapping for FDR values
+    fdr_colors = {
+        1: ("#257d5a", "black"),
+        2: ("#00ff86", "black"),
+        3: ("#ebebe4", "black"),
+        4: ("#ff005a", "white"),
+        5: ("#861d46", "white"),
+    }
 
-# Define a coloring function based on the FDR values using the custom color mapping
-def color_fdr(value):
-    if value in fdr_colors:
-        background_color, text_color = fdr_colors[value]
-        return f'background-color: {background_color}; color: {text_color}; text-align: center;'
-    else:
-        return ''  # No style for undefined values
+    # Define a coloring function based on the FDR values using the custom color mapping
+    def color_fdr(value):
+        if value in fdr_colors:
+            background_color, text_color = fdr_colors[value]
+            return f'background-color: {background_color}; color: {text_color}; text-align: center;'
+        else:
+            return ''  # No style for undefined values
 
-# Apply the styling to the pivoted SUI matrix using colors from the VAL DataFrame
-styled_filtered_fdr_table = pivot_sui_matrix.style.applymap(color_fdr)
+    # Apply the styling to the pivoted SUI matrix using colors from the VAL DataFrame
+    styled_filtered_fdr_table = pivot_sui_matrix.style.applymap(color_fdr)
 
-# Display the title with the current game week
-st.markdown(
-        f"**Fixture Difficulty Rating (FDR) for the Next {slider2-slider1} Gameweeks (Starting GW{slider1})**",
-        unsafe_allow_html=True)
+    # Display the title with the current game week
+    st.markdown(
+            f"**Fixture Difficulty Rating (FDR) for the Next {slider2-slider1} Gameweeks (Starting GW{slider1})**",
+            unsafe_allow_html=True)
 
-# Streamlit app to display the styled table
-st.write(styled_filtered_fdr_table)
+    # Streamlit app to display the styled table
+    st.write(styled_filtered_fdr_table)
 
 # Sidebar for the legend
 with st.sidebar:
