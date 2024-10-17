@@ -1,9 +1,15 @@
 import streamlit as st
 import sys
 import os
-# Set the path to the 'fpl_utils' directory
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'FPL')))
 
+# Set the path to the 'fpl_utils' directory
+from fpl_utils import (
+    define_sidebar, chip_converter
+)
 # Project Description
+define_sidebar()
 st.title("Fantasy Premier League Analysis and Insights ")
 st.markdown("""
 ### Objective:
