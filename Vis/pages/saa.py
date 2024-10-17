@@ -75,9 +75,8 @@ styled_filtered_fdr_table = pivot_fdr_matrix.style.applymap(color_fdr)
 
 # Display the title with the current game week
 st.markdown(
-    f"<h2 style='text-align: center;'>Premier League Fixtures - Gameweek {slider2 - slider1}</h2>",
-    unsafe_allow_html=True,
-)
+        f"**Fixture Difficulty Rating (FDR) for the Next {slider2-slider1} Gameweeks (Starting GW{slider1})**",
+        unsafe_allow_html=True)
 
 # Streamlit app to display the styled table
 st.write(styled_filtered_fdr_table)
