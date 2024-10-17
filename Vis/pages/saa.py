@@ -53,7 +53,7 @@ val.columns = ['Team'] + [f'GW{col}' for col in range(1, len(val.columns))]
 teams = pd.concat([sui['Team'], val['Team']]).unique()
 
 # Initialize the FDR matrix
-fdr_matrix = pd.DataFrame(index=teams, columns=['GW1', 'GW2'])
+fdr_matrix = pd.DataFrame(index=teams, columns=sui.columns)
 
 # Populate the FDR matrix based on GW matches
 for team in teams:
