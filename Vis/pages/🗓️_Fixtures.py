@@ -21,6 +21,7 @@ from fpl_utils import (
     get_rotation,
     get_user_timezone
 )
+
 st.markdown(
     """
     <style>
@@ -31,8 +32,6 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-
-
 
 # Load data
 team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
@@ -53,11 +52,9 @@ drf.rename(columns={0: 'Team'}, inplace=True)
 ga.rename(columns={0: 'Team'}, inplace=True)
 gf.rename(columns={0: 'Team'}, inplace=True)
 
-
 teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
 teams_df['logo_url'] = "https://resources.premierleague.com/premierleague/badges/70/t" + teams_df['code'].astype(str) + ".png"
 team_logo_mapping = pd.Series(teams_df.logo_url.values, index=teams_df.short_name).to_dict()
-
 
 # Create FDR matrix directly from 'val' DataFrame
 fdr_matrix = drf.copy()
@@ -70,12 +67,11 @@ fdr_matrix['FDR'] = fdr_matrix['FDR'].astype(int)
 st.title("FPL Fixture Analysis")
 
 # Create a selection choice for the display
-with st.sidebar:
-    selected_display = st.radio(
-        "Select Display:", ['⚔️Premier League Fixtures', '📊Fixture Difficulty Rating']
-    )
+selected_display = st.sidebar.radio(
+    "Select Display:", ['⚔️ Premier League Fixtures', '📊 Fixture Difficulty Rating']
+)
 
-if selected_display == '📊Fixture Difficulty Rating':
+if selected_display == '📊 Fixture Difficulty Rating':
     # Create sliders for game week selection
     slider1, slider2 = st.slider('Gameweek Range:', int(ct_gw), gw_max, [int(ct_gw), int(ct_gw + 10)], 1)
 
@@ -105,7 +101,7 @@ if selected_display == '📊Fixture Difficulty Rating':
         1.5: ("#eceae6", "black"),
         2.0: ("#fa8072", "black"),
         2.5: ("#ff0057", "white"),
-        3.0: ("#920947", "white"), 
+        3.0: ("#920947", "white"),
     }
 
     # Define a coloring function based on the FDR values
@@ -118,14 +114,14 @@ if selected_display == '📊Fixture Difficulty Rating':
 
     # Define a coloring function for GA/GF values
     def color_ga_gf(value):
-        # Round the value to two decimal places for display and color mapping
-        rounded_value = round(value, 2)
-        closest_key = min(ga_gf_colors, key=lambda x: abs(x - rounded_value))
-        background_color, text_color = ga_gf_colors[closest_key]
-        return f'background-color: {background_color}; color: {text_color}; text-align: center;'
+        rounded_value = round(value, 1)  # Round to one decimal place for this mapping
+        for threshold, (bg_color, font_color) in ga_gf_colors.items():
+            if rounded_value <= threshold + 0.25:  # Check within a range of 0.5
+                return f'background-color: {bg_color}; color: {font_color}; text-align: center;'
+        return ''  # Default style if no match
 
     # Create a selection choice for metrics
-    selected_metric = st.selectbox(
+    selected_metric = st.sidebar.selectbox(
         "Select Metric:",
         ("Fixture Difficulty Rating (FDR)", "Average Goals Against (GA)", "Average Goals For (GF)")
     )
@@ -133,98 +129,98 @@ if selected_display == '📊Fixture Difficulty Rating':
     # Create a function to get the appropriate DataFrame based on the selection
     def get_selected_data(metric):
         if metric == "Fixture Difficulty Rating (FDR)":
-            return pivot_fdr_matrix.copy() 
+            return pivot_fdr_matrix.copy()
         elif metric == "Average Goals Against (GA)":
             ga_matrix = ga.melt(id_vars='Team', var_name='GameWeek', value_name='GA')
-            # Round GA values to 2 decimal places
-            ga_matrix['GA'] = ga_matrix['GA'].astype(float).round(2) 
+            ga_matrix['GA'] = ga_matrix['GA'].astype(float).round(2)
             filtered_ga_matrix = ga_matrix[(ga_matrix['GameWeek'] >= slider1) & (ga_matrix['GameWeek'] <= slider2)]
             pivot_ga_matrix = filtered_ga_matrix.pivot(index='Team', columns='GameWeek', values='GA')
             pivot_ga_matrix.columns = [f'GW {col}' for col in pivot_ga_matrix.columns].copy()
-            return pivot_ga_matrix.copy()  
+            return pivot_ga_matrix.copy()
         elif metric == "Average Goals For (GF)":
             gf_matrix = gf.melt(id_vars='Team', var_name='GameWeek', value_name='GF')
-            # Round GF values to 2 decimal places
-            gf_matrix['GF'] = gf_matrix['GF'].astype(float).round(2) 
+            gf_matrix['GF'] = gf_matrix['GF'].astype(float).round(2)
             filtered_gf_matrix = gf_matrix[(gf_matrix['GameWeek'] >= slider1) & (gf_matrix['GameWeek'] <= slider2)]
-            pivot_gf_matrix = filtered_gf_matrix.pivot(index='Team', columns='GameWeek', values='GF') 
-            pivot_gf_matrix.columns = [f'GW {col}' for col in pivot_gf_matrix.columns].copy() 
+            pivot_gf_matrix = filtered_gf_matrix.pivot(index='Team', columns='GameWeek', values='GF')
+            pivot_gf_matrix.columns = [f'GW {col}' for col in pivot_gf_matrix.columns].copy()
             return pivot_gf_matrix.copy()
-        pivot_gf_matrix.index = pivot_gf_matrix.index.map(lambda team: f"<img src='{team_logo_mapping[team]}' style='width:20px; height:20px; vertical-align:middle; margin-right:5px;'/> {team}")
-
-    
 
     # Get the selected data
     selected_data = get_selected_data(selected_metric)
+    selected_data.index = selected_data.index.map(lambda team: f"<img src='{team_logo_mapping[team]}' style='width:20px; height:20px; vertical-align:middle; margin-right:5px;'/> {team}")
+
 
     # Display the styled table based on the selected metric
     if selected_metric == "Fixture Difficulty Rating (FDR)":
-        styled_table = selected_data.style.applymap(color_fdr)  # Use applymap for cell-wise styling
-
-        # Display the title with the selected metric (FDR)
+        styled_table = selected_data.style.applymap(color_fdr) 
         st.markdown(
-            f"**{selected_metric} for the Next {slider2-slider1+1} Gameweeks (Starting GW {slider1})**",
+            f"**{selected_metric} for the Next {slider2 - slider1 + 1} Gameweeks (Starting GW {slider1})**",
             unsafe_allow_html=True
         )
-
-        # FDR Legend (only if FDR is selected)
-        with st.sidebar:
-            st.markdown("**Legend (FDR):**")
-            for fdr, (bg_color, font_color) in fdr_colors.items():
-                st.sidebar.markdown(
-                    f"<span style='background-color: {bg_color}; color: {font_color}; padding: 2px 5px; border-radius: 3px;'>"
-                    f"{fdr} - {'Very Easy' if fdr == 1 else 'Easy' if fdr == 2 else 'Medium' if fdr == 3 else 'Difficult' if fdr == 4 else 'Very Difficult'}"
-                    f"</span>",
-                    unsafe_allow_html=True,
-                )
+        # FDR Legend
+        st.sidebar.markdown("**Legend (FDR):**")
+        for fdr, (bg_color, font_color) in fdr_colors.items():
+            st.sidebar.markdown(
+                f"<span style='background-color: {bg_color}; color: {font_color}; padding: 2px 5px; border-radius: 3px;'>"
+                f"{fdr} - {'Very Easy' if fdr == 1 else 'Easy' if fdr == 2 else 'Medium' if fdr == 3 else 'Difficult' if fdr == 4 else 'Very Difficult'}"
+                f"</span>",
+                unsafe_allow_html=True,
+            )
     else:  # For GA and GF
-        styled_table = selected_data.style.applymap(color_ga_gf)  # Use applymap for cell-wise styling
-
-        # Display the title with the selected metric (GA or GF)
+        styled_table = selected_data.style.applymap(color_ga_gf)  
         st.markdown(
-            f"**{selected_metric} for the Next {slider2-slider1+1} Gameweeks (Starting GW {slider1})**",
+            f"**{selected_metric} for the Next {slider2 - slider1 + 1} Gameweeks (Starting GW {slider1})**",
             unsafe_allow_html=True
         )
-
-        # GA/GF Legend (only if GA or GF is selected)
-        with st.sidebar:
-            st.markdown("**Legend (GA/GF):**")
-            for ga_gf, (bg_color, font_color) in ga_gf_colors.items():
+        # GA/GF Legend 
+        st.sidebar.markdown("**Legend (GA/GF):**")
+        for i, (ga_gf, (bg_color, font_color)) in enumerate(ga_gf_colors.items()):
+            if i < len(ga_gf_colors) - 1:
+                next_ga_gf = list(ga_gf_colors.keys())[i + 1]
                 st.sidebar.markdown(
                     f"<span style='background-color: {bg_color}; color: {font_color}; padding: 2px 5px; border-radius: 3px;'>"
-                    f"{ga_gf:.1f} - {ga_gf + 0.4:.1f}"  # Display the range
+                    f"{ga_gf:.1f} - {next_ga_gf:.1f}"  # Display the range
+                    f"</span>",
+                    unsafe_allow_html=True,
+                )
+            else:
+                st.sidebar.markdown(
+                    f"<span style='background-color: {bg_color}; color: {font_color}; padding: 2px 5px; border-radius: 3px;'>"
+                    f"{ga_gf:.1f}+"  # Display for the last range
                     f"</span>",
                     unsafe_allow_html=True,
                 )
 
-    # Streamlit app to display the styled table (outside the if/else)
+    # Streamlit app to display the styled table
     st.write(styled_table)
 
-
-
 ###################################
-elif selected_display == '⚔️Premier League Fixtures':
-    time=get_user_timezone()
+elif selected_display == '⚔️ Premier League Fixtures':
+    time = get_user_timezone()
 
-    saaaa=get_fixture_data()
-    fixtures_df = pd.DataFrame(saaaa)
+    fixtures_data = get_fixture_data()
+    fixtures_df = pd.DataFrame(fixtures_data)
     fixtures_df.drop(columns='stats', inplace=True)
+
     teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
     teams_df['logo_url'] = "https://resources.premierleague.com/premierleague/badges/70/t" + teams_df['code'].astype(str) + ".png"
     team_name_mapping = pd.Series(teams_df.name.values, index=teams_df.id).to_dict()
+
     fixtures_df = fixtures_df.merge(teams_df[['id', 'logo_url']], left_on='team_h', right_on='id', how='left').rename(columns={'logo_url': 'team_h_logo'})
     fixtures_df = fixtures_df.merge(teams_df[['id', 'logo_url']], left_on='team_a', right_on='id', how='left').rename(columns={'logo_url': 'team_a_logo'})
     fixtures_df['team_a'] = fixtures_df['team_a'].replace(team_name_mapping)
     fixtures_df['team_h'] = fixtures_df['team_h'].replace(team_name_mapping)
     fixtures_df = fixtures_df.drop(columns=['pulse_id'])
+
     fixtures_df['datetime'] = pd.to_datetime(fixtures_df['kickoff_time'], utc=True)
     fixtures_df['local_time'] = fixtures_df['datetime'].dt.tz_convert(time).dt.strftime('%A %d %B %Y %H:%M')
     fixtures_df['local_date'] = fixtures_df['datetime'].dt.tz_convert(time).dt.strftime('%d %A %B %Y')
     fixtures_df['local_hour'] = fixtures_df['datetime'].dt.tz_convert(time).dt.strftime('%H:%M')
+
     gw_minn = min(fixtures_df['event'])
     gw_maxx = max(fixtures_df['event'])
-    selected_gw = st.slider('Select Gameweek:', gw_minn, gw_maxx, ct_gw) 
-        # --- Display Fixtures for Selected Gameweek ---
+    selected_gw = st.slider('Select Gameweek:', gw_minn, gw_maxx, ct_gw)
+
     st.markdown(
         f"<h2 style='text-align: center;'>Premier League Fixtures - Gameweek {selected_gw}</h2>",
         unsafe_allow_html=True,
@@ -233,14 +229,11 @@ elif selected_display == '⚔️Premier League Fixtures':
     current_gameweek_fixtures = fixtures_df[fixtures_df['event'] == selected_gw]
     grouped_fixtures = current_gameweek_fixtures.groupby('local_date')
 
-        # Use centered container for fixtures
     with st.container():
         for date, matches in grouped_fixtures:
             st.markdown(f"<h3 style='text-align: center;'>{date}</h3>", unsafe_allow_html=True)
             for _, match in matches.iterrows():
-                # Create a fixture box for each match
                 with st.container():
-                    # Create columns with NO spacing
                     col1, col2, col3 = st.columns([1, 1, 1])
 
                     with col1:
@@ -251,7 +244,6 @@ elif selected_display == '⚔️Premier League Fixtures':
                             unsafe_allow_html=True
                         )
 
-                    # --- Column 2: Score/VS (centered) ---
                     with col2:
                         if match['finished']:
                             st.markdown(
@@ -264,7 +256,6 @@ elif selected_display == '⚔️Premier League Fixtures':
                                 unsafe_allow_html=True
                             )
 
-                    # --- Column 3: Away Team (left-aligned with logo) ---
                     with col3:
                         st.markdown(
                             f"<div style='text-align: left;'>"
@@ -272,11 +263,10 @@ elif selected_display == '⚔️Premier League Fixtures':
                             f"{match['team_a']}</div>",
                             unsafe_allow_html=True
                         )
-
-                    # --- Kickoff Time (centered below) ---
                     if not match['finished']:
                         st.markdown(
                             f"<p style='text-align: center; margin-top: 10px;'>Kickoff: {match['local_hour']}</p>",
                             unsafe_allow_html=True
                         )
+
 define_sidebar()
