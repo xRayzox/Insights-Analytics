@@ -21,7 +21,6 @@ from fpl_utils import (
     get_rotation,
     get_user_timezone
 )
-
 st.markdown(
     """
     <style>
@@ -32,6 +31,8 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+
 
 # Load data
 team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
@@ -52,9 +53,11 @@ drf.rename(columns={0: 'Team'}, inplace=True)
 ga.rename(columns={0: 'Team'}, inplace=True)
 gf.rename(columns={0: 'Team'}, inplace=True)
 
+
 teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
 teams_df['logo_url'] = "https://resources.premierleague.com/premierleague/badges/70/t" + teams_df['code'].astype(str) + ".png"
 team_logo_mapping = pd.Series(teams_df.logo_url.values, index=teams_df.short_name).to_dict()
+
 
 # Create FDR matrix directly from 'val' DataFrame
 fdr_matrix = drf.copy()
@@ -147,12 +150,12 @@ if selected_display == '📊Fixture Difficulty Rating':
             pivot_gf_matrix = filtered_gf_matrix.pivot(index='Team', columns='GameWeek', values='GF') 
             pivot_gf_matrix.columns = [f'GW {col}' for col in pivot_gf_matrix.columns].copy() 
             return pivot_gf_matrix.copy()
+        
 
     # Get the selected data
     selected_data = get_selected_data(selected_metric)
-    selected_data.index = selected_data.index.map(lambda team: f"<img src='{team_logo_mapping[team]}' style='width:20px; height:20px; vertical-align:middle; margin-right:5px;'/> {team}")
-    st.markdown(selected_data.to_html(escape=False), unsafe_allow_html=True)
-
+    #selected_data.index = selected_data.index.map(lambda team: f"<img src='{team_logo_mapping[team]}' style='width:20px; height:20px; vertical-align:middle; margin-right:5px;'/> {team}")
+    
     # Display the styled table based on the selected metric
     if selected_metric == "Fixture Difficulty Rating (FDR)":
         styled_table = selected_data.style.applymap(color_fdr)  # Use applymap for cell-wise styling
@@ -188,40 +191,91 @@ if selected_display == '📊Fixture Difficulty Rating':
             for ga_gf, (bg_color, font_color) in ga_gf_colors.items():
                 st.sidebar.markdown(
                     f"<span style='background-color: {bg_color}; color: {font_color}; padding: 2px 5px; border-radius: 3px;'>"
-                    f"{ga_gf} Goals"
+                    f"{ga_gf:.1f} - {ga_gf + 0.4:.1f}"  # Display the range
                     f"</span>",
                     unsafe_allow_html=True,
                 )
 
-    # Display the styled table
-    st.dataframe(styled_table, height=700)
+    # Streamlit app to display the styled table (outside the if/else)
+    st.write(styled_table)
 
+
+
+###################################
 elif selected_display == '⚔️Premier League Fixtures':
-    st.subheader("Premier League Fixtures")
+    time=get_user_timezone()
 
-    # Retrieve fixture data from the FPL API
-    fixtures = get_fixture_data()
+    saaaa=get_fixture_data()
+    fixtures_df = pd.DataFrame(saaaa)
+    fixtures_df.drop(columns='stats', inplace=True)
+    teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
+    teams_df['logo_url'] = "https://resources.premierleague.com/premierleague/badges/70/t" + teams_df['code'].astype(str) + ".png"
+    team_name_mapping = pd.Series(teams_df.name.values, index=teams_df.id).to_dict()
+    fixtures_df = fixtures_df.merge(teams_df[['id', 'logo_url']], left_on='team_h', right_on='id', how='left').rename(columns={'logo_url': 'team_h_logo'})
+    fixtures_df = fixtures_df.merge(teams_df[['id', 'logo_url']], left_on='team_a', right_on='id', how='left').rename(columns={'logo_url': 'team_a_logo'})
+    fixtures_df['team_a'] = fixtures_df['team_a'].replace(team_name_mapping)
+    fixtures_df['team_h'] = fixtures_df['team_h'].replace(team_name_mapping)
+    fixtures_df = fixtures_df.drop(columns=['pulse_id'])
+    fixtures_df['datetime'] = pd.to_datetime(fixtures_df['kickoff_time'], utc=True)
+    fixtures_df['local_time'] = fixtures_df['datetime'].dt.tz_convert(time).dt.strftime('%A %d %B %Y %H:%M')
+    fixtures_df['local_date'] = fixtures_df['datetime'].dt.tz_convert(time).dt.strftime('%d %A %B %Y')
+    fixtures_df['local_hour'] = fixtures_df['datetime'].dt.tz_convert(time).dt.strftime('%H:%M')
+    gw_minn = min(fixtures_df['event'])
+    gw_maxx = max(fixtures_df['event'])
+    selected_gw = st.slider('Select Gameweek:', gw_minn, gw_maxx, ct_gw) 
+        # --- Display Fixtures for Selected Gameweek ---
+    st.markdown(
+        f"<h2 style='text-align: center;'>Premier League Fixtures - Gameweek {selected_gw}</h2>",
+        unsafe_allow_html=True,
+    )
 
-    # Get user's time zone
-    user_timezone = get_user_timezone()
+    current_gameweek_fixtures = fixtures_df[fixtures_df['event'] == selected_gw]
+    grouped_fixtures = current_gameweek_fixtures.groupby('local_date')
 
-    # Sort fixtures by kickoff time
-    fixtures_sorted = sorted(fixtures, key=lambda f: f['kickoff_time'])
+        # Use centered container for fixtures
+    with st.container():
+        for date, matches in grouped_fixtures:
+            st.markdown(f"<h3 style='text-align: center;'>{date}</h3>", unsafe_allow_html=True)
+            for _, match in matches.iterrows():
+                # Create a fixture box for each match
+                with st.container():
+                    # Create columns with NO spacing
+                    col1, col2, col3 = st.columns([1, 1, 1])
 
-    for fixture in fixtures_sorted:
-        # Convert kickoff time to user's local time
-        kickoff_time = datetime.strptime(fixture['kickoff_time'], '%Y-%m-%dT%H:%M:%SZ')
-        kickoff_time_local = kickoff_time.replace(tzinfo=timezone.utc).astimezone(user_timezone)
+                    with col1:
+                        st.markdown(
+                            f"<div style='text-align: right;'>"
+                            f"{match['team_h']} "
+                            f"<img src='{match['team_h_logo']}' style='width:20px; height:20px; vertical-align:middle; margin-left:5px;'/></div>",
+                            unsafe_allow_html=True
+                        )
 
-        home_team = fixture['team_h_short']
-        away_team = fixture['team_a_short']
+                    # --- Column 2: Score/VS (centered) ---
+                    with col2:
+                        if match['finished']:
+                            st.markdown(
+                                f"<div style='text-align: center;'>{int(match['team_h_score'])} - {int(match['team_a_score'])}</div>",
+                                unsafe_allow_html=True
+                            )
+                        else:
+                            st.markdown(
+                                "<div style='text-align: center;'>vs</div>",
+                                unsafe_allow_html=True
+                            )
 
-        st.markdown(
-            f"<img src='{team_logo_mapping[home_team]}' style='width:30px; height:30px; vertical-align:middle; margin-right:10px;'>"
-            f"**{home_team}** vs "
-            f"**{away_team}**"
-            f"<img src='{team_logo_mapping[away_team]}' style='width:30px; height:30px; vertical-align:middle; margin-left:10px;'>",
-            unsafe_allow_html=True
-        )
-        st.markdown(f"<div class='kickoff'>{kickoff_time_local.strftime('%Y-%m-%d %H:%M:%S %Z')}</div>", unsafe_allow_html=True)
+                    # --- Column 3: Away Team (left-aligned with logo) ---
+                    with col3:
+                        st.markdown(
+                            f"<div style='text-align: left;'>"
+                            f"<img src='{match['team_a_logo']}' style='width:20px; height:20px; vertical-align:middle; margin-right:5px;'/>"
+                            f"{match['team_a']}</div>",
+                            unsafe_allow_html=True
+                        )
 
+                    # --- Kickoff Time (centered below) ---
+                    if not match['finished']:
+                        st.markdown(
+                            f"<p style='text-align: center; margin-top: 10px;'>Kickoff: {match['local_hour']}</p>",
+                            unsafe_allow_html=True
+                        )
+define_sidebar()
