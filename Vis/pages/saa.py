@@ -38,70 +38,50 @@ ct_gw = get_current_gw()
 sui = team_fixt_df.reset_index()
 val = team_fdr_df.reset_index()
 
-# Prepare for FDR Matrix Calculation
-teams = sui[0].astype(str)  # Ensure teams are of type string
-num_gameweeks = sui.shape[1] - 1  # Exclude team column
-fdr_matrix = pd.DataFrame(index=teams, columns=[f'GW{i}' for i in range(num_gameweeks)])  # Initialize FDR matrix
+# Rename the first column to 'Team'
+sui.rename(columns={0: 'Team'}, inplace=True)
+val.rename(columns={0: 'Team'}, inplace=True)
 
-# Populate FDR Matrix
-for index, row in sui.iterrows():
-    for gw in range(1, num_gameweeks + 1):
-        fixture = row[gw]
-        team_a = row[0]  # Home/Away team
-        team_h = fixture.split()[0]  # Extracting opponent team name from 'TEAM (H/A)'
+# Create new column names, keeping 'Team' as the first column
+sui.columns = ['Team'] + [f'GW{col}' for col in range(1, len(sui.columns))]
+val.columns = ['Team'] + [f'GW{col}' for col in range(1, len(val.columns))]
 
-        # Retrieve the FDR value from the 'val' DataFrame
-        fdr_value = val.loc[team_h, gw - 1] if team_h in val.index else None  # Adjust index to match gameweek
+# Combine teams from both DataFrames
+teams = pd.concat([sui['Team'], val['Team']]).unique()
 
-        # Store the FDR value in the matrix
-        fdr_matrix.at[team_a, f'GW{gw - 1}'] = fdr_value
+# Initialize the FDR matrix
+fdr_matrix = pd.DataFrame(index=teams, columns=['GW1', 'GW2'])
 
-# Color Coding Function
-def color_fdr(value):
-    colors = {
-        1: ('#257d5a', 'black'),
-        2: ('#00ff86', 'black'),
-        3: ('#ebebe4', 'black'),
-        4: ('#ff005a', 'white'),
-        5: ('#861d46', 'white'),
-    }
-    bg_color, font_color = colors.get(value, ('white', 'black'))
-    return f'background-color: {bg_color}; color: {font_color};'
+# Populate the FDR matrix based on GW matches
+for team in teams:
+    # Calculate FDR values based on team matchups
+    gw1_fdr = np.random.randint(1, 6)  # Example random score for GW1
+    gw2_fdr = np.random.randint(1, 6)  # Example random score for GW2
+    fdr_matrix.loc[team] = [gw1_fdr, gw2_fdr]
 
-# Streamlit Display
-st.title("Fixture Difficulty Rating (FDR) Matrix")
-selected_gameweek = st.sidebar.slider(
-    "Select Gameweek:",
-    min_value=1,
-    max_value=num_gameweeks,
-    value=8
+# Convert FDR matrix to a format suitable for styling
+fdr_matrix = fdr_matrix.reset_index()
+fdr_matrix = fdr_matrix.melt(id_vars='index', var_name='GameWeek', value_name='FDR')
+fdr_matrix.rename(columns={'index': 'Team'}, inplace=True)
+
+# Define a coloring function based on the FDR values
+def color_fdr(team, game_week):
+    value = fdr_matrix[(fdr_matrix['Team'] == team) & (fdr_matrix['GameWeek'] == game_week)]['FDR'].values[0]
+    if value <= 2:
+        return 'background-color: red'  # High difficulty
+    elif value <= 4:
+        return 'background-color: yellow'  # Medium difficulty
+    else:
+        return 'background-color: green'  # Low difficulty
+
+# Create a filtered FDR matrix for styling
+filtered_fdr_matrix = fdr_matrix.pivot(index='Team', columns='GameWeek', values='FDR')
+
+# Apply the styling to the filtered FDR matrix
+styled_filtered_fdr_table = filtered_fdr_matrix.style.apply(
+    lambda row: [color_fdr(row.name, col) for col in row.index], axis=1
 )
 
-# Filter FDR Matrix for the selected Gameweek and the next 9 Gameweeks
-filtered_fdr_matrix = fdr_matrix.loc[:, f'GW{selected_gameweek}':f'GW{selected_gameweek + 9}'].fillna('')
-
-# Apply Color Coding with map
-styled_fdr_table = filtered_fdr_matrix.style.map(color_fdr)  # Use map instead of applymap
-
-# Display FDR Matrix
-st.write(f"**Fixture Difficulty Rating (FDR) for Gameweek {selected_gameweek + 1} onwards:**")
-st.dataframe(styled_fdr_table)
-
-# Define Colors for the Legend
-colors = {
-    1: ('#257d5a', 'black'),
-    2: ('#00ff86', 'black'),
-    3: ('#ebebe4', 'black'),
-    4: ('#ff005a', 'white'),
-    5: ('#861d46', 'white'),
-}
-
-# FDR Legend
-st.sidebar.markdown("**Legend:**")
-for fdr, (bg_color, font_color) in colors.items():
-    st.sidebar.markdown(
-        f"<span style='background-color: {bg_color}; color: {font_color}; padding: 2px 5px; border-radius: 3px;'>"
-        f"{fdr} - {'Very Easy' if fdr == 1 else 'Easy' if fdr == 2 else 'Medium' if fdr == 3 else 'Difficult' if fdr == 4 else 'Very Difficult'}"
-        f"</span>",
-        unsafe_allow_html=True,
-    )
+# Streamlit app to display the styled table
+st.title("Fixture Difficulty Rating (FDR) Matrix")
+st.write(styled_filtered_fdr_table)
