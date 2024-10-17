@@ -176,7 +176,7 @@ st.write(styled_table)
 saaaa=get_fixture_data()
 fixtures_df = pd.DataFrame(saaaa)
 fixtures_df.drop(columns='stats', inplace=True)
-
+fixtures_df['local_date'] = fixtures_df['datetime'].dt.tz_convert('Europe/London').dt.strftime('%A %d %B %Y')
     # --- Display Fixtures for Selected Gameweek ---
 st.markdown(
         f"<h2 style='text-align: center;'>Premier League Fixtures - Gameweek {ct_gw}</h2>",
