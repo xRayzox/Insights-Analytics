@@ -153,12 +153,21 @@ df_col, chart_col = st.columns([24, 24])  # Adjust the column sizes as needed
 with df_col:
     # Display the DataFrame with full width
     st.dataframe(
-        rating_df[["name", "ovr_rating" + ("_" + model_type if model_type else ""),
-                    "o_rating" + ("_" + model_type if model_type else ""),
-                    "d_rating" + ("_" + model_type if model_type else "")]],
-        hide_index=True,
-        use_container_width=True  # This makes the DataFrame take full width
-    )
+    rating_df,
+    column_config={
+        "team_short": "Team",
+        "ovr_rating_" + model_type: st.column_config.ProgressColumn(
+            "Overall Rating",
+            help="= Offensive Rating / Defensive Rating",
+            format="%d",
+            max_value=rating_df["ovr_rating_" + model_type].max(),
+        ),
+        "o_rating_" + model_type: "Offensive Rating",
+        "d_rating_" + model_type: "Defensive Rating"
+    },
+    hide_index=True,
+    use_container_width=True  # This makes the DataFrame take full width
+)
 
 # Scatter plot setup
 x_domain = [teams_df["d_rating" + ("_" + model_type if model_type else "")].min()-0.1, teams_df["d_rating" + ("_" + model_type if model_type else "")].max() + 0.1]
