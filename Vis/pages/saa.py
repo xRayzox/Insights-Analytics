@@ -10,6 +10,7 @@ from fpl_api_collection import (
     get_bootstrap_data,
     get_current_gw,
     get_fixt_dfs,
+    get_fixture_data
 )
 from fpl_utils import (
     define_sidebar,
@@ -170,6 +171,11 @@ else:  # For GA and GF
 st.write(styled_table)
 
 
+###############################
+
+saaaa=get_fixture_data()
+fixtures_df = pd.DataFrame(saaaa)
+fixtures_df.drop(columns='stats', inplace=True)
 
     # --- Display Fixtures for Selected Gameweek ---
 st.markdown(
@@ -177,7 +183,7 @@ st.markdown(
         unsafe_allow_html=True,
     )
 
-current_gameweek_fixtures = events_df[events_df['event'] == ct_gw]
+current_gameweek_fixtures = fixtures_df[fixtures_df['event'] == ct_gw]
 grouped_fixtures = current_gameweek_fixtures.groupby('local_date')
 
     # Use centered container for fixtures
