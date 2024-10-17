@@ -6,6 +6,8 @@ import numpy as np
 
 # Adjust the path to your FPL API collection as necessary
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'FPL')))
+
+# Import functions from your FPL API and utility modules
 from fpl_api_collection import (
     get_bootstrap_data,
     get_current_gw,
@@ -86,16 +88,17 @@ def get_selected_data(metric):
         return pivot_fdr_matrix
     elif metric == "Average Goals Against (GA)":
         ga_matrix = ga.melt(id_vars='Team', var_name='GameWeek', value_name='GA')
-        ga_matrix['GA'] = ga_matrix['GA'].astype(float)  # Ensure GA is float for consistency
+        ga_matrix['GA'] = ga_matrix['GA'].astype(float) 
         filtered_ga_matrix = ga_matrix[(ga_matrix['GameWeek'] >= slider1) & (ga_matrix['GameWeek'] <= slider2)]
         pivot_ga_matrix = filtered_ga_matrix.pivot(index='Team', columns='GameWeek', values='GA')
         pivot_ga_matrix.columns = [f'GW {col}' for col in pivot_ga_matrix.columns]
         return pivot_ga_matrix
     elif metric == "Average Goals For (GF)":
         gf_matrix = gf.melt(id_vars='Team', var_name='GameWeek', value_name='GF')
-        gf_matrix['GF'] = gf_matrix['GF'].astype(float)  # Ensure GF is float for consistency
+        gf_matrix['GF'] = gf_matrix['GF'].astype(float)  
         filtered_gf_matrix = gf_matrix[(gf_matrix['GameWeek'] >= slider1) & (gf_matrix['GameWeek'] <= slider2)]
-        pivot_gf_matrix = filtered_gf_matrix.pivot(index='Team', columns='GameWeek', value='GF')
+        # Correct the pivot function call for GF
+        pivot_gf_matrix = filtered_gf_matrix.pivot(index='Team', columns='GameWeek', values='GF') 
         pivot_gf_matrix.columns = [f'GW {col}' for col in pivot_gf_matrix.columns]
         return pivot_gf_matrix
 
@@ -105,10 +108,10 @@ selected_data = get_selected_data(selected_metric)
 # Display the styled table based on the selected metric
 if selected_metric == "Fixture Difficulty Rating (FDR)":
     # Apply the styling for FDR
-    styled_table = selected_data.style.applymap(color_fdr)
+    styled_table = selected_data.style.map(color_fdr)  # Use .map instead of .applymap
 else:
     # Default styling for GA and GF (optional, customize as needed)
-    styled_table = selected_data.style.applymap(lambda x: 'text-align: center;')
+    styled_table = selected_data.style.map(lambda x: 'text-align: center;')  # Use .map 
 
 # Display the title with the selected metric
 st.markdown(
