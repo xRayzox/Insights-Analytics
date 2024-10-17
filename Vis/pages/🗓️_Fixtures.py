@@ -71,7 +71,7 @@ with st.sidebar:
 # Merge team logos into the DataFrame for display in the matrix
 teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
 teams_df['logo_url'] = "https://resources.premierleague.com/premierleague/badges/70/t" + teams_df['code'].astype(str) + ".png"
-team_logo_mapping = pd.Series(teams_df.logo_url.values, index=teams_df.name).to_dict()
+team_logo_mapping = pd.Series(teams_df.logo_url.values, index=teams_df.short_name).to_dict()
 
 if selected_display == '📊Fixture Difficulty Rating':
     # Create sliders for game week selection
