@@ -75,7 +75,7 @@ styled_filtered_fdr_table = pivot_fdr_matrix.style.applymap(color_fdr)
 
 # Display the title with the current game week
 st.markdown(
-    f"<h2 style='text-align: center;'>Premier League Fixtures - Gameweek {slider1}</h2>",
+    f"<h2 style='text-align: center;'>Premier League Fixtures - Gameweek {slider2 - slider1}</h2>",
     unsafe_allow_html=True,
 )
 
