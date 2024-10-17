@@ -145,7 +145,7 @@ if selected_display == '📊Fixture Difficulty Rating':
         elif metric == "Average Goals For (GF)":
             gf_matrix = gf.melt(id_vars='Team', var_name='GameWeek', value_name='GF')
             # Round GF values to 2 decimal places
-            gf_matrix['GF'] = gf_matrix['GF'].astype(int)
+            gf_matrix['GF'] = gf_matrix['GF'].astype(float)
             filtered_gf_matrix = gf_matrix[(gf_matrix['GameWeek'] >= slider1) & (gf_matrix['GameWeek'] <= slider2)]
             pivot_gf_matrix = filtered_gf_matrix.pivot(index='Team', columns='GameWeek', values='GF')
             pivot_gf_matrix.columns = [f'GW {col}' for col in pivot_gf_matrix.columns].copy() 
