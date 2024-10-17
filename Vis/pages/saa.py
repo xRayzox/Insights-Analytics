@@ -34,24 +34,17 @@ val = team_fdr_df.reset_index()
 sui.rename(columns={0: 'Team'}, inplace=True)
 val.rename(columns={0: 'Team'}, inplace=True)
 
-# Create FDR matrix directly from 'val' DataFrame
-fdr_matrix = val.copy()
-fdr_matrix = fdr_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='FDR')
-
-# Convert FDR values to integers
-fdr_matrix['FDR'] = fdr_matrix['FDR'].astype(int)
-
 # Create sliders for game week selection
 slider1, slider2 = st.slider('Gameweek: ', int(ct_gw), gw_max, [int(ct_gw), int(ct_gw + 10)], 1)
 
-# Filter FDR matrix based on selected game weeks
-filtered_fdr_matrix = fdr_matrix[(fdr_matrix['GameWeek'] >= slider1) & (fdr_matrix['GameWeek'] <= slider2)]
+# Filter the 'sui' DataFrame based on selected game weeks
+filtered_sui = sui[(sui['GameWeek'] >= slider1) & (sui['GameWeek'] <= slider2)]
 
-# Pivot the filtered FDR matrix for styling
-pivot_fdr_matrix = filtered_fdr_matrix.pivot(index='Team', columns='GameWeek', values='FDR')
+# Pivot the filtered 'sui' DataFrame for styling
+pivot_sui_matrix = filtered_sui.pivot(index='Team', columns='GameWeek', values='FDR')
 
 # Rename columns for display purposes
-pivot_fdr_matrix.columns = [f'GW {col}' for col in pivot_fdr_matrix.columns]
+pivot_sui_matrix.columns = [f'GW {col}' for col in pivot_sui_matrix.columns]
 
 # Define the custom color mapping for FDR values
 fdr_colors = {
@@ -70,8 +63,8 @@ def color_fdr(value):
     else:
         return ''  # No style for undefined values
 
-# Apply the styling to the pivoted FDR matrix
-styled_filtered_fdr_table = pivot_fdr_matrix.style.applymap(color_fdr)
+# Apply the styling to the pivoted SUI matrix using colors from the VAL DataFrame
+styled_filtered_fdr_table = pivot_sui_matrix.style.applymap(color_fdr)
 
 # Display the title with the current game week
 st.markdown(
