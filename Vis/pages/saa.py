@@ -205,7 +205,7 @@ elif selected_display == 'Premier League Fixtures':
     )
 
     current_gameweek_fixtures = fixtures_df[fixtures_df['event'] == selected_gw]
-    grouped_fixtures = current_gameweek_fixtures.groupby('datetime')
+    grouped_fixtures = current_gameweek_fixtures.groupby('local_date')
 
         # Use centered container for fixtures
     with st.container():
