@@ -206,12 +206,6 @@ if selected_display == '📊Fixture Difficulty Rating':
 ###################################
 elif selected_display == '⚔️Premier League Fixtures':
 
-    st.write("""
-    <script>
-    var timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    document.cookie = "timezone=" + timezone;
-    </script>
-    """, unsafe_allow_html=True)
 
     # Load timezone from session state
     timezone = st.session_state['timezone']
