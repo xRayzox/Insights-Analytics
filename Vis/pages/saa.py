@@ -147,20 +147,11 @@ with st.sidebar:
 
     st.markdown("<br>", unsafe_allow_html=True)  # Add a line break
 
-if selected_metric == "Fixture Difficulty Rating (FDR)":
-    styled_table = selected_data.style.map(color_fdr)
-
-    # Display the title with the selected metric (FDR)
-    st.markdown(
-        f"<h2 style='text-align: center;'>Fixture Difficulty Rating (FDR) for the Next {slider2-slider1} Gameweeks (Starting GW {slider1})</h2>",
-        unsafe_allow_html=True
-    )
-
-else:  # For GA and GF
-    styled_table = selected_data.style.map(color_ga_gf) 
-
-    # Display the title with the selected metric (GA or GF)
-    st.markdown(
-        f"<h2 style='text-align: center;'>{selected_metric} for the Next {slider2-slider1} Gameweeks (Starting GW {slider1})</h2>",
-        unsafe_allow_html=True
-    )
+    st.markdown("**Legend (GA/GF):**")
+    for ga_gf, (bg_color, font_color) in ga_gf_colors.items():
+        st.sidebar.markdown(
+            f"<span style='background-color: {bg_color}; color: {font_color}; padding: 2px 5px; border-radius: 3px;'>"
+            f"{ga_gf:.1f} - {ga_gf + 0.4:.1f}"  # Display the range
+            f"</span>",
+            unsafe_allow_html=True,
+        ) 
