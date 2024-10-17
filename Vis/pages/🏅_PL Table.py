@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..', 'FPL')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'FPL')))
 from fpl_api_collection import (
     get_league_table, get_current_gw, get_fixt_dfs, get_bootstrap_data
 )
@@ -36,8 +36,18 @@ league_df.index += 1
 league_df['GD'] = league_df['GD'].map('{:+}'.format)
 
 teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
+teams_df['logo_url'] = "https://resources.premierleague.com/premierleague/badges/70/t" + teams_df['code'].astype(str) + ".png"
+team_logo_mapping = pd.Series(teams_df.logo_url.values, index=teams_df.short_name).to_dict()
 
-## Very slow to load, works but needs to be sped up.
+# Add Team logo next to the team name
+def add_team_logo(team_name):
+    logo_url = team_logo_mapping.get(team_name, "")
+    return f'<img src="{logo_url}" width="20"/> {team_name}'
+
+# Apply the logo to the 'Team' column
+league_df['Team'] = league_df['Team'].apply(add_team_logo)
+
+## Slow to load part
 def get_home_away_str_dict():
     new_fdr_df.columns = new_fixt_cols
     result_dict = {}
@@ -111,5 +121,6 @@ for col in new_fixt_cols:
         if max_length > 7:
             league_df.loc[league_df[col].str.len() <= 7, col] = league_df[col].str.pad(width=max_length+9, side='both', fillchar=' ')
 
+# Streamlit cannot render HTML in the dataframe directly, use st.markdown instead for logo column
 st.dataframe(league_df.style.applymap(color_fixtures, subset=new_fixt_cols) \
              .format(subset=float_cols, formatter='{:.2f}'), height=740, width=None)
