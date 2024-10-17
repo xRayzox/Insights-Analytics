@@ -44,25 +44,14 @@ fdr_matrix['FDR'] = fdr_matrix['FDR'].astype(int)
 # Create sliders for game week selection
 slider1, slider2 = st.slider('Gameweek: ', int(ct_gw), gw_max, [int(ct_gw), int(ct_gw + 10)], 1)
 
-# Filter FDR and Fixture matrices based on selected game weeks
+# Filter FDR matrix based on selected game weeks
 filtered_fdr_matrix = fdr_matrix[(fdr_matrix['GameWeek'] >= slider1) & (fdr_matrix['GameWeek'] <= slider2)]
-filtered_fixt_matrix = sui[(sui.columns >= slider1) & (sui.columns <= slider2)]
 
-# Combine Fixture information with FDR values for display
-display_matrix = filtered_fixt_matrix.copy()
-
-# Iterate through columns (GameWeeks) and apply styles based on FDR
-for gw in range(slider1, slider2 + 1):
-    display_matrix[gw] = display_matrix[gw].apply(lambda x: f"{x} ({filtered_fdr_matrix.loc[filtered_fdr_matrix['GameWeek'] == gw, 'FDR'].iloc[0]})")
-
-# Melt the display matrix for styling
-melted_display_matrix = display_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='Fixture')
-
-# Pivot the melted display matrix for final display
-pivot_display_matrix = melted_display_matrix.pivot(index='Team', columns='GameWeek', values='Fixture')
+# Pivot the filtered FDR matrix for styling
+pivot_fdr_matrix = filtered_fdr_matrix.pivot(index='Team', columns='GameWeek', values='FDR')
 
 # Rename columns for display purposes
-pivot_display_matrix.columns = [f'GW {col}' for col in pivot_display_matrix.columns]
+pivot_fdr_matrix.columns = [f'GW {col}' for col in pivot_fdr_matrix.columns]
 
 # Define the custom color mapping for FDR values
 fdr_colors = {
@@ -74,16 +63,15 @@ fdr_colors = {
 }
 
 # Define a coloring function based on the FDR values using the custom color mapping
-def color_fixture(value):
-    fdr = int(value.split("(")[-1].strip(")"))
-    if fdr in fdr_colors:
-        background_color, text_color = fdr_colors[fdr]
+def color_fdr(value):
+    if value in fdr_colors:
+        background_color, text_color = fdr_colors[value]
         return f'background-color: {background_color}; color: {text_color}; text-align: center;'
     else:
         return ''  # No style for undefined values
 
-# Apply the styling to the pivoted display matrix
-styled_filtered_fixt_table = pivot_display_matrix.style.applymap(color_fixture)
+# Apply the styling to the pivoted FDR matrix
+styled_filtered_fdr_table = pivot_fdr_matrix.style.applymap(color_fdr)
 
 # Display the title with the current game week
 st.markdown(
@@ -91,7 +79,7 @@ st.markdown(
         unsafe_allow_html=True)
 
 # Streamlit app to display the styled table
-st.write(styled_filtered_fixt_table)
+st.write(styled_filtered_fdr_table)
 
 # Sidebar for the legend
 with st.sidebar:
