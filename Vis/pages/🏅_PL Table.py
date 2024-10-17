@@ -173,18 +173,7 @@ column_config = {
 }
 
 with df_col:
-    st.markdown(
-        """
-        <style>
-        .streamlit-expanderHeader {
-            font-size: 14px;
-        }
-        .css-1d391kg {
-            max-width: 1px;  /* Adjust width here */
-        }
-        </style>
-        """, unsafe_allow_html=True
-    )
+    
     # Display the DataFrame with full width using progress columns
     st.dataframe(
         rating_df[["name", 
