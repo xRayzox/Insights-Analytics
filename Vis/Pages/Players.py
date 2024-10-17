@@ -358,13 +358,14 @@ else:
             if player1_next3[col].dtype == 'O':
                 max_length = player1_next3[col].str.len().max()
                 if max_length > 7:
+                    # Correct use of .loc for both selection and assignment:
                     player1_next3.loc[player1_next3[col].str.len() <= 7, col] = player1_next3.loc[player1_next3[col].str.len() <= 7, col].str.pad(width=max_length+9, side='both', fillchar=' ')
-        # Apply formatting and then display the DataFrame
+
         styled_player1_next3 = player1_next3.style.map(color_fixtures, subset=new_fixt_df.columns) \
-            .format(subset=player1_next3.select_dtypes(include='float64') \
-                    .columns.values, formatter='{:.2f}')
+                .format(subset=player1_next3.select_dtypes(include='float64') \
+                        .columns.values, formatter='{:.2f}')
         init_rows[1].dataframe(styled_player1_next3)
-        
+            
         if len(id_dict) > 1:
             player2 = init_rows[2].selectbox("Choose Player Two", id_dict.values(), 1) #index=int(ind2))
             player2_next3 = get_player_next3(player2)
@@ -372,13 +373,14 @@ else:
                 if player2_next3[col].dtype == 'O':
                     max_length = player2_next3[col].str.len().max()
                     if max_length > 7:
+                        # Correct use of .loc for selection and assignment:
                         player2_next3.loc[player2_next3[col].str.len() <= 7, col] = player2_next3.loc[player2_next3[col].str.len() <= 7, col].str.pad(width=max_length+9, side='both', fillchar=' ')
-            # Apply formatting and then display the DataFrame        
+            
             styled_player2_next3 = player2_next3.style.map(color_fixtures, subset=new_fixt_df.columns) \
-                .format(subset=player2_next3.select_dtypes(include='float64') \
-                        .columns.values, formatter='{:.2f}')
-            init_rows[3].dataframe(styled_player2_next3) # Display in the correct column
-        
+                    .format(subset=player2_next3.select_dtypes(include='float64') \
+                            .columns.values, formatter='{:.2f}')
+            init_rows[3].dataframe(styled_player2_next3)
+            
         rows = st.columns(2)
         player1_df = collate_hist_df_from_name(player1)
         player1_total_df = collate_total_df_from_name(player1)
