@@ -39,23 +39,21 @@ fdr_matrix = val.melt(id_vars='Team', var_name='GameWeek', value_name='FDR')
 fdr_matrix['FDR'] = fdr_matrix['FDR'].astype(int)
 
 # Create a filtered FDR matrix for styling
-filtered_fdr_matrix = val.copy()
+filtered_fdr_matrix = sui.copy()
 filtered_fdr_matrix = filtered_fdr_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='DisplayValue')
 
 # Merge with FDR values
 merged_fdr_matrix = pd.merge(filtered_fdr_matrix, fdr_matrix, on=['Team', 'GameWeek'], how='left')
 
-# Define the custom color mapping for FDR values
-fdr_colors = {
-    1: ("#257d5a", "black"),
-    2: ("#00ff86", "black"),
-    3: ("#ebebe4", "black"),
-    4: ("#ff005a", "white"),
-    5: ("#861d46", "white"),
-}
-
-# Define a coloring function based on the FDR values using the custom color mapping
+# Define the coloring function based on FDR values
 def color_fdr(value):
+    fdr_colors = {
+        1: ("#257d5a", "black"),
+        2: ("#00ff86", "black"),
+        3: ("#ebebe4", "black"),
+        4: ("#ff005a", "white"),
+        5: ("#861d46", "white"),
+    }
     if value in fdr_colors:
         background_color, text_color = fdr_colors[value]
         return f'background-color: {background_color}; color: {text_color};'
@@ -68,9 +66,9 @@ styled_fdr_matrix = merged_fdr_matrix.pivot(index='Team', columns='GameWeek', va
 # Create a DataFrame for the FDR values to apply styles correctly
 fdr_values_matrix = merged_fdr_matrix.pivot(index='Team', columns='GameWeek', values='FDR')
 
-# Apply the styling using a lambda function
-styled_filtered_fdr_table = styled_fdr_matrix.style.applymap(
-    lambda x: color_fdr(fdr_values_matrix.loc[x.name].get(x.name, None)), 
+# Apply the styling using style.map (preferred method)
+styled_filtered_fdr_table = styled_fdr_matrix.style.map(
+    lambda x: color_fdr(fdr_values_matrix.loc[x.name, x.column]),
     subset=pd.IndexSlice[:, :]  # Apply to the entire table
 )
 
