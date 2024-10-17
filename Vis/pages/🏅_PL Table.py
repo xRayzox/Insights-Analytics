@@ -121,11 +121,9 @@ st.dataframe(league_df.style.applymap(color_fixtures, subset=new_fixt_cols) \
 
 ####################################################
 
-# Title and information
 st.title("Team Offensive / Defensive Ratings")
 st.caption("Compare overall, offensive, and defensive strengths of teams.")
 
-# Assuming teams_df is already defined and has the required columns
 # Calculate ratings using the specified strength columns
 teams_df["ovr_rating_home"] = teams_df["strength_overall_home"]
 teams_df["ovr_rating_away"] = teams_df["strength_overall_away"]
@@ -139,15 +137,19 @@ teams_df["ovr_rating"] = (teams_df["ovr_rating_home"] + teams_df["ovr_rating_awa
 teams_df["o_rating"] = (teams_df["o_rating_home"] + teams_df["o_rating_away"]) / 2
 teams_df["d_rating"] = (teams_df["d_rating_home"] + teams_df["d_rating_away"]) / 2
 
-# Selectbox for model options
+# Options for ratings
 model_option = st.selectbox("Data Source", ("Overall", "Home", "Away"))
-model_type = "" if model_option == "Overall" else model_option.lower()
+if model_option == "Overall":
+    model_type = ""
+elif model_option == "Home":
+    model_type = "home"
+else:  # "Away"
+    model_type = "away"
 
-# Sorting the DataFrame based on the selected model
+# Display DataFrame
 rating_df = teams_df.sort_values("ovr_rating" + ("_" + model_type if model_type else ""), ascending=False)
 df_col, chart_col = st.columns([2, 3])  # Adjust the column sizes as needed
 
-# Display DataFrame
 with df_col:
     st.dataframe(
         rating_df[["name", "ovr_rating" + ("_" + model_type if model_type else ""),
@@ -156,53 +158,49 @@ with df_col:
         hide_index=True,
     )
 
-# Scatter plot domain and range setup
+# Scatter plot setup
 x_domain = [0, teams_df["d_rating" + ("_" + model_type if model_type else "")].max() + 0.1]
 y_range = [0, teams_df["o_rating" + ("_" + model_type if model_type else "")].max() + 100]
 
-# Create scatter plot with team logos
+# Create scatter plot with reduced size
 scatter_plot = (
-    alt.Chart(teams_df, height=400, width=500)  # Adjust height and width
-    .mark_image(width=30, height=30)  # Adjust logo width and height
+    alt.Chart(teams_df, height=400, width=500)  # Adjust height and width here
+    .mark_point(filled=True, size=100)
     .encode(
-        x=alt.X("d_rating" + ("_" + model_type if model_type else ""), type="quantitative", title="Defensive Rating", scale=alt.Scale(domain=x_domain)),
-        y=alt.Y("o_rating" + ("_" + model_type if model_type else ""), type="quantitative", title="Offensive Rating", scale=alt.Scale(domain=y_range)),
-        url='logo_url',
+        x=alt.X(
+            "d_rating" + ("_" + model_type if model_type else ""),
+            type="quantitative",
+            title="Defensive Rating",
+            scale=alt.Scale(domain=x_domain),
+        ),
+        y=alt.Y(
+            "o_rating" + ("_" + model_type if model_type else ""),
+            type="quantitative",
+            title="Offensive Rating",
+            scale=alt.Scale(domain=y_range),
+        ),
         tooltip=[
             alt.Tooltip("name", title="Team"),
-            alt.Tooltip("ovr_rating" + ("_" + model_type if model_type else ""), title="Overall Rating", format=".2f"),
-            alt.Tooltip("o_rating" + ("_" + model_type if model_type else ""), title="Offensive Rating", format=".2f"),
+            alt.Tooltip("ovr_rating" + ("_" + model_type if model_type else ""), title="Overall Rating", format="d"),
+            alt.Tooltip("o_rating" + ("_" + model_type if model_type else ""), title="Offensive Rating", format="d"),
             alt.Tooltip("d_rating" + ("_" + model_type if model_type else ""), title="Defensive Rating", format=".2f"),
         ],
     )
 )
 
-# Mean lines for Offensive and Defensive ratings
-off_mean = teams_df["o_rating" + ("_" + model_type if model_type else "")].mean()
-def_mean = teams_df["d_rating" + ("_" + model_type if model_type else "")].mean()
+# Mean lines
+off_mean_line = (
+    alt.Chart(pd.DataFrame({"Mean Offensive Rating": [teams_df["o_rating" + ("_" + model_type if model_type else "")].mean()]}))
+    .mark_rule(color="#60b4ff", opacity=0.66)
+    .encode(y="Mean Offensive Rating")
+)
 
-# Create mean lines if there are valid ratings
-if pd.notna(off_mean):
-    off_mean_line = (
-        alt.Chart(pd.DataFrame({"Mean Offensive Rating": [off_mean]}))
-        .mark_rule(color="#60b4ff", opacity=0.66)
-        .encode(y="Mean Offensive Rating:Q")
-    )
-
-if pd.notna(def_mean):
-    def_mean_line = (
-        alt.Chart(pd.DataFrame({"Mean Defensive Rating": [def_mean]}))
-        .mark_rule(color="#60b4ff", opacity=0.66)
-        .encode(x="Mean Defensive Rating:Q")
-    )
+def_mean_line = (
+    alt.Chart(pd.DataFrame({"Mean Defensive Rating": [teams_df["d_rating" + ("_" + model_type if model_type else "")].mean()]}))
+    .mark_rule(color="#60b4ff", opacity=0.66)
+    .encode(x="Mean Defensive Rating")
+)
 
 # Combine all chart elements
 with chart_col:
-    combo_chart = scatter_plot
-    if pd.notna(off_mean):
-        combo_chart += off_mean_line
-    
-    if pd.notna(def_mean):
-        combo_chart += def_mean_line
-    
-    st.altair_chart(combo_chart, use_container_width=True)
+    st.altair_chart(scatter_plot + off_mean_line + def_mean_line, use_container_width=True)
