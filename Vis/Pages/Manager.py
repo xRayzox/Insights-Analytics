@@ -168,6 +168,11 @@ with col2:
 
         # Fill NaN values
         manager_team_df['Played'] = manager_team_df['Played'].fillna(False)
+
+        # Convert to appropriate dtypes to avoid FutureWarning
+        manager_team_df = manager_team_df.infer_objects()
+
+        # Select relevant columns and rename them
         manager_team_df = manager_team_df[['web_name', 'element_type', 'team', 'opponent_team', 'total_points', 'Played']]
         rn_cols = {
             'web_name': 'Player', 'element_type': 'Pos',
@@ -176,7 +181,7 @@ with col2:
         }
         manager_team_df.rename(columns=rn_cols, inplace=True)
         manager_team_df.set_index('Player', inplace=True)
-        
+
         # Map teams
         manager_team_df['vs'] = manager_team_df['vs'].map(teams_df.set_index('id')['short_name'])
         manager_team_df['vs'] = manager_team_df['vs'].fillna('BLANK')
