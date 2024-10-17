@@ -215,7 +215,7 @@ elif selected_display == '⚔️Premier League Fixtures':
     selected_gw = st.slider('Select Gameweek:', gw_minn, gw_maxx, ct_gw) 
         # --- Display Fixtures for Selected Gameweek ---
     st.markdown(
-        f"<h2 style='text-align: center;'>Premier League Fixtures - Gameweek {selected_gw}</h2>",
+        f"<h1 style='text-align: center;'>Premier League Fixtures - Gameweek {selected_gw}</h1>",
         unsafe_allow_html=True,
     )
 
