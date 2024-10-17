@@ -223,7 +223,7 @@ def collate_total_df_from_name(player_name):
                  'T', 'ICT', 'Form', 'TSB%', 'element_type']
     p_t = p_t[col_order]
     p_t['Price'] = p_t['Price']/10
-    p_t['TSB%'].replace('0.0', '0.09', inplace=True)
+    p_t['TSB%'] = p_t['TSB%'].replace('0.0', '0.09')  # Assign the result back to the column
     p_t['TSB%'] = p_t['TSB%'].astype(float)/100
     p_t.set_index('web_name', inplace=True)
     return p_t
