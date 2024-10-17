@@ -180,7 +180,9 @@ saaaa=get_fixture_data()
 fixtures_df = pd.DataFrame(saaaa)
 fixtures_df.drop(columns='stats', inplace=True)
 fixtures_df['datetime'] = pd.to_datetime(fixtures_df['kickoff_time'], utc=True)
+fixtures_df['local_time'] = fixtures_df['datetime'].dt.tz_convert(time).dt.strftime('%A %d %B %Y %H:%M')
 fixtures_df['local_date'] = fixtures_df['datetime'].dt.tz_convert(time).dt.strftime('%A %d %B %Y')
+fixtures_df['local_hour'] = fixtures_df['datetime'].dt.tz_convert(time).dt.strftime('%H:%M')
     # --- Display Fixtures for Selected Gameweek ---
 st.markdown(
         f"<h2 style='text-align: center;'>Premier League Fixtures - Gameweek {ct_gw}</h2>",
