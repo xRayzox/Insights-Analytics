@@ -35,11 +35,11 @@ sui.rename(columns={0: 'Team'}, inplace=True)
 val.rename(columns={0: 'Team'}, inplace=True)
 
 # Create FDR matrix directly from 'val' DataFrame
-fdr_matrix = val.copy()
+fdr_matrix = sui.copy()
 fdr_matrix = fdr_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='FDR')
 
 # Convert FDR values to integers
-fdr_matrix['FDR'] = fdr_matrix['FDR'].astype(int)
+fdr_matrix['FDR'] = fdr_matrix['FDR'].astype(str)
 
 # Create sliders for game week selection
 slider1, slider2 = st.slider('Gameweek: ', int(ct_gw), gw_max, [int(ct_gw), int(ct_gw + 10)], 1)
