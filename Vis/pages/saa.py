@@ -39,7 +39,7 @@ sui = team_fixt_df.reset_index()
 val = team_fdr_df.reset_index()
 
 # Prepare for FDR Matrix Calculation
-teams = sui[0]  # List of teams from the fixtures DataFrame
+teams = sui[0].astype(str)  # Ensure teams are of type string
 num_gameweeks = sui.shape[1] - 1  # Exclude team column
 fdr_matrix = pd.DataFrame(index=teams, columns=[f'GW{i}' for i in range(num_gameweeks)])  # Initialize FDR matrix
 
@@ -72,20 +72,20 @@ def color_fdr(value):
 st.title("Fixture Difficulty Rating (FDR) Matrix")
 selected_gameweek = st.sidebar.slider(
     "Select Gameweek:",
-    min_value=0,
-    max_value=num_gameweeks - 1,
-    value=0
+    min_value=1,
+    max_value=num_gameweeks,
+    value=8
 )
 
 # Filter FDR Matrix for the selected Gameweek and the next 9 Gameweeks
 filtered_fdr_matrix = fdr_matrix.loc[:, f'GW{selected_gameweek}':f'GW{selected_gameweek + 9}'].fillna('')
 
-# Apply Color Coding
-styled_fdr_table = filtered_fdr_matrix.style.applymap(color_fdr)
+# Apply Color Coding with map
+styled_fdr_table = filtered_fdr_matrix.style.map(color_fdr)  # Use map instead of applymap
 
 # Display FDR Matrix
 st.write(f"**Fixture Difficulty Rating (FDR) for Gameweek {selected_gameweek + 1} onwards:**")
-st.dataframe(styled_fdr_table)  # Use st.dataframe instead of st.write
+st.dataframe(styled_fdr_table)
 
 # Define Colors for the Legend
 colors = {
