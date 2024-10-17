@@ -28,9 +28,7 @@ val = team_fdr_df.reset_index()
 sui.rename(columns={0: 'Team'}, inplace=True)
 val.rename(columns={0: 'Team'}, inplace=True)
 
-# Create new column names, keeping 'Team' as the first column
-sui.columns = ['Team'] + [f'GW{col}' for col in range(1, len(sui.columns))]
-val.columns = ['Team'] + [f'GW{col}' for col in range(1, len(val.columns))]
+
 
 # Combine teams from both DataFrames
 teams = pd.concat([sui['Team'], val['Team']]).unique()
