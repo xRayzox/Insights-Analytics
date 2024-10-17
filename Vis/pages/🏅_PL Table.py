@@ -163,7 +163,7 @@ y_range = [0, teams_df["o_rating" + ("_" + model_type if model_type else "")].ma
 # Create scatter plot
 scatter_plot = (
     alt.Chart(teams_df, height=750)
-    .mark_point(filled=True, size=200)
+    .mark_image(url=alt.datum.logo_url, width=50, height=50)  # Set the width and height of the logos
     .encode(
         x=alt.X(
             "d_rating" + ("_" + model_type if model_type else ""),
