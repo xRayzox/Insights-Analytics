@@ -195,13 +195,16 @@ elif selected_display == 'Premier League Fixtures':
     fixtures_df['local_time'] = fixtures_df['datetime'].dt.tz_convert(time).dt.strftime('%A %d %B %Y %H:%M')
     fixtures_df['local_date'] = fixtures_df['datetime'].dt.tz_convert(time).dt.strftime('%A %d %B %Y')
     fixtures_df['local_hour'] = fixtures_df['datetime'].dt.tz_convert(time).dt.strftime('%H:%M')
+    gw_minn = min(fixtures_df['event'])
+    gw_maxx = max(fixtures_df['event'])
+    selected_gw = st.slider('Select Gameweek:', gw_minn, gw_maxx, ct_gw) 
         # --- Display Fixtures for Selected Gameweek ---
     st.markdown(
-            f"<h2 style='text-align: center;'>Premier League Fixtures - Gameweek {ct_gw}</h2>",
-            unsafe_allow_html=True,
-        )
+        f"<h2 style='text-align: center;'>Premier League Fixtures - Gameweek {selected_gw}</h2>",
+        unsafe_allow_html=True,
+    )
 
-    current_gameweek_fixtures = fixtures_df[fixtures_df['event'] == ct_gw]
+    current_gameweek_fixtures = fixtures_df[fixtures_df['event'] == selected_gw]
     grouped_fixtures = current_gameweek_fixtures.groupby('local_date')
 
         # Use centered container for fixtures
