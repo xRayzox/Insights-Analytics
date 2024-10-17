@@ -218,30 +218,36 @@ elif selected_display == 'Premier League Fixtures':
 
         # Use centered container for fixtures
     with st.container():
-            for date, matches in grouped_fixtures:
-                st.markdown(f"<h3 style='text-align: center;'>{date}</h3>", unsafe_allow_html=True)
-                for _, match in matches.iterrows():
-                    # Create a fixture box for each match
-                    with st.container():
-                        # Create columns with better spacing and vertical alignment
-                        col1, col2, col3 = st.columns([1, 1, 1])  
+        for date, matches in grouped_fixtures:
+            st.markdown(f"<h3 style='text-align: center;'>{date}</h3>", unsafe_allow_html=True)
+            for _, match in matches.iterrows():
+                # Create a fixture box for each match
+                with st.container():
+                    # --- Apply custom CSS for no spacing ---
+                    st.markdown(
+                        """
+                        <style>
+                        .no-gap {
+                            display: flex;
+                            gap: 0px; /* Remove any gap between columns */
+                        }
+                        </style>
+                        <div class="no-gap">
+                            <div style="width: 33.33%; text-align: right;">
+                                **{match['team_h']}**
+                            </div>
+                            <div style="width: 33.33%; text-align: center;">
+                                {f"{int(match['team_h_score'])} - {int(match['team_a_score'])}" if match['finished'] else 'vs'}
+                            </div>
+                            <div style="width: 33.33%; text-align: left;">
+                                **{match['team_a']}**
+                            </div>
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
 
-                        # --- Column 1: Home Team ---
-                        with col1:
-                            st.markdown(f"**{match['team_h']}**", unsafe_allow_html=True)
-
-                        # --- Column 2: Score/VS ---
-                        with col2:
-                            if match['finished']:
-                                st.markdown(f"<p style='text-align: center;'>{int(match['team_h_score'])} - {int(match['team_a_score'])}</p>", unsafe_allow_html=True)
-                            else:
-                                st.markdown(f"<p style='text-align: center;'>vs</p>", unsafe_allow_html=True)
-
-                        # --- Column 3: Away Team ---
-                        with col3:
-                            st.markdown(f"**{match['team_a']}**", unsafe_allow_html=True)
-                                                
-
-                        if not match['finished']:
-                            st.markdown(f"<p class='kickoff'>Kickoff: {match['local_hour']}</p>",
-                                         unsafe_allow_html=True)
+                    # --- Kickoff Time (centered below) ---
+                    if not match['finished']:
+                        st.markdown(f"<p style='text-align: center;'>Kickoff: {match['local_hour']}</p>",
+                                    unsafe_allow_html=True)
