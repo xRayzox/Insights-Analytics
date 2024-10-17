@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import sys
 import os
+import altair as alt
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..', 'FPL')))
 from fpl_api_collection import (
     get_league_table, get_current_gw, get_fixt_dfs, get_bootstrap_data
