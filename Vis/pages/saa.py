@@ -122,36 +122,42 @@ selected_data = get_selected_data(selected_metric)
 # Display the styled table based on the selected metric
 if selected_metric == "Fixture Difficulty Rating (FDR)":
     styled_table = selected_data.style.map(color_fdr)
-else:
-    styled_table = selected_data.style.map(color_ga_gf)  
 
-# Display the title with the selected metric
-st.markdown(
-    f"**{selected_metric} for the Next {slider2-slider1} Gameweeks (Starting GW {slider1})**",
-    unsafe_allow_html=True
-)
+    # Display the title with the selected metric (FDR)
+    st.markdown(
+        f"<h2 style='text-align: center;'>Fixture Difficulty Rating (FDR) for the Next {slider2-slider1} Gameweeks (Starting GW {slider1})</h2>",
+        unsafe_allow_html=True
+    )
 
-# Streamlit app to display the styled table
-st.write(styled_table)
+    # FDR Legend (only if FDR is selected)
+    with st.sidebar:
+        st.markdown("**Legend (FDR):**")
+        for fdr, (bg_color, font_color) in fdr_colors.items():
+            st.sidebar.markdown(
+                f"<span style='background-color: {bg_color}; color: {font_color}; padding: 2px 5px; border-radius: 3px;'>"
+                f"{fdr} - {'Very Easy' if fdr == 1 else 'Easy' if fdr == 2 else 'Medium' if fdr == 3 else 'Difficult' if fdr == 4 else 'Very Difficult'}"
+                f"</span>",
+                unsafe_allow_html=True,
+            )
+else:  # For GA and GF
+    styled_table = selected_data.style.map(color_ga_gf) 
 
-# Sidebar for the legends
-with st.sidebar:
-    st.markdown("**Legend (FDR):**")
-    for fdr, (bg_color, font_color) in fdr_colors.items():
-        st.sidebar.markdown(
-            f"<span style='background-color: {bg_color}; color: {font_color}; padding: 2px 5px; border-radius: 3px;'>"
-            f"{fdr} - {'Very Easy' if fdr == 1 else 'Easy' if fdr == 2 else 'Medium' if fdr == 3 else 'Difficult' if fdr == 4 else 'Very Difficult'}"
-            f"</span>",
-            unsafe_allow_html=True,
-        )
+    # Display the title with the selected metric (GA or GF)
+    st.markdown(
+        f"<h2 style='text-align: center;'>{selected_metric} for the Next {slider2-slider1} Gameweeks (Starting GW {slider1})</h2>",
+        unsafe_allow_html=True
+    )
 
-    st.markdown("<br>", unsafe_allow_html=True)  # Add a line break
+    # GA/GF Legend (only if GA or GF is selected)
+    with st.sidebar:
+        st.markdown("**Legend (GA/GF):**")
+        for ga_gf, (bg_color, font_color) in ga_gf_colors.items():
+            st.sidebar.markdown(
+                f"<span style='background-color: {bg_color}; color: {font_color}; padding: 2px 5px; border-radius: 3px;'>"
+                f"{ga_gf:.1f} - {ga_gf + 0.4:.1f}"  # Display the range
+                f"</span>",
+                unsafe_allow_html=True,
+            )
 
-    st.markdown("**Legend (GA/GF):**")
-    for ga_gf, (bg_color, font_color) in ga_gf_colors.items():
-        st.sidebar.markdown(
-            f"<span style='background-color: {bg_color}; color: {font_color}; padding: 2px 5px; border-radius: 3px;'>"
-            f"{ga_gf:.1f} - {ga_gf + 0.4:.1f}"  # Display the range
-            f"</span>",
-            unsafe_allow_html=True,
-        ) 
+# Streamlit app to display the styled table (outside the if/else)
+st.write(styled_table) 
