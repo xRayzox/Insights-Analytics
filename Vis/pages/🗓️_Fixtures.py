@@ -204,7 +204,7 @@ if selected_display == '📊Fixture Difficulty Rating':
 ###################################
 elif selected_display == '⚔️Premier League Fixtures':
     time=get_user_timezone()
-
+    st.write(time)
     saaaa=get_fixture_data()
     fixtures_df = pd.DataFrame(saaaa)
     fixtures_df.drop(columns='stats', inplace=True)

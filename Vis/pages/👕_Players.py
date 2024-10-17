@@ -17,9 +17,6 @@ from fpl_utils import define_sidebar
 st.set_page_config(page_title='Player Stats', page_icon=':shirt:', layout='wide')
 define_sidebar()
 st.title("Players")
-
-st.write("Currently only looking at data available through the FPL API. FBRef and Understat data being added is on the to-do list.")
-
 ele_types_data = get_bootstrap_data()['element_types']
 ele_types_df = pd.DataFrame(ele_types_data)
 ele_data = get_bootstrap_data()['elements']
