@@ -39,14 +39,6 @@ teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
 teams_df['logo_url'] = "https://resources.premierleague.com/premierleague/badges/70/t" + teams_df['code'].astype(str) + ".png"
 team_logo_mapping = pd.Series(teams_df.logo_url.values, index=teams_df.short_name).to_dict()
 
-# Add Team logo next to the team name using HTML
-def add_team_logo_html(team_name):
-    logo_url = team_logo_mapping.get(team_name, "")
-    return f'<img src="{logo_url}" width="20"/> {team_name}'
-
-# Apply the logo to the 'Team' column
-league_df['Team'] = league_df['Team'].apply(add_team_logo_html)
-
 ## Slow to load part
 def get_home_away_str_dict():
     new_fdr_df.columns = new_fixt_cols
@@ -121,8 +113,15 @@ for col in new_fixt_cols:
         if max_length > 7:
             league_df.loc[league_df[col].str.len() <= 7, col] = league_df[col].str.pad(width=max_length+9, side='both', fillchar=' ')
 
-# Render the table as HTML with logos
-st.markdown(
-    league_df.to_html(escape=False, index=False),
-    unsafe_allow_html=True
-)
+# Split layout: Logos on the left, table on the right
+col1, col2 = st.columns([1, 4])
+
+# Display team logos in the first column
+with col1:
+    for team in league_df['Team']:
+        st.image(team_logo_mapping.get(team, ""), width=30)
+
+# Display the league table in the second column
+with col2:
+    st.dataframe(league_df.style.applymap(color_fixtures, subset=new_fixt_cols) \
+                 .format(subset=float_cols, formatter='{:.2f}'), height=740, width=None)
