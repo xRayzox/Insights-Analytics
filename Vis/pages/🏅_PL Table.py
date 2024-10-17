@@ -158,20 +158,7 @@ max_d = rating_df["d_rating" + ("_" + model_type if model_type else "")].max()
 # Set up columns for layout
 df_col, chart_col = st.columns([24, 24])  # Adjust the column sizes as needed
 
-st.markdown(
-    """
-    <style>
-    .stProgress {
-        height: 20px; /* Adjust height */
-        border-radius: 5px; /* Optional: make corners rounded */
-    }
-    .stProgress > div {
-        height: 100%; /* Ensure the inner div fills the height */
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+
 # Configure progress columns for ratings
 column_config = {
     "ovr_rating" + ("_" + model_type if model_type else ""): st.column_config.ProgressColumn(
