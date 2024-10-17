@@ -121,6 +121,7 @@ st.dataframe(league_df.style.applymap(color_fixtures, subset=new_fixt_cols) \
 
 ####################################################
 
+# Set the title and caption
 st.title("Team Offensive / Defensive Ratings")
 st.caption("Compare overall, offensive, and defensive strengths of teams.")
 
@@ -149,12 +150,14 @@ else:  # "Away"
 # Display DataFrame
 rating_df = teams_df.sort_values("ovr_rating" + ("_" + model_type if model_type else ""), ascending=False)
 df_col, chart_col = st.columns([24, 24])  # Adjust the column sizes as needed
+
 # Configure progress columns for ratings
 column_config = {
-    "ovr_rating": st.column_config.ProgressColumn(label="Overall Rating"),
-    "o_rating": st.column_config.ProgressColumn(label="Offensive Rating"),
-    "d_rating": st.column_config.ProgressColumn(label="Defensive Rating"),
+    "ovr_rating" + ("_" + model_type if model_type else ""): st.column_config.ProgressColumn(label="Overall Rating"),
+    "o_rating" + ("_" + model_type if model_type else ""): st.column_config.ProgressColumn(label="Offensive Rating"),
+    "d_rating" + ("_" + model_type if model_type else ""): st.column_config.ProgressColumn(label="Defensive Rating"),
 }
+
 with df_col:
     # Display the DataFrame with full width using progress columns
     st.dataframe(
@@ -166,7 +169,6 @@ with df_col:
         use_container_width=True,  # This makes the DataFrame take full width
         column_config=column_config  # Apply the progress column configuration
     )
-
 # Scatter plot setup
 x_domain = [teams_df["d_rating" + ("_" + model_type if model_type else "")].min()-0.1, teams_df["d_rating" + ("_" + model_type if model_type else "")].max() + 0.1]
 y_range = [teams_df["o_rating" + ("_" + model_type if model_type else "")].min()-100, teams_df["o_rating" + ("_" + model_type if model_type else "")].max() + 100]
