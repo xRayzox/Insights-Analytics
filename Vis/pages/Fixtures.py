@@ -33,7 +33,7 @@ st.markdown(
 )
 
 
-st.set_page_config(page_title='Fixtures', page_icon=':calendar:', layout='wide')
+
 
 # Load data
 team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
