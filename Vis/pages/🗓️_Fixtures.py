@@ -21,7 +21,6 @@ from fpl_utils import (
     get_rotation,
     get_user_timezone
 )
-
 st.markdown(
     """
     <style>
@@ -32,6 +31,8 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+
 
 # Load data
 team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
@@ -67,11 +68,6 @@ with st.sidebar:
     selected_display = st.radio(
         "Select Display:", ['⚔️Premier League Fixtures', '📊Fixture Difficulty Rating']
     )
-
-# Merge team logos into the DataFrame for display in the matrix
-teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
-teams_df['logo_url'] = "https://resources.premierleague.com/premierleague/badges/70/t" + teams_df['code'].astype(str) + ".png"
-team_logo_mapping = pd.Series(teams_df.logo_url.values, index=teams_df.short_name).to_dict()
 
 if selected_display == '📊Fixture Difficulty Rating':
     # Create sliders for game week selection
@@ -131,24 +127,23 @@ if selected_display == '📊Fixture Difficulty Rating':
     # Create a function to get the appropriate DataFrame based on the selection
     def get_selected_data(metric):
         if metric == "Fixture Difficulty Rating (FDR)":
-            matrix = pivot_fdr_matrix.copy()
+            return pivot_fdr_matrix.copy() 
         elif metric == "Average Goals Against (GA)":
             ga_matrix = ga.melt(id_vars='Team', var_name='GameWeek', value_name='GA')
-            ga_matrix['GA'] = ga_matrix['GA'].astype(float).round(2)
+            # Round GA values to 2 decimal places
+            ga_matrix['GA'] = ga_matrix['GA'].astype(float).round(2) 
             filtered_ga_matrix = ga_matrix[(ga_matrix['GameWeek'] >= slider1) & (ga_matrix['GameWeek'] <= slider2)]
-            matrix = filtered_ga_matrix.pivot(index='Team', columns='GameWeek', values='GA')
-            matrix.columns = [f'GW {col}' for col in matrix.columns]
+            pivot_ga_matrix = filtered_ga_matrix.pivot(index='Team', columns='GameWeek', values='GA')
+            pivot_ga_matrix.columns = [f'GW {col}' for col in pivot_ga_matrix.columns].copy()
+            return pivot_ga_matrix.copy()  
         elif metric == "Average Goals For (GF)":
             gf_matrix = gf.melt(id_vars='Team', var_name='GameWeek', value_name='GF')
-            gf_matrix['GF'] = gf_matrix['GF'].astype(float).round(2)
+            # Round GF values to 2 decimal places
+            gf_matrix['GF'] = gf_matrix['GF'].astype(float).round(2) 
             filtered_gf_matrix = gf_matrix[(gf_matrix['GameWeek'] >= slider1) & (gf_matrix['GameWeek'] <= slider2)]
-            matrix = filtered_gf_matrix.pivot(index='Team', columns='GameWeek', values='GF')
-            matrix.columns = [f'GW {col}' for col in matrix.columns]
-
-        # Add team logos next to the team names
-        matrix['Team'] = matrix.index.map(lambda team: f"<img src='{team_logo_mapping[team]}' style='width:20px; height:20px; vertical-align:middle; margin-right:5px;'/> {team}")
-        
-        return matrix
+            pivot_gf_matrix = filtered_gf_matrix.pivot(index='Team', columns='GameWeek', values='GF') 
+            pivot_gf_matrix.columns = [f'GW {col}' for col in pivot_gf_matrix.columns].copy() 
+            return pivot_gf_matrix.copy() 
 
     # Get the selected data
     selected_data = get_selected_data(selected_metric)
@@ -173,7 +168,6 @@ if selected_display == '📊Fixture Difficulty Rating':
                     f"</span>",
                     unsafe_allow_html=True,
                 )
-
     else:  # For GA and GF
         styled_table = selected_data.style.applymap(color_ga_gf)  # Use applymap for cell-wise styling
 
@@ -189,14 +183,13 @@ if selected_display == '📊Fixture Difficulty Rating':
             for ga_gf, (bg_color, font_color) in ga_gf_colors.items():
                 st.sidebar.markdown(
                     f"<span style='background-color: {bg_color}; color: {font_color}; padding: 2px 5px; border-radius: 3px;'>"
-                    f"{ga_gf:.1f} - {ga_gf + 0.4:.1f}"  # Example range representation
+                    f"{ga_gf:.1f} - {ga_gf + 0.4:.1f}"  # Display the range
                     f"</span>",
                     unsafe_allow_html=True,
                 )
 
-    # Display the styled table with team logos
-    st.write(styled_table.to_html(escape=False), unsafe_allow_html=True)
-
+    # Streamlit app to display the styled table (outside the if/else)
+    st.write(styled_table)
 
 
 
