@@ -52,9 +52,10 @@ fdr_matrix['FDR'] = fdr_matrix['FDR'].astype(int)
 st.title("FPL Fixture Analysis")
 
 # Create a selection choice for the display
-selected_display = st.radio(
-    "Select Display:", ['Premier League Fixtures', 'Fixture Difficulty Rating']
-)
+with st.sidebar:
+    selected_display = st.radio(
+        "Select Display:", ['Premier League Fixtures', 'Fixture Difficulty Rating']
+    )
 
 if selected_display == 'Fixture Difficulty Rating':
     # Create sliders for game week selection
