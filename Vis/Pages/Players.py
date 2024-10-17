@@ -2,20 +2,22 @@ import streamlit as st
 import pandas as pd
 import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..', 'FPL')))
+import plotly.graph_objects as go
+import numpy as np
 
+# Assuming fpl_api_collection and fpl_utils are in the FPL directory
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..', 'FPL')))
 
 from fpl_api_collection import (
     get_player_id_dict, get_bootstrap_data, get_player_data, get_league_table,
     get_fixt_dfs, get_current_gw, remove_moved_players, get_current_season
 )
-import plotly.graph_objects as go
-from fpl_utils import (
-    define_sidebar
-)
+from fpl_utils import define_sidebar
+
 st.set_page_config(page_title='Player Stats', page_icon=':shirt:', layout='wide')
 define_sidebar()
 st.title("Players")
+
 st.write("Currently only looking at data available through the FPL API. FBRef and Understat data being added is on the to-do list.")
 
 ele_types_data = get_bootstrap_data()['element_types']
@@ -110,16 +112,16 @@ def color_fixtures(val):
     bg_color = 'background-color: '
     font_color = 'color: '
     if val in home_away_dict[1]:
-        bg_color += '#147d1b'
+        bg_color += '#147d1b'  # Green for easiest
     elif val in home_away_dict[2]:
-        bg_color += '#00ff78'
+        bg_color += '#00ff78'  # Lighter green
     elif val in home_away_dict[3]:
-        bg_color += '#eceae6'
+        bg_color += '#eceae6'  # Light gray for neutral
     elif val in home_away_dict[4]:
-        bg_color += '#ff0057'
+        bg_color += '#ff0057'  # Red for harder
         font_color += 'white'
     elif val in home_away_dict[5]:
-        bg_color += '#920947'
+        bg_color += '#920947'  # Darker red for hardest
         font_color += 'white'
     else:
         bg_color += ''
@@ -308,7 +310,7 @@ def get_top_two_mid_ids():
     mid_df = ele_df.loc[ele_df['element_type'] == 3]
     mid_df_sorted = mid_df.sort_values('total_points', ascending=False)
     top2 = mid_df_sorted.head(2).reset_index()
-    return top2['index'][0], top2['index'][1]
+    return top2['id'][0], top2['id'][1]
 
 
 def get_player_next3(player):
@@ -348,7 +350,7 @@ else:
     
     if len(id_dict) == 0:
         st.write('No data to display in range.')
-    elif len(id_dict) == 1:
+    elif len(id_dict) >= 1:
         init_rows = st.columns(4)
         player1 = init_rows[0].selectbox("Choose Player One", id_dict.values(), index=0)
         player1_next3 = get_player_next3(player1)
@@ -360,37 +362,19 @@ else:
         init_rows[1].dataframe(player1_next3.style.applymap(color_fixtures, subset=new_fixt_df.columns) \
             .format(subset=player1_next3.select_dtypes(include='float64') \
                     .columns.values,formatter='{:.2f}'))
-        rows = st.columns(2)
-        player1_df = collate_hist_df_from_name(player1)
-        player1_total_df = collate_total_df_from_name(player1)
-        player1_total_df.drop(['team', 'element_type'], axis=1, inplace=True)
-        rows[0].dataframe(player1_df.style.format({'Price': '£{:.1f}'}))
-        total_fmt = {'xG':'{:.2f}', 'xA':'{:.2f}', 'xGI':'{:.2f}', 'xGC':'{:.2f}',
-                     'Price': '£{:.1f}', 'TSB%': '{:.1%}'}
-        rows[0].dataframe(player1_total_df.style.format(total_fmt))
-    else:
-        init_rows = st.columns(4)
-        player1 = init_rows[0].selectbox("Choose Player One", id_dict.values(), index=0)
-        player1_next3 = get_player_next3(player1)
-        for col in new_fixt_cols:
-            if player1_next3[col].dtype == 'O':
-                max_length = player1_next3[col].str.len().max()
-                if max_length > 7:
-                    player1_next3.loc[player1_next3[col].str.len() <= 7, col] = player1_next3[col].str.pad(width=max_length+9, side='both', fillchar=' ')
-        init_rows[1].dataframe(player1_next3.style.applymap(color_fixtures, subset=new_fixt_df.columns) \
-            .format(subset=player1_next3.select_dtypes(include='float64') \
-                    .columns.values,formatter='{:.2f}'))
-        player2 = init_rows[2].selectbox("Choose Player Two", id_dict.values(), 1) #index=int(ind2))
-        player2_next3 = get_player_next3(player2)
-        for col in new_fixt_cols:
-            if player2_next3[col].dtype == 'O':
-                max_length = player2_next3[col].str.len().max()
-                if max_length > 7:
-                    player2_next3.loc[player2_next3[col].str.len() <= 7, col] = player2_next3[col].str.pad(width=max_length+9, side='both', fillchar=' ')
-        init_rows[3].dataframe(player2_next3.style.applymap(color_fixtures, subset=new_fixt_df.columns) \
-            .format(subset=player2_next3.select_dtypes(include='float64') \
-                    .columns.values,formatter='{:.2f}'))
-    
+        
+        if len(id_dict) > 1:
+            player2 = init_rows[2].selectbox("Choose Player Two", id_dict.values(), 1) #index=int(ind2))
+            player2_next3 = get_player_next3(player2)
+            for col in new_fixt_cols:
+                if player2_next3[col].dtype == 'O':
+                    max_length = player2_next3[col].str.len().max()
+                    if max_length > 7:
+                        player2_next3.loc[player2_next3[col].str.len() <= 7, col] = player2_next3[col].str.pad(width=max_length+9, side='both', fillchar=' ')
+            init_rows[3].dataframe(player2_next3.style.applymap(color_fixtures, subset=new_fixt_df.columns) \
+                .format(subset=player2_next3.select_dtypes(include='float64') \
+                        .columns.values,formatter='{:.2f}'))
+        
         rows = st.columns(2)
         player1_df = collate_hist_df_from_name(player1)
         player1_total_df = collate_total_df_from_name(player1)
@@ -400,16 +384,18 @@ else:
                      'Price': '£{:.1f}', 'TSB%': '{:.1%}'}
         rows[0].dataframe(player1_total_df.style.format(total_fmt))
         
-        player2_df = collate_hist_df_from_name(player2)
-        player2_total_df = collate_total_df_from_name(player2)
-        player2_total_df.drop(['team', 'element_type'], axis=1, inplace=True)
-        rows[1].dataframe(player2_df.style.format({'Price': '£{:.1f}'}))
-        total_fmt = {'xG':'{:.2f}', 'xA':'{:.2f}', 'xGI':'{:.2f}', 'xGC':'{:.2f}',
+        if len(id_dict) > 1:
+            player2_df = collate_hist_df_from_name(player2)
+            player2_total_df = collate_total_df_from_name(player2)
+            player2_total_df.drop(['team', 'element_type'], axis=1, inplace=True)
+            rows[1].dataframe(player2_df.style.format({'Price': '£{:.1f}'}))
+            total_fmt = {'xG':'{:.2f}', 'xA':'{:.2f}', 'xGI':'{:.2f}', 'xGC':'{:.2f}',
                      'Price': '£{:.1f}', 'TSB%': '{:.1%}'}
-        rows[1].dataframe(player2_total_df.style.format(total_fmt))
+            rows[1].dataframe(player2_total_df.style.format(total_fmt))
 
-        rows[0].plotly_chart(get_stats_spider_plot(player1, player2))
-        rows[1].plotly_chart(get_ICT_spider_plot(player1, player2))
+            rows[0].plotly_chart(get_stats_spider_plot(player1, player2))
+            rows[1].plotly_chart(get_ICT_spider_plot(player1, player2))
         
 
-#st.plotly_chart(get_spider_plot(player1, player2), use_container_width=True)
+#st.plotly_chart(get_spider_plot(player1, player2), use_container_width=True)correct this
+ 
