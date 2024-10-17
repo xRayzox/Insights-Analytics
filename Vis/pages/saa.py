@@ -37,25 +37,21 @@ val.rename(columns={0: 'Team'}, inplace=True)
 # Create FDR matrix directly from 'val' DataFrame
 fdr_matrix = val.copy()
 fdr_matrix = fdr_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='FDR')
-fdr_matrix['FDR'] = fdr_matrix['FDR'].astype(int)  # Convert FDR to integers
+
+# Convert FDR values to integers
+fdr_matrix['FDR'] = fdr_matrix['FDR'].astype(int)
 
 # Create sliders for game week selection
 slider1, slider2 = st.slider('Gameweek: ', int(ct_gw), gw_max, [int(ct_gw), int(ct_gw + 10)], 1)
 
-# Filter both DataFrames based on selected game weeks
+# Filter FDR matrix based on selected game weeks
 filtered_fdr_matrix = fdr_matrix[(fdr_matrix['GameWeek'] >= slider1) & (fdr_matrix['GameWeek'] <= slider2)]
-filtered_fixt_df = sui[(sui.columns >= slider1) & (sui.columns <= slider2)]
 
 # Pivot the filtered FDR matrix for styling
 pivot_fdr_matrix = filtered_fdr_matrix.pivot(index='Team', columns='GameWeek', values='FDR')
 
-# Pivot the fixture DataFrame for display
-pivot_fixt_df = filtered_fixt_df.melt(id_vars='Team', var_name='GameWeek', value_name='Opponent')
-pivot_fixt_df = pivot_fixt_df.pivot(index='Team', columns='GameWeek', values='Opponent')
-
 # Rename columns for display purposes
 pivot_fdr_matrix.columns = [f'GW {col}' for col in pivot_fdr_matrix.columns]
-pivot_fixt_df.columns = [f'GW {col}' for col in pivot_fixt_df.columns]
 
 # Define the custom color mapping for FDR values
 fdr_colors = {
@@ -67,20 +63,23 @@ fdr_colors = {
 }
 
 # Define a coloring function based on the FDR values using the custom color mapping
-def color_fdr(row):
-    return [f'background-color: {fdr_colors[value][0]}; color: {fdr_colors[value][1]}; text-align: center;'
-            for value in pivot_fdr_matrix.loc[row.name]]
+def color_fdr(value):
+    if value in fdr_colors:
+        background_color, text_color = fdr_colors[value]
+        return f'background-color: {background_color}; color: {text_color}; text-align: center;'
+    else:
+        return ''  # No style for undefined values
 
-# Apply the styling to the fixture DataFrame using FDR colors
-styled_filtered_fixt_table = pivot_fixt_df.style.apply(color_fdr, axis=1)
+# Apply the styling to the pivoted FDR matrix
+styled_filtered_fdr_table = pivot_fdr_matrix.style.applymap(color_fdr)
 
 # Display the title with the current game week
 st.markdown(
-    f"**Fixture Difficulty Rating (FDR) for the Next {slider2 - slider1} Gameweeks (Starting GW{slider1})**",
-    unsafe_allow_html=True)
+        f"**Fixture Difficulty Rating (FDR) for the Next {slider2-slider1} Gameweeks (Starting GW{slider1})**",
+        unsafe_allow_html=True)
 
-# Streamlit app to display the styled table (using fixture data with FDR colors)
-st.write(styled_filtered_fixt_table)
+# Streamlit app to display the styled table
+st.write(styled_filtered_fdr_table)
 
 # Sidebar for the legend
 with st.sidebar:
