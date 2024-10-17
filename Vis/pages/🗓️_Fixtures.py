@@ -66,7 +66,7 @@ st.title("FPL Fixture Analysis")
 # Create a selection choice for the display
 with st.sidebar:
     selected_display = st.radio(
-        "Select Display:", ['Premier League Fixtures', 'Fixture Difficulty Rating']
+        "Select Display:", ['⚔️Premier League Fixtures', '📊Fixture Difficulty Rating']
     )
 
 if selected_display == 'Fixture Difficulty Rating':
