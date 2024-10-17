@@ -149,15 +149,22 @@ else:  # "Away"
 # Display DataFrame
 rating_df = teams_df.sort_values("ovr_rating" + ("_" + model_type if model_type else ""), ascending=False)
 df_col, chart_col = st.columns([24, 24])  # Adjust the column sizes as needed
-
+# Configure progress columns for ratings
+column_config = {
+    "ovr_rating": st.column_config.ProgressColumn(label="Overall Rating"),
+    "o_rating": st.column_config.ProgressColumn(label="Offensive Rating"),
+    "d_rating": st.column_config.ProgressColumn(label="Defensive Rating"),
+}
 with df_col:
-    # Display the DataFrame with full width
+    # Display the DataFrame with full width using progress columns
     st.dataframe(
-        rating_df[["name", "ovr_rating" + ("_" + model_type if model_type else ""),
+        rating_df[["name", 
+                    "ovr_rating" + ("_" + model_type if model_type else ""),
                     "o_rating" + ("_" + model_type if model_type else ""),
                     "d_rating" + ("_" + model_type if model_type else "")]],
         hide_index=True,
-        use_container_width=True  # This makes the DataFrame take full width
+        use_container_width=True,  # This makes the DataFrame take full width
+        column_config=column_config  # Apply the progress column configuration
     )
 
 # Scatter plot setup
