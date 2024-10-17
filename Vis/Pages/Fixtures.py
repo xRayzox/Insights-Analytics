@@ -227,3 +227,5 @@ def app():
             st.write(fig)
         else:
             st.write('Please wait until GW1 concludes to view Goals Against metrics.')
+if __name__ == "__main__":
+    app()
