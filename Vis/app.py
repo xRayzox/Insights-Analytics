@@ -8,6 +8,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'F
 from fpl_utils import (
     define_sidebar, chip_converter
 )
+st.set_page_config(page_title='Home', page_icon=':shirt:', layout='wide')
 # Project Description
 define_sidebar()
 st.title("Fantasy Premier League Analysis and Insights ")
