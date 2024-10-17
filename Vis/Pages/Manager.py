@@ -5,7 +5,8 @@ import pandas as pd
 import requests
 import sys
 import os
-#
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..', 'FPL')))
+print(sys.path)
 from fpl_api_collection import (
     get_bootstrap_data, get_manager_history_data, get_manager_team_data,
     get_manager_details, get_player_data, get_current_season
