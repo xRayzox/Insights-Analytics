@@ -45,8 +45,11 @@ fdr_matrix = fdr_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='FD
 # Convert FDR values to integers
 fdr_matrix['FDR'] = fdr_matrix['FDR'].astype(int)
 
+# Streamlit app
+st.title("FPL Fixture Analysis")
+
 # Create sliders for game week selection
-slider1, slider2 = st.slider('Gameweek: ', int(ct_gw), gw_max, [int(ct_gw), int(ct_gw + 10)], 1)
+slider1, slider2 = st.slider('Gameweek Range:', int(ct_gw), gw_max, [int(ct_gw), int(ct_gw + 10)], 1)
 
 # Filter FDR matrix based on selected game weeks
 filtered_fdr_matrix = fdr_matrix[(fdr_matrix['GameWeek'] >= slider1) & (fdr_matrix['GameWeek'] <= slider2)]
@@ -103,16 +106,15 @@ def get_selected_data(metric):
         return pivot_fdr_matrix
     elif metric == "Average Goals Against (GA)":
         ga_matrix = ga.melt(id_vars='Team', var_name='GameWeek', value_name='GA')
-        ga_matrix['GA'] = ga_matrix['GA'].astype(float).round(2)  # Round to 2 decimal places
+        ga_matrix['GA'] = ga_matrix['GA'].astype(float).round(2) 
         filtered_ga_matrix = ga_matrix[(ga_matrix['GameWeek'] >= slider1) & (ga_matrix['GameWeek'] <= slider2)]
-        filtered_gf_matrix['GA'] = filtered_gf_matrix['GA'].astype(float).round(2)
         pivot_ga_matrix = filtered_ga_matrix.pivot(index='Team', columns='GameWeek', values='GA')
         pivot_ga_matrix.columns = [f'GW {col}' for col in pivot_ga_matrix.columns]
         return pivot_ga_matrix
     elif metric == "Average Goals For (GF)":
         gf_matrix = gf.melt(id_vars='Team', var_name='GameWeek', value_name='GF')
         filtered_gf_matrix = gf_matrix[(gf_matrix['GameWeek'] >= slider1) & (gf_matrix['GameWeek'] <= slider2)]
-        filtered_gf_matrix['GF'] = filtered_gf_matrix['GF'].astype(float).round(2)  # Round to 2 decimal places
+        filtered_gf_matrix['GF'] = filtered_gf_matrix['GF'].astype(float).round(2)  
         pivot_gf_matrix = filtered_gf_matrix.pivot(index='Team', columns='GameWeek', values='GF') 
         pivot_gf_matrix.columns = [f'GW {col}' for col in pivot_gf_matrix.columns]
         return pivot_gf_matrix
@@ -122,11 +124,11 @@ selected_data = get_selected_data(selected_metric)
 
 # Display the styled table based on the selected metric
 if selected_metric == "Fixture Difficulty Rating (FDR)":
-    styled_table = selected_data.style.map(color_fdr)
+    styled_table = selected_data.style.applymap(color_fdr)  # Apply color to each cell
 
     # Display the title with the selected metric (FDR)
     st.markdown(
-    f"{selected_metric} for the Next {slider2-slider1} Gameweeks (Starting GW {slider1})",
+    f"**{selected_metric} for the Next {slider2-slider1+1} Gameweeks (Starting GW {slider1})**",
     unsafe_allow_html=True
     )
 
@@ -141,11 +143,11 @@ if selected_metric == "Fixture Difficulty Rating (FDR)":
                 unsafe_allow_html=True,
             )
 else:  # For GA and GF
-    styled_table = selected_data.style.map(color_ga_gf) 
+    styled_table = selected_data.style.applymap(color_ga_gf)  # Apply color to each cell
 
     # Display the title with the selected metric (GA or GF)
     st.markdown(
-    f"{selected_metric} for the Next {slider2-slider1} Gameweeks (Starting GW {slider1})",
+    f"**{selected_metric} for the Next {slider2-slider1+1} Gameweeks (Starting GW {slider1})**",
     unsafe_allow_html=True
     )
 
@@ -161,4 +163,4 @@ else:  # For GA and GF
             )
 
 # Streamlit app to display the styled table (outside the if/else)
-st.write(styled_table) 
+st.write(styled_table)
