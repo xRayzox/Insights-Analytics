@@ -1,228 +1,266 @@
 import streamlit as st
 import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
-import pytz
-import datetime as datetime
 import os
 import sys
+import numpy as np
+from datetime import datetime, timezone
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..', 'FPL')))
+# Adjust the path to your FPL API collection as necessary
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'FPL')))
 from fpl_api_collection import (
     get_bootstrap_data,
     get_current_gw,
     get_fixt_dfs,
-    get_league_table
+    get_fixture_data
 )
 from fpl_utils import (
     define_sidebar,
     get_annot_size,
     map_float_to_color,
     get_text_color_from_hash,
-    get_rotation
+    get_rotation,
+    get_user_timezone
 )
-from fpl_params import (
-    TIMEZONES_BY_CONTINENT,
-    AUTHOR_CONTINENT,
-    AUTHOR_CITY
+st.markdown(
+    """
+    <style>
+    .kickoff {
+        text-align: center;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
 )
+
+
 st.set_page_config(page_title='Fixtures', page_icon=':calendar:', layout='wide')
-define_sidebar()
-st.title("Premier League Fixtures")
 
-league_df = get_league_table()
+# Load data
 team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
-
 events_df = pd.DataFrame(get_bootstrap_data()['events'])
 
 gw_min = min(events_df['id'])
 gw_max = max(events_df['id'])
 
 ct_gw = get_current_gw()
+fixt = team_fixt_df.reset_index()
+drf = team_fdr_df.reset_index()
+ga = team_ga_df.reset_index()
+gf = team_gf_df.reset_index()
 
-col1, col2, col3 = st.columns([1,1,1])
-with col1:
-    select_options = ['Fixture Difficulty Rating (FDR)',
-                     'Average Goals Against (GA)',
-                     'Average Goals For (GF)']
-    select_choice = st.selectbox("Sort fixtures by:", select_options)
-with col2:
-    radio_options = ['Fixture', 'Statistic']
-    radio_choice = st.radio("Toggle:",
-                            radio_options,
-                            horizontal=True)
+# Rename the first column to 'Team'
+fixt.rename(columns={0: 'Team'}, inplace=True)
+drf.rename(columns={0: 'Team'}, inplace=True)
+ga.rename(columns={0: 'Team'}, inplace=True)
+gf.rename(columns={0: 'Team'}, inplace=True)
 
-slider1, slider2 = st.slider('Gameweek: ', gw_min, gw_max, [int(ct_gw), int(ct_gw+4)], 1)
-annot_size = get_annot_size(slider1, slider2)
-rotation = get_rotation(slider1, slider2)
+# Create FDR matrix directly from 'val' DataFrame
+fdr_matrix = drf.copy()
+fdr_matrix = fdr_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='FDR')
 
-# Tried with a get_user_timezone() function but the IP Address is automatically
-# set to Los Angeles as Streamlit/Github servers are there. Reverted to Sydney.
-user_tz = f'{AUTHOR_CONTINENT}/{AUTHOR_CITY}'
-user_cont = AUTHOR_CONTINENT
-tzs_by_cont = TIMEZONES_BY_CONTINENT
-colA, colB, colC = st.columns([1,1,1])
-with colA:
-    cont = st.selectbox("Select your continent:", options=list(tzs_by_cont.keys()),
-                        index=[i for i, k in enumerate(list(tzs_by_cont.items())) if k[0] == user_cont][0])
-with colB:
-    if user_cont == cont:
-        tz = st.selectbox("Select your timezone:",
-                        options=tzs_by_cont[cont],
-                        index=[i for i, k in enumerate(tzs_by_cont[cont]) if k == user_tz][0])
-    else:
-        tz = st.selectbox("Select your timezone:",
-                        options=tzs_by_cont[cont])
+# Convert FDR values to integers
+fdr_matrix['FDR'] = fdr_matrix['FDR'].astype(int)
 
-events_df['deadline_time'] = pd.to_datetime(events_df['deadline_time'])
-events_df['tz_datetime'] = events_df['deadline_time'].apply(lambda x: x.astimezone(pytz.timezone(tz))).dt.strftime('%a %d-%b-%y %-I:%M%p').str.upper()
+# Streamlit app
+st.title("FPL Fixture Analysis")
 
-gw_numbers = range(slider1, slider2+1)
-gw_deadlines = events_df.loc[(events_df['id'] >= slider1) & (events_df['id'] <= slider2)]['tz_datetime']
-custom_labels = [f'GW{gw_number}\n{my_string}' for gw_number, my_string in zip(gw_numbers, gw_deadlines)]
+# Create a selection choice for the display
+with st.sidebar:
+    selected_display = st.radio(
+        "Select Display:", ['Premier League Fixtures', 'Fixture Difficulty Rating']
+    )
 
-#Check to see if GW1 has finished in order to populate GF and GA plots.
-gw1_finished = events_df.loc[events_df['id'] == 1, 'finished'].values[0]
+if selected_display == 'Fixture Difficulty Rating':
+    # Create sliders for game week selection
+    slider1, slider2 = st.slider('Gameweek Range:', int(ct_gw), gw_max, [int(ct_gw), int(ct_gw + 10)], 1)
 
-# Fixture Difficulty Rating (FDR) seaborn plot
-if select_choice == 'Fixture Difficulty Rating (FDR)':
-    st.write('The higher up the heatmap, the \'easier\' (according to the FDRs) the games in the selected GW range.')
-    filtered_fixt_df = team_fdr_df.iloc[:, slider1-1: slider2]
-    filtered_team_df = team_fixt_df.iloc[:, slider1-1: slider2]
-    new_fixt_df = filtered_fixt_df.copy()
-    new_fixt_df.loc[:, 'fixt_ave'] = new_fixt_df.mean(axis=1)
-    new_fixt_df.sort_values('fixt_ave', ascending=True, inplace=True)
-    new_fixt_df.drop('fixt_ave', axis=1, inplace=True)
-    new_fixt_df = new_fixt_df.astype(float)
-    filtered_team_df = filtered_team_df.loc[new_fixt_df.index]
-    
-    fig, ax = plt.subplots()
-    if new_fixt_df[slider1].nunique() == 4:
-        flatui = ["#00ff78", "#eceae6", "#ff0057", "#920947"]
-    else:
-        flatui = ["#147d1b", "#00ff78", "#eceae6", "#ff0057", "#920947"]
-    if radio_choice == 'Fixture':
-        annot_df = filtered_team_df
-        sns.heatmap(new_fixt_df,
-                    ax=ax,
-                    cmap=flatui,
-                    annot=False,
-                    fmt='',
-                    cbar=False,
-                    linewidth=1)
-        new_fixt_df.fillna(0, inplace=True)
-        for i in range(len(annot_df)):
-            for j in range(slider2 - slider1+1):
-                val = annot_df[slider1 + j][list(annot_df[slider1 + j].keys())[i]]
-                g_val = new_fixt_df[slider1 + j][list(new_fixt_df[slider1 + j].keys())[i]]
-                if len(val) > 7:
-                    fontsize = annot_size/1.5
-                else:
-                    fontsize = annot_size 
-                text_color = 'white' if flatui[int(g_val-2)] == flatui[-1] or flatui[int(g_val-2)] == flatui[-2]  or flatui[int(g_val-2)] == '#147d1b' else 'black'
-                plt.text(j + 0.5, i + 0.5, val, ha='center', va='center', fontsize=fontsize, color=text_color)
-    else:
-        annot_df = new_fixt_df
-        sns.heatmap(new_fixt_df, ax=ax, annot=True, fmt='', cmap=flatui,
-                    annot_kws={'size': annot_size}, cbar=False, linewidth=1, color='black')
-    ax.set_xticks([x+0.5 for x in range(0, len(range(slider1-1, slider2)))])
-    ax.set_xticklabels(custom_labels, rotation=rotation, ha='center')
-    plt.setp(ax.get_xticklabels(), fontsize=4)
-    ax.set_ylabel('Team')
-    st.write(fig)
+    # Filter FDR matrix based on selected game weeks
+    filtered_fdr_matrix = fdr_matrix[(fdr_matrix['GameWeek'] >= slider1) & (fdr_matrix['GameWeek'] <= slider2)]
 
-# Average Goals Against seaborn plot
-elif select_choice == 'Average Goals Against (GA)':
-    if gw1_finished:
-        st.write('The higher up the heatmap, based on historic averages, the higher chance of scoring in the selected GW range.')
-        filtered_team_df = team_fixt_df.iloc[:, slider1-1: slider2]
-        filtered_ga_df = team_ga_df.iloc[:, slider1-1:slider2]
-        ga_fixt_df = filtered_ga_df.copy()
-        ga_fixt_df.loc[:, 'fixt_ave'] = ga_fixt_df.mean(axis=1)
-        ga_fixt_df.sort_values('fixt_ave', ascending=False, inplace=True)
-        ga_fixt_df.drop('fixt_ave', axis=1, inplace=True)
-        ga_fixt_df = ga_fixt_df.astype(float)
-        filtered_team_df_ga = filtered_team_df.loc[ga_fixt_df.index]
-        
-        fig, ax = plt.subplots()
-        flatui_rev = ["#147d1b", "#00ff78", "#caf4bd", "#eceae6", "#fa8072", "#ff0057",
-                "#920947"][::-1]
-        if radio_choice == 'Fixture':
-            annot_df = filtered_team_df_ga
-            sns.heatmap(ga_fixt_df,
-                        ax=ax,
-                        cmap=flatui_rev,
-                        annot=False,
-                        fmt='',
-                        cbar=False,
-                        linewidth=1)
-            for i in range(len(annot_df)):
-                for j in range(slider2 - slider1+1):
-                    val = annot_df[slider1 + j][list(annot_df[slider1 + j].keys())[i]]
-                    g_val = ga_fixt_df[slider1 + j][list(ga_fixt_df[slider1 + j].keys())[i]]
-                    if len(val) > 7:
-                        fontsize = annot_size/1.5
-                    else:
-                        fontsize = annot_size
-                    hash_color = map_float_to_color(g_val, flatui_rev, ga_fixt_df.min().min(), ga_fixt_df.max().max())
-                    text_color = get_text_color_from_hash(hash_color)
-                    plt.text(j + 0.5, i + 0.5, val, ha='center', va='center', fontsize=fontsize, color=text_color)
+    # Pivot the filtered FDR matrix for styling
+    pivot_fdr_matrix = filtered_fdr_matrix.pivot(index='Team', columns='GameWeek', values='FDR')
+
+    # Rename columns for display purposes
+    pivot_fdr_matrix.columns = [f'GW {col}' for col in pivot_fdr_matrix.columns].copy()
+
+    # Define the custom color mapping for FDR values
+    fdr_colors = {
+        1: ("#257d5a", "black"),
+        2: ("#00ff86", "black"),
+        3: ("#ebebe4", "black"),
+        4: ("#ff005a", "white"),
+        5: ("#861d46", "white"),
+    }
+
+    # Define the custom color mapping for GA and GF
+    ga_gf_colors = {
+        0.0: ("#147d1b", "white"),
+        0.5: ("#00ff78", "black"),
+        1.0: ("#caf4bd", "black"),
+        1.5: ("#eceae6", "black"),
+        2.0: ("#fa8072", "black"),
+        2.5: ("#ff0057", "white"),
+        3.0: ("#920947", "white"), 
+    }
+
+    # Define a coloring function based on the FDR values
+    def color_fdr(value):
+        if value in fdr_colors:
+            background_color, text_color = fdr_colors[value]
+            return f'background-color: {background_color}; color: {text_color}; text-align: center;'
         else:
-            annot_df = ga_fixt_df
-            sns.heatmap(annot_df, ax=ax, annot=True, fmt='', cmap=flatui_rev,
-                        annot_kws={'size': annot_size}, cbar=False, linewidth=1, color='black')
-        ax.set_xticks([x+0.5 for x in range(0, len(range(slider1-1, slider2)))])
-        ax.set_xticklabels(custom_labels, rotation=rotation, ha='center')
-        plt.setp(ax.get_xticklabels(), fontsize=4)
-        ax.set_ylabel('Team')
-        st.write(fig)
-    else:
-        st.write('Please wait until GW1 concludes to view Goals Against metrics.')
+            return ''
 
-# Average Goals For seaborn plot
-elif select_choice == 'Average Goals For (GF)':
-    if gw1_finished:
-        st.write('The higher up the heatmap, based on historic averages, the higher chance of keeping a clean sheet in the selected GW range.')
-        filtered_team_df = team_fixt_df.iloc[:, slider1-1: slider2]
-        filtered_gf_df = team_gf_df.iloc[:, slider1-1:slider2]
-        gf_fixt_df = filtered_gf_df.copy()
-        gf_fixt_df.loc[:, 'fixt_ave'] = gf_fixt_df.mean(axis=1)
-        gf_fixt_df.sort_values('fixt_ave', ascending=True, inplace=True)
-        gf_fixt_df.drop('fixt_ave', axis=1, inplace=True)
-        gf_fixt_df = gf_fixt_df.astype(float)
-        filtered_team_df_gf = filtered_team_df.loc[gf_fixt_df.index]
-        
-        fig, ax = plt.subplots()
-        flatui = ["#147d1b", "#00ff78", "#caf4bd", "#eceae6", "#fa8072", "#ff0057",
-                "#920947"]
-        if radio_choice == 'Fixture':
-            annot_df = filtered_team_df_gf
-            sns.heatmap(gf_fixt_df,
-                        ax=ax,
-                        cmap=flatui,
-                        annot=False,
-                        fmt='',
-                        cbar=False,
-                        linewidth=1)
-            for i in range(len(annot_df)):
-                for j in range(slider2 - slider1+1):
-                    val = annot_df[slider1 + j][list(annot_df[slider1 + j].keys())[i]]
-                    g_val = gf_fixt_df[slider1 + j][list(gf_fixt_df[slider1 + j].keys())[i]]
-                    if len(val) > 7:
-                        fontsize = annot_size/1.5
-                    else:
-                        fontsize = annot_size
-                    hash_color = map_float_to_color(g_val, flatui, gf_fixt_df.min().min(), gf_fixt_df.max().max())
-                    text_color = get_text_color_from_hash(hash_color)
-                    plt.text(j + 0.5, i + 0.5, val, ha='center', va='center', fontsize=fontsize, color=text_color)
-        else:
-            annot_df = gf_fixt_df
-            sns.heatmap(annot_df, ax=ax, annot=True, fmt='', cmap=flatui,
-                        annot_kws={'size': annot_size}, cbar=False, linewidth=1, color='black')
-        ax.set_xticks([x+0.5 for x in range(0, len(range(slider1-1, slider2)))])
-        ax.set_xticklabels(custom_labels, rotation=rotation, ha='center')
-        plt.setp(ax.get_xticklabels(), fontsize=4)
-        ax.set_ylabel('Team')
-        st.write(fig)
-    else:
-        st.write('Please wait until GW1 concludes to view Goals Against metrics.')
+    # Define a coloring function for GA/GF values
+    def color_ga_gf(value):
+        # Round the value to two decimal places for display and color mapping
+        rounded_value = round(value, 2)
+        closest_key = min(ga_gf_colors, key=lambda x: abs(x - rounded_value))
+        background_color, text_color = ga_gf_colors[closest_key]
+        return f'background-color: {background_color}; color: {text_color}; text-align: center;'
+
+    # Create a selection choice for metrics
+    selected_metric = st.selectbox(
+        "Select Metric:",
+        ("Fixture Difficulty Rating (FDR)", "Average Goals Against (GA)", "Average Goals For (GF)")
+    )
+
+    # Create a function to get the appropriate DataFrame based on the selection
+    def get_selected_data(metric):
+        if metric == "Fixture Difficulty Rating (FDR)":
+            return pivot_fdr_matrix.copy() 
+        elif metric == "Average Goals Against (GA)":
+            ga_matrix = ga.melt(id_vars='Team', var_name='GameWeek', value_name='GA')
+            # Round GA values to 2 decimal places
+            ga_matrix['GA'] = ga_matrix['GA'].astype(float).round(2) 
+            filtered_ga_matrix = ga_matrix[(ga_matrix['GameWeek'] >= slider1) & (ga_matrix['GameWeek'] <= slider2)]
+            pivot_ga_matrix = filtered_ga_matrix.pivot(index='Team', columns='GameWeek', values='GA')
+            pivot_ga_matrix.columns = [f'GW {col}' for col in pivot_ga_matrix.columns].copy()
+            return pivot_ga_matrix.copy()  
+        elif metric == "Average Goals For (GF)":
+            gf_matrix = gf.melt(id_vars='Team', var_name='GameWeek', value_name='GF')
+            # Round GF values to 2 decimal places
+            gf_matrix['GF'] = gf_matrix['GF'].astype(float).round(2) 
+            filtered_gf_matrix = gf_matrix[(gf_matrix['GameWeek'] >= slider1) & (gf_matrix['GameWeek'] <= slider2)]
+            pivot_gf_matrix = filtered_gf_matrix.pivot(index='Team', columns='GameWeek', values='GF') 
+            pivot_gf_matrix.columns = [f'GW {col}' for col in pivot_gf_matrix.columns].copy() 
+            return pivot_gf_matrix.copy() 
+
+    # Get the selected data
+    selected_data = get_selected_data(selected_metric)
+
+    # Display the styled table based on the selected metric
+    if selected_metric == "Fixture Difficulty Rating (FDR)":
+        styled_table = selected_data.style.applymap(color_fdr)  # Use applymap for cell-wise styling
+
+        # Display the title with the selected metric (FDR)
+        st.markdown(
+            f"**{selected_metric} for the Next {slider2-slider1+1} Gameweeks (Starting GW {slider1})**",
+            unsafe_allow_html=True
+        )
+
+        # FDR Legend (only if FDR is selected)
+        with st.sidebar:
+            st.markdown("**Legend (FDR):**")
+            for fdr, (bg_color, font_color) in fdr_colors.items():
+                st.sidebar.markdown(
+                    f"<span style='background-color: {bg_color}; color: {font_color}; padding: 2px 5px; border-radius: 3px;'>"
+                    f"{fdr} - {'Very Easy' if fdr == 1 else 'Easy' if fdr == 2 else 'Medium' if fdr == 3 else 'Difficult' if fdr == 4 else 'Very Difficult'}"
+                    f"</span>",
+                    unsafe_allow_html=True,
+                )
+    else:  # For GA and GF
+        styled_table = selected_data.style.applymap(color_ga_gf)  # Use applymap for cell-wise styling
+
+        # Display the title with the selected metric (GA or GF)
+        st.markdown(
+            f"**{selected_metric} for the Next {slider2-slider1+1} Gameweeks (Starting GW {slider1})**",
+            unsafe_allow_html=True
+        )
+
+        # GA/GF Legend (only if GA or GF is selected)
+        with st.sidebar:
+            st.markdown("**Legend (GA/GF):**")
+            for ga_gf, (bg_color, font_color) in ga_gf_colors.items():
+                st.sidebar.markdown(
+                    f"<span style='background-color: {bg_color}; color: {font_color}; padding: 2px 5px; border-radius: 3px;'>"
+                    f"{ga_gf:.1f} - {ga_gf + 0.4:.1f}"  # Display the range
+                    f"</span>",
+                    unsafe_allow_html=True,
+                )
+
+    # Streamlit app to display the styled table (outside the if/else)
+    st.write(styled_table)
+
+
+elif selected_display == 'Premier League Fixtures':
+    time=get_user_timezone()
+
+    saaaa=get_fixture_data()
+    fixtures_df = pd.DataFrame(saaaa)
+    fixtures_df.drop(columns='stats', inplace=True)
+    teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
+    team_name_mapping = pd.Series(teams_df.name.values, index=teams_df.id).to_dict()
+    fixtures_df['team_a'] = fixtures_df['team_a'].replace(team_name_mapping)
+    fixtures_df['team_h'] = fixtures_df['team_h'].replace(team_name_mapping)
+    fixtures_df = fixtures_df.drop(columns=['pulse_id'])
+    fixtures_df['datetime'] = pd.to_datetime(fixtures_df['kickoff_time'], utc=True)
+    fixtures_df['local_time'] = fixtures_df['datetime'].dt.tz_convert(time).dt.strftime('%A %d %B %Y %H:%M')
+    fixtures_df['local_date'] = fixtures_df['datetime'].dt.tz_convert(time).dt.strftime('%d %A %B %Y')
+    fixtures_df['local_hour'] = fixtures_df['datetime'].dt.tz_convert(time).dt.strftime('%H:%M')
+    gw_minn = min(fixtures_df['event'])
+    gw_maxx = max(fixtures_df['event'])
+    selected_gw = st.slider('Select Gameweek:', gw_minn, gw_maxx, ct_gw) 
+        # --- Display Fixtures for Selected Gameweek ---
+    st.markdown(
+        f"<h2 style='text-align: center;'>Premier League Fixtures - Gameweek {selected_gw}</h2>",
+        unsafe_allow_html=True,
+    )
+
+    current_gameweek_fixtures = fixtures_df[fixtures_df['event'] == selected_gw]
+    grouped_fixtures = current_gameweek_fixtures.groupby('local_date')
+
+        # Use centered container for fixtures
+    with st.container():
+        for date, matches in grouped_fixtures:
+            st.markdown(f"<h3 style='text-align: center;'>{date}</h3>", unsafe_allow_html=True)
+            for _, match in matches.iterrows():
+                # Create a fixture box for each match
+                with st.container():
+                    # Create columns with NO spacing 
+                    col1, col2, col3 = st.columns([1, 1, 1])
+
+                    # --- Column 1: Home Team (right-aligned) ---
+                    with col1:
+                        st.markdown(
+                            f"<div style='text-align: right;'>{match['team_h']}</div>", 
+                            unsafe_allow_html=True
+                        )
+
+                    # --- Column 2: Score/VS (centered) ---
+                    with col2:
+                        if match['finished']:
+                            st.markdown(
+                                f"<div style='text-align: center;'>{int(match['team_h_score'])} - {int(match['team_a_score'])}</div>", 
+                                unsafe_allow_html=True
+                            )
+                        else:
+                            st.markdown(
+                                "<div style='text-align: center;'>vs</div>", 
+                                unsafe_allow_html=True
+                            )
+
+                    # --- Column 3: Away Team (left-aligned) ---
+                    with col3:
+                        st.markdown(
+                            f"<div style='text-align: left;'>{match['team_a']}</div>", 
+                            unsafe_allow_html=True
+                        )
+
+                    # --- Kickoff Time (centered below) ---
+                    if not match['finished']:
+                        st.markdown(
+                            f"<p style='text-align: center;'>Kickoff: {match['local_hour']}</p>",
+                            unsafe_allow_html=True
+                        )
+define_sidebar()
