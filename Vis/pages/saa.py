@@ -31,11 +31,11 @@ val.rename(columns={0: 'Team'}, inplace=True)
 teams = pd.concat([sui['Team'], val['Team']]).unique()
 
 # Create FDR matrix directly from 'val' DataFrame
-fdr_matrix = sui.copy()
+fdr_matrix = val.copy()
 fdr_matrix = fdr_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='FDR')
 
 # Convert FDR values to integers
-fdr_matrix['FDR'] = fdr_matrix['FDR'].astype(str)
+fdr_matrix['FDR'] = fdr_matrix['FDR'].astype(int)
 
 # Define the custom color mapping for FDR values
 fdr_colors = {
@@ -50,7 +50,7 @@ fdr_colors = {
 def color_fdr(value):
     if value in fdr_colors:
         background_color, text_color = fdr_colors[value]
-        return f'background-color: {background_color}; color: {text_color};'
+        return f'background-color: {background_color}; color: {text_color}; text-align: center;'
     else:
         return ''  # No style for undefined values
 
