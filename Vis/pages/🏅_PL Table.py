@@ -155,24 +155,15 @@ max_ovr = rating_df["ovr_rating" + ("_" + model_type if model_type else "")].max
 max_o = rating_df["o_rating" + ("_" + model_type if model_type else "")].max()
 max_d = rating_df["d_rating" + ("_" + model_type if model_type else "")].max()
 
-#rating_df["ovr_rating" + ("_" + model_type if model_type else "")] /= max_ovr
-#rating_df["o_rating" + ("_" + model_type if model_type else "")] /= max_o
-#rating_df["d_rating" + ("_" + model_type if model_type else "")] /= max_d
 
 # Set up columns for layout
 df_col, chart_col = st.columns([24, 24])  # Adjust the column sizes as needed
 
 # Configure progress columns for ratings
 column_config = {
-    "ovr_rating" + ("_" + model_type if model_type else ""): st.column_config.ProgressColumn(
-        label="Overall Rating", format="%d",max_value=rating_df["ovr_rating" + ("_" + model_type if model_type else "")].max()
-    ),
-    "o_rating" + ("_" + model_type if model_type else ""): st.column_config.ProgressColumn(
-        label="Offensive Rating", format="%d"
-    ),
-    "d_rating" + ("_" + model_type if model_type else ""): st.column_config.ProgressColumn(
-        label="Defensive Rating", format="%d"
-    ),
+    "ovr_rating" + ("_" + model_type if model_type else ""): st.column_config.ProgressColumn(label="Overall Rating"),
+    "o_rating" + ("_" + model_type if model_type else ""): st.column_config.ProgressColumn(label="Offensive Rating"),
+    "d_rating" + ("_" + model_type if model_type else ""): st.column_config.ProgressColumn(label="Defensive Rating"),
 }
 
 with df_col:
