@@ -226,8 +226,7 @@ elif selected_display == '⚔️Premier League Fixtures':
 
     st.write(f"Detected Timezone: {timezone}")
     st.write(f"Current time in {timezone}: {current_time.strftime('%Y-%m-%d %H:%M:%S')}")
-    time=get_user_timezone()
-    st.write(time)
+
     saaaa=get_fixture_data()
     fixtures_df = pd.DataFrame(saaaa)
     fixtures_df.drop(columns='stats', inplace=True)
@@ -240,9 +239,9 @@ elif selected_display == '⚔️Premier League Fixtures':
     fixtures_df['team_h'] = fixtures_df['team_h'].replace(team_name_mapping)
     fixtures_df = fixtures_df.drop(columns=['pulse_id'])
     fixtures_df['datetime'] = pd.to_datetime(fixtures_df['kickoff_time'], utc=True)
-    fixtures_df['local_time'] = fixtures_df['datetime'].dt.tz_convert(time).dt.strftime('%A %d %B %Y %H:%M')
-    fixtures_df['local_date'] = fixtures_df['datetime'].dt.tz_convert(time).dt.strftime('%d %A %B %Y')
-    fixtures_df['local_hour'] = fixtures_df['datetime'].dt.tz_convert(time).dt.strftime('%H:%M')
+    fixtures_df['local_time'] = fixtures_df['datetime'].dt.tz_convert(timezone).dt.strftime('%A %d %B %Y %H:%M')
+    fixtures_df['local_date'] = fixtures_df['datetime'].dt.tz_convert(timezone).dt.strftime('%d %A %B %Y')
+    fixtures_df['local_hour'] = fixtures_df['datetime'].dt.tz_convert(timezone).dt.strftime('%H:%M')
     gw_minn = min(fixtures_df['event'])
     gw_maxx = max(fixtures_df['event'])
     selected_gw = st.slider('Select Gameweek:', gw_minn, gw_maxx, ct_gw) 
