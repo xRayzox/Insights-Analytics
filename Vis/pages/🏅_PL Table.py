@@ -150,7 +150,7 @@ elif model_option == "Away":
 # Display DataFrame
 rating_df = teams_df.sort_values("ovr_rating" + ("_" + model_type if model_type else ""), ascending=False)
 st.dataframe(
-    rating_df[["team_name", "ovr_rating" + ("_" + model_type if model_type else ""),
+    rating_df[["name", "ovr_rating" + ("_" + model_type if model_type else ""),
                 "o_rating" + ("_" + model_type if model_type else ""),
                 "d_rating" + ("_" + model_type if model_type else "")]],
     hide_index=True,
@@ -178,7 +178,7 @@ scatter_plot = (
             scale=alt.Scale(domain=y_range),
         ),
         tooltip=[
-            alt.Tooltip("team_name", title="Team"),
+            alt.Tooltip("name", title="Team"),
             alt.Tooltip("ovr_rating" + ("_" + model_type if model_type else ""), title="Overall Rating", format="d"),
             alt.Tooltip("o_rating" + ("_" + model_type if model_type else ""), title="Offensive Rating", format="d"),
             alt.Tooltip("d_rating" + ("_" + model_type if model_type else ""), title="Defensive Rating", format=".2f"),
