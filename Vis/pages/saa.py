@@ -36,7 +36,7 @@ val.columns = ['Team'] + [f'GW {col}' for col in range(1, len(val.columns))]
 fdr_matrix = val.melt(id_vars='Team', var_name='GameWeek', value_name='FDR')
 
 # Convert FDR values to integers
-fdr_matrix['FDR'] = fdr_matrix['FDR'].astype(int)
+fdr_matrix['FDR'] = fdr_matrix['FDR'].astype(str)
 
 # Create a filtered FDR matrix for styling
 filtered_fdr_matrix = sui.copy()
