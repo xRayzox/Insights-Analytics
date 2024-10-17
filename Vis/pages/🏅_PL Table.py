@@ -121,7 +121,6 @@ st.dataframe(league_df.style.applymap(color_fixtures, subset=new_fixt_cols) \
 
 ####################################################
 
-# Title and information
 st.title("Team Offensive / Defensive Ratings")
 st.caption("Compare overall, offensive, and defensive strengths of teams.")
 
@@ -144,17 +143,20 @@ if model_option == "Overall":
     model_type = ""
 elif model_option == "Home":
     model_type = "home"
-elif model_option == "Away":
+else:  # "Away"
     model_type = "away"
 
 # Display DataFrame
 rating_df = teams_df.sort_values("ovr_rating" + ("_" + model_type if model_type else ""), ascending=False)
-st.dataframe(
-    rating_df[["name", "ovr_rating" + ("_" + model_type if model_type else ""),
-                "o_rating" + ("_" + model_type if model_type else ""),
-                "d_rating" + ("_" + model_type if model_type else "")]],
-    hide_index=True,
-)
+df_col, chart_col = st.columns([2, 3])  # Adjust the column sizes as needed
+
+with df_col:
+    st.dataframe(
+        rating_df[["name", "ovr_rating" + ("_" + model_type if model_type else ""),
+                    "o_rating" + ("_" + model_type if model_type else ""),
+                    "d_rating" + ("_" + model_type if model_type else "")]],
+        hide_index=True,
+    )
 
 # Scatter plot setup
 x_domain = [0, teams_df["d_rating" + ("_" + model_type if model_type else "")].max() + 0.1]
@@ -162,8 +164,8 @@ y_range = [0, teams_df["o_rating" + ("_" + model_type if model_type else "")].ma
 
 # Create scatter plot with reduced size
 scatter_plot = (
-    alt.Chart(teams_df, height=500, width=600)  # Adjust height and width here
-    .mark_point(filled=True, size=200)
+    alt.Chart(teams_df, height=400, width=500)  # Adjust height and width here
+    .mark_point(filled=True, size=100)
     .encode(
         x=alt.X(
             "d_rating" + ("_" + model_type if model_type else ""),
@@ -200,4 +202,5 @@ def_mean_line = (
 )
 
 # Combine all chart elements
-st.altair_chart(scatter_plot + off_mean_line + def_mean_line, use_container_width=True)
+with chart_col:
+    st.altair_chart(scatter_plot + off_mean_line + def_mean_line, use_container_width=True)
