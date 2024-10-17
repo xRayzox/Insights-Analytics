@@ -8,7 +8,7 @@ import os
 import sys
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
-from fpl_utils.fpl_api_collection import (
+from fpl_api_collection import (
     get_bootstrap_data,
     get_current_gw,
     get_fixt_dfs,
