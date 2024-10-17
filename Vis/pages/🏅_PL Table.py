@@ -159,8 +159,8 @@ with df_col:
     )
 
 # Scatter plot setup
-x_domain = [0, teams_df["d_rating" + ("_" + model_type if model_type else "")].max() + 0.1]
-y_range = [0, teams_df["o_rating" + ("_" + model_type if model_type else "")].max() + 100]
+x_domain = [teams_df["d_rating" + ("_" + model_type if model_type else "")].min()-0.1, teams_df["d_rating" + ("_" + model_type if model_type else "")].max() + 0.1]
+y_range = [teams_df["o_rating" + ("_" + model_type if model_type else "")].min()-100, teams_df["o_rating" + ("_" + model_type if model_type else "")].max() + 100]
 
 # Create scatter plot with reduced size
 scatter_plot = (
