@@ -137,11 +137,6 @@ teams_df["ovr_rating"] = (teams_df["ovr_rating_home"] + teams_df["ovr_rating_awa
 teams_df["o_rating"] = (teams_df["o_rating_home"] + teams_df["o_rating_away"]) / 2
 teams_df["d_rating"] = (teams_df["d_rating_home"] + teams_df["d_rating_away"]) / 2
 
-# Convert relevant columns to native Python types
-teams_df["ovr_rating"] = teams_df["ovr_rating"].astype(float)
-teams_df["o_rating"] = teams_df["o_rating"].astype(float)
-teams_df["d_rating"] = teams_df["d_rating"].astype(float)
-
 # Options for ratings
 model_option = st.selectbox("Data Source", ("Overall", "Home", "Away"))
 if model_option == "Overall":
@@ -156,50 +151,14 @@ rating_df = teams_df.sort_values("ovr_rating" + ("_" + model_type if model_type 
 df_col, chart_col = st.columns([24, 24])  # Adjust the column sizes as needed
 
 with df_col:
-    # ratings dataframe
-    sss = st.dataframe(
-        rating_df.sort_values("ovr_rating" + ("_" + model_type if model_type else ""), ascending=False).copy(),
-        column_config={
-            "name": "name",
-            "ovr_rating_" + model_type: st.column_config.ProgressColumn(
-                "Overall Rating",
-                help="= Offensive Rating / Defensive Rating",
-                format="%d",
-                max_value=rating_df["ovr_rating_" + model_type].max() if model_type else rating_df["ovr_rating"].max(),
-            ),
-            "o_rating_" + model_type: st.column_config.ProgressColumn(
-                "Offensive Rating",
-                help="Higher is better",
-                format="%d",
-                max_value=rating_df["o_rating_" + model_type].max() if model_type else rating_df["o_rating"].max(),
-            ),
-            "d_rating_" + model_type: st.column_config.ProgressColumn(
-                "Defensive Rating",
-                help="Lower is better",
-                format="%.2f",
-                max_value=rating_df["d_rating_" + model_type].max() if model_type else rating_df["d_rating"].max(),
-            ),
-        },
-        column_order=(
-            "team_short",
-            "ovr_rating_" + model_type,
-            "o_rating_" + model_type,
-            "d_rating_" + model_type,
-        ),
+    # Display the DataFrame with full width
+    st.dataframe(
+        rating_df[["name", "ovr_rating" + ("_" + model_type if model_type else ""),
+                    "o_rating" + ("_" + model_type if model_type else ""),
+                    "d_rating" + ("_" + model_type if model_type else "")]],
         hide_index=True,
-        on_select="rerun",
-        use_container_width=True,
-        height=737,
+        use_container_width=True  # This makes the DataFrame take full width
     )
-
-# Identify selected teams to highlight
-selected_team = sss.selection.rows
-selected_team_id = (
-    rating_df.sort_values("ovr_rating" + ("_" + model_type if model_type else ""), ascending=False)
-    .iloc[selected_team]["id"]
-    .to_list()
-)
-
 
 # Scatter plot setup
 x_domain = [teams_df["d_rating" + ("_" + model_type if model_type else "")].min()-0.1, teams_df["d_rating" + ("_" + model_type if model_type else "")].max() + 0.1]
