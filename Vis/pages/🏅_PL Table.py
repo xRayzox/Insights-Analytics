@@ -113,5 +113,6 @@ for col in new_fixt_cols:
         if max_length > 7:
             league_df.loc[league_df[col].str.len() <= 7, col] = league_df[col].str.pad(width=max_length+9, side='both', fillchar=' ')
 
-st.dataframe(league_df.style.applymap(color_fixtures, subset=new_fixt_cols) \
-             .format(subset=float_cols, formatter='{:.2f}'), height=740, width=None)
+st.write(st.dataframe(league_df.style.applymap(color_fixtures, subset=new_fixt_cols) \
+             .format(subset=float_cols, formatter='{:.2f}'), height=740, width=None).to_html(escape=False), unsafe_allow_html=True)
+
