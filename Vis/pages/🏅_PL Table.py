@@ -157,12 +157,12 @@ st.dataframe(
 )
 
 # Scatter plot setup
-x_domain = [0, teams_df["d_rating" + ("_" + model_type if model_type else "")].max() ]
-y_range = [0, teams_df["o_rating" + ("_" + model_type if model_type else "")].max() ]
+x_domain = [0, teams_df["d_rating" + ("_" + model_type if model_type else "")].max() + 0.1]
+y_range = [0, teams_df["o_rating" + ("_" + model_type if model_type else "")].max() + 100]
 
-# Create scatter plot
+# Create scatter plot with reduced size
 scatter_plot = (
-    alt.Chart(teams_df, height=750)
+    alt.Chart(teams_df, height=500, width=600)  # Adjust height and width here
     .mark_point(filled=True, size=200)
     .encode(
         x=alt.X(
