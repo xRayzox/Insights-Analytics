@@ -14,14 +14,14 @@ from fpl_api_collection import (
     get_fixt_dfs,
     get_league_table
 )
-from fpl_utils.fpl_utils import (
+from fpl_utils import (
     define_sidebar,
     get_annot_size,
     map_float_to_color,
     get_text_color_from_hash,
     get_rotation
 )
-from fpl_utils.fpl_params import (
+from fpl_params import (
     TIMEZONES_BY_CONTINENT,
     AUTHOR_CONTINENT,
     AUTHOR_CITY
