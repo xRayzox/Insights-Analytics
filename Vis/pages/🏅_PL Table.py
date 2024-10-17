@@ -155,24 +155,28 @@ max_ovr = rating_df["ovr_rating" + ("_" + model_type if model_type else "")].max
 max_o = rating_df["o_rating" + ("_" + model_type if model_type else "")].max()
 max_d = rating_df["d_rating" + ("_" + model_type if model_type else "")].max()
 
+# Normalize ratings for progress bars
+rating_df["norm_ovr_rating"] = rating_df["ovr_rating" + ("_" + model_type if model_type else "")] / max_ovr if max_ovr > 0 else 0
+rating_df["norm_o_rating"] = rating_df["o_rating" + ("_" + model_type if model_type else "")] / max_o if max_o > 0 else 0
+rating_df["norm_d_rating"] = rating_df["d_rating" + ("_" + model_type if model_type else "")] / max_d if max_d > 0 else 0
 
 # Set up columns for layout
 df_col, chart_col = st.columns([24, 24])  # Adjust the column sizes as needed
 
 # Configure progress columns for ratings
 column_config = {
-    "ovr_rating" + ("_" + model_type if model_type else ""): st.column_config.ProgressColumn(label="Overall Rating"),
-    "o_rating" + ("_" + model_type if model_type else ""): st.column_config.ProgressColumn(label="Offensive Rating"),
-    "d_rating" + ("_" + model_type if model_type else ""): st.column_config.ProgressColumn(label="Defensive Rating"),
+    "norm_ovr_rating": st.column_config.ProgressColumn(label="Overall Rating"),
+    "norm_o_rating": st.column_config.ProgressColumn(label="Offensive Rating"),
+    "norm_d_rating": st.column_config.ProgressColumn(label="Defensive Rating"),
 }
 
 with df_col:
     # Display the DataFrame with full width using progress columns
     st.dataframe(
         rating_df[["name", 
-                    "ovr_rating" + ("_" + model_type if model_type else ""),
-                    "o_rating" + ("_" + model_type if model_type else ""),
-                    "d_rating" + ("_" + model_type if model_type else "")]],
+                    "norm_ovr_rating",
+                    "norm_o_rating",
+                    "norm_d_rating"]],
         hide_index=True,
         use_container_width=True,  
         column_config=column_config  
