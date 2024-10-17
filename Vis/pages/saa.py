@@ -30,12 +30,9 @@ val.rename(columns={0: 'Team'}, inplace=True)
 # Combine teams from both DataFrames
 teams = pd.concat([sui['Team'], val['Team']]).unique()
 
-# Melt both DataFrames for easier manipulation
-sui_melted = sui.melt(id_vars='Team', var_name='GameWeek', value_name='Fixture')
-val_melted = val.melt(id_vars='Team', var_name='GameWeek', value_name='FDR')
-
-# Merge the melted DataFrames on 'Team' and 'GameWeek'
-fdr_matrix = pd.merge(sui_melted, val_melted, on=['Team', 'GameWeek'])
+# Create FDR matrix directly from 'val' DataFrame
+fdr_matrix = val.copy()
+fdr_matrix = fdr_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='FDR')
 
 # Convert FDR values to integers
 fdr_matrix['FDR'] = fdr_matrix['FDR'].astype(int)
@@ -49,23 +46,23 @@ fdr_colors = {
     5: ("#861d46", "white"),
 }
 
-# Define a coloring function based on the FDR values
-def color_fdr(val):
-    if val in fdr_colors:
-        background_color, text_color = fdr_colors[val]
+# Define a coloring function based on the FDR values using the custom color mapping
+def color_fdr(value):
+    if value in fdr_colors:
+        background_color, text_color = fdr_colors[value]
         return f'background-color: {background_color}; color: {text_color}; text-align: center;'
     else:
         return ''  # No style for undefined values
 
-# Apply styling to the 'Fixture' column based on 'FDR'
-fdr_matrix['StyledFixture'] = fdr_matrix.apply(lambda row: f'<span style="{color_fdr(row["FDR"])}">{row["Fixture"]}</span>', axis=1)
+# Create a filtered FDR matrix for styling
+filtered_fdr_matrix = fdr_matrix.pivot(index='Team', columns='GameWeek', values='FDR')
 
-# Pivot the fdr_matrix for display, using 'StyledFixture'
-filtered_fdr_matrix = fdr_matrix.pivot(index='Team', columns='GameWeek', values='StyledFixture')
+# Rename columns for display purposes
 filtered_fdr_matrix.columns = [f'GW {col}' for col in filtered_fdr_matrix.columns]
 
-# Streamlit app
-st.title("Fixture Difficulty Rating (FDR) Matrix")
+# Apply the styling to the filtered FDR matrix
+styled_filtered_fdr_table = filtered_fdr_matrix.style.applymap(color_fdr)
 
-# Use st.markdown to render the styled HTML
-st.markdown(filtered_fdr_matrix.to_html(), unsafe_allow_html=True)
+# Streamlit app to display the styled table
+st.title("Fixture Difficulty Rating (FDR) Matrix")
+st.write(styled_filtered_fdr_table)
