@@ -90,13 +90,9 @@ def color_fdr(value):
 
 # Define a coloring function for GA/GF values
 def color_ga_gf(value):
-    # Round value for display ONLY
-    displayed_value = round(value, 2) 
-
-    closest_key = min(ga_gf_colors, key=lambda x: abs(x - value)) # Use original 'value' for key finding
+    closest_key = min(ga_gf_colors, key=lambda x: abs(x - value))
     background_color, text_color = ga_gf_colors[closest_key]
-    return f'background-color: {background_color}; color: {text_color}; text-align: center; display: ":.2f"'.format(displayed_value)
-   
+    return f'background-color: {background_color}; color: {text_color}; text-align: center;'
 
 # Create a selection choice for metrics
 selected_metric = st.selectbox(
