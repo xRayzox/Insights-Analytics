@@ -7,6 +7,7 @@ import datetime as datetime
 import os
 import sys
 
+# Adjust the path to your FPL API collection as necessary
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'FPL')))
 from fpl_api_collection import (
     get_bootstrap_data,
@@ -27,27 +28,15 @@ from fpl_params import (
     AUTHOR_CITY
 )
 
-
 team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
-
 events_df = pd.DataFrame(get_bootstrap_data()['events'])
 
 gw_min = min(events_df['id'])
 gw_max = max(events_df['id'])
 
 ct_gw = get_current_gw()
-
-
-sui=team_fixt_df.reset_index()
-
-
-val=team_fdr_df.reset_index()
-
-
-import pandas as pd
-import streamlit as st
-
-# Assuming 'sui' and 'val' DataFrames are already defined and structured correctly
+sui = team_fixt_df.reset_index()
+val = team_fdr_df.reset_index()
 
 # Prepare for FDR Matrix Calculation
 teams = sui[0]  # List of teams from the fixtures DataFrame
@@ -95,15 +84,18 @@ filtered_fdr_matrix = fdr_matrix.loc[:, f'GW{selected_gameweek}':f'GW{selected_g
 styled_fdr_table = filtered_fdr_matrix.style.applymap(color_fdr)
 
 # Display FDR Matrix
-st.write(st.markdown(f"**Fixture Difficulty Rating (FDR) for Gameweek {selected_gameweek + 1} onwards:**"))
-st.write(styled_fdr_table)
+st.write(f"**Fixture Difficulty Rating (FDR) for Gameweek {selected_gameweek + 1} onwards:**")
+st.dataframe(styled_fdr_table)  # Use st.dataframe instead of st.write
+
+# Define Colors for the Legend
 colors = {
-            1: ('#257d5a', 'black'),
-            2: ('#00ff86', 'black'),
-            3: ('#ebebe4', 'black'),
-            4: ('#ff005a', 'white'),
-            5: ('#861d46', 'white'),
-        }
+    1: ('#257d5a', 'black'),
+    2: ('#00ff86', 'black'),
+    3: ('#ebebe4', 'black'),
+    4: ('#ff005a', 'white'),
+    5: ('#861d46', 'white'),
+}
+
 # FDR Legend
 st.sidebar.markdown("**Legend:**")
 for fdr, (bg_color, font_color) in colors.items():
