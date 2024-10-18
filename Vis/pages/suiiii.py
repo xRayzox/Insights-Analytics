@@ -188,8 +188,7 @@ with col2:
         manager_team_df['vs'] = manager_team_df['vs'].map(teams_df.set_index('id')['short_name'])
         manager_team_df['vs'] = manager_team_df['vs'].fillna('BLANK')
 
-        # Strip any leading/trailing spaces in column names
-        manager_team_df.columns = manager_team_df.columns.str.strip()
+
 
         # Check column names for debugging
         st.write("Columns in DataFrame:", manager_team_df.columns.tolist())
