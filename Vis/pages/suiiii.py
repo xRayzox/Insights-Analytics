@@ -198,6 +198,7 @@ with col3:
         # Initialize the positions dictionary
         # --- Formation Setup ---
         formation = "4-3-3"
+        st.write(formation)
         num_players = {'GK': 1, 'DEF': 4, 'MID': 3, 'FWD': 3}
         positions = {pos: [] for pos in num_players}
 
