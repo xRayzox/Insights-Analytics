@@ -13,6 +13,8 @@ from PIL import Image
 from urllib.request import urlopen
 import random
 from matplotlib.patches import FancyBboxPatch
+from matplotlib.textpath import TextPath
+from mplfooty import VerticalPitch
 
 
 
@@ -271,13 +273,16 @@ if fpl_id and gw_complete_list:
             ax_image = pitch.inset_image(y_image, x_image, image, height=10, ax=ax)
             # Add a rounded rectangle behind the player's name
             player_name = row['Player']  # Assuming the DataFrame has a 'Player' column
-            rect_width = 6  # Width of the rectangle
-            rect_height = 2.5  # Height of the rectangle
-            rounding = 1  # Rounding of the rectangle corners
+            fontsize = 8 
+            tp = TextPath(0, 0, row['Player'], size=fontsize)  
+            bb = tp.get_extents()
+            rect_width = bb.width * 1.1 # Add a little padding (10% here)
+            rect_height = 2.5 
+            rounding = 1 
 
             # Create a rounded rectangle patch
             rounded_rect = FancyBboxPatch(
-                (x_image - rect_width / 2, y_image - rect_height - 8),  # Position below image
+                (x_image - rect_width / 2, y_image - rect_height - 8),  
                 rect_width,
                 rect_height,
                 boxstyle=f"round,pad=0.2,rounding_size={rounding}",
