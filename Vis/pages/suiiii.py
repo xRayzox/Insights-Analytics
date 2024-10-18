@@ -236,15 +236,15 @@ with col3:
         positions = []
         for index, row in lineup.iterrows():
             if row['Pos'] == 'GKP':
-                positions.append(0)  # GKP position
+                positions.append(1)  # GKP position (change to 1)
             elif row['Pos'] == 'DEF':
-                positions.append(1 + def_len)  # DEF position
+                positions.append(2 + (3 - def_len))  # DEF positions: 2, 3, 4
                 def_len -= 1  # Decrement remaining DEF count
             elif row['Pos'] == 'MID':
-                positions.append(6 + mid_len)  # MID position
+                positions.append(5 + (4 - mid_len))  # MID positions: 5, 6, 7, 8
                 mid_len -= 1  # Decrement remaining MID count
             elif row['Pos'] == 'FWD':
-                positions.append(11 + fwd_len)  # FWD position
+                positions.append(9 + (3 - fwd_len))  # FWD positions: 9, 10, 11
                 fwd_len -= 1  # Decrement remaining FWD count
 
         
