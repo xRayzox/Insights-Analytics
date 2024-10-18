@@ -214,8 +214,8 @@ with col3:
         pitch = VerticalPitch(pitch_color='grass', line_color='white', stripe=True, corner_arcs=True, half=True, pitch_length=pitch_length, pitch_width=pitch_width)
         fig, ax = pitch.draw(figsize=(8, 8), tight_layout=False)  # Adjust 
 
-        ax.set_xlim(0, pitch_width)
-        ax.set_ylim(pitch_length, 0)  # Invert y-axis
+        ax.set_xlim(60, pitch_width)
+        ax.set_ylim(pitch_length, 60)  # Invert y-axis
 
         # Calculate y-coordinates for each zone starting from the top
         y_gkp = 0  # Goalkeeper zone starts at the top
