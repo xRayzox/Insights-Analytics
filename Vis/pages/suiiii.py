@@ -196,7 +196,7 @@ with col3:
         # Separate players into lineup and bench
         lineup = test[test['Played'] == True]
         bench = test[test['Played'] == False]
-
+        lineup
         # Count players in each position
         gkp_count = lineup[lineup['Pos'] == 'GKP'].count()
         def_count = lineup[lineup['Pos'] == 'DEF'].count()
