@@ -238,7 +238,7 @@ with col3:
         y_image = pitch_length - gkp_height + (gkp_height / 2)  # Centered vertically in the GKP zone
 
         # Insert the image
-        ax_image = pitch.inset_image(x_image, y_image, image, height=10, ax=ax)
+        ax_image = pitch.inset_image(x_image, y_image-20, image, height=10, ax=ax)
         st.pyplot(fig)
                     
 ###############################################################################################################
