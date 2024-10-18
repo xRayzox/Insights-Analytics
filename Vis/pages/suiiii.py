@@ -289,7 +289,7 @@ if fpl_id and gw_complete_list:
                 rect_height,
                 boxstyle=f"round,pad=0.2,rounding_size={rounding}",
                 facecolor='white',
-                edgecolor='black',
+                edgecolor='white',
                 linewidth=1,
                 alpha=0.8
             )
