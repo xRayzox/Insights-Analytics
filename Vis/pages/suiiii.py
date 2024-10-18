@@ -7,11 +7,12 @@ import sys
 import os
 import matplotlib.pyplot as plt
 import numpy as np
-from mplsoccer import Pitch, VerticalPitch
-import matplotlib as mpl
-import matplotlib.pyplot as plt
+from mplsoccer import VerticalPitch
 import matplotlib.patches as patches
+from PIL import Image
+from urllib.request import urlopen
 import random
+
 
 pd.set_option('future.no_silent_downcasting', True)
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'FPL')))
@@ -195,47 +196,74 @@ with col3:
         manager_team_df['vs'] = manager_team_df['vs'].fillna('BLANK')
         
         test = manager_team_df.reset_index()
-        st.write(test)
-        # Initialize the positions dictionary
-        # --- Formation Setup ---
-        # --- Position Calculation ---
-        x_positions = {
-            'GK': [0.5],
-            'DEF': [0.2, 0.4, 0.6, 0.8],
-            'MID': [0.3, 0.5, 0.7],
-            'FWD': [0.25, 0.5, 0.75]
-        }
 
-        y_positions = {
-            'GK': [0.1],
-            'DEF': [0.3] * 4,
-            'MID': [0.5] * 3,
-            'FWD': [0.8] * 3
-        }
-        num_players = {'GK': 1, 'DEF': 4, 'MID': 3, 'FWD': 3}
-        positions = {pos: [] for pos in num_players}
-        for pos, num in num_players.items():
-            for i in range(num):
-                positions[pos].append((x_positions[pos][i], y_positions[pos][i]))
 
-        # --- Plotting ---
-        pitch = VerticalPitch(pitch_color='grass', line_color='white', stripe=True, corner_arcs=True, half=True)
-        fig, ax = pitch.draw()
+        # Define the pitch size
+        pitch_length = 60  # Set to desired length
+        pitch_width = 60    # Set to desired width
 
-        marker_style = {'GK': 'x', 'DEF': 'o', 'MID': 'o', 'FWD': 'o'}
-        marker_color = {'GK': 'red', 'DEF': 'blue', 'MID': 'yellow', 'FWD': 'green'}
+        # Define heights for each zone
+        gkp_height = pitch_length / 5         # Height of Goalkeeper Zone
+        def_height = pitch_length / 5         # Height of Defenders Zone
+        mid_height = pitch_length / 5 * 1.5   # Height of Midfielders Zone (twice the height)
+        fwd_height = pitch_length / 5         # Height of Forwards Zone
 
-        for pos, coords in positions.items():
-            x, y = zip(*coords)
-            ax.scatter(x, y, label=pos, marker=marker_style[pos], color=marker_color[pos], s=200, zorder=3)
-            for x_c, y_c in coords:  # Add circles around markers
-                circle = plt.Circle((x_c, y_c), 0.05, color=marker_color[pos], fill=False, linewidth=2, zorder=2)
-                ax.add_patch(circle)
+        # Define space between zones
+        space_between_zones = 2  # Space between zones
 
-        ax.legend(loc='upper left')
+        # Create a vertical pitch with specified size
+        pitch = VerticalPitch(pitch_color='grass', line_color='white', stripe=True, corner_arcs=True, half=True, pitch_length=pitch_length, pitch_width=pitch_width)
+        fig, ax = pitch.draw(figsize=(8, 8), tight_layout=False)  # Adjust figsize as needed
 
-        # Display the plot using Streamlit
-        st.pyplot(fig)
+        # Draw pitch zones
+        # Goalkeeper Zone (at the top)
+        gkp_zone = patches.Rectangle((0, pitch_length - gkp_height + pitch_length), pitch_width+(pitch_width/3), gkp_height, linewidth=1, edgecolor='blue', facecolor='lightblue', alpha=0.5)
+        ax.add_patch(gkp_zone)
+
+        # Defenders Zone (below the goalkeeper)
+        def_zone = patches.Rectangle((0, pitch_length - gkp_height - def_height - space_between_zones + pitch_length), pitch_width+(pitch_width/3), def_height, linewidth=1, edgecolor='black', facecolor='blue', alpha=0.5)
+        ax.add_patch(def_zone)
+
+        # Midfielders Zone (below the defenders)
+        mid_zone = patches.Rectangle((0, pitch_length - gkp_height - def_height - mid_height - space_between_zones * 2 + pitch_length), pitch_width+(pitch_width/3), mid_height, linewidth=1, edgecolor='black', facecolor='blue', alpha=0.5)
+        ax.add_patch(mid_zone)
+
+        # Forwards Zone (at the bottom)
+        fwd_zone = patches.Rectangle((0, pitch_length - gkp_height - def_height - mid_height - fwd_height - space_between_zones * 3 + pitch_length), pitch_width+(pitch_width/3), fwd_height, linewidth=1, edgecolor='orange', facecolor='lightcoral', alpha=0.5)
+        ax.add_patch(fwd_zone)
+
+        # Draw reference lines for x and y axes outside the pitch
+        ax.axhline(0, color='red', linewidth=0.5, linestyle='--', label='Y=0')  # Horizontal line at Y=0
+        ax.axhline(pitch_length, color='red', linewidth=0.5, linestyle='--', label=f'Y={pitch_length}')  # Horizontal line at Y=pitch_length
+        ax.axvline(0, color='blue', linewidth=0.5, linestyle='--', label='X=0')  # Vertical line at X=0
+        ax.axvline(pitch_width, color='blue', linewidth=0.5, linestyle='--', label=f'X={pitch_width}')  # Vertical line at X=pitch_width
+
+        # Filter for players that have played
+        played_players = test[test['Played']]
+
+        # Place players on the pitch
+        for i, row in played_players.iterrows():
+            # Load the image
+            img = Image.open(urlopen(row['Code']))
+            
+            if row['Pos'] == 'GKP':
+                # Place goalkeeper
+                ax.imshow(img, extent=(pitch_width/2 - 1.5, pitch_width/2 + 1.5, pitch_length - gkp_height + pitch_length/2 - 1.5, pitch_length - gkp_height + pitch_length/2 + 1.5))
+            elif row['Pos'] == 'DEF':
+                # Place defenders
+                ax.imshow(img, extent=(pitch_width/2 - 1.5, pitch_width/2 + 1.5, pitch_length - gkp_height - def_height/2 - space_between_zones - (i - 1) * (def_height + space_between_zones) + pitch_length/2 - 1.5, pitch_length - gkp_height - def_height/2 - space_between_zones - (i - 1) * (def_height + space_between_zones) + pitch_length/2 + 1.5))
+            elif row['Pos'] == 'MID':
+                # Place midfielders
+                ax.imshow(img, extent=(pitch_width/2 - 1.5, pitch_width/2 + 1.5, pitch_length - gkp_height - def_height - mid_height/2 - space_between_zones * 2 - (i - 1) * (mid_height + space_between_zones) + pitch_length/2 - 1.5, pitch_length - gkp_height - def_height - mid_height/2 - space_between_zones * 2 - (i - 1) * (mid_height + space_between_zones) + pitch_length/2 + 1.5))
+            elif row['Pos'] == 'FWD':
+                # Place forwards
+                ax.imshow(img, extent=(pitch_width/2 - 1.5, pitch_width/2 + 1.5, pitch_length - gkp_height - def_height - mid_height - fwd_height/2 - space_between_zones * 3 - (i - 1) * (fwd_height + space_between_zones) + pitch_length/2 - 1.5, pitch_length - gkp_height - def_height - mid_height - fwd_height/2 - space_between_zones * 3 - (i - 1) * (fwd_height + space_between_zones) + pitch_length/2 + 1.5))
+
+        # Add legend for reference lines
+        ax.legend()
+
+        plt.show()
+
         
 ###############################################################################################################
 with col2:
