@@ -239,7 +239,7 @@ if fpl_id and gw_complete_list:
         positions = {
             'GKP': pitch_length + 2.5 * zone_height,
             'DEF': pitch_length + 5/6 * zone_height,
-            'MID': pitch_length - 2 * zone_height,
+            'MID': pitch_length + 2 * zone_height,
             'FWD': pitch_length - zone_height
         }
         df=test[test['Played']==True]
