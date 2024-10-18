@@ -236,17 +236,18 @@ with col3:
         positions = []
         for index, row in lineup.iterrows():
             if row['Pos'] == 'GKP':
-                positions.append(1)  # GKP position (change to 1)
+                positions.append(1)  # GKP position
             elif row['Pos'] == 'DEF':
                 positions.append(2 + (3 - def_len))  # DEF positions: 2, 3, 4
-                def_len -= 1  # Decrement remaining DEF count
+                def_len -= 1
             elif row['Pos'] == 'MID':
                 positions.append(5 + (4 - mid_len))  # MID positions: 5, 6, 7, 8
-                mid_len -= 1  # Decrement remaining MID count
+                mid_len -= 1
             elif row['Pos'] == 'FWD':
                 positions.append(9 + (3 - fwd_len))  # FWD positions: 9, 10, 11
-                fwd_len -= 1  # Decrement remaining FWD count
-
+                fwd_len -= 1
+            # Ignore unsupported positions
+        print(lineup['Pos'].unique())  # Check the unique positions
         
         
         # Draw player names on the pitch
