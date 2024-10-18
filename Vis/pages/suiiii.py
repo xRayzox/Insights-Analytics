@@ -274,7 +274,7 @@ if fpl_id and gw_complete_list:
             # Add a rounded rectangle behind the player's name
             player_name = row['Player']  # Assuming the DataFrame has a 'Player' column
             fontsize = 8 
-            tp = TextPath(0, 0, row['Player'], size=fontsize)  
+            tp = TextPath(0, 0, row['Player'])  
             bb = tp.get_extents()
             rect_width = bb.width * 1.1 # Add a little padding (10% here)
             rect_height = 2.5 
