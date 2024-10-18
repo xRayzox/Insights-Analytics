@@ -228,22 +228,26 @@ with col3:
 
         # Assign positions based on played players
         positions = []
+        def_line = 2   # Starting position for defenders
+        mid_line = 7   # Starting position for midfielders
+        fwd_line = 12  # Starting position for forwards
+
         for index, row in lineup.iterrows():
             if row['Pos'] == 'GKP':
-                positions.append(1)  # GKP position
+                positions.append(1)
             elif row['Pos'] == 'DEF':
-                positions.append(2 + (3 - def_len))  # DEF positions: 2, 3, 4
-                def_len -= 1
+                positions.append(def_line)
+                def_line += 1  # Increment for the next defender
             elif row['Pos'] == 'MID':
-                positions.append(5 + (4 - mid_len))  # MID positions: 5, 6, 7, 8
-                mid_len -= 1
+                positions.append(mid_line)
+                mid_line += 1  # Increment for the next midfielder
             elif row['Pos'] == 'FWD':
-                positions.append(9 + (3 - fwd_len))  # FWD positions: 9, 10, 11
-                fwd_len -= 1
+                positions.append(fwd_line)
+                fwd_line += 1  # Increment for the next forward
             # Ignore unsupported positions
 
         for i, row in lineup.iterrows():
-            pitch.annotate(row['Player'], (0.5, positions[i]/14), ax=ax, va='center', ha='center') # Adjust vertical spacing
+            pitch.annotate(row['Player Name'], (0.5, positions[i]/14), ax=ax, va='center', ha='center', fontsize=12)
 
         # Display formation
         st.write(f"Formation: {formation}")
