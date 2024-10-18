@@ -199,7 +199,7 @@ with col3:
         test = manager_team_df.reset_index()
 
 
-        #Define the figure size
+        # Define the figure size
         fig_size = (8, 8)  # Set to desired size (width, height)
 
         # Create a vertical pitch with specified size
@@ -210,46 +210,42 @@ with col3:
         pitch_length = fig.get_figheight() * 10  # Scale as needed (10 is a scaling factor)
         pitch_width = fig.get_figwidth() * 10  # Scale as needed
 
-        # Define heights for each zone based on pitch length
-        zone_height = pitch_length / 6  # Common height for all zones
-        space_between_zones = 2  # Space between zones
+        # Define placements for each position zone
+        zone_height = pitch_length / 6  # Height for each zone
+        space_between_zones = 1  # Space between zones
 
-        # Draw pitch zones
-        # Goalkeeper Zone (at the top)
-        gkp_zone = patches.Rectangle((0, pitch_length + 2*zone_height), pitch_width, zone_height,
-                                    linewidth=1, edgecolor='blue', facecolor='lightblue', alpha=0.5)
-        ax.add_patch(gkp_zone)
+        # Position calculations
+        positions = {
+            'GKP': pitch_length + 2 * zone_height,
+            'DEF': pitch_length + zone_height - space_between_zones,
+            'MID': pitch_length - 1/zone_height  - space_between_zones * 2,
+            'FWD': pitch_length - zone_height - space_between_zones * 3
+        }
+        df=test
+        # Loop through DataFrame and place images
+        for index, row in df.iterrows():
+            IMAGE_URL = row['code']
+            image = Image.open(urlopen(IMAGE_URL))
 
-        # Defenders Zone (below the goalkeeper)
-        def_zone = patches.Rectangle((0, pitch_length + zone_height - space_between_zones),
-                                    pitch_width, zone_height, linewidth=1, edgecolor='black', facecolor='blue', alpha=0.5)
-        ax.add_patch(def_zone)
+            pos = row['Pos']
+            if pos == 'GKP':
+                y_image = positions['GKP']
+                x_image = pitch_width / 2  # Centered horizontally
+            elif pos == 'DEF':
+                y_image = positions['DEF']
+                x_image = pitch_width / (len(df[df['Pos'] == 'DEF']) + 1) * (index % 5 + 1)  # Distribute DEF
+            elif pos == 'MID':
+                y_image = positions['MID']
+                x_image = pitch_width / (len(df[df['Pos'] == 'MID']) + 1) * (index % 5 + 1)  # Distribute MID
+            elif pos == 'FWD':
+                y_image = positions['FWD']
+                x_image = pitch_width / (len(df[df['Pos'] == 'FWD']) + 1) * (index % 3 + 1)  # Distribute FWD
 
-        # Midfielders Zone (below the defenders)
+            # Draw the image on the pitch
+            ax_image = pitch.inset_image(y_image, x_image, image, height=10, ax=ax)
 
-        mid_zone = patches.Rectangle((0, pitch_length + 1/zone_height  - space_between_zones * 2),
-                                    pitch_width, zone_height, linewidth=1, edgecolor='black', facecolor='blue', alpha=0.5)
-        ax.add_patch(mid_zone)
-
-        # Forwards Zone (starting from the bottom and going up)
-        fwd_zone = patches.Rectangle((0, pitch_length - zone_height - space_between_zones * 3), pitch_width, zone_height,
-                                    linewidth=1, edgecolor='orange', facecolor='lightcoral', alpha=0.5)
-        ax.add_patch(fwd_zone)
-
-        # Invert the y-axis
-        
-
-        """
-        # Centering image in the GKP zone
-        IMAGE_URL = 'https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_3-110.png'
-        image = Image.open(urlopen(IMAGE_URL))
-        x_image = (pitch_width / 2) + (pitch_width / 3) / 2  # Centered horizontally in the GKP zone
-        y_image = y_gkp - gkp_height / 2  # Centered vertically in the GKP zone
-
-        # Insert the image
-        ax_image = pitch.inset_image(x_image, y_image, image, height=10, ax=ax)
-        """
-        st.pyplot(fig)
+        # Show the pitch with player images
+        plt.show()
 
 
 ###############################################################################################################
