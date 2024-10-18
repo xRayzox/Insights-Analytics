@@ -241,7 +241,7 @@ with col3:
         ax.add_patch(fwd_zone)
 
         # Filter for players that have played
-        played_players = test[test['Played']]
+        played_players = test[test['Played'] == True]
 
         # Place players on the pitch
         for pos, width, space_factor in [('GKP', gkp_width, 0),
