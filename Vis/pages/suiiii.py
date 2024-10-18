@@ -223,33 +223,47 @@ with col3:
         pitch = VerticalPitch(goal_type='box')
         fig, ax = pitch.draw(figsize=(6, 8.72))
 
-        # Assign positions based on played players
-        positions = []
-        def_line_start = 3   # Starting position for defenders
-        mid_line_start = 8   # Starting position for midfielders
-        fwd_line_start = 12  # Starting position for forwards
-
-        # Set vertical positions for players based on the number of players in each category
+        # Assign position IDs for each player
+        position_ids = []
         for index, row in lineup.iterrows():
             if row['Pos'] == 'GKP':
-                positions.append(1)  # Goalkeeper at position 1
+                position_ids.append(1)  # Position ID for the goalkeeper
             elif row['Pos'] == 'DEF':
-                positions.append(def_line_start)
-                def_line_start += 1  # Increment for the next defender
+                position_ids.append(3 + (len([p for p in position_ids if p == 3])))  # Increment for the next defender
             elif row['Pos'] == 'MID':
-                positions.append(mid_line_start)
-                mid_line_start += 1  # Increment for the next midfielder
+                position_ids.append(8 + (len([p for p in position_ids if p == 8])))  # Increment for the next midfielder
             elif row['Pos'] == 'FWD':
-                positions.append(fwd_line_start)
-                fwd_line_start += 1  # Increment for the next forward
-            # Ignore unsupported positions
+                position_ids.append(12 + (len([p for p in position_ids if p == 12])))  # Increment for the next forward
 
-        # Adjust the positions to be evenly spaced on the pitch
-        positions_normalized = [pos / 14 for pos in positions]
+        # Normalize positions for pitch plotting
+        normalized_positions = [pos / 14 for pos in position_ids]
 
-        # Annotate players on the pitch
-        for i, row in lineup.iterrows():
-            pitch.annotate(row['Player'], (0.5, positions_normalized[i]), ax=ax, va='center', ha='center', fontsize=12)
+        # Create the text annotations for players
+        ax_text = pitch.formation(
+            formation,
+            positions=position_ids,
+            kind='text',
+            text=lineup['Player'].str.replace(' ', '\n'),
+            va='center',
+            ha='center',
+            fontsize=16,
+            ax=ax
+        )
+
+        # Scatter markers for players
+        mpl.rcParams['hatch.linewidth'] = 3
+        mpl.rcParams['hatch.color'] = '#a50044'
+        ax_scatter = pitch.formation(
+            formation,
+            positions=position_ids,
+            kind='scatter',
+            c='#004d98',
+            hatch='||',
+            linewidth=3,
+            s=500,
+            xoffset=-8,
+            ax=ax
+        )
 
         # Display formation
         st.write(f"Formation: {formation}")
@@ -257,7 +271,6 @@ with col3:
         # Display the pitch
         st.pyplot(fig)
 
-        
         
         
 ###############################################################################################################
