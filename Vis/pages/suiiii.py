@@ -137,8 +137,8 @@ with col1:
 
 ###############################################################################################################
 with col2:
-    st.write(manager_name + '\'s Past Results')
-    st.write('Best ever finish: ')
+    # st.write(manager_name + '\'s Past Results')
+    # st.write('Best ever finish: ')
     col = st.selectbox(
         manager_name + '\'s Past Results', ['Season', 'Pts', 'OR']
         )
