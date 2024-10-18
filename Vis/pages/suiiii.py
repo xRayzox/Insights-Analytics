@@ -268,7 +268,7 @@ if fpl_id and gw_complete_list:
             # Draw the image on the pitch
             ax_image = pitch.inset_image(y_image, x_image, image, height=10, ax=ax)
             player_name = row['Player']  # Assuming the DataFrame has a 'Name' column
-            ax.text(x_image, y_image - 10, player_name, fontsize=8, ha='center')  # Adjust -10 to position the text below the image
+            ax.text(x_image, y_image - 5, player_name, fontsize=8, ha='center')  # Adjust -10 to position the text below the image
 
         # Show the pitch with player images
         plt.show()
