@@ -44,7 +44,6 @@ ele_df = pd.DataFrame(ele_data)
 # Map element types and teams
 ele_df['element_type'] = ele_df['element_type'].map(ele_types_df.set_index('id')['singular_name_short'])
 ele_df['code'] = ele_df['team'].apply(lambda x: f"https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_{x}-110.png")
-st.write(ele_df)
 ele_df['team'] = ele_df['team'].map(teams_df.set_index('id')['short_name'])
 
 col1, col2, col3 = st.columns([3, 2, 10])
@@ -135,7 +134,7 @@ with col3:
     if fpl_id and gw_complete_list:
         man_picks_data = get_manager_team_data(fpl_id, fpl_gw)
         manager_team_df = pd.DataFrame(man_picks_data['picks'])
-        ele_cut = ele_df[['id', 'web_name', 'team', 'element_type']].copy()
+        ele_cut = ele_df[['id', 'web_name', 'team', 'element_type','code']].copy()
         ele_cut.rename(columns={'id': 'element'}, inplace=True)
         
         manager_team_df = manager_team_df.merge(ele_cut, how='left', on='element')
