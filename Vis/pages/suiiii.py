@@ -238,7 +238,7 @@ if fpl_id and gw_complete_list:
 
         # Position calculations
         positions = {
-            'GKP': pitch_length + 3 * zone_height-space_between_zones,
+            'GKP': pitch_length + 3 * zone_height+1/2 * zone_height,
             'DEF': pitch_length + zone_height - space_between_zones,
             'MID': pitch_length - 1/zone_height  - space_between_zones * 2,
             'FWD': pitch_length - zone_height - space_between_zones * 3
