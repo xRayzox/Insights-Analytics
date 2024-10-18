@@ -224,7 +224,7 @@ with col3:
 
         # Draw pitch zones
         # Goalkeeper Zone (at the top)
-        gkp_zone = patches.Rectangle((0, y_gkp - gkp_height), pitch_width+ (pitch_width / 3) , gkp_height, linewidth=1, edgecolor='blue', facecolor='lightblue', alpha=0.5)
+        gkp_zone = patches.Rectangle((0, y_gkp), pitch_width+ (pitch_width / 3) , gkp_height, linewidth=1, edgecolor='blue', facecolor='lightblue', alpha=0.5)
         ax.add_patch(gkp_zone)
 
         # Defenders Zone (below the goalkeeper)
@@ -242,7 +242,7 @@ with col3:
         # Invert the y-axis
         ax.set_ylim(pitch_length, 0)  # Set y-axis limits and invert
 
-
+        """
         # Centering image in the GKP zone
         IMAGE_URL = 'https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_3-110.png'
         image = Image.open(urlopen(IMAGE_URL))
@@ -251,6 +251,7 @@ with col3:
 
         # Insert the image
         ax_image = pitch.inset_image(x_image, y_image, image, height=10, ax=ax)
+        """
         st.pyplot(fig)
 
 
