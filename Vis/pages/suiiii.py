@@ -295,7 +295,7 @@ if fpl_id and gw_complete_list:
             ax.add_patch(rounded_rect)
 
             # Add the player's name centered below the image
-            ax.text(x_image, y_image - rect_height - 8, player_name, fontsize=8, ha='center', color='black')
+            ax.text(x_image, y_image - rect_height - 7, player_name, fontsize=8, ha='center', color='black')
 
 
         # Show the pitch with player images
