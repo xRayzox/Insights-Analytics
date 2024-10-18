@@ -118,76 +118,11 @@ with col1:
         except ValueError:
             st.write('Please enter a valid FPL ID.')
 ###############################################################################################################
-import matplotlib.pyplot as plt
-import numpy as np
-import streamlit as st
-
-# Function to draw the football pitch
-def draw_pitch():
-    fig, ax = plt.subplots(figsize=(10, 6))
-    # Pitch Outline & Centre Line
-    plt.plot([0, 0, 100, 100, 0], [0, 100, 100, 0, 0], color="black")
-    plt.plot([50, 50], [0, 100], color="black")
-    
-    # Left Penalty Area
-    plt.plot([0, 16.5, 16.5, 0], [100 - 16.5, 100 - 16.5, 16.5, 16.5], color="black")
-    plt.plot([100, 100 - 16.5, 100 - 16.5, 100], [100 - 16.5, 100 - 16.5, 16.5, 16.5], color="black")
-    
-    # Circles
-    centre_circle = plt.Circle((50, 50), 9.15, color="black", fill=False)
-    centre_spot = plt.Circle((50, 50), 0.8, color="black")
-    ax.add_patch(centre_circle)
-    ax.add_patch(centre_spot)
-    
-    # Goal Area
-    plt.plot([0, 5.5, 5.5, 0], [100 - 5.5, 100 - 5.5, 5.5, 5.5], color="black")
-    plt.plot([100, 100 - 5.5, 100 - 5.5, 100], [100 - 5.5, 100 - 5.5, 5.5, 5.5], color="black")
-    
-    # Set axis limits
-    ax.set_xlim(0, 100)
-    ax.set_ylim(0, 100)
-    plt.axis('off')
-    
-    return fig, ax
-
-# Create a mapping for positions on the pitch based on element_type
-def plot_team_on_pitch(df):
-    fig, ax = draw_pitch()
-
-    positions = {
-        'GKP': (5, 50),   # Goalkeeper
-        'DEF': [(20, 15), (20, 35), (20, 65), (20, 85)],  # Defenders
-        'MID': [(50, 15), (50, 35), (50, 65), (50, 85)],  # Midfielders
-        'FWD': [(80, 40), (80, 60)]   # Forwards
-    }
-
-    # Assign positions based on element_type
-    for index, row in df.iterrows():
-        pos_type = row['Pos']
-        pos = positions[pos_type]
-        if pos is None:
-            continue  # Skip if position type is not mapped
-
-        # For defenders and midfielders, we need to spread the players out
-        if isinstance(pos, list):
-            pos = pos.pop(0)
-        
-        ax.text(pos[0], pos[1], f"{row.name}\n{row['GWP']} pts", fontsize=12, ha='center', color='blue')
-        
-        # Handle captain and vice-captain annotations
-        if "(C)" in row.name:
-            ax.text(pos[0], pos[1]-3, 'C', fontsize=8, color='red')
-        elif "(VC)" in row.name:
-            ax.text(pos[0], pos[1]-3, 'VC', fontsize=8, color='orange')
-
-    st.pyplot(fig)
-
-# Streamlit layout
 with col2:
     events_df = pd.DataFrame(get_bootstrap_data()['events'])
     complete_df = events_df.loc[events_df['deadline_time'] < str(dt.datetime.now())]
     gw_complete_list = sorted(complete_df['id'].tolist(), reverse=True)
-
+    
     fpl_gw = st.selectbox('Team on Gameweek', gw_complete_list)
 
     if fpl_id and gw_complete_list:
@@ -195,9 +130,9 @@ with col2:
         manager_team_df = pd.DataFrame(man_picks_data['picks'])
         ele_cut = ele_df[['id', 'web_name', 'team', 'element_type']].copy()
         ele_cut.rename(columns={'id': 'element'}, inplace=True)
-
+        
         manager_team_df = manager_team_df.merge(ele_cut, how='left', on='element')
-
+        
         # Pull GW data for each player
         gw_players_list = manager_team_df['element'].tolist()
         pts_list = []
@@ -219,16 +154,16 @@ with col2:
         manager_team_df.loc[((manager_team_df['multiplier'] == 2) |
                              (manager_team_df['multiplier'] == 3)),
                             'total_points'] *= manager_team_df['multiplier']
-
+        
         manager_team_df.loc[(manager_team_df['is_captain'] == True) & (manager_team_df['multiplier'] == 2),
                             'web_name'] += ' (C)'
-
+        
         manager_team_df.loc[manager_team_df['multiplier'] == 3,
                             'web_name'] += ' (TC)'
-
+        
         manager_team_df.loc[manager_team_df['is_vice_captain'] == True,
                             'web_name'] += ' (VC)'
-
+        
         manager_team_df.loc[manager_team_df['multiplier'] != 0, 'Played'] = True
 
         # Fill NaN values
@@ -251,9 +186,8 @@ with col2:
         manager_team_df['vs'] = manager_team_df['vs'].map(teams_df.set_index('id')['short_name'])
         manager_team_df['vs'] = manager_team_df['vs'].fillna('BLANK')
 
-        # Plot the team on the pitch
-        plot_team_on_pitch(manager_team_df)
-
+        # Show DataFrame in Streamlit
+        manager_team_df
 
 
 ###############################################################################################################
