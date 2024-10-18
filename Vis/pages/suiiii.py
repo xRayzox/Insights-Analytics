@@ -195,62 +195,35 @@ with col3:
         manager_team_df['vs'] = manager_team_df['vs'].fillna('BLANK')
         
         test = manager_team_df.reset_index()
-        # Function to plot football pitch
-        def plot_pitch(lineup_df):
-            # Create a figure
-            fig, ax = plt.subplots(figsize=(10, 7))
-            
-            # Pitch Outline & Centre Line
-            plt.plot([0, 0, 1, 1, 0], [0, 1, 1, 0, 0], color="black")  # Outer lines
-            plt.plot([0.5, 0.5], [0, 1], color="black")  # Centre line
-            plt.plot([0, 0.5, 0.5, 0], [0.25, 0.25, 0.75, 0.75], color="black")  # Goal box
-            plt.plot([1, 0.5, 0.5, 1], [0.25, 0.25, 0.75, 0.75], color="black")  # Goal box
-            
-            # Plot players
-            for idx, row in lineup_df.iterrows():
-                if row['Played']:
-                    # Starting lineup positions
-                    ax.text(0.1 + 0.2 * (idx % 4), 0.1 + 0.3 * (idx // 4), row['Player'], 
-                            fontsize=12, ha='center', va='center', bbox=dict(facecolor='lightgreen', edgecolor='black', boxstyle='round,pad=0.3'))
-                else:
-                    # Bench players positions
-                    ax.text(0.8, 0.1 + 0.2 * (idx % 5), row['Player'], 
-                            fontsize=10, ha='center', va='center', bbox=dict(facecolor='lightgray', edgecolor='black', boxstyle='round,pad=0.3'))
+        # Filter players based on formation requirements
+        goalkeeper = test[(test['Pos'] == 'GKP') & (test['Played'])]
+        defenders = test[(test['Pos'] == 'DEF') & (test['Played'])].head(3)
+        midfielders = test[(test['Pos'] == 'MID') & (test['Played'])].head(4)
+        forwards = test[(test['Pos'] == 'FWD') & (test['Played'])].head(3)
 
-            plt.xlim(-0.1, 1.1)
-            plt.ylim(-0.1, 1.1)
-            plt.axis('off')
-            plt.title('Football Lineup', fontsize=16)
-            plt.show()
+        # Combine players into a single lineup DataFrame
+        lineup = pd.concat([goalkeeper, defenders, midfielders, forwards])
 
-        # Filter DataFrame for players who played (starting lineup)
-        lineup_df = test[test['Played'] == True]
+        # Verify the lineup
+        print(lineup)
 
-        # Plot the pitch with the lineup
-        plot_pitch(lineup_df)       
+        # Create a pitch and plot the lineup
+        pitch = Pitch()
+        fig, ax = pitch.draw()
 
-        
-        
-###############################################################################################################
-with col2:
-    # st.write(manager_name + '\'s Past Results')
-    # st.write('Best ever finish: ')
-    col = st.selectbox(
-        manager_name + '\'s Past Results', ['Season', 'Pts', 'OR']
-        )
-    hist_data = get_manager_history_data(fpl_id)
-    hist_df = pd.DataFrame(hist_data['past'])
-    if len(hist_df) == 0:
-        st.write('No previous season history to display.')
-    else:
-        hist_df.columns=['Season', 'Pts', 'OR']
-        if col == 'OR':
-            hist_df.sort_values(col, ascending=True, inplace=True)
-        else:
-            hist_df.sort_values(col, ascending=False, inplace=True)
-        hist_df.set_index('Season', inplace=True)
-        st.dataframe(hist_df, height=562)
+        # Add players to the pitch
+        for idx, row in lineup.iterrows():
+            if row['Pos'] == 'GKP':
+                x, y = pitch.get_location(0.5, 0.05)
+            elif row['Pos'] == 'DEF':
+                x, y = pitch.get_location(0.25 + (idx - 1) * 0.1, 0.3)  # Adjust for 3 DEF
+            elif row['Pos'] == 'MID':
+                x, y = pitch.get_location(0.25 + (idx - 4) * 0.15, 0.5)  # Adjust for 4 MID
+            elif row['Pos'] == 'FWD':
+                x, y = pitch.get_location(0.25 + (idx - 8) * 0.2, 0.7)  # Adjust for 3 FWD
+            ax.text(x, y, row['Player'], fontsize=10, ha='center', va='center')
 
+        plt.show()
 
 if fpl_id == '':
     st.write('')
