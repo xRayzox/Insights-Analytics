@@ -188,10 +188,10 @@ with col2:
         manager_team_df['vs'] = manager_team_df['vs'].map(teams_df.set_index('id')['short_name'])
         manager_team_df['vs'] = manager_team_df['vs'].fillna('BLANK')
 
-
+        test=manager_team_df.reset_index()
 
         # Check column names for debugging
-        st.write("Columns in DataFrame:", manager_team_df.columns.tolist())
+        st.write("Columns in DataFrame:", test.columns.tolist())
 
 
         # Separate players into lineup and bench
