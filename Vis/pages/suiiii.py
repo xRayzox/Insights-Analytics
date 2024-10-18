@@ -199,51 +199,56 @@ with col3:
         test = manager_team_df.reset_index()
 
 
-        # Define the pitch size
-        pitch_length = 60  # Set to desired length
-        pitch_width = 60    # Set to desired width
+        #Define the figure size
+        fig_size = (8, 8)  # Set to desired size (width, height)
 
-        # Define heights for each zone
-        gkp_height = pitch_length / 5         # Height of Goalkeeper Zone
-        def_height = pitch_length / 5         # Height of Defenders Zone
-        mid_height = pitch_length / 5 * 1.5   # Height of Midfielders Zone (twice the height)
-        fwd_height = pitch_length / 5         # Height of Forwards Zone
+        # Create a vertical pitch with specified size
+        pitch = VerticalPitch(pitch_color='grass', line_color='white', stripe=True, corner_arcs=True, half=True)
+        fig, ax = pitch.draw(figsize=fig_size, tight_layout=False)  # Draw the pitch
 
-        # Define space between zones
+        # Extract pitch dimensions from the figure
+        pitch_length = fig.get_figheight() * 10  # Scale as needed (10 is a scaling factor)
+        pitch_width = fig.get_figwidth() * 10  # Scale as needed
+
+        # Define heights for each zone based on pitch length
+        zone_height = pitch_length / 6  # Common height for all zones
         space_between_zones = 2  # Space between zones
-        pitch = VerticalPitch(pitch_color='grass', line_color='white', stripe=True, corner_arcs=True, half=True, pitch_length=pitch_length, pitch_width=pitch_width)
-        fig, ax = pitch.draw(figsize=(8, 8), tight_layout=False)  # Adjust 
-
-        ax.set_xlim(60, pitch_width)
-        ax.set_ylim(pitch_length, 60)  # Invert y-axis
-
-        # Calculate y-coordinates for each zone starting from the top
-        y_gkp = 0  # Goalkeeper zone starts at the top
-        y_def = y_gkp + gkp_height + space_between_zones
-        y_mid = y_def + def_height + space_between_zones
-        y_fwd = y_mid + mid_height + space_between_zones
 
         # Draw pitch zones
         # Goalkeeper Zone (at the top)
-        gkp_zone = patches.Rectangle((0, y_gkp), pitch_width, gkp_height, linewidth=1, edgecolor='blue', facecolor='lightblue', alpha=0.5)
+        gkp_zone = patches.Rectangle((0, pitch_length + 2*zone_height), pitch_width, zone_height,
+                                    linewidth=1, edgecolor='blue', facecolor='lightblue', alpha=0.5)
         ax.add_patch(gkp_zone)
 
         # Defenders Zone (below the goalkeeper)
-        def_zone = patches.Rectangle((0, y_def), pitch_width, def_height, linewidth=1, edgecolor='black', facecolor='blue', alpha=0.5)
+        def_zone = patches.Rectangle((0, pitch_length + zone_height - space_between_zones),
+                                    pitch_width, zone_height, linewidth=1, edgecolor='black', facecolor='blue', alpha=0.5)
         ax.add_patch(def_zone)
 
         # Midfielders Zone (below the defenders)
-        mid_zone = patches.Rectangle((0, y_mid), pitch_width, mid_height, linewidth=1, edgecolor='black', facecolor='blue', alpha=0.5)
+
+        mid_zone = patches.Rectangle((0, pitch_length + 1/zone_height  - space_between_zones * 2),
+                                    pitch_width, zone_height, linewidth=1, edgecolor='black', facecolor='blue', alpha=0.5)
         ax.add_patch(mid_zone)
 
-        # Forwards Zone (at the bottom)
-        fwd_zone = patches.Rectangle((0, y_fwd), pitch_width, fwd_height, linewidth=1, edgecolor='orange', facecolor='lightcoral', alpha=0.5)
+        # Forwards Zone (starting from the bottom and going up)
+        fwd_zone = patches.Rectangle((0, pitch_length - zone_height - space_between_zones * 3), pitch_width, zone_height,
+                                    linewidth=1, edgecolor='orange', facecolor='lightcoral', alpha=0.5)
         ax.add_patch(fwd_zone)
 
-        # Add title and show plot
-        ax.set_title('Vertical Football Pitch with Zones')
-        plt.axis('off')  # Turn off the axis
-        plt.show()
+        # Invert the y-axis
+        
+
+        """
+        # Centering image in the GKP zone
+        IMAGE_URL = 'https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_3-110.png'
+        image = Image.open(urlopen(IMAGE_URL))
+        x_image = (pitch_width / 2) + (pitch_width / 3) / 2  # Centered horizontally in the GKP zone
+        y_image = y_gkp - gkp_height / 2  # Centered vertically in the GKP zone
+
+        # Insert the image
+        ax_image = pitch.inset_image(x_image, y_image, image, height=10, ax=ax)
+        """
         st.pyplot(fig)
 
 
