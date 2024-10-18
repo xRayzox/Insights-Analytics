@@ -223,7 +223,7 @@ with col3:
         pitch = VerticalPitch(goal_type='box')
         fig, ax = pitch.draw(figsize=(6, 8.72))
 
-        # Assign position IDs for each player
+        # Assign position IDs for each player based on the 3-4-3 formation
         position_ids = []
         def_line_count = 0
         mid_line_count = 0
@@ -233,14 +233,17 @@ with col3:
             if row['Pos'] == 'GKP':
                 position_ids.append(1)  # Position ID for the goalkeeper
             elif row['Pos'] == 'DEF':
-                position_ids.append(3 + def_line_count)  # Start at position 3 for DEF
-                def_line_count += 1  # Increment for the next defender
+                if def_line_count < 3:  # Only 3 defenders in a 3-4-3 formation
+                    position_ids.append(2 + def_line_count)  # IDs for defenders: 2, 3, 4
+                    def_line_count += 1
             elif row['Pos'] == 'MID':
-                position_ids.append(8 + mid_line_count)  # Start at position 8 for MID
-                mid_line_count += 1  # Increment for the next midfielder
+                if mid_line_count < 4:  # Only 4 midfielders in a 3-4-3 formation
+                    position_ids.append(5 + mid_line_count)  # IDs for midfielders: 5, 6, 7, 8
+                    mid_line_count += 1
             elif row['Pos'] == 'FWD':
-                position_ids.append(12 + fwd_line_count)  # Start at position 12 for FWD
-                fwd_line_count += 1  # Increment for the next forward
+                if fwd_line_count < 3:  # Only 3 forwards in a 3-4-3 formation
+                    position_ids.append(9 + fwd_line_count)  # IDs for forwards: 9, 10, 11
+                    fwd_line_count += 1
 
         # Create the text annotations for players
         ax_text = pitch.formation(
