@@ -251,7 +251,7 @@ with col3:
             if num_players > 0:
                 # Calculate the starting y position for the zone
                 y_position = pitch_length - sum([gkp_height, def_height, mid_height, fwd_height][:space_factor]) - (height / 2)
-
+                st.write(y_position)
                 # Calculate spacing between players
                 spacing = (pitch_width - 3) / (num_players - 1) if num_players > 1 else 0  # Adjust this based on desired spacing
 
@@ -261,9 +261,9 @@ with col3:
                     
                     # Calculate the horizontal position based on index and spacing
                     x_position = (spacing * i) - (pitch_width / 2) + 1.5  # Center the players in the zone
-
+                    st.write(x_position)
                     # Place the image in the calculated position
-                    ax.imshow(img, extent=(0, 0))
+                    ax.imshow(img, extent=(x_position, x_position + 1.5, y_position - 1.5, y_position + 1.5))
 
         # Add legend for reference lines
         ax.legend()
