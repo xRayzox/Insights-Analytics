@@ -240,6 +240,7 @@ with col3:
         ax.axvline(pitch_width, color='blue', linewidth=0.5, linestyle='--', label=f'X={pitch_width}')  # Vertical line at X=pitch_width
 
         # Filter for players that have played
+        # Filter for players that have played
         played_players = test[test['Played'] == True]
 
         # Place players on the pitch
@@ -253,17 +254,20 @@ with col3:
             
             if num_players > 0:
                 # Calculate the starting y position for the zone
-                zone_start = pitch_length - sum([gkp_height, def_height, mid_height, fwd_height][:space_factor]) - height * (num_players - 1) / 2
+                y_position = pitch_length - sum([gkp_height, def_height, mid_height, fwd_height][:space_factor]) - (height / 2)
+
+                # Calculate spacing between players
+                spacing = (pitch_width - 3) / num_players  # Adjust this based on desired spacing
 
                 for i, row in pos_players.iterrows():
                     # Load the image
                     img = Image.open(urlopen(row['code']))
                     
-                    # Calculate the vertical position based on the zone and index
-                    y_position = zone_start + (i * height)
+                    # Calculate the horizontal position based on index and spacing
+                    x_position = (spacing * i) - (pitch_width / 2) + 1.5  # Center the players in the zone
 
-                    # Place the image horizontally centered in the zone
-                    ax.imshow(img, extent=(pitch_width / 2 - 1.5, pitch_width / 2 + 1.5, y_position + pitch_length / 2 - 1.5, y_position + pitch_length / 2 + 1.5))
+                    # Place the image in the calculated position
+                    ax.imshow(img, extent=(x_position, x_position + 1.5, y_position - 1.5, y_position + 1.5))
 
         # Add legend for reference lines
         ax.legend()
