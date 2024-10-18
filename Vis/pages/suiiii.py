@@ -188,18 +188,19 @@ with col2:
         manager_team_df['vs'] = manager_team_df['vs'].map(teams_df.set_index('id')['short_name'])
         manager_team_df['vs'] = manager_team_df['vs'].fillna('BLANK')
 
-        # Show DataFrame in Streamlit
+        # Strip any leading/trailing spaces in column names
+        manager_team_df.columns = manager_team_df.columns.str.strip()
+
+        # Check column names for debugging
+        st.write("Columns in DataFrame:", manager_team_df.columns.tolist())
+
         # Separate players into lineup and bench
         lineup = manager_team_df[manager_team_df['Played'] == True]
         bench = manager_team_df[manager_team_df['Played'] == False]
-        lineup
-        # Define positions
-        positions = {
-            'GKP': [1, 5],
-            'DEF': [(2, 2), (3, 2), (4, 2), (2, 4), (3, 4)],
-            'MID': [(2, 7), (3, 7), (4, 7), (2, 9), (3, 9)],
-            'FWD': [(3, 10), (4, 10), (5, 10)]
-        }
+
+        # Show DataFrame in Streamlit
+        st.write("Lineup:")
+        st.dataframe(lineup)
 
         # Create pitch
         fig, ax = plt.subplots(figsize=(10, 7))
@@ -211,25 +212,24 @@ with col2:
         for index, row in lineup.iterrows():
             pos = row['Pos']
             if pos == 'GKP':
-                ax.text(0.5, 0.5, row[0], horizontalalignment='center', verticalalignment='center', fontsize=12, bbox=dict(facecolor='lightblue', edgecolor='black'))
+                ax.text(0.5, 0.5, row['Player'], horizontalalignment='center', verticalalignment='center', fontsize=12, bbox=dict(facecolor='lightblue', edgecolor='black'))
             elif pos == 'DEF':
-                ax.text(np.random.uniform(0.2, 0.4), np.random.uniform(0.4, 0.6), row[0], fontsize=10, bbox=dict(facecolor='lightgreen', edgecolor='black'))
+                ax.text(np.random.uniform(0.2, 0.4), np.random.uniform(0.4, 0.6), row['Player'], fontsize=10, bbox=dict(facecolor='lightgreen', edgecolor='black'))
             elif pos == 'MID':
-                ax.text(np.random.uniform(0.4, 0.6), np.random.uniform(0.6, 0.8), row[0], fontsize=10, bbox=dict(facecolor='lightyellow', edgecolor='black'))
+                ax.text(np.random.uniform(0.4, 0.6), np.random.uniform(0.6, 0.8), row['Player'], fontsize=10, bbox=dict(facecolor='lightyellow', edgecolor='black'))
             elif pos == 'FWD':
-                ax.text(np.random.uniform(0.6, 0.8), np.random.uniform(0.8, 0.9), row[0], fontsize=10, bbox=dict(facecolor='salmon', edgecolor='black'))
+                ax.text(np.random.uniform(0.6, 0.8), np.random.uniform(0.8, 0.9), row['Player'], fontsize=10, bbox=dict(facecolor='salmon', edgecolor='black'))
 
         # Plot bench
         for index, row in bench.iterrows():
-            ax.text(0.9, 0.5 + index * 0.05, row[0], fontsize=9, bbox=dict(facecolor='gray', edgecolor='black'))
+            ax.text(0.9, 0.5 + index * 0.05, row['Player'], fontsize=9, bbox=dict(facecolor='gray', edgecolor='black'))
 
         # Add labels
         ax.set_title('Football Lineup', fontsize=16)
         ax.axis('off')
 
-        # Show the plot
-        plt.show()
-
+        # Display plot in Streamlit
+        st.pyplot(fig)
 
 ###############################################################################################################
 with col3:
