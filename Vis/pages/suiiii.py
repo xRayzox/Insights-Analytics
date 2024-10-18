@@ -234,7 +234,7 @@ with col3:
         ax.add_patch(fwd_zone)
         IMAGE_URL = 'https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_3-110.png'
         image = Image.open(urlopen(IMAGE_URL))
-        x_image = pitch_width+2/3 * pitch_width  # Centered horizontally in the GKP zone
+        x_image = 1/2*pitch_width+2/3 * pitch_width  # Centered horizontally in the GKP zone
         y_image = 2 * pitch_length - gkp_height / 2  # Centered vertically in the GKP zone
 
         # Insert the image
