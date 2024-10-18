@@ -235,10 +235,10 @@ with col3:
         IMAGE_URL = 'https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_3-110.png'
         image = Image.open(urlopen(IMAGE_URL))
         x_image = (pitch_width + (pitch_width / 3)) / 2  # Centered horizontally in the GKP zone
-        y_image = pitch_length - gkp_height + (gkp_height / 2)  # Centered vertically in the GKP zone
+        y_image = pitch_length - gkp_height + (gkp_height / 2)+pitch_length  # Centered vertically in the GKP zone
 
         # Insert the image
-        ax_image = pitch.inset_image(-x_image, -y_image, image, height=10, ax=ax)
+        ax_image = pitch.inset_image(x_image, y_image, image, height=10, ax=ax)
         st.pyplot(fig)
                     
 ###############################################################################################################
