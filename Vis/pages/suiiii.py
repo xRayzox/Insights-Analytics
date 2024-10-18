@@ -243,7 +243,7 @@ with col3:
 
         
         formation=f'{def_len}-{mid_len}-{fwd_len}'
-        
+        formation
         print(formation)
         # Draw player names on the pitch
         ax_text = pitch.formation(
