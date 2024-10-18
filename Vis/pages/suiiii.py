@@ -195,12 +195,27 @@ with col3:
         manager_team_df['vs'] = manager_team_df['vs'].fillna('BLANK')
         
         test = manager_team_df.reset_index()
-        pitch = VerticalPitch(pitch_color='grass', 
-                              line_color='white', stripe=True,corner_arcs=True, half=True)
+        # Sample player positions (replace with your actual data)
+        positions = {
+            'GK': [(0.5, 0.1)],  # Example GK position
+            'DEF': [(0.3, 0.2), (0.7, 0.2), (0.2, 0.3), (0.8, 0.3)], # Example DEF positions
+            'MID': [(0.2, 0.5), (0.5, 0.5), (0.8, 0.5)],  # Example MID positions
+            'FWD': [(0.4, 0.8), (0.6, 0.8)],  # Example FWD positions
+        }
+
+        pitch = VerticalPitch(pitch_color='grass', line_color='white', stripe=True, corner_arcs=True, half=True)
         fig, ax = pitch.draw()
+
+        # Plot points for each position group with different markers and labels
+        for pos, coords in positions.items():
+            x, y = zip(*coords)
+            ax.scatter(x, y, label=pos, marker='o' if pos != 'GK' else 'x', s=100)  # 'x' for GK
+
+        # Add a legend
+        ax.legend()
+
         plt.show()
         st.pyplot(fig)
-
         
         
         
