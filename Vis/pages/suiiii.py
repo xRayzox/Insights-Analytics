@@ -195,6 +195,7 @@ with col3:
         manager_team_df['vs'] = manager_team_df['vs'].fillna('BLANK')
         
         test = manager_team_df.reset_index()
+        st.write(test)
         # Initialize the positions dictionary
         # --- Formation Setup ---
         # --- Position Calculation ---
