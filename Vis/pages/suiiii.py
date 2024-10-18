@@ -235,7 +235,8 @@ with col3:
             elif row['Pos'] == 'FWD':
                 positions.append(11 + fwd_count)  # FWD position
                 fwd_count -= 1  # Decrement remaining FWD count
-
+        formation=f'{def_count}-{mid_count}-{fwd_count}'
+        print(formation)
         # Draw player names on the pitch
         ax_text = pitch.formation(
             formation=f'{def_count}-{mid_count}-{fwd_count}',
