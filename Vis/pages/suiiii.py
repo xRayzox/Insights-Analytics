@@ -238,10 +238,10 @@ if fpl_id and gw_complete_list:
         st.write(space_between_zones)
         # Position calculations
         positions = {
-            'GKP': pitch_length + 3 * zone_height-1/2 * zone_height,
-            'DEF': pitch_length + zone_height - space_between_zones+1/2 * zone_height,
-            'MID': pitch_length - 1/zone_height  - space_between_zones * 2+1/2 * zone_height,
-            'FWD': pitch_length - zone_height - space_between_zones * 3+1/2 * zone_height
+            'GKP': pitch_length - zone_height / 2,
+            'DEF': pitch_length - zone_height * 1.5 - space_between_zones,
+            'MID': pitch_length - zone_height * 2.5 - space_between_zones * 2,
+            'FWD': pitch_length - zone_height * 3.5 - space_between_zones * 3 
         }
         df=test[test['Played']==True]
         # Loop through DataFrame and place images
