@@ -218,7 +218,7 @@ with col3:
         # Show DataFrame in Streamlit
         st.write("Lineup:")
         st.dataframe(lineup)
-        gkp_count
+        len(gkp_count)
         def_count
         # Create vertical pitch
         pitch = VerticalPitch(goal_type='box')
