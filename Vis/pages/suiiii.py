@@ -195,7 +195,7 @@ with col3:
         manager_team_df['vs'] = manager_team_df['vs'].fillna('BLANK')
         
         test = manager_team_df.reset_index()
-        pitch = Pitch(pitch_color='grass', line_color='white', stripe=True)
+        pitch = VerticalPitch(pitch_color='grass', line_color='white', stripe=True)
         fig, ax = pitch.draw()
         plt.show()
         st.pyplot(fig)
