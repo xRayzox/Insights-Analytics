@@ -237,10 +237,10 @@ with col3:
                 ax.add_patch(circle)
 
 
-        ax.legend(loc='center left')
+        ax.legend(loc='upper left')
 
         plt.show()
-        st.pyplot(plt)
+        st.pyplot(plt.show())
         
         
 ###############################################################################################################
