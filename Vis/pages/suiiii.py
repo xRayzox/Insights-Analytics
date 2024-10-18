@@ -233,11 +233,7 @@ with col3:
         fwd_zone = patches.Rectangle((0, pitch_length - gkp_height - def_height - mid_height - fwd_height - space_between_zones * 3 + pitch_length), pitch_width + (pitch_width / 3), fwd_height, linewidth=1, edgecolor='orange', facecolor='lightcoral', alpha=0.5)
         ax.add_patch(fwd_zone)
 
-        # Draw reference lines for x and y axes outside the pitch
-        ax.axhline(0, color='red', linewidth=0.5, linestyle='--', label='Y=0')  # Horizontal line at Y=0
-        ax.axhline(pitch_length, color='red', linewidth=0.5, linestyle='--', label=f'Y={pitch_length}')  # Horizontal line at Y=pitch_length
-        ax.axvline(0, color='blue', linewidth=0.5, linestyle='--', label='X=0')  # Vertical line at X=0
-        ax.axvline(pitch_width, color='blue', linewidth=0.5, linestyle='--', label=f'X={pitch_width}')  # Vertical line at X=pitch_width
+        
 
         # Filter for players that have played
         # Filter for players that have played
