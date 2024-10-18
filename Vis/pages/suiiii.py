@@ -247,7 +247,7 @@ with col3:
         # Filter players for the current position
             pos_players = played_players[played_players['Pos'] == pos]
             num_players = len(pos_players)
-            img1 = Image.open(urlopen(pos_players['code'][0]))
+            img1 = Image.open(urlopen(played_players['code'][0]))
             ax.imshow(img1, extent=(54.0,-28.5))
             if num_players > 0:
                 # Calculate the starting y position for the zone
