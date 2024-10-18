@@ -50,7 +50,7 @@ ele_df['code'] = ele_df['team'].map(teams_df.set_index('id')['code'])
 ele_df['code'] = ele_df['code'].apply(lambda x: f"https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_{x}-110.png")
 ele_df['team'] = ele_df['team'].map(teams_df.set_index('id')['short_name'])
 
-col1, col2, col3 = st.columns([3, 2, 2])
+col1, col2, col3 = st.columns([3, 2, 10])
 
 with col1:
     fpl_id = st.text_input('Please enter your FPL ID:', MY_FPL_ID)
