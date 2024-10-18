@@ -193,30 +193,52 @@ with col3:
 
         test=manager_team_df.reset_index()
         # Separate players into lineup and bench
+        # Separate players into lineup and bench
         lineup = test[test['Played'] == True]
         bench = test[test['Played'] == False]
+
+        # Count players in each position
+        gkp_count = lineup[lineup['Pos'] == 'GKP'].shape[0]
+        def_count = lineup[lineup['Pos'] == 'DEF'].shape[0]
+        mid_count = lineup[lineup['Pos'] == 'MID'].shape[0]
+        fwd_count = lineup[lineup['Pos'] == 'FWD'].shape[0]
+
+        # Ensure the lineup adheres to the specified constraints
+        if gkp_count > 1:
+            st.error("Only 1 Goalkeeper (GKP) is allowed.")
+        if def_count > 5:
+            st.error("Maximum of 5 Defenders (DEF) is allowed.")
+        if mid_count > 5:
+            st.error("Maximum of 5 Midfielders (MID) is allowed.")
+        if fwd_count > 3:
+            st.error("Maximum of 3 Forwards (FWD) is allowed.")
 
         # Show DataFrame in Streamlit
         st.write("Lineup:")
         st.dataframe(lineup)
 
-        # Define formation based on the number of players
-        formation = "4-3-3"  # You can change this as needed based on your lineup
-        starting_xi = lineup.copy()
-
-        # Set player positions
-        starting_xi['position_id'] = np.arange(len(starting_xi))  # Placeholder for positions
-
         # Create vertical pitch
         pitch = VerticalPitch(goal_type='box')
         fig, ax = pitch.draw(figsize=(6, 8.72))
 
+        # Assign positions based on played players
+        positions = []
+        for index, row in lineup.iterrows():
+            if row['Pos'] == 'GKP':
+                positions.append(0)  # GKP position
+            elif row['Pos'] == 'DEF':
+                positions.append(len(positions) + 1)  # Position for DEF
+            elif row['Pos'] == 'MID':
+                positions.append(len(positions) + 1)  # Position for MID
+            elif row['Pos'] == 'FWD':
+                positions.append(len(positions) + 1)  # Position for FWD
+
         # Draw player names on the pitch
         ax_text = pitch.formation(
-            formation,
-            positions=starting_xi['position_id'],
+            '4-3-3',  # You can adjust the formation type
+            positions=positions,
             kind='text',
-            text=starting_xi['Player'].str.replace(' ', '\n'),
+            text=lineup['Player'].str.replace(' ', '\n'),
             va='center',
             ha='center',
             fontsize=16,
@@ -227,8 +249,8 @@ with col3:
         mpl.rcParams['hatch.linewidth'] = 3
         mpl.rcParams['hatch.color'] = '#a50044'
         ax_scatter = pitch.formation(
-            formation,
-            positions=starting_xi['position_id'],
+            '4-3-3',  # You can adjust the formation type
+            positions=positions,
             kind='scatter',
             c='#004d98',
             hatch='||',
@@ -244,7 +266,6 @@ with col3:
 
         # Display plot in Streamlit
         st.pyplot(fig)
-
 ###############################################################################################################
 with col2:
     # st.write(manager_name + '\'s Past Results')
