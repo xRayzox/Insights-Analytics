@@ -8,10 +8,11 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 from mplsoccer import VerticalPitch
-import matplotlib.patches as patches ,FancyBboxPatch
+import matplotlib.patches as patches 
 from PIL import Image
 from urllib.request import urlopen
 import random
+from matplotlib.patches import FancyBboxPatch
 
 
 
