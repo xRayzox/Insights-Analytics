@@ -233,13 +233,16 @@ with col3:
                 x_image = pitch_width / 2  # Centered horizontally
             elif pos == 'DEF':
                 y_image = positions['DEF']
-                x_image = pitch_width / (len(df[df['Pos'] == 'DEF']) + 1) * (index % 5 + 1)  # Distribute DEF
+                num_def = len(df[df['Pos'] == 'DEF'])  # Number of DEF players
+                x_image = (pitch_width / (num_def + 1)) * (index % num_def + 1)  # Centered and distributed
             elif pos == 'MID':
                 y_image = positions['MID']
-                x_image = pitch_width / (len(df[df['Pos'] == 'MID']) + 1) * (index % 5 + 1)  # Distribute MID
+                num_mid = len(df[df['Pos'] == 'MID'])  # Number of MID players
+                x_image = (pitch_width / (num_mid + 1)) * (index % num_mid + 1)  # Centered and distributed
             elif pos == 'FWD':
                 y_image = positions['FWD']
-                x_image = pitch_width / (len(df[df['Pos'] == 'FWD']) + 1) * (index % 3 + 1)  # Distribute FWD
+                num_fwd = len(df[df['Pos'] == 'FWD'])  # Number of FWD players
+                x_image = (pitch_width / (num_fwd + 1)) * (index % num_fwd + 1)  # Centered and distributed
 
             # Draw the image on the pitch
             ax_image = pitch.inset_image(y_image, x_image, image, height=10, ax=ax)
