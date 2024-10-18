@@ -196,31 +196,29 @@ with col3:
         
         test = manager_team_df.reset_index()
         # Initialize the positions dictionary
-        positions = {
-            'GK': [],
-            'DEF': [],
-            'MID': [],
-            'FWD': []
+        # --- Formation Setup ---
+        formation = "4-3-3"
+        num_players = {'GK': 1, 'DEF': 4, 'MID': 3, 'FWD': 3}
+        positions = {pos: [] for pos in num_players}
+
+        # --- Position Calculation ---
+        x_positions = {
+            'GK': [0.5],
+            'DEF': [0.2, 0.4, 0.6, 0.8],
+            'MID': [0.3, 0.5, 0.7],
+            'FWD': [0.25, 0.5, 0.75]
         }
 
-        # Distribute players randomly across positions (adjust numbers as needed)
-        num_players = {'GK': 2, 'DEF': 8, 'MID': 6, 'FWD': 4} 
+        y_positions = {
+            'GK': [0.1],
+            'DEF': [0.3] * 4,
+            'MID': [0.5] * 3,
+            'FWD': [0.8] * 3
+        }
 
         for pos, num in num_players.items():
-            for _ in range(num):
-                x = random.uniform(0.1, 0.9)  # Avoid placing players right on the edge
-                # Adjust y-coordinate range based on position
-                if pos == 'GK':
-                    y = random.uniform(0.05, 0.15)  # Closer to the goal line
-                elif pos == 'DEF':
-                    y = random.uniform(0.15, 0.4)
-                elif pos == 'MID':
-                    y = random.uniform(0.4, 0.7)
-                else:  # FWD
-                    y = random.uniform(0.7, 0.95) # Closer to the opponent's goal line
-                positions[pos].append((x, y))
-
-
+            for i in range(num):
+                positions[pos].append((x_positions[pos][i], y_positions[pos][i]))
 
 
         # --- Plotting ---
@@ -232,11 +230,13 @@ with col3:
 
         for pos, coords in positions.items():
             x, y = zip(*coords)
-            ax.scatter(x, y, label=pos, marker=marker_style[pos], color=marker_color[pos], s=100, zorder=2)  # Set zorder for markers above pitch elements
+            ax.scatter(x, y, label=pos, marker=marker_style[pos], color=marker_color[pos], s=200, zorder=3)
+            for x_c, y_c in coords:  # Add circles around markers
+                circle = plt.Circle((x_c, y_c), 0.05, color=marker_color[pos], fill=False, linewidth=2, zorder=2)
+                ax.add_patch(circle)
 
-        # Ensure the legend is visible
+
         ax.legend(loc='center left')
-
 
         plt.show()
         st.pyplot(fig)
