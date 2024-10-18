@@ -211,17 +211,17 @@ with col2:
         for index, row in lineup.iterrows():
             pos = row['Pos']
             if pos == 'GKP':
-                ax.text(0.5, 0.5, row['Player'], horizontalalignment='center', verticalalignment='center', fontsize=12, bbox=dict(facecolor='lightblue', edgecolor='black'))
+                ax.text(0.5, 0.5, row[index], horizontalalignment='center', verticalalignment='center', fontsize=12, bbox=dict(facecolor='lightblue', edgecolor='black'))
             elif pos == 'DEF':
-                ax.text(np.random.uniform(0.2, 0.4), np.random.uniform(0.4, 0.6), row['Player'], fontsize=10, bbox=dict(facecolor='lightgreen', edgecolor='black'))
+                ax.text(np.random.uniform(0.2, 0.4), np.random.uniform(0.4, 0.6), row[index], fontsize=10, bbox=dict(facecolor='lightgreen', edgecolor='black'))
             elif pos == 'MID':
-                ax.text(np.random.uniform(0.4, 0.6), np.random.uniform(0.6, 0.8), row['Player'], fontsize=10, bbox=dict(facecolor='lightyellow', edgecolor='black'))
+                ax.text(np.random.uniform(0.4, 0.6), np.random.uniform(0.6, 0.8), row[index], fontsize=10, bbox=dict(facecolor='lightyellow', edgecolor='black'))
             elif pos == 'FWD':
-                ax.text(np.random.uniform(0.6, 0.8), np.random.uniform(0.8, 0.9), row['Player'], fontsize=10, bbox=dict(facecolor='salmon', edgecolor='black'))
+                ax.text(np.random.uniform(0.6, 0.8), np.random.uniform(0.8, 0.9), row[index], fontsize=10, bbox=dict(facecolor='salmon', edgecolor='black'))
 
         # Plot bench
         for index, row in bench.iterrows():
-            ax.text(0.9, 0.5 + index * 0.05, row['Player'], fontsize=9, bbox=dict(facecolor='gray', edgecolor='black'))
+            ax.text(0.9, 0.5 + index * 0.05, row[index], fontsize=9, bbox=dict(facecolor='gray', edgecolor='black'))
 
         # Add labels
         ax.set_title('Football Lineup', fontsize=16)
