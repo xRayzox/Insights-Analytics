@@ -240,6 +240,7 @@ with col3:
         # Show the legend and the plot
         ax.legend()
         plt.show()
+        st.pyplot(fig)
         
 ###############################################################################################################
 with col2:
