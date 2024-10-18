@@ -199,9 +199,9 @@ with col3:
 
         # Count players in each position
         gkp_count = lineup[lineup['Pos'] == 'GKP']
-        def_count = len(lineup[lineup['Pos'] == 'DEF'])
-        mid_count = len(lineup[lineup['Pos'] == 'MID'])
-        fwd_count = len(lineup[lineup['Pos'] == 'FWD'])
+        def_count = lineup[lineup['Pos'] == 'DEF']
+        mid_count = lineup[lineup['Pos'] == 'MID']
+        fwd_count = lineup[lineup['Pos'] == 'FWD']
 
 
         """
