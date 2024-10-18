@@ -267,7 +267,7 @@ with col3:
                     x_position = (spacing * i) - (pitch_width / 2) + 1.5  # Center the players in the zone
 
                     # Place the image in the calculated position
-                    ax.imshow(img, extent=(x_position, x_position + 1.5, y_position - 1.5, y_position + 1.5))
+                    ax.imshow(img, extent=(x_position, x_position + 1.5, y_position - 1.5, y_position + 1.5)-pitch_length)
 
         # Add legend for reference lines
         ax.legend()
