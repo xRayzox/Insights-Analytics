@@ -203,6 +203,8 @@ with col3:
         mid_count = len(lineup[lineup['Pos'] == 'MID'])
         fwd_count = len(lineup[lineup['Pos'] == 'FWD'])
 
+
+        """
         # Ensure the lineup adheres to the specified constraints
         if gkp_count > 1:
             st.error("Only 1 Goalkeeper (GKP) is allowed.")
@@ -212,7 +214,7 @@ with col3:
             st.error("Maximum of 5 Midfielders (MID) is allowed.")
         if fwd_count > 3:
             st.error("Maximum of 3 Forwards (FWD) is allowed.")
-
+        """
         # Show DataFrame in Streamlit
         st.write("Lineup:")
         st.dataframe(lineup)
