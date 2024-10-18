@@ -195,48 +195,7 @@ with col3:
         manager_team_df['vs'] = manager_team_df['vs'].fillna('BLANK')
         
         test = manager_team_df.reset_index()
-
-        # Filter players based on formation requirements
-        goalkeeper = test[(test['Pos'] == 'GKP') & (test['Played'])]
-        defenders = test[(test['Pos'] == 'DEF') & (test['Played'])].head(3)
-        midfielders = test[(test['Pos'] == 'MID') & (test['Played'])].head(4)
-        forwards = test[(test['Pos'] == 'FWD') & (test['Played'])].head(3)
-
-        # Combine players into a single lineup DataFrame
-        lineup = pd.concat([goalkeeper, defenders, midfielders, forwards])
-
-        # Verify the lineup
-        print(lineup)
-
-        # Create a pitch and plot the lineup
-        pitch = Pitch()
-        fig, ax = pitch.draw()
-
-        # Define positions on the pitch for 3-4-3 formation
-        positions = {
-            'GKP': (0.5, 0.05),  # Goalkeeper
-            'DEF': [(0.25, 0.3), (0.5, 0.3), (0.75, 0.3)],  # 3 Defenders
-            'MID': [(0.2, 0.5), (0.5, 0.5), (0.8, 0.5), (0.5, 0.6)],  # 4 Midfielders
-            'FWD': [(0.25, 0.7), (0.5, 0.7), (0.75, 0.7)],  # 3 Forwards
-        }
-
-        # Place players on the pitch
-        for idx, row in lineup.iterrows():
-            if row['Pos'] == 'GKP':
-                x, y = positions['GKP']
-            elif row['Pos'] == 'DEF':
-                x, y = positions['DEF'][list(defenders['Player']).index(row['Player'])]
-            elif row['Pos'] == 'MID':
-                x, y = positions['MID'][list(midfielders['Player']).index(row['Player'])]
-            elif row['Pos'] == 'FWD':
-                x, y = positions['FWD'][list(forwards['Player']).index(row['Player'])]
-
-            # Adjust text positioning to avoid overlap
-            ax.text(x, y, row['Player'], fontsize=10, ha='center', va='center')
-
-        plt.title('3-4-3 Formation Lineup')
-        plt.show()
-        st.pyplot(fig)
+        st.write(test)
         
         
 ###############################################################################################################
