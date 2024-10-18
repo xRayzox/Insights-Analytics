@@ -196,7 +196,6 @@ with col3:
         
         test = manager_team_df.reset_index()
         # Initialize the positions dictionary
-        # Initialize the positions dictionary
         positions = {
             'GK': [],
             'DEF': [],
@@ -210,37 +209,38 @@ with col3:
         for pos, num in num_players.items():
             for _ in range(num):
                 x = random.uniform(0.1, 0.9)  # Avoid placing players right on the edge
+                # Adjust y-coordinate range based on position
                 if pos == 'GK':
-                    y = random.uniform(0.05, 0.15)
+                    y = random.uniform(0.05, 0.15)  # Closer to the goal line
                 elif pos == 'DEF':
                     y = random.uniform(0.15, 0.4)
                 elif pos == 'MID':
                     y = random.uniform(0.4, 0.7)
                 else:  # FWD
-                    y = random.uniform(0.7, 0.95)
+                    y = random.uniform(0.7, 0.95) # Closer to the opponent's goal line
                 positions[pos].append((x, y))
+
+
+
 
         # --- Plotting ---
         pitch = VerticalPitch(pitch_color='grass', line_color='white', stripe=True, corner_arcs=True, half=True)
         fig, ax = pitch.draw()
 
-        # Assign different colors to each position for better visibility
-        colors = {
-            'GK': 'red',
-            'DEF': 'blue',
-            'MID': 'yellow',
-            'FWD': 'green'
-        }
+        marker_style = {'GK': 'x', 'DEF': 'o', 'MID': 'o', 'FWD': 'o'}
+        marker_color = {'GK': 'red', 'DEF': 'blue', 'MID': 'yellow', 'FWD': 'green'}
 
         for pos, coords in positions.items():
-            if coords:  # Check if the list is not empty
-                x, y = zip(*coords)
-                ax.scatter(x, y, label=pos, color=colors[pos], marker='o' if pos != 'GK' else 'x', s=100)
+            x, y = zip(*coords)
+            ax.scatter(x, y, label=pos, marker=marker_style[pos], color=marker_color[pos], s=100, zorder=2)  # Set zorder for markers above pitch elements
 
-        # Show the legend and the plot
-        ax.legend()
+        # Ensure the legend is visible
+        ax.legend(loc='center left')
+
+
         plt.show()
         st.pyplot(fig)
+        
         
 ###############################################################################################################
 with col2:
