@@ -195,19 +195,9 @@ with col3:
         manager_team_df['vs'] = manager_team_df['vs'].fillna('BLANK')
         
         test = manager_team_df.reset_index()
-        # Create a 2x2 grid of subplots (4 separate sections)
-        fig, axs = plt.subplots(2, 2, figsize=(10, 10))
-
-        # Initialize pitch drawing
         pitch = VerticalPitch(pitch_color='grass', 
-                            line_color='white', stripe=True, corner_arcs=True, half=True)
-
-        # Draw the pitch in each subplot
-        for ax in axs.flat:
-            pitch.draw(ax=ax)
-
-        # Adjust spacing and show the plot
-        plt.tight_layout()
+                              line_color='white', stripe=True,corner_arcs=True, half=True)
+        fig, ax = pitch.draw()
         plt.show()
         st.pyplot(fig)
 
