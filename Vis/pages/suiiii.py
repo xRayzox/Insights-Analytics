@@ -209,10 +209,10 @@ with col3:
         def_len = len(def_count)
         mid_len = len(mid_count)
         fwd_len = len(fwd_count)
-        gkp_len
-        def_len
-        mid_len
-        fwd_len
+        st.write(gkp_len)
+        st.write(def_len)
+        st.write(mid_len)
+        st.write(fwd_len)
 
 
         # Ensure the lineup adheres to the specified constraints
