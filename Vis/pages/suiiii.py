@@ -142,6 +142,8 @@ with col2:
     col = st.selectbox(
         manager_name + '\'s Past Results', ['Season', 'Pts', 'OR']
         )
+    # Add space before the table
+    st.write(' ')  # or st.write('\n') for an empty line
     hist_data = get_manager_history_data(fpl_id)
     hist_df = pd.DataFrame(hist_data['past'])
     if len(hist_df) == 0:
