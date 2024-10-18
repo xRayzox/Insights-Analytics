@@ -190,6 +190,9 @@ with col3:
         # Map teams
         manager_team_df['vs'] = manager_team_df['vs'].map(teams_df.set_index('id')['short_name'])
         manager_team_df['vs'] = manager_team_df['vs'].fillna('BLANK')
+        manager_team_df['team_logo'] = manager_team_df['id'].apply(lambda x: f"https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_{x}-110.png")
+        st.write(manager_team_df)
+
 
         test = manager_team_df.reset_index()
         # Separate players into lineup and bench
