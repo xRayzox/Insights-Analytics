@@ -191,28 +191,50 @@ with col3:
 
         test=manager_team_df.reset_index()
         # Separate players into lineup and bench
-        lineup = test[test['Played'] == True]
-        bench = test[test['Played'] == False]
-        # Create pitch
-        # Create pitch
-        pitch = VerticalPitch(pitch_color='grass', line_color='white', stripe=True, half=True)
-        fig, ax = pitch.draw()
+        lineup = manager_team_df[manager_team_df['Played'] == True]
+        bench = manager_team_df[manager_team_df['Played'] == False]
 
-        # Plot players
-        for index, row in lineup.iterrows():
-            pos = row['Pos']
-            if pos == 'GKP':
-                ax.text(0.5, 0.5, row['Player'], horizontalalignment='center', verticalalignment='center', fontsize=12, bbox=dict(facecolor='lightblue', edgecolor='black'))
-            elif pos == 'DEF':
-                ax.text(np.random.uniform(0.2, 0.4), np.random.uniform(0.4, 0.6), row['Player'], fontsize=10, bbox=dict(facecolor='lightgreen', edgecolor='black'))
-            elif pos == 'MID':
-                ax.text(np.random.uniform(0.4, 0.6), np.random.uniform(0.6, 0.8), row['Player'], fontsize=10, bbox=dict(facecolor='lightyellow', edgecolor='black'))
-            elif pos == 'FWD':
-                ax.text(np.random.uniform(0.6, 0.8), np.random.uniform(0.8, 0.9), row['Player'], fontsize=10, bbox=dict(facecolor='salmon', edgecolor='black'))
+        # Show DataFrame in Streamlit
+        st.write("Lineup:")
+        st.dataframe(lineup)
 
-        # Plot bench
-        for index, row in bench.iterrows():
-            ax.text(0.9, 0.5 + index * 0.05, row['Player'], fontsize=9, bbox=dict(facecolor='gray', edgecolor='black'))
+        # Define formation based on the number of players
+        formation = "4-3-3"  # You can change this as needed based on your lineup
+        starting_xi = lineup.copy()
+
+        # Set player positions
+        starting_xi['position_id'] = np.arange(len(starting_xi))  # Placeholder for positions
+
+        # Create vertical pitch
+        pitch = VerticalPitch(goal_type='box')
+        fig, ax = pitch.draw(figsize=(6, 8.72))
+
+        # Draw player names on the pitch
+        ax_text = pitch.formation(
+            formation,
+            positions=starting_xi['position_id'],
+            kind='text',
+            text=starting_xi['Player'].str.replace(' ', '\n'),
+            va='center',
+            ha='center',
+            fontsize=16,
+            ax=ax
+        )
+
+        # Scatter markers for players
+        mpl.rcParams['hatch.linewidth'] = 3
+        mpl.rcParams['hatch.color'] = '#a50044'
+        ax_scatter = pitch.formation(
+            formation,
+            positions=starting_xi['position_id'],
+            kind='scatter',
+            c='#004d98',
+            hatch='||',
+            linewidth=3,
+            s=500,
+            xoffset=-8,
+            ax=ax
+        )
 
         # Add labels
         ax.set_title('Football Lineup', fontsize=16)
