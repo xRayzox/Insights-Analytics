@@ -194,8 +194,8 @@ with col3:
         test=manager_team_df.reset_index()
         # Separate players into lineup and bench
         # Separate players into lineup and bench
-        lineup = manager_team_df[manager_team_df['Played'] == True]
-        bench = manager_team_df[manager_team_df['Played'] == False]
+        lineup = test[test['Played'] == True]
+        bench = test[test['Played'] == False]
 
         # Count players in each position
         gkp_count = lineup[lineup['Pos'] == 'GKP'].shape[0]
