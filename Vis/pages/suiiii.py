@@ -7,6 +7,8 @@ import sys
 import os
 import matplotlib.pyplot as plt
 import numpy as np
+from mplsoccer import Pitch
+
 pd.set_option('future.no_silent_downcasting', True)
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'FPL')))
 from fpl_api_collection import (
@@ -192,10 +194,9 @@ with col3:
         lineup = test[test['Played'] == True]
         bench = test[test['Played'] == False]
         # Create pitch
-        fig, ax = plt.subplots(figsize=(10, 7))
-        plt.plot([0, 0, 1, 1, 0], [0, 1, 1, 0, 0], color="black")  # Pitch outline
-        plt.xlim(0, 1)
-        plt.ylim(0, 1)
+        # Create pitch
+        pitch = Pitch(pitch_color='grass', line_color='white', stripe=True, half=True)
+        fig, ax = pitch.draw()
 
         # Plot players
         for index, row in lineup.iterrows():
