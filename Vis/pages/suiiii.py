@@ -55,7 +55,7 @@ ele_df['code'] = ele_df.apply(lambda row: f"https://fantasy.premierleague.com/di
                               if row['element_type'] == 'GKP' else f"https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_{row['code']}-110.png", axis=1)
 ele_df['team'] = ele_df['team'].map(teams_df.set_index('id')['short_name'])
 
-col1, col2 = st.columns([5, 2])
+col1, col2 = st.columns([10, 2])
 
 with col1:
     fpl_id = st.text_input('Please enter your FPL ID:', MY_FPL_ID)
