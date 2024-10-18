@@ -218,25 +218,25 @@ with col3:
 
         # Calculate y-coordinates for each zone starting from the top
         y_gkp = pitch_length  # Goalkeeper zone starts at the top
-        y_def = y_gkp - gkp_height - space_between_zones
-        y_mid = y_def - def_height - space_between_zones
-        y_fwd = y_mid - mid_height - space_between_zones
+        y_def = y_gkp + gkp_height + space_between_zones
+        y_mid = y_def + def_height + space_between_zones
+        y_fwd = y_mid + mid_height + space_between_zones
 
         # Draw pitch zones
         # Goalkeeper Zone (at the top)
-        gkp_zone = patches.Rectangle((0, y_gkp - gkp_height), pitch_width , gkp_height, linewidth=1, edgecolor='blue', facecolor='lightblue', alpha=0.5)
+        gkp_zone = patches.Rectangle((0, y_gkp - gkp_height), pitch_width+ (pitch_width / 3) , gkp_height, linewidth=1, edgecolor='blue', facecolor='lightblue', alpha=0.5)
         ax.add_patch(gkp_zone)
 
         # Defenders Zone (below the goalkeeper)
-        def_zone = patches.Rectangle((0, y_def), pitch_width + (pitch_width / 3), def_height, linewidth=1, edgecolor='black', facecolor='blue', alpha=0.5)
+        def_zone = patches.Rectangle((0, y_def - def_height), pitch_width + (pitch_width / 3), def_height, linewidth=1, edgecolor='black', facecolor='blue', alpha=0.5)
         ax.add_patch(def_zone)
 
         # Midfielders Zone (below the defenders)
-        mid_zone = patches.Rectangle((0, y_mid ), pitch_width + (pitch_width / 3), mid_height, linewidth=1, edgecolor='black', facecolor='blue', alpha=0.5)
+        mid_zone = patches.Rectangle((0, y_mid - mid_height), pitch_width + (pitch_width / 3), mid_height, linewidth=1, edgecolor='black', facecolor='blue', alpha=0.5)
         ax.add_patch(mid_zone)
 
         # Forwards Zone (at the bottom)
-        fwd_zone = patches.Rectangle((0, y_fwd), pitch_width + (pitch_width / 3), fwd_height, linewidth=1, edgecolor='orange', facecolor='lightcoral', alpha=0.5)
+        fwd_zone = patches.Rectangle((0, y_fwd - fwd_height), pitch_width + (pitch_width / 3), fwd_height, linewidth=1, edgecolor='orange', facecolor='lightcoral', alpha=0.5)
         ax.add_patch(fwd_zone)
 
         # Invert the y-axis
