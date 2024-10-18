@@ -210,7 +210,7 @@ with col3:
         mid_len = len(mid_count)
         fwd_len = len(fwd_count)
         
-        formation=f"{def_len}{mid_len}{fwd_len}"
+        formation=f"{def_len}-{mid_len}-{fwd_len}"
 
         st.write(gkp_len)
         st.write(def_len)
