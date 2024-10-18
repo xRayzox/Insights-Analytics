@@ -301,10 +301,47 @@ if fpl_id and gw_complete_list:
             ax.text(x_image, y_image - rect_height - 6, player_name, fontsize=8, ha='center', color='black')
 
 
-        # Show the pitch with player images
-        plt.show()
-        st.pyplot(fig)
+            # Bench players (df['Played'] == False)
+            df_bench = test[test['Played'] == False]
 
+            # Define bench position and dimensions
+            bench_width = pitch_width / 4  # 25% of pitch width
+            bench_height = pitch_length / 4  # 25% of pitch length
+            bench_x = pitch_width - bench_width - 5  # Position bench on the right side
+            bench_y = 5  # Position bench at the bottom of the figure
+
+            # Create a rectangle for the bench area
+            bench_rect = FancyBboxPatch(
+                (bench_x, bench_y), 
+                bench_width, 
+                bench_height, 
+                boxstyle="round,pad=0.2", 
+                facecolor='lightgray', 
+                edgecolor='white', 
+                linewidth=2,
+                alpha=0.8
+            )
+            ax.add_patch(bench_rect)
+
+            # Place bench players inside the rectangle
+            for i, row in enumerate(df_bench.itertuples()):
+                IMAGE_URL = row.code
+                image = Image.open(urlopen(IMAGE_URL))
+                
+                # Distribute bench players within the bench rectangle
+                x_bench = bench_x + (bench_width / len(df_bench)) * (i + 0.5)  # Center each image
+                y_bench = bench_y + bench_height / 2  # Vertically centered in the bench
+
+                # Draw the bench player image
+                ax_image = pitch.inset_image(y_bench, x_bench, image, height=5, ax=ax)  # Smaller image size for bench players
+
+                # Add player's name below image
+                player_name = row.Player
+                ax.text(x_bench, y_bench - 7, player_name, fontsize=6, ha='center', color='black')
+
+            # Show the pitch with player images and bench
+            plt.show()
+            st.pyplot(fig)
 
 
 ###############################################################################
