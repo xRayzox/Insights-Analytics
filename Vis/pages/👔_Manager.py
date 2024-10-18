@@ -276,23 +276,29 @@ else:
 
 if 'count' not in st.session_state:
     st.session_state['count'] = 0
+
 if fpl_id == '':
     st.write('')
-if fpl_id != 392357 & st.session_state['count'] == 0:
+
+if fpl_id != 3764749 and st.session_state['count'] == 0:
     st.session_state['count'] += 1
     del st.session_state['ID']
     if 'ID' not in st.session_state:
         st.session_state['ID'] = [fpl_id]
-    new_id = st.text_input('Select another FPL ID to compare:', '')
-    button = st.button('Add Manager')
+
+    new_id = st.text_input('Select another FPL ID to compare:', '', key='text_input_1')
+    button = st.button('Add Manager', key='button_1')
+
     if button and new_id != '':
         st.session_state.ID.append(int(new_id))
+
     filter_man = st.multiselect(
         'Manager IDs',
         st.session_state.ID,
         st.session_state.ID,
-        key='ID'
+        key='multiselect_1'
     )
+
     df_list = []
     for fpl_id in filter_man:
         new_df = collate_manager_history(fpl_id)
@@ -303,21 +309,27 @@ if fpl_id != 392357 & st.session_state['count'] == 0:
         x=alt.X('event', axis=alt.Axis(tickMinStep=1, title='GW')),
         y=alt.Y('overall_rank', axis=alt.Axis(title='Overall Rank'), scale=alt.Scale(reverse=True)),
         color='Manager').properties(
-            height=700)
+            height=700
+    )
     st.altair_chart(c, use_container_width=True)
-if fpl_id != 392357 & st.session_state['count'] != 0:
+
+elif fpl_id != 3764749 and st.session_state['count'] != 0:
     if 'ID' not in st.session_state:
         st.session_state['ID'] = [fpl_id]
-    new_id = st.text_input('Select another FPL ID to compare:', '')
-    button = st.button('Add Manager')
+
+    new_id = st.text_input('Select another FPL ID to compare:', '', key='text_input_2')
+    button = st.button('Add Manager', key='button_2')
+
     if button and new_id != '':
         st.session_state.ID.append(int(new_id))
+
     filter_man = st.multiselect(
         'Manager IDs',
         st.session_state.ID,
         st.session_state.ID,
-        key='ID'
+        key='multiselect_2'
     )
+
     df_list = []
     for fpl_id in filter_man:
         new_df = collate_manager_history(fpl_id)
@@ -328,21 +340,27 @@ if fpl_id != 392357 & st.session_state['count'] != 0:
         x=alt.X('event', axis=alt.Axis(tickMinStep=1, title='GW')),
         y=alt.Y('overall_rank', axis=alt.Axis(title='Overall Rank'), scale=alt.Scale(reverse=True)),
         color='Manager').properties(
-            height=700)
+            height=700
+    )
     st.altair_chart(c, use_container_width=True)
+
 else:
     if 'ID' not in st.session_state:
         st.session_state['ID'] = [fpl_id]
-    new_id = st.text_input('Select another FPL ID to compare:', '')
-    button = st.button('Add Manager')
+
+    new_id = st.text_input('Select another FPL ID to compare:', '', key='text_input_3')
+    button = st.button('Add Manager', key='button_3')
+
     if button and new_id != '':
         st.session_state.ID.append(int(new_id))
+
     filter_man = st.multiselect(
         'Manager IDs',
         st.session_state.ID,
         st.session_state.ID,
-        key='ID'
+        key='multiselect_3'
     )
+
     df_list = []
     for fpl_id in filter_man:
         new_df = collate_manager_history(fpl_id)
@@ -353,5 +371,6 @@ else:
         x=alt.X('event', axis=alt.Axis(tickMinStep=1, title='GW')),
         y=alt.Y('overall_rank', axis=alt.Axis(title='Overall Rank'), scale=alt.Scale(reverse=True)),
         color='Manager').properties(
-            height=700)
+            height=700
+    )
     st.altair_chart(c, use_container_width=True)
