@@ -241,6 +241,7 @@ with col3:
 
         # Invert the y-axis
         ax.set_ylim(pitch_length, 0)  # Set y-axis limits and invert
+        ax.set_ylim(pitch_width,0)
 
         # Centering image in the GKP zone
         IMAGE_URL = 'https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_3-110.png'
