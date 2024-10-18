@@ -218,7 +218,8 @@ with col3:
         # Show DataFrame in Streamlit
         st.write("Lineup:")
         st.dataframe(lineup)
-
+        gkp_count
+        def_count
         # Create vertical pitch
         pitch = VerticalPitch(goal_type='box')
         fig, ax = pitch.draw(figsize=(6, 8.72))
@@ -240,7 +241,7 @@ with col3:
 
         
         formation=f'{def_count}-{mid_count}-{fwd_count}'
-        formation
+        
         print(formation)
         # Draw player names on the pitch
         ax_text = pitch.formation(
