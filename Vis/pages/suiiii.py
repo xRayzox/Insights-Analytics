@@ -206,13 +206,13 @@ with col3:
 
 
         # Ensure the lineup adheres to the specified constraints
-        if gkp_count > 1:
+        if len(gkp_count) > 1:
             st.error("Only 1 Goalkeeper (GKP) is allowed.")
-        if def_count > 5:
+        if len(def_count) > 5:
             st.error("Maximum of 5 Defenders (DEF) is allowed.")
-        if mid_count > 5:
+        if len(mid_count) > 5:
             st.error("Maximum of 5 Midfielders (MID) is allowed.")
-        if fwd_count > 3:
+        if len(fwd_count) > 3:
             st.error("Maximum of 3 Forwards (FWD) is allowed.")
 
         # Create vertical pitch
