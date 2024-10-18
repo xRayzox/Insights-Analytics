@@ -204,7 +204,7 @@ with col3:
         fwd_count = lineup[lineup['Pos'] == 'FWD']
 
 
-        """
+
         # Ensure the lineup adheres to the specified constraints
         if gkp_count > 1:
             st.error("Only 1 Goalkeeper (GKP) is allowed.")
@@ -214,12 +214,7 @@ with col3:
             st.error("Maximum of 5 Midfielders (MID) is allowed.")
         if fwd_count > 3:
             st.error("Maximum of 3 Forwards (FWD) is allowed.")
-        """
-        # Show DataFrame in Streamlit
-        st.write("Lineup:")
-        st.dataframe(lineup)
-        st.write(len(gkp_count))
-        def_count
+
         # Create vertical pitch
         pitch = VerticalPitch(goal_type='box')
         fig, ax = pitch.draw(figsize=(6, 8.72))
