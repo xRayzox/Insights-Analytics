@@ -14,7 +14,7 @@ from urllib.request import urlopen
 import random
 from matplotlib.patches import FancyBboxPatch
 from matplotlib.textpath import TextPath
-from mplfooty import VerticalPitch
+
 
 
 
