@@ -243,7 +243,7 @@ with col3:
             # Ignore unsupported positions
 
         for i, row in lineup.iterrows():
-            pitch.annotate(row['Player Name'], (0.5, positions[i]/14), ax=ax, va='center', ha='center') # Adjust vertical spacing
+            pitch.annotate(row['Player'], (0.5, positions[i]/14), ax=ax, va='center', ha='center') # Adjust vertical spacing
 
         # Display formation
         st.write(f"Formation: {formation}")
