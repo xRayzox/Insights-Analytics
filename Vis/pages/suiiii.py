@@ -7,7 +7,7 @@ import sys
 import os
 import matplotlib.pyplot as plt
 import numpy as np
-from mplsoccer import Pitch
+from mplsoccer import Pitch, VerticalPitch
 
 pd.set_option('future.no_silent_downcasting', True)
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'FPL')))
@@ -195,7 +195,7 @@ with col3:
         bench = test[test['Played'] == False]
         # Create pitch
         # Create pitch
-        pitch = Pitch(pitch_color='grass', line_color='white', stripe=True, half=True)
+        pitch = VerticalPitch(pitch_color='grass', line_color='white', stripe=True, half=True)
         fig, ax = pitch.draw()
 
         # Plot players
