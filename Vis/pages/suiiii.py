@@ -45,7 +45,7 @@ ele_df = pd.DataFrame(ele_data)
 ele_df['element_type'] = ele_df['element_type'].map(ele_types_df.set_index('id')['singular_name_short'])
 ele_df['team'] = ele_df['team'].map(teams_df.set_index('id')['short_name'])
 
-col1, col2, col3 = st.columns([3, 2, 1])
+col1, col2, col3 = st.columns([3, 2, 10])
 
 with col1:
     fpl_id = st.text_input('Please enter your FPL ID:', MY_FPL_ID)
