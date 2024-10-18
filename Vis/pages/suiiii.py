@@ -229,8 +229,8 @@ if fpl_id and gw_complete_list:
         fig, ax = pitch.draw(figsize=fig_size, tight_layout=False)  # Draw the pitch
 
         # Extract pitch dimensions from the figure
-        pitch_length = fig.get_figheight() * 10  # Scale as needed (10 is a scaling factor)
-        pitch_width = fig.get_figwidth() * 10  # Scale as needed
+        pitch_length = pitch.dim.pitch_length  # Scale as needed (10 is a scaling factor)
+        pitch_width = pitch.dim.pitch_width  # Scale as needed
 
         # Define placements for each position zone
         zone_height = pitch_length / 6  # Height for each zone
