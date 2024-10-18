@@ -195,7 +195,7 @@ with col3:
         manager_team_df['vs'] = manager_team_df['vs'].fillna('BLANK')
         
         test = manager_team_df.reset_index()
-        # Example: Generate random positions for 22 players (two teams)
+        # Initialize the positions dictionary
         positions = {
             'GK': [],
             'DEF': [],
@@ -209,7 +209,6 @@ with col3:
         for pos, num in num_players.items():
             for _ in range(num):
                 x = random.uniform(0.1, 0.9)  # Avoid placing players right on the edge
-                # Adjust y-coordinate range based on position
                 if pos == 'GK':
                     y = random.uniform(0.05, 0.15)
                 elif pos == 'DEF':
@@ -225,13 +224,12 @@ with col3:
         fig, ax = pitch.draw()
 
         for pos, coords in positions.items():
-            x, y = zip(*coords)
-            ax.scatter(x, y, label=pos, marker='o' if pos != 'GK' else 'x', s=100)
+            if coords:  # Check if the list is not empty
+                x, y = zip(*coords)
+                ax.scatter(x, y, label=pos, marker='o' if pos != 'GK' else 'x', s=100)
 
         ax.legend()
-        plt.show()
-        st.pyplot(fig)
-                
+        plt.show()  # Use plt.show() to display the plot with matplotlib
         
         
 ###############################################################################################################
