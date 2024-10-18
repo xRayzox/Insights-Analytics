@@ -216,7 +216,7 @@ with col3:
         pitch = VerticalPitch(pitch_color='grass', line_color='white', stripe=True, corner_arcs=True, half=True, pitch_length=pitch_length, pitch_width=pitch_width)
         fig, ax = pitch.draw(figsize=(8, 8), tight_layout=False)  # Adjust figsize as needed
 
-        # Calculate y-coordinates for each zone starting from the top of the pitch
+        # Calculate y-coordinates for each zone starting from the top
         y_gkp = pitch_length  # Goalkeeper zone starts at the top
         y_def = y_gkp - gkp_height - space_between_zones
         y_mid = y_def - def_height - space_between_zones
@@ -239,6 +239,9 @@ with col3:
         fwd_zone = patches.Rectangle((0, y_fwd - fwd_height), pitch_width + (pitch_width / 3), fwd_height, linewidth=1, edgecolor='orange', facecolor='lightcoral', alpha=0.5)
         ax.add_patch(fwd_zone)
 
+        # Invert the y-axis
+        ax.set_ylim(pitch_length, 0)  # Set y-axis limits and invert
+
         # Centering image in the GKP zone
         IMAGE_URL = 'https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_3-110.png'
         image = Image.open(urlopen(IMAGE_URL))
@@ -248,6 +251,7 @@ with col3:
         # Insert the image
         ax_image = pitch.inset_image(x_image, y_image, image, height=10, ax=ax)
         st.pyplot(fig)
+
 
 ###############################################################################################################
 with col2:
