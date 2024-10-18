@@ -230,6 +230,7 @@ with col3:
 
         ax.legend()
         plt.show()  # Use plt.show() to display the plot with matplotlib
+        st.pyplot(fig)
         
         
 ###############################################################################################################
