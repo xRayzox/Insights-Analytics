@@ -198,7 +198,7 @@ with col3:
         pitch = VerticalPitch(pitch_color='grass', 
                               line_color='white', stripe=True,corner_arcs=True, half=True)
         fig, ax = pitch.draw()
-        plt.show()
+        plt.show(figsize=(10, 7.727))
         st.pyplot(fig)
 
         
