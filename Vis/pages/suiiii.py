@@ -235,16 +235,16 @@ with col3:
 
         
 
-        # Filter for players that have played
+        
         # Filter for players that have played
         played_players = test[test['Played'] == True]
 
         # Place players on the pitch
         for pos, height, space_factor in [('GKP', gkp_height, 0),
-                                        ('DEF', def_height, 1),
-                                        ('MID', mid_height, 2),
-                                        ('FWD', fwd_height, 3)]:
-            # Filter players for the current position
+                                   ('DEF', def_height, 1),
+                                   ('MID', mid_height, 2),
+                                   ('FWD', fwd_height, 3)]:
+        # Filter players for the current position
             pos_players = played_players[played_players['Pos'] == pos]
             num_players = len(pos_players)
             
@@ -253,7 +253,7 @@ with col3:
                 y_position = pitch_length - sum([gkp_height, def_height, mid_height, fwd_height][:space_factor]) - (height / 2)
 
                 # Calculate spacing between players
-                spacing = (pitch_width - 3) / num_players  # Adjust this based on desired spacing
+                spacing = (pitch_width - 3) / (num_players - 1) if num_players > 1 else 0  # Adjust this based on desired spacing
 
                 for i, row in pos_players.iterrows():
                     # Load the image
@@ -270,8 +270,7 @@ with col3:
 
         plt.show()
         st.pyplot(fig)
-
-        
+            
 ###############################################################################################################
 with col2:
     # st.write(manager_name + '\'s Past Results')
