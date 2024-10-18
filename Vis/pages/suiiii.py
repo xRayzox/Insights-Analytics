@@ -197,11 +197,6 @@ with col3:
         test = manager_team_df.reset_index()
         # Initialize the positions dictionary
         # --- Formation Setup ---
-        formation = "4-3-3"
-        st.write(formation)
-        num_players = {'GK': 1, 'DEF': 4, 'MID': 3, 'FWD': 3}
-        positions = {pos: [] for pos in num_players}
-
         # --- Position Calculation ---
         x_positions = {
             'GK': [0.5],
@@ -217,10 +212,10 @@ with col3:
             'FWD': [0.8] * 3
         }
 
+        positions = {pos: [] for pos in num_players}
         for pos, num in num_players.items():
             for i in range(num):
                 positions[pos].append((x_positions[pos][i], y_positions[pos][i]))
-
 
         # --- Plotting ---
         pitch = VerticalPitch(pitch_color='grass', line_color='white', stripe=True, corner_arcs=True, half=True)
@@ -236,12 +231,10 @@ with col3:
                 circle = plt.Circle((x_c, y_c), 0.05, color=marker_color[pos], fill=False, linewidth=2, zorder=2)
                 ax.add_patch(circle)
 
-
         ax.legend(loc='upper left')
 
-        plt.show()
-        st.pyplot(plt.show())
-        
+        # Display the plot using Streamlit
+        st.pyplot(fig)
         
 ###############################################################################################################
 with col2:
