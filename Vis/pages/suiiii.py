@@ -44,6 +44,7 @@ ele_df = pd.DataFrame(ele_data)
 # Map element types and teams
 ele_df['element_type'] = ele_df['element_type'].map(ele_types_df.set_index('id')['singular_name_short'])
 ele_df['code']=f"https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_{ele_df['team']}-110.png"
+st.write(ele_df)
 ele_df['team'] = ele_df['team'].map(teams_df.set_index('id')['short_name'])
 
 col1, col2, col3 = st.columns([3, 2, 10])
@@ -179,7 +180,7 @@ with col3:
         manager_team_df = manager_team_df.infer_objects()
 
         # Select relevant columns and rename them
-        manager_team_df = manager_team_df[['web_name', 'element_type', 'team', 'opponent_team', 'total_points', 'Played']]
+        manager_team_df = manager_team_df[['web_name', 'element_type', 'team', 'opponent_team', 'total_points', 'Played','']]
         rn_cols = {
             'web_name': 'Player', 'element_type': 'Pos',
             'team': 'Team', 'opponent_team': 'vs',
@@ -191,8 +192,7 @@ with col3:
         # Map teams
         manager_team_df['vs'] = manager_team_df['vs'].map(teams_df.set_index('id')['short_name'])
         manager_team_df['vs'] = manager_team_df['vs'].fillna('BLANK')
-        manager_team_df['Team_id'] = manager_team_df['Team'].map(teams_df.set_index('id')['short_name'])
-        #manager_team_df['team_logo'] = manager_team_df['cod'].apply(lambda cod: f"https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_{cod}-110.png" if pd.notnull(cod) else 'BLANK')
+        
 
         st.write(manager_team_df)
         test = manager_team_df.reset_index()
