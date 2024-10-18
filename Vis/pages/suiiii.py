@@ -212,12 +212,6 @@ with col3:
         
         formation=f"{def_len}-{mid_len}-{fwd_len}"
 
-        st.write(gkp_len)
-        st.write(def_len)
-        st.write(mid_len)
-        st.write(fwd_len)
-        st.write(formation)
-
         # Ensure the lineup adheres to the specified constraints
         if gkp_len > 1:
             st.error("Only 1 Goalkeeper (GKP) is allowed.")
@@ -247,42 +241,20 @@ with col3:
                 positions.append(9 + (3 - fwd_len))  # FWD positions: 9, 10, 11
                 fwd_len -= 1
             # Ignore unsupported positions
-        st.write(lineup['Pos'])  # Check the unique positions
-        
-        
-        # Draw player names on the pitch
-        ax_text = pitch.formation(
-            formation=formation,
-            positions=positions,
-            kind='text',
-            text=lineup['Player'].str.replace(' ', '\n'),
-            va='center',
-            ha='center',
-            fontsize=16,
-            ax=ax
-        )
 
-        # Scatter markers for players
-        mpl.rcParams['hatch.linewidth'] = 3
-        mpl.rcParams['hatch.color'] = '#a50044'
-        ax_scatter = pitch.formation(
-            formation=formation,
-            positions=positions,
-            kind='scatter',
-            c='#004d98',
-            hatch='||',
-            linewidth=3,
-            s=500,
-            xoffset=-8,
-            ax=ax
-        )
+        for i, row in lineup.iterrows():
+            pitch.annotate(row['Player Name'], (0.5, positions[i]/14), ax=ax, va='center', ha='center') # Adjust vertical spacing
 
-        # Add labels
-        ax.set_title('Football Lineup', fontsize=16)
-        ax.axis('off')
+        # Display formation
+        st.write(f"Formation: {formation}")
 
-        # Display plot in Streamlit
+
+        # Display the pitch
         st.pyplot(fig)
+
+        
+        
+        
 ###############################################################################################################
 with col2:
     # st.write(manager_name + '\'s Past Results')
