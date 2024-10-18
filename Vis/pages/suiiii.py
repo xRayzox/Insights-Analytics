@@ -248,7 +248,7 @@ with col3:
             pos_players = played_players[played_players['Pos'] == pos]
             num_players = len(pos_players)
             img1 = Image.open(urlopen(played_players['code'][0]))
-            ax.imshow(img1, extent=(-60, -60, 60, 60))
+            #ax.imshow(img1, extent=(-60, -60, 60, 60))
             if num_players > 0:
                 # Calculate the starting y position for the zone
                 y_position = pitch_length - sum([gkp_height, def_height, mid_height, fwd_height][:space_factor]) - (height / 2)
