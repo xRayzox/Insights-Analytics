@@ -9,6 +9,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from mplsoccer import Pitch, VerticalPitch
 import matplotlib as mpl
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 
 
 pd.set_option('future.no_silent_downcasting', True)
@@ -192,95 +194,42 @@ with col3:
         manager_team_df['vs'] = manager_team_df['vs'].map(teams_df.set_index('id')['short_name'])
         manager_team_df['vs'] = manager_team_df['vs'].fillna('BLANK')
         
-
-        st.write(manager_team_df)
         test = manager_team_df.reset_index()
-        # Separate players into lineup and bench
-        lineup = test[test['Played'] == True]
-        bench = test[test['Played'] == False]
+        # Function to plot football pitch
+        def plot_pitch(lineup_df):
+            # Create a figure
+            fig, ax = plt.subplots(figsize=(10, 7))
+            
+            # Pitch Outline & Centre Line
+            plt.plot([0, 0, 1, 1, 0], [0, 1, 1, 0, 0], color="black")  # Outer lines
+            plt.plot([0.5, 0.5], [0, 1], color="black")  # Centre line
+            plt.plot([0, 0.5, 0.5, 0], [0.25, 0.25, 0.75, 0.75], color="black")  # Goal box
+            plt.plot([1, 0.5, 0.5, 1], [0.25, 0.25, 0.75, 0.75], color="black")  # Goal box
+            
+            # Plot players
+            for idx, row in lineup_df.iterrows():
+                if row['Played']:
+                    # Starting lineup positions
+                    ax.text(0.1 + 0.2 * (idx % 4), 0.1 + 0.3 * (idx // 4), row['Player'], 
+                            fontsize=12, ha='center', va='center', bbox=dict(facecolor='lightgreen', edgecolor='black', boxstyle='round,pad=0.3'))
+                else:
+                    # Bench players positions
+                    ax.text(0.8, 0.1 + 0.2 * (idx % 5), row['Player'], 
+                            fontsize=10, ha='center', va='center', bbox=dict(facecolor='lightgray', edgecolor='black', boxstyle='round,pad=0.3'))
 
-        # Count players in each position
-        gkp_count = lineup[lineup['Pos'] == 'GKP']
-        def_count = lineup[lineup['Pos'] == 'DEF']
-        mid_count = lineup[lineup['Pos'] == 'MID']
-        fwd_count = lineup[lineup['Pos'] == 'FWD']
+            plt.xlim(-0.1, 1.1)
+            plt.ylim(-0.1, 1.1)
+            plt.axis('off')
+            plt.title('Football Lineup', fontsize=16)
+            plt.show()
 
-        gkp_len = len(gkp_count)
-        def_len = len(def_count)
-        mid_len = len(mid_count)
-        fwd_len = len(fwd_count)
+        # Filter DataFrame for players who played (starting lineup)
+        lineup_df = test[test['Played'] == True]
 
-        formation = f"{def_len}-{mid_len}-{fwd_len}"
+        # Plot the pitch with the lineup
+        plot_pitch(lineup_df)       
 
-        # Ensure the lineup adheres to the specified constraints
-        if gkp_len > 1:
-            st.error("Only 1 Goalkeeper (GKP) is allowed.")
-        if def_len > 5:
-            st.error("Maximum of 5 Defenders (DEF) is allowed.")
-        if mid_len > 5:
-            st.error("Maximum of 5 Midfielders (MID) is allowed.")
-        if fwd_len > 3:
-            st.error("Maximum of 3 Forwards (FWD) is allowed.")
-
-        # Create vertical pitch
-        pitch = VerticalPitch(goal_type='box')
-        fig, ax = pitch.draw(figsize=(6, 8.72))
-
-        # Assign position IDs for each player based on the 3-4-3 formation
-        position_ids = []
-        def_line_count = 0
-        mid_line_count = 0
-        fwd_line_count = 0
-
-        for index, row in lineup.iterrows():
-            if row['Pos'] == 'GKP':
-                position_ids.append(1)  # Position ID for the goalkeeper
-            elif row['Pos'] == 'DEF':
-                if def_line_count < 3:  # Only 3 defenders in a 3-4-3 formation
-                    position_ids.append(2 + def_line_count)  # IDs for defenders: 2, 3, 4
-                    def_line_count += 1
-            elif row['Pos'] == 'MID':
-                if mid_line_count < 4:  # Only 4 midfielders in a 3-4-3 formation
-                    position_ids.append(5 + mid_line_count)  # IDs for midfielders: 5, 6, 7, 8
-                    mid_line_count += 1
-            elif row['Pos'] == 'FWD':
-                if fwd_line_count < 3:  # Only 3 forwards in a 3-4-3 formation
-                    position_ids.append(9 + fwd_line_count)  # IDs for forwards: 9, 10, 11
-                    fwd_line_count += 1
-
-        # Create the text annotations for players
-        ax_text = pitch.formation(
-            formation,
-            positions=position_ids,
-            kind='text',
-            text=lineup['Player'].str.replace(' ', '\n'),
-            va='center',
-            ha='center',
-            fontsize=16,
-            ax=ax
-        )
-
-        # Scatter markers for players
-        mpl.rcParams['hatch.linewidth'] = 3
-        mpl.rcParams['hatch.color'] = '#a50044'
-        ax_scatter = pitch.formation(
-            formation,
-            positions=position_ids,
-            kind='scatter',
-            c='#004d98',
-            hatch='||',
-            linewidth=3,
-            s=500,
-            xoffset=-8,
-            ax=ax
-        )
-
-        # Display formation
-        st.write(f"Formation: {formation}")
-
-        # Display the pitch
-        st.pyplot(fig)
-
+        
         
 ###############################################################################################################
 with col2:
