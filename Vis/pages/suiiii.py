@@ -155,7 +155,7 @@ with col2:
         else:
             hist_df.sort_values(col, ascending=False, inplace=True)
         hist_df.set_index('Season', inplace=True)
-        st.dataframe(hist_df, height=562)
+        st.dataframe(hist_df)
 #############################################################################
 events_df = pd.DataFrame(get_bootstrap_data()['events'])
 complete_df = events_df.loc[events_df['deadline_time'] < str(dt.datetime.now())]
