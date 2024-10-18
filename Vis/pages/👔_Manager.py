@@ -273,7 +273,7 @@ else:
     st.altair_chart(c, use_container_width=True)
 
 
-
+"""
 if 'count' not in st.session_state:
     st.session_state['count'] = 0
 
@@ -374,3 +374,4 @@ else:
             height=700
     )
     st.altair_chart(c, use_container_width=True)
+"""
