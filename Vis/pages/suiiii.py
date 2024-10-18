@@ -155,10 +155,10 @@ def plot_team_on_pitch(df):
     fig, ax = draw_pitch()
 
     positions = {
-        1: (5, 50),   # Goalkeeper
-        2: [(20, 15), (20, 35), (20, 65), (20, 85)],  # Defenders
-        3: [(50, 15), (50, 35), (50, 65), (50, 85)],  # Midfielders
-        4: [(80, 40), (80, 60)]   # Forwards
+        'GKP': (5, 50),   # Goalkeeper
+        'DEF': [(20, 15), (20, 35), (20, 65), (20, 85)],  # Defenders
+        'MID': [(50, 15), (50, 35), (50, 65), (50, 85)],  # Midfielders
+        'FWD': [(80, 40), (80, 60)]   # Forwards
     }
 
     # Assign positions based on element_type
