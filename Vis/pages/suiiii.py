@@ -215,7 +215,7 @@ with col3:
         # Create a vertical pitch with specified size
         pitch = VerticalPitch(pitch_color='grass', line_color='white', stripe=True, corner_arcs=True, half=True, pitch_length=pitch_length, pitch_width=pitch_width)
         fig, ax = pitch.draw(figsize=(8, 8), tight_layout=False)  # Adjust figsize as needed
-
+        ax.set_ylim(pitch_length, 0)  # Set y-axis limits and invert
         # Calculate y-coordinates for each zone starting from the top
         y_gkp = pitch_length  # Goalkeeper zone starts at the top
         y_def = y_gkp + gkp_height + space_between_zones
@@ -240,7 +240,7 @@ with col3:
         ax.add_patch(fwd_zone)
 
         # Invert the y-axis
-        ax.set_ylim(pitch_length, 0)  # Set y-axis limits and invert
+        
 
         """
         # Centering image in the GKP zone
