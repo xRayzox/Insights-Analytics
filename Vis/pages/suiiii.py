@@ -195,7 +195,8 @@ with col3:
         # Map teams
         manager_team_df['vs'] = manager_team_df['vs'].map(teams_df.set_index('id')['short_name'])
         manager_team_df['vs'] = manager_team_df['vs'].fillna('BLANK')
-        
+        test = manager_team_df.reset_index()
+
         # Define the pitch size
         pitch_length = 60  # Set to desired length
         pitch_width = 60    # Set to desired width
