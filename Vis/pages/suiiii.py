@@ -196,12 +196,12 @@ with col3:
         # Separate players into lineup and bench
         lineup = test[test['Played'] == True]
         bench = test[test['Played'] == False]
-        lineup
+
         # Count players in each position
-        gkp_count = lineup[lineup['Pos'] == 'GKP'].count()
-        def_count = lineup[lineup['Pos'] == 'DEF'].count()
-        mid_count = lineup[lineup['Pos'] == 'MID'].count()
-        fwd_count = lineup[lineup['Pos'] == 'FWD'].count()
+        gkp_count = lineup[lineup['Pos'] == 'GKP'].shape[0]
+        def_count = lineup[lineup['Pos'] == 'DEF'].shape[0]
+        mid_count = lineup[lineup['Pos'] == 'MID'].shape[0]
+        fwd_count = lineup[lineup['Pos'] == 'FWD'].shape[0]
 
         # Ensure the lineup adheres to the specified constraints
         if gkp_count > 1:
@@ -235,6 +235,8 @@ with col3:
             elif row['Pos'] == 'FWD':
                 positions.append(11 + fwd_count)  # FWD position
                 fwd_count -= 1  # Decrement remaining FWD count
+
+        positions
         formation=f'{def_count}-{mid_count}-{fwd_count}'
         print(formation)
         # Draw player names on the pitch
