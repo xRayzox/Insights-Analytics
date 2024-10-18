@@ -198,7 +198,7 @@ with col3:
         bench = test[test['Played'] == False]
 
         # Count players in each position
-        gkp_count = len(lineup[lineup['Pos'] == 'GKP'])
+        gkp_count = lineup[lineup['Pos'] == 'GKP']
         def_count = len(lineup[lineup['Pos'] == 'DEF'])
         mid_count = len(lineup[lineup['Pos'] == 'MID'])
         fwd_count = len(lineup[lineup['Pos'] == 'FWD'])
