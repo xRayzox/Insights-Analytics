@@ -100,7 +100,7 @@ with col1:
                         man_gw_hist['£'] /= 10
                         man_gw_hist = man_gw_hist[['GWP', 'Ave', 'OP', 'GWR', 'OR', '£', 'TV', 'TM', 'TC', 'PoB']]
                         man_gw_hist['Chip'] = 'None'
-                        st.dataframe(man_gw_hist.style.format({'TV': '£{:.1f}', '£': '£{:.1f}'}))
+                        st.dataframe(man_gw_hist.style.format({'TV': '£{:.1f}', '£': '£{:.1f}'}),use_container_width=True)
                     else:
                         chips_df['name'] = chips_df['name'].apply(chip_converter)
                         chips_df = chips_df[['event', 'name']]
@@ -125,7 +125,7 @@ with col1:
                         man_gw_hist['TV'] /= 10
                         man_gw_hist['£'] /= 10
                         man_gw_hist = man_gw_hist[['GWP', 'Ave', 'OP', 'GWR', 'OR', '£', 'TV', 'TM', 'TC', 'PoB', 'Chip']]
-                        st.dataframe(man_gw_hist.style.format({'TV': '£{:.1f}', '£': '£{:.1f}'}))
+                        st.dataframe(man_gw_hist.style.format({'TV': '£{:.1f}', '£': '£{:.1f}'}),use_container_width=True)
             else:
                 st.write('FPL ID is too high to be a valid ID. Please try again.')
                 st.write(f'The total number of FPL players is: {total_players}')
