@@ -196,6 +196,7 @@ with col3:
         
         test = manager_team_df.reset_index()
         # Initialize the positions dictionary
+        # Initialize the positions dictionary
         positions = {
             'GK': [],
             'DEF': [],
@@ -223,15 +224,22 @@ with col3:
         pitch = VerticalPitch(pitch_color='grass', line_color='white', stripe=True, corner_arcs=True, half=True)
         fig, ax = pitch.draw()
 
+        # Assign different colors to each position for better visibility
+        colors = {
+            'GK': 'red',
+            'DEF': 'blue',
+            'MID': 'yellow',
+            'FWD': 'green'
+        }
+
         for pos, coords in positions.items():
             if coords:  # Check if the list is not empty
                 x, y = zip(*coords)
-                ax.scatter(x, y, label=pos, marker='o' if pos != 'GK' else 'x', s=100)
+                ax.scatter(x, y, label=pos, color=colors[pos], marker='o' if pos != 'GK' else 'x', s=100)
 
+        # Show the legend and the plot
         ax.legend()
-        plt.show()  # Use plt.show() to display the plot with matplotlib
-        st.pyplot(fig)
-        
+        plt.show()
         
 ###############################################################################################################
 with col2:
