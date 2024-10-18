@@ -240,7 +240,7 @@ with col3:
         ax.axvline(pitch_width, color='blue', linewidth=0.5, linestyle='--', label=f'X={pitch_width}')  # Vertical line at X=pitch_width
 
         # Filter for players that have played
-        played_players = test[test['Played']]
+        played_players = test[test['Played'] == True]
 
         # Place players on the pitch
         for pos, height, space_factor in [('GKP', gkp_height, 0),
@@ -251,15 +251,19 @@ with col3:
             pos_players = played_players[played_players['Pos'] == pos]
             num_players = len(pos_players)
             
-            for i, row in pos_players.iterrows():
-                # Load the image
-                img = Image.open(urlopen(row['code']))
-                
-                # Calculate the vertical position based on the zone and index
-                y_position = pitch_length - sum([gkp_height, def_height, mid_height, fwd_height][:space_factor]) - (height / 2) - space_between_zones * space_factor - (i * (height + space_between_zones))
-                
-                # Place the image horizontally centered in the zone
-                ax.imshow(img, extent=(pitch_width / 2 - 1.5, pitch_width / 2 + 1.5, y_position + pitch_length / 2 - 1.5, y_position + pitch_length / 2 + 1.5))
+            if num_players > 0:
+                # Calculate the starting y position for the zone
+                zone_start = pitch_length - sum([gkp_height, def_height, mid_height, fwd_height][:space_factor]) - height * (num_players - 1) / 2
+
+                for i, row in pos_players.iterrows():
+                    # Load the image
+                    img = Image.open(urlopen(row['code']))
+                    
+                    # Calculate the vertical position based on the zone and index
+                    y_position = zone_start + (i * height)
+
+                    # Place the image horizontally centered in the zone
+                    ax.imshow(img, extent=(pitch_width / 2 - 1.5, pitch_width / 2 + 1.5, y_position + pitch_length / 2 - 1.5, y_position + pitch_length / 2 + 1.5))
 
         # Add legend for reference lines
         ax.legend()
