@@ -224,6 +224,28 @@ with col3:
             ax.text(x, y, row['Player'], fontsize=10, ha='center', va='center')
 
         plt.show()
+        
+        
+###############################################################################################################
+with col2:
+    # st.write(manager_name + '\'s Past Results')
+    # st.write('Best ever finish: ')
+    col = st.selectbox(
+        manager_name + '\'s Past Results', ['Season', 'Pts', 'OR']
+        )
+    hist_data = get_manager_history_data(fpl_id)
+    hist_df = pd.DataFrame(hist_data['past'])
+    if len(hist_df) == 0:
+        st.write('No previous season history to display.')
+    else:
+        hist_df.columns=['Season', 'Pts', 'OR']
+        if col == 'OR':
+            hist_df.sort_values(col, ascending=True, inplace=True)
+        else:
+            hist_df.sort_values(col, ascending=False, inplace=True)
+        hist_df.set_index('Season', inplace=True)
+        st.dataframe(hist_df, height=562)
+
 
 if fpl_id == '':
     st.write('')
