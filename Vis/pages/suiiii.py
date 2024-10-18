@@ -194,8 +194,8 @@ with col3:
         test=manager_team_df.reset_index()
         # Separate players into lineup and bench
         # Separate players into lineup and bench
-        lineup = test[test['Played'] == True]
-        bench = test[test['Played'] == False]
+        lineup = manager_team_df[manager_team_df['Played'] == True]
+        bench = manager_team_df[manager_team_df['Played'] == False]
 
         # Count players in each position
         gkp_count = lineup[lineup['Pos'] == 'GKP'].shape[0]
@@ -227,15 +227,17 @@ with col3:
             if row['Pos'] == 'GKP':
                 positions.append(0)  # GKP position
             elif row['Pos'] == 'DEF':
-                positions.append(len(positions) + 1)  # Position for DEF
+                positions.append(1 + def_count)  # DEF position
+                def_count -= 1  # Decrement remaining DEF count
             elif row['Pos'] == 'MID':
-                positions.append(len(positions) + 1)  # Position for MID
+                positions.append(6 + mid_count)  # MID position
+                mid_count -= 1  # Decrement remaining MID count
             elif row['Pos'] == 'FWD':
-                positions.append(len(positions) + 1)  # Position for FWD
+                positions.append(11 + fwd_count)  # FWD position
+                fwd_count -= 1  # Decrement remaining FWD count
 
         # Draw player names on the pitch
         ax_text = pitch.formation(
-            '4-3-3',  # You can adjust the formation type
             positions=positions,
             kind='text',
             text=lineup['Player'].str.replace(' ', '\n'),
@@ -249,7 +251,6 @@ with col3:
         mpl.rcParams['hatch.linewidth'] = 3
         mpl.rcParams['hatch.color'] = '#a50044'
         ax_scatter = pitch.formation(
-            '4-3-3',  # You can adjust the formation type
             positions=positions,
             kind='scatter',
             c='#004d98',
