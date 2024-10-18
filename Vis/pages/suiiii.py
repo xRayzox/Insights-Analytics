@@ -229,19 +229,18 @@ if fpl_id and gw_complete_list:
         fig, ax = pitch.draw(figsize=fig_size, tight_layout=False)  # Draw the pitch
 
         # Extract pitch dimensions from the figure
-        pitch_length = pitch.dim.pitch_length  # Scale as needed (10 is a scaling factor)
-        pitch_width = pitch.dim.pitch_width  # Scale as needed
+        pitch_length = fig.get_figheight() * 10  # Scale as needed (10 is a scaling factor)
+        pitch_width = fig.get_figwidth() * 10  # Scale as needed
 
         # Define placements for each position zone
-        zone_height = pitch_length / 6  # Height for each zone
-        space_between_zones = zone_height/6  # Space between zones
-        st.write(space_between_zones)
-        # Position calculations
+        zone_height = pitch_length / 6  
+
+        # Position calculations (optimized)
         positions = {
-            'GKP': pitch_length - zone_height / 2,
-            'DEF': pitch_length - zone_height * 1.5 - space_between_zones,
-            'MID': pitch_length - zone_height * 2.5 - space_between_zones * 2,
-            'FWD': pitch_length - zone_height * 3.5 - space_between_zones * 3 
+            'GKP': pitch_length + 2.5 * zone_height,
+            'DEF': pitch_length + 5/6 * zone_height,
+            'MID': pitch_length - 1/3 * zone_height,
+            'FWD': pitch_length - zone_height
         }
         df=test[test['Played']==True]
         # Loop through DataFrame and place images
