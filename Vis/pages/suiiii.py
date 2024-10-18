@@ -194,6 +194,10 @@ with col2:
         # Check column names for debugging
         st.write("Columns in DataFrame:", manager_team_df.columns.tolist())
 
+        # Print the entire DataFrame for debugging
+        st.write("Complete DataFrame:")
+        st.dataframe(manager_team_df)
+
         # Separate players into lineup and bench
         lineup = manager_team_df[manager_team_df['Played'] == True]
         bench = manager_team_df[manager_team_df['Played'] == False]
