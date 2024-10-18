@@ -220,7 +220,7 @@ with col3:
             'MID': pitch_length + 3 * zone_height - space_between_zones * 2,
             'FWD': pitch_length + 4 * zone_height - space_between_zones * 3
         }
-        df=test
+        df=test[test['Played']==True]
         # Loop through DataFrame and place images
         for index, row in df.iterrows():
             IMAGE_URL = row['code']
