@@ -190,7 +190,7 @@ with col3:
         # Map teams
         manager_team_df['vs'] = manager_team_df['vs'].map(teams_df.set_index('id')['short_name'])
         manager_team_df['vs'] = manager_team_df['vs'].fillna('BLANK')
-        manager_team_df['cod'] = manager_team_df['team'].map(teams_df.set_index('id')['short_name'])
+        manager_team_df['cod'] = manager_team_df['Team'].map(teams_df.set_index('id')['short_name'])
         manager_team_df['team_logo'] = manager_team_df['cod'].apply(lambda cod: f"https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_{cod}-110.png" if pd.notnull(cod) else 'BLANK')
 
         st.write(manager_team_df)
