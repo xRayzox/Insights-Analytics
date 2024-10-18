@@ -271,9 +271,9 @@ if fpl_id and gw_complete_list:
             ax_image = pitch.inset_image(y_image, x_image, image, height=10, ax=ax)
             # Add a rounded rectangle behind the player's name
             player_name = row['Player']  # Assuming the DataFrame has a 'Player' column
-            rect_width = 2  # Width of the rectangle
-            rect_height = 2  # Height of the rectangle
-            rounding = 5  # Rounding of the rectangle corners
+            rect_width = 5  # Width of the rectangle
+            rect_height = 5  # Height of the rectangle
+            rounding = 2  # Rounding of the rectangle corners
 
             # Create a rounded rectangle patch
             rounded_rect = FancyBboxPatch(
