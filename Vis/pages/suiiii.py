@@ -206,7 +206,7 @@ with col3:
         # Define heights for each zone
         gkp_height = pitch_length / 5         # Height of Goalkeeper Zone
         def_height = pitch_length / 5         # Height of Defenders Zone
-        mid_height = pitch_length / 5 * 1.5   # Height of Midfielders Zone (twice the height)
+        mid_height = pitch_length / 5 * 1.5   # Height of Midfielders Zone (1.5 times the height)
         fwd_height = pitch_length / 5         # Height of Forwards Zone
 
         # Define space between zones
@@ -218,41 +218,36 @@ with col3:
 
         # Draw pitch zones
         # Goalkeeper Zone (at the top)
-        gkp_zone = patches.Rectangle((0, pitch_length - gkp_height + pitch_length), pitch_width + (pitch_width / 3), gkp_height, linewidth=1, edgecolor='blue', facecolor='lightblue', alpha=0.5)
+        gkp_zone = patches.Rectangle((0, pitch_length - gkp_height), pitch_width + (pitch_width / 3), gkp_height, linewidth=1, edgecolor='blue', facecolor='lightblue', alpha=0.5)
         ax.add_patch(gkp_zone)
 
         # Defenders Zone (below the goalkeeper)
-        def_zone = patches.Rectangle((0, pitch_length - gkp_height - def_height - space_between_zones + pitch_length), pitch_width + (pitch_width / 3), def_height, linewidth=1, edgecolor='black', facecolor='blue', alpha=0.5)
+        def_zone = patches.Rectangle((0, pitch_length - gkp_height - def_height - space_between_zones), pitch_width + (pitch_width / 3), def_height, linewidth=1, edgecolor='black', facecolor='blue', alpha=0.5)
         ax.add_patch(def_zone)
 
         # Midfielders Zone (below the defenders)
-        mid_zone = patches.Rectangle((0, pitch_length - gkp_height - def_height - mid_height - space_between_zones * 2 + pitch_length), pitch_width + (pitch_width / 3), mid_height, linewidth=1, edgecolor='black', facecolor='blue', alpha=0.5)
+        mid_zone = patches.Rectangle((0, pitch_length - gkp_height - def_height - mid_height - space_between_zones * 2), pitch_width + (pitch_width / 3), mid_height, linewidth=1, edgecolor='black', facecolor='blue', alpha=0.5)
         ax.add_patch(mid_zone)
 
         # Forwards Zone (at the bottom)
-        fwd_zone = patches.Rectangle((0, pitch_length - gkp_height - def_height - mid_height - fwd_height - space_between_zones * 3 + pitch_length), pitch_width + (pitch_width / 3), fwd_height, linewidth=1, edgecolor='orange', facecolor='lightcoral', alpha=0.5)
+        fwd_zone = patches.Rectangle((0, pitch_length - gkp_height - def_height - mid_height - fwd_height - space_between_zones * 3), pitch_width + (pitch_width / 3), fwd_height, linewidth=1, edgecolor='orange', facecolor='lightcoral', alpha=0.5)
         ax.add_patch(fwd_zone)
 
-        
-
-        
         # Filter for players that have played
         played_players = test[test['Played'] == True]
 
         # Place players on the pitch
         for pos, height, space_factor in [('GKP', gkp_height, 0),
-                                   ('DEF', def_height, 1),
-                                   ('MID', mid_height, 2),
-                                   ('FWD', fwd_height, 3)]:
-        # Filter players for the current position
+                                        ('DEF', def_height, 1),
+                                        ('MID', mid_height, 2),
+                                        ('FWD', fwd_height, 3)]:
+            # Filter players for the current position
             pos_players = played_players[played_players['Pos'] == pos]
             num_players = len(pos_players)
-            img1 = Image.open(urlopen(played_players['code'][0]))
-            #ax.imshow(img1, extent=(-60, -60, 60, 60))
             if num_players > 0:
                 # Calculate the starting y position for the zone
                 y_position = pitch_length - sum([gkp_height, def_height, mid_height, fwd_height][:space_factor]) - (height / 2)
-                st.write(y_position)
+
                 # Calculate spacing between players
                 spacing = (pitch_width - 3) / (num_players - 1) if num_players > 1 else 0  # Adjust this based on desired spacing
 
@@ -261,8 +256,8 @@ with col3:
                     img = Image.open(urlopen(row['code']))
                     
                     # Calculate the horizontal position based on index and spacing
-                    x_position = (spacing * i) - (pitch_width / 2) + 1.5  # Center the players in the zone
-                    st.write(x_position)
+                    x_position = (spacing * i) - (pitch_width / 2) + (1.5 / 2)  # Center the players in the zone
+
                     # Place the image in the calculated position
                     ax.imshow(img, extent=(x_position, x_position + 1.5, y_position - 1.5, y_position + 1.5))
 
