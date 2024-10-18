@@ -50,7 +50,7 @@ ele_df['code'] = ele_df['team'].map(teams_df.set_index('id')['code'])
 ele_df['code'] = ele_df['code'].apply(lambda x: f"https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_{x}-110.png")
 ele_df['team'] = ele_df['team'].map(teams_df.set_index('id')['short_name'])
 
-col1, col2, col3 = st.columns([3, 2, 10])
+col1, col2, col3 = st.columns([3, 3])
 
 with col1:
     fpl_id = st.text_input('Please enter your FPL ID:', MY_FPL_ID)
@@ -129,128 +129,6 @@ with col1:
         except ValueError:
             st.write('Please enter a valid FPL ID.')
 ###############################################################################################################
-with col3:
-    events_df = pd.DataFrame(get_bootstrap_data()['events'])
-    complete_df = events_df.loc[events_df['deadline_time'] < str(dt.datetime.now())]
-    gw_complete_list = sorted(complete_df['id'].tolist(), reverse=True)
-    fpl_gw = st.selectbox('Team on Gameweek', gw_complete_list)
-
-    if fpl_id and gw_complete_list:
-        man_picks_data = get_manager_team_data(fpl_id, fpl_gw)
-        manager_team_df = pd.DataFrame(man_picks_data['picks'])
-        ele_cut = ele_df[['id', 'web_name', 'team', 'element_type','code']].copy()
-        ele_cut.rename(columns={'id': 'element'}, inplace=True)
-        
-        manager_team_df = manager_team_df.merge(ele_cut, how='left', on='element')
-        
-        # Pull GW data for each player
-        gw_players_list = manager_team_df['element'].tolist()
-        pts_list = []
-        for player_id in gw_players_list:
-            test = pd.DataFrame(get_player_data(player_id)['history'])
-            pl_cols = ['element', 'opponent_team', 'total_points', 'round']
-            test_cut = test[pl_cols]
-            test_new = test_cut.loc[test_cut['round'] == fpl_gw]
-
-            if test_new.empty:
-                test_new = pd.DataFrame([[player_id, 'BLANK', 0, fpl_gw]], columns=pl_cols)
-
-            pts_list.append(test_new)
-
-        pts_df = pd.concat(pts_list)
-        manager_team_df = manager_team_df.merge(pts_df, how='left', on='element')
-
-        # Calculate total points based on multiplier and captaincy
-        manager_team_df.loc[((manager_team_df['multiplier'] == 2) |
-                             (manager_team_df['multiplier'] == 3)),
-                            'total_points'] *= manager_team_df['multiplier']
-        
-        manager_team_df.loc[(manager_team_df['is_captain'] == True) & (manager_team_df['multiplier'] == 2),
-                            'web_name'] += ' (C)'
-        
-        manager_team_df.loc[manager_team_df['multiplier'] == 3,
-                            'web_name'] += ' (TC)'
-        
-        manager_team_df.loc[manager_team_df['is_vice_captain'] == True,
-                            'web_name'] += ' (VC)'
-        
-        manager_team_df.loc[manager_team_df['multiplier'] != 0, 'Played'] = True
-
-        # Fill NaN values
-        manager_team_df['Played'] = manager_team_df['Played'].fillna(False)
-
-        # Convert to appropriate dtypes after filling NaN values
-        manager_team_df = manager_team_df.infer_objects()
-
-        # Select relevant columns and rename them
-        manager_team_df = manager_team_df[['web_name', 'element_type', 'team', 'opponent_team', 'total_points', 'Played','code']]
-        rn_cols = {
-            'web_name': 'Player', 'element_type': 'Pos',
-            'team': 'Team', 'opponent_team': 'vs',
-            'total_points': 'GWP'
-        }
-        manager_team_df.rename(columns=rn_cols, inplace=True)
-        manager_team_df.set_index('Player', inplace=True)
-
-        # Map teams
-        manager_team_df['vs'] = manager_team_df['vs'].map(teams_df.set_index('id')['short_name'])
-        manager_team_df['vs'] = manager_team_df['vs'].fillna('BLANK')
-        
-        test = manager_team_df.reset_index()
-
-
-        # Define the figure size
-        fig_size = (8, 8)  # Set to desired size (width, height)
-
-        # Create a vertical pitch with specified size
-        pitch = VerticalPitch(pitch_color='grass', line_color='white', stripe=True, corner_arcs=True, half=True)
-        fig, ax = pitch.draw(figsize=fig_size, tight_layout=False)  # Draw the pitch
-
-        # Extract pitch dimensions from the figure
-        pitch_length = fig.get_figheight() * 10  # Scale as needed (10 is a scaling factor)
-        pitch_width = fig.get_figwidth() * 10  # Scale as needed
-
-        # Define placements for each position zone
-        zone_height = pitch_length / 6  # Height for each zone
-        space_between_zones = 1  # Space between zones
-
-        # Position calculations
-        positions = {
-            'GKP': pitch_length + 2 * zone_height,
-            'DEF': pitch_length + zone_height - space_between_zones,
-            'MID': pitch_length - 1/zone_height  - space_between_zones * 2,
-            'FWD': pitch_length - zone_height - space_between_zones * 3
-        }
-        df=test[test['Played']==True]
-        # Loop through DataFrame and place images
-        for index, row in df.iterrows():
-            IMAGE_URL = row['code']
-            image = Image.open(urlopen(IMAGE_URL))
-
-            pos = row['Pos']
-            if pos == 'GKP':
-                y_image = positions['GKP']
-                x_image = pitch_width / 2  # Centered horizontally
-            elif pos == 'DEF':
-                y_image = positions['DEF']
-                num_def = len(df[df['Pos'] == 'DEF'])  # Number of DEF players
-                x_image = (pitch_width / (num_def + 1)) * (index % num_def + 1)  # Centered and distributed
-            elif pos == 'MID':
-                y_image = positions['MID']
-                num_mid = len(df[df['Pos'] == 'MID'])  # Number of MID players
-                x_image = (pitch_width / (num_mid + 1)) * (index % num_mid + 1)  # Centered and distributed
-            elif pos == 'FWD':
-                y_image = positions['FWD']
-                num_fwd = len(df[df['Pos'] == 'FWD'])  # Number of FWD players
-                x_image = (pitch_width / (num_fwd + 1)) * (index % num_fwd + 1)  # Centered and distributed
-
-            # Draw the image on the pitch
-            ax_image = pitch.inset_image(y_image, x_image, image, height=10, ax=ax)
-
-        # Show the pitch with player images
-        plt.show()
-        st.pyplot(fig)
-
 
 ###############################################################################################################
 with col2:
@@ -271,7 +149,126 @@ with col2:
             hist_df.sort_values(col, ascending=False, inplace=True)
         hist_df.set_index('Season', inplace=True)
         st.dataframe(hist_df, height=562)
+################################################
+events_df = pd.DataFrame(get_bootstrap_data()['events'])
+complete_df = events_df.loc[events_df['deadline_time'] < str(dt.datetime.now())]
+gw_complete_list = sorted(complete_df['id'].tolist(), reverse=True)
+fpl_gw = st.selectbox('Team on Gameweek', gw_complete_list)
 
+# Check if fpl_id and gw_complete_list are available
+if fpl_id and gw_complete_list:
+    # Retrieve manager's team data
+    man_picks_data = get_manager_team_data(fpl_id, fpl_gw)
+    manager_team_df = pd.DataFrame(man_picks_data['picks'])
+    
+    # Prepare element data for merging
+    ele_cut = ele_df[['id', 'web_name', 'team', 'element_type', 'code']].copy()
+    ele_cut.rename(columns={'id': 'element'}, inplace=True)
+    
+    # Merge manager's team with element data
+    manager_team_df = manager_team_df.merge(ele_cut, how='left', on='element')
+
+    # Pull Gameweek data for each player
+    gw_players_list = manager_team_df['element'].tolist()
+    pts_list = []
+
+    for player_id in gw_players_list:
+        test = pd.DataFrame(get_player_data(player_id)['history'])
+        pl_cols = ['element', 'opponent_team', 'total_points', 'round']
+        test_cut = test[pl_cols]
+        test_new = test_cut.loc[test_cut['round'] == fpl_gw]
+
+        # Handle blank cases
+        if test_new.empty:
+            test_new = pd.DataFrame([[player_id, 'BLANK', 0, fpl_gw]], columns=pl_cols)
+
+        pts_list.append(test_new)
+
+    # Concatenate points data and merge with manager's team
+    pts_df = pd.concat(pts_list)
+    manager_team_df = manager_team_df.merge(pts_df, how='left', on='element')
+
+    # Calculate total points based on multiplier and captaincy
+    manager_team_df['total_points'] = manager_team_df.apply(
+        lambda row: row['total_points'] * row['multiplier'] if row['multiplier'] in [2, 3] else row['total_points'],
+        axis=1
+    )
+
+    # Update player names based on roles
+    manager_team_df.loc[manager_team_df['is_captain'], 'web_name'] += ' (C)'
+    manager_team_df.loc[manager_team_df['multiplier'] == 3, 'web_name'] += ' (TC)'
+    manager_team_df.loc[manager_team_df['is_vice_captain'], 'web_name'] += ' (VC)'
+    
+    # Mark players as played if they have a multiplier
+    manager_team_df['Played'] = manager_team_df['multiplier'].notnull()
+
+    # Fill NaN values for 'Played'
+    manager_team_df['Played'] = manager_team_df['Played'].fillna(False)
+
+    # Convert to appropriate dtypes
+    manager_team_df = manager_team_df.infer_objects()
+
+    # Select relevant columns and rename
+    manager_team_df = manager_team_df[['web_name', 'element_type', 'team', 'opponent_team', 'total_points', 'Played', 'code']]
+    renaming_dict = {
+        'web_name': 'Player', 
+        'element_type': 'Pos',
+        'team': 'Team', 
+        'opponent_team': 'vs',
+        'total_points': 'GWP'
+    }
+    manager_team_df.rename(columns=renaming_dict, inplace=True)
+    manager_team_df.set_index('Player', inplace=True)
+
+    # Map team names to short names
+    manager_team_df['vs'] = manager_team_df['vs'].map(teams_df.set_index('id')['short_name']).fillna('BLANK')
+
+    # Reset index for plotting
+    df = manager_team_df.reset_index()
+
+    # Create a vertical pitch for visualization
+    fig_size = (8, 8)
+    pitch = VerticalPitch(pitch_color='grass', line_color='white', stripe=True, corner_arcs=True, half=True)
+    fig, ax = pitch.draw(figsize=fig_size, tight_layout=False)
+
+    # Calculate pitch dimensions
+    pitch_length = fig.get_figheight() * 10
+    pitch_width = fig.get_figwidth() * 10
+
+    # Define placement zones for each position
+    zone_height = pitch_length / 6
+    positions = {
+        'GKP': pitch_length + 2 * zone_height,
+        'DEF': pitch_length + zone_height - 1,
+        'MID': pitch_length - 1 - zone_height - 2,
+        'FWD': pitch_length - zone_height - 3
+    }
+
+    # Filter played players for plotting
+    df = df[df['Played']]
+
+    # Loop through players and place images on the pitch
+    for index, row in df.iterrows():
+        IMAGE_URL = row['code']
+        image = Image.open(urlopen(IMAGE_URL))
+
+        pos = row['Pos']
+        if pos == 'GKP':
+            y_image = positions['GKP']
+            x_image = pitch_width / 2  # Centered horizontally
+        else:
+            num_players = len(df[df['Pos'] == pos])
+            y_image = positions[pos]
+            x_image = (pitch_width / (num_players + 1)) * (index % num_players + 1)
+
+        # Draw the image on the pitch
+        ax_image = pitch.inset_image(y_image, x_image, image, height=10, ax=ax)
+
+    # Show the pitch with player images
+    plt.show()
+    st.pyplot(fig)
+
+##################################################
 
 if fpl_id == '':
     st.write('')
