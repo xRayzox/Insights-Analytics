@@ -195,8 +195,9 @@ with col2:
 
 
         # Separate players into lineup and bench
-        lineup = manager_team_df[manager_team_df['Played'] == True]
-        bench = manager_team_df[manager_team_df['Played'] == False]
+        lineup = test[test['Played'] == True]
+        bench = test[test['Played'] == False]
+        st.dataframe(lineup)
         # Create pitch
         fig, ax = plt.subplots(figsize=(10, 7))
         plt.plot([0, 0, 1, 1, 0], [0, 1, 1, 0, 0], color="black")  # Pitch outline
