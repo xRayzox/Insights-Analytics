@@ -198,7 +198,7 @@ with col3:
 
         # Filter players based on formation requirements
         goalkeeper = test[(test['Pos'] == 'GKP') & (test['Played'])]
-        defenders = test[(test['Pos'] == 'DEF') & (test['Played']].head(3)
+        defenders = test[(test['Pos'] == 'DEF') & (test['Played'])].head(3)
         midfielders = test[(test['Pos'] == 'MID') & (test['Played'])].head(4)
         forwards = test[(test['Pos'] == 'FWD') & (test['Played'])].head(3)
 
