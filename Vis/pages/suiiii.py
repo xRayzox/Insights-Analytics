@@ -211,7 +211,7 @@ with col3:
 
         # Define space between zones
         space_between_zones = 2  # Space between zones
-        pitch = VerticalPitch(pitch_color='grass', line_color='white', stripe=True, corner_arcs=True, half=True, pitch_length=pitch_length, pitch_width=pitch_width)
+        pitch = VerticalPitch(pitch_color='grass', line_color='white', stripe=True, corner_arcs=True,  pitch_length=pitch_length, pitch_width=pitch_width)
         fig, ax = pitch.draw(figsize=(8, 8), tight_layout=False)  # Adjust 
         ax.set_xlim(0, pitch_width)
         ax.set_ylim(pitch_length, 0)  # Invert y-axis
