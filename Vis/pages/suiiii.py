@@ -194,18 +194,10 @@ with col2:
         # Check column names for debugging
         st.write("Columns in DataFrame:", manager_team_df.columns.tolist())
 
-        # Print the entire DataFrame for debugging
-        st.write("Complete DataFrame:")
-        st.dataframe(manager_team_df)
 
         # Separate players into lineup and bench
         lineup = manager_team_df[manager_team_df['Played'] == True]
         bench = manager_team_df[manager_team_df['Played'] == False]
-
-        # Show DataFrame in Streamlit
-        st.write("Lineup:")
-        st.dataframe(lineup)
-
         # Create pitch
         fig, ax = plt.subplots(figsize=(10, 7))
         plt.plot([0, 0, 1, 1, 0], [0, 1, 1, 0, 0], color="black")  # Pitch outline
