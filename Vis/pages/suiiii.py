@@ -165,7 +165,9 @@ def plot_team_on_pitch(df):
     for index, row in df.iterrows():
         pos_type = row['Pos']
         pos = positions[pos_type]
-        
+        if pos is None:
+            continue  # Skip if position type is not mapped
+
         # For defenders and midfielders, we need to spread the players out
         if isinstance(pos, list):
             pos = pos.pop(0)
