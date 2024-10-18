@@ -120,11 +120,10 @@ with col1:
         except ValueError:
             st.write('Please enter a valid FPL ID.')
 ###############################################################################################################
-with col2:
+with col3:
     events_df = pd.DataFrame(get_bootstrap_data()['events'])
     complete_df = events_df.loc[events_df['deadline_time'] < str(dt.datetime.now())]
     gw_complete_list = sorted(complete_df['id'].tolist(), reverse=True)
-    
     fpl_gw = st.selectbox('Team on Gameweek', gw_complete_list)
 
     if fpl_id and gw_complete_list:
@@ -189,11 +188,6 @@ with col2:
         manager_team_df['vs'] = manager_team_df['vs'].fillna('BLANK')
 
         test=manager_team_df.reset_index()
-
-        # Check column names for debugging
-        st.write("Columns in DataFrame:", test.columns.tolist())
-
-
         # Separate players into lineup and bench
         lineup = test[test['Played'] == True]
         bench = test[test['Played'] == False]
@@ -227,7 +221,7 @@ with col2:
         st.pyplot(fig)
 
 ###############################################################################################################
-with col3:
+with col2:
     # st.write(manager_name + '\'s Past Results')
     # st.write('Best ever finish: ')
     col = st.selectbox(
