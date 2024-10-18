@@ -198,10 +198,10 @@ with col3:
         bench = test[test['Played'] == False]
 
         # Count players in each position
-        gkp_count = lineup[lineup['Pos'] == 'GKP'].shape[0]
-        def_count = lineup[lineup['Pos'] == 'DEF'].shape[0]
-        mid_count = lineup[lineup['Pos'] == 'MID'].shape[0]
-        fwd_count = lineup[lineup['Pos'] == 'FWD'].shape[0]
+        gkp_count = lineup[lineup['Pos'] == 'GKP'].count()
+        def_count = lineup[lineup['Pos'] == 'DEF'].count()
+        mid_count = lineup[lineup['Pos'] == 'MID'].count()
+        fwd_count = lineup[lineup['Pos'] == 'FWD'].count()
 
         # Ensure the lineup adheres to the specified constraints
         if gkp_count > 1:
