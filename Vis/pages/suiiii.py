@@ -242,7 +242,7 @@ if fpl_id and gw_complete_list:
             'MID': pitch_length + 1/3 * zone_height,
             'FWD': pitch_length - zone_height
         }
-        df=test[test['Played']==False]
+        df=test[test['Played']==True]
         # Loop through DataFrame and place images
         for index, row in df.iterrows():
             IMAGE_URL = row['code']
