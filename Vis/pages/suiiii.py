@@ -273,16 +273,17 @@ if fpl_id and gw_complete_list:
             ax_image = pitch.inset_image(y_image, x_image, image, height=10, ax=ax)
             # Add a rounded rectangle behind the player's name
             player_name = row['Player']  # Assuming the DataFrame has a 'Player' column
-            fontsize = 8 
-            tp = TextPath(0, 0, row['Player'])  
+
+            # Get the width of the text to determine the size of the rounded rectangle
+            tp = TextPath((0, 0), player_name, size=8)  # Specify size of the text
             bb = tp.get_extents()
-            rect_width = bb.width * 1.1 # Add a little padding (10% here)
+            rect_width = bb.width * 1.1  # Add a little padding (10%)
             rect_height = 2.5 
             rounding = 1 
 
-            # Create a rounded rectangle patch
+            # Create a rounded rectangle patch at the correct location
             rounded_rect = FancyBboxPatch(
-                (x_image - rect_width / 2, y_image - rect_height - 8),  
+                (x_image - rect_width / 2, y_image - rect_height - 8),  # Center the rectangle
                 rect_width,
                 rect_height,
                 boxstyle=f"round,pad=0.2,rounding_size={rounding}",
@@ -293,8 +294,9 @@ if fpl_id and gw_complete_list:
             )
             ax.add_patch(rounded_rect)
 
-            # Add the player's name below the image
-            ax.text(x_image, y_image - 8, player_name, fontsize=8, ha='center', color='black')
+            # Add the player's name centered below the image
+            ax.text(x_image, y_image - rect_height - 8, player_name, fontsize=8, ha='center', color='black')
+
 
         # Show the pitch with player images
         plt.show()
