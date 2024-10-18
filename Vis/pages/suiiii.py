@@ -202,17 +202,24 @@ with col3:
         def_count = lineup[lineup['Pos'] == 'DEF']
         mid_count = lineup[lineup['Pos'] == 'MID']
         fwd_count = lineup[lineup['Pos'] == 'FWD']
+        
 
+        
+        gkp_len = len(gkp_count)
+        def_len = len(def_count)
+        mid_len = len(mid_count)
+        fwd_len = len(fwd_count)
+        
 
 
         # Ensure the lineup adheres to the specified constraints
-        if len(gkp_count) > 1:
+        if gkp_len > 1:
             st.error("Only 1 Goalkeeper (GKP) is allowed.")
-        if len(def_count) > 5:
+        if def_len > 5:
             st.error("Maximum of 5 Defenders (DEF) is allowed.")
-        if len(mid_count) > 5:
+        if mid_len > 5:
             st.error("Maximum of 5 Midfielders (MID) is allowed.")
-        if len(fwd_count) > 3:
+        if fwd_len  > 3:
             st.error("Maximum of 3 Forwards (FWD) is allowed.")
 
         # Create vertical pitch
@@ -225,17 +232,17 @@ with col3:
             if row['Pos'] == 'GKP':
                 positions.append(0)  # GKP position
             elif row['Pos'] == 'DEF':
-                positions.append(1 + def_count)  # DEF position
-                def_count -= 1  # Decrement remaining DEF count
+                positions.append(1 + def_len)  # DEF position
+                def_len -= 1  # Decrement remaining DEF count
             elif row['Pos'] == 'MID':
-                positions.append(6 + mid_count)  # MID position
-                mid_count -= 1  # Decrement remaining MID count
+                positions.append(6 + mid_len)  # MID position
+                mid_len -= 1  # Decrement remaining MID count
             elif row['Pos'] == 'FWD':
-                positions.append(11 + fwd_count)  # FWD position
-                fwd_count -= 1  # Decrement remaining FWD count
+                positions.append(11 + fwd_len)  # FWD position
+                fwd_len -= 1  # Decrement remaining FWD count
 
         
-        formation=f'{len(def_count)}-{len(mid_count)}-{len(fwd_count)}'
+        formation=f'{def_len}-{mid_len}-{fwd_len}'
         
         print(formation)
         # Draw player names on the pitch
