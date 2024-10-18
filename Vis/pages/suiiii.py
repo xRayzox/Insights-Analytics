@@ -8,10 +8,11 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 from mplsoccer import VerticalPitch
-import matplotlib.patches as patches
+import matplotlib.patches as patches ,FancyBboxPatch
 from PIL import Image
 from urllib.request import urlopen
 import random
+
 
 
 pd.set_option('future.no_silent_downcasting', True)
@@ -267,8 +268,29 @@ if fpl_id and gw_complete_list:
 
             # Draw the image on the pitch
             ax_image = pitch.inset_image(y_image, x_image, image, height=10, ax=ax)
-            player_name = row['Player']  # Assuming the DataFrame has a 'Name' column
-            ax.text(x_image, y_image - 8, player_name, fontsize=8, ha='center')  # Adjust -10 to position the text below the image
+            # Add a rounded rectangle behind the player's name
+            player_name = row['Player']  # Assuming the DataFrame has a 'Player' column
+            rect_width = 30  # Width of the rectangle
+            rect_height = 10  # Height of the rectangle
+            rounding = 5  # Rounding of the rectangle corners
+
+            # Create a rounded rectangle patch
+            rounded_rect = FancyBboxPatch(
+                (x_image - rect_width / 2, y_image - rect_height - 2),  # Bottom-left corner of the rectangle
+                rect_width,
+                rect_height,
+                boxstyle=f"round,pad=0.1,rounding_size={rounding}",
+                facecolor='white',  # Background color
+                edgecolor='black',  # Edge color
+                linewidth=1,  # Edge width
+                alpha=0.8  # Transparency
+            )
+            
+            # Add the rectangle to the plot
+            ax.add_patch(rounded_rect)
+
+            # Add the player's name below the image
+            ax.text(x_image, y_image - 8, player_name, fontsize=8, ha='center', color='black')
 
         # Show the pitch with player images
         plt.show()
