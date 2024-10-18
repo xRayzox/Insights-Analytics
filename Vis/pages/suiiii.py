@@ -191,8 +191,7 @@ with col3:
         manager_team_df['vs'] = manager_team_df['vs'].map(teams_df.set_index('id')['short_name'])
         manager_team_df['vs'] = manager_team_df['vs'].fillna('BLANK')
 
-        test=manager_team_df.reset_index()
-        # Separate players into lineup and bench
+        test = manager_team_df.reset_index()
         # Separate players into lineup and bench
         lineup = test[test['Played'] == True]
         bench = test[test['Played'] == False]
@@ -202,15 +201,13 @@ with col3:
         def_count = lineup[lineup['Pos'] == 'DEF']
         mid_count = lineup[lineup['Pos'] == 'MID']
         fwd_count = lineup[lineup['Pos'] == 'FWD']
-        
 
-        
         gkp_len = len(gkp_count)
         def_len = len(def_count)
         mid_len = len(mid_count)
         fwd_len = len(fwd_count)
-        
-        formation=f"{def_len}-{mid_len}-{fwd_len}"
+
+        formation = f"{def_len}-{mid_len}-{fwd_len}"
 
         # Ensure the lineup adheres to the specified constraints
         if gkp_len > 1:
@@ -219,7 +216,7 @@ with col3:
             st.error("Maximum of 5 Defenders (DEF) is allowed.")
         if mid_len > 5:
             st.error("Maximum of 5 Midfielders (MID) is allowed.")
-        if fwd_len  > 3:
+        if fwd_len > 3:
             st.error("Maximum of 3 Forwards (FWD) is allowed.")
 
         # Create vertical pitch
@@ -228,30 +225,34 @@ with col3:
 
         # Assign positions based on played players
         positions = []
-        def_line = 2   # Starting position for defenders
-        mid_line = 7   # Starting position for midfielders
-        fwd_line = 12  # Starting position for forwards
+        def_line_start = 3   # Starting position for defenders
+        mid_line_start = 8   # Starting position for midfielders
+        fwd_line_start = 12  # Starting position for forwards
 
+        # Set vertical positions for players based on the number of players in each category
         for index, row in lineup.iterrows():
             if row['Pos'] == 'GKP':
-                positions.append(1)
+                positions.append(1)  # Goalkeeper at position 1
             elif row['Pos'] == 'DEF':
-                positions.append(def_line)
-                def_line += 1  # Increment for the next defender
+                positions.append(def_line_start)
+                def_line_start += 1  # Increment for the next defender
             elif row['Pos'] == 'MID':
-                positions.append(mid_line)
-                mid_line += 1  # Increment for the next midfielder
+                positions.append(mid_line_start)
+                mid_line_start += 1  # Increment for the next midfielder
             elif row['Pos'] == 'FWD':
-                positions.append(fwd_line)
-                fwd_line += 1  # Increment for the next forward
+                positions.append(fwd_line_start)
+                fwd_line_start += 1  # Increment for the next forward
             # Ignore unsupported positions
 
+        # Adjust the positions to be evenly spaced on the pitch
+        positions_normalized = [pos / 14 for pos in positions]
+
+        # Annotate players on the pitch
         for i, row in lineup.iterrows():
-            pitch.annotate(row['Player'], (0.5, positions[i]/14), ax=ax, va='center', ha='center', fontsize=12)
+            pitch.annotate(row['Player'], (0.5, positions_normalized[i]), ax=ax, va='center', ha='center', fontsize=12)
 
         # Display formation
         st.write(f"Formation: {formation}")
-
 
         # Display the pitch
         st.pyplot(fig)
