@@ -247,7 +247,7 @@ with col3:
                 positions.append(9 + (3 - fwd_len))  # FWD positions: 9, 10, 11
                 fwd_len -= 1
             # Ignore unsupported positions
-        st.write(lineup['Pos'].unique())  # Check the unique positions
+        st.write(lineup['Pos'])  # Check the unique positions
         
         
         # Draw player names on the pitch
