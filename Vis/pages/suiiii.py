@@ -240,12 +240,12 @@ with col3:
                 fwd_count -= 1  # Decrement remaining FWD count
 
         
-        formation=f'{def_count}-{mid_count}-{fwd_count}'
+        formation=f'{len(def_count)}-{len(mid_count)}-{len(fwd_count)}'
         
         print(formation)
         # Draw player names on the pitch
         ax_text = pitch.formation(
-            formation=f'{def_count}-{mid_count}-{fwd_count}',
+            formation=formation,
             positions=positions,
             kind='text',
             text=lineup['Player'].str.replace(' ', '\n'),
@@ -259,7 +259,7 @@ with col3:
         mpl.rcParams['hatch.linewidth'] = 3
         mpl.rcParams['hatch.color'] = '#a50044'
         ax_scatter = pitch.formation(
-            formation=f'{def_count}-{mid_count}-{fwd_count}',
+            formation=formation,
             positions=positions,
             kind='scatter',
             c='#004d98',
