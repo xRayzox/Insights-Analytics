@@ -234,7 +234,7 @@ if fpl_id and gw_complete_list:
 
         # Define placements for each position zone
         zone_height = pitch_length / 6  # Height for each zone
-        space_between_zones = zone_height/4  # Space between zones
+        space_between_zones = zone_height/6  # Space between zones
         st.write(space_between_zones)
         # Position calculations
         positions = {
