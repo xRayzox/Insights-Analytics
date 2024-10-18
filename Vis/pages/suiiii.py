@@ -244,7 +244,7 @@ with col3:
         # Place players on the pitch
         for i, row in played_players.iterrows():
             # Load the image
-            img = Image.open(urlopen(row['Code']))
+            img = Image.open(urlopen(row['code']))
             
             if row['Pos'] == 'GKP':
                 # Place goalkeeper
