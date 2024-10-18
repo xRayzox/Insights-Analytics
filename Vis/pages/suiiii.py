@@ -211,18 +211,28 @@ with col3:
         pitch = Pitch()
         fig, ax = pitch.draw()
 
-        # Add players to the pitch
+        # Define positions on the pitch for 3-4-3 formation
+        positions = {
+            'GKP': (0.5, 0.05),           # Goalkeeper
+            'DEF': [(0.25, 0.3), (0.5, 0.3), (0.75, 0.3)],  # 3 Defenders
+            'MID': [(0.2, 0.5), (0.5, 0.5), (0.8, 0.5), (0.5, 0.6)],  # 4 Midfielders
+            'FWD': [(0.25, 0.7), (0.5, 0.7), (0.75, 0.7)],  # 3 Forwards
+        }
+
+        # Place players on the pitch
         for idx, row in lineup.iterrows():
             if row['Pos'] == 'GKP':
-                x, y = pitch.get_location(0.5, 0.05)
+                x, y = positions['GKP']
             elif row['Pos'] == 'DEF':
-                x, y = pitch.get_location(0.25 + (idx - 1) * 0.1, 0.3)  # Adjust for 3 DEF
+                x, y = positions['DEF'][list(defenders['Player']).index(row['Player'])]
             elif row['Pos'] == 'MID':
-                x, y = pitch.get_location(0.25 + (idx - 4) * 0.15, 0.5)  # Adjust for 4 MID
+                x, y = positions['MID'][list(midfielders['Player']).index(row['Player'])]
             elif row['Pos'] == 'FWD':
-                x, y = pitch.get_location(0.25 + (idx - 8) * 0.2, 0.7)  # Adjust for 3 FWD
+                x, y = positions['FWD'][list(forwards['Player']).index(row['Player'])]
+
             ax.text(x, y, row['Player'], fontsize=10, ha='center', va='center')
 
+        plt.title('3-4-3 Formation Lineup')
         plt.show()
         
         
