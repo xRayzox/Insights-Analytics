@@ -100,8 +100,7 @@ with col1:
                         man_gw_hist['£'] /= 10
                         man_gw_hist = man_gw_hist[['GWP', 'Ave', 'OP', 'GWR', 'OR', '£', 'TV', 'TM', 'TC', 'PoB']]
                         man_gw_hist['Chip'] = 'None'
-                        st.dataframe(man_gw_hist.style.format({'TV': '£{:.1f}', '£': '£{:.1f}'}),
-                                     width=800, height=522)
+                        st.dataframe(man_gw_hist.style.format({'TV': '£{:.1f}', '£': '£{:.1f}'}))
                     else:
                         chips_df['name'] = chips_df['name'].apply(chip_converter)
                         chips_df = chips_df[['event', 'name']]
