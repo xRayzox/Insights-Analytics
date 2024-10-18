@@ -245,7 +245,7 @@ with col3:
                 fwd_len -= 1  # Decrement remaining FWD count
 
         
-        formation=f'{def_len}-{mid_len}-{fwd_len}'
+        formation=f'{def_len}{mid_len}{fwd_len}'
         formation
         print(formation)
         # Draw player names on the pitch
