@@ -197,8 +197,6 @@ with col3:
         manager_team_df['vs'] = manager_team_df['vs'].fillna('BLANK')
         
         test = manager_team_df.reset_index()
-
-
         # Define the pitch size
         pitch_length = 60  # Set to desired length
         pitch_width = 60    # Set to desired width
@@ -218,19 +216,19 @@ with col3:
 
         # Draw pitch zones
         # Goalkeeper Zone (at the top)
-        gkp_zone = patches.Rectangle((0, pitch_length - gkp_height + pitch_length), pitch_width + (pitch_width / 3), gkp_height, linewidth=1, edgecolor='blue', facecolor='lightblue', alpha=0.5)
+        gkp_zone = patches.Rectangle((0, pitch_length - gkp_height), pitch_width, gkp_height, linewidth=1, edgecolor='blue', facecolor='lightblue', alpha=0.5)
         ax.add_patch(gkp_zone)
 
         # Defenders Zone (below the goalkeeper)
-        def_zone = patches.Rectangle((0, pitch_length - gkp_height - def_height - space_between_zones + pitch_length), pitch_width + (pitch_width / 3), def_height, linewidth=1, edgecolor='black', facecolor='blue', alpha=0.5)
+        def_zone = patches.Rectangle((0, pitch_length - gkp_height - def_height - space_between_zones), pitch_width, def_height, linewidth=1, edgecolor='black', facecolor='blue', alpha=0.5)
         ax.add_patch(def_zone)
 
         # Midfielders Zone (below the defenders)
-        mid_zone = patches.Rectangle((0, pitch_length - gkp_height - def_height - mid_height - space_between_zones * 2 + pitch_length), pitch_width + (pitch_width / 3), mid_height, linewidth=1, edgecolor='black', facecolor='blue', alpha=0.5)
+        mid_zone = patches.Rectangle((0, pitch_length - gkp_height - def_height - mid_height - space_between_zones * 2), pitch_width, mid_height, linewidth=1, edgecolor='black', facecolor='blue', alpha=0.5)
         ax.add_patch(mid_zone)
 
         # Forwards Zone (at the bottom)
-        fwd_zone = patches.Rectangle((0, pitch_length - gkp_height - def_height - mid_height - fwd_height - space_between_zones * 3 + pitch_length), pitch_width + (pitch_width / 3), fwd_height, linewidth=1, edgecolor='orange', facecolor='lightcoral', alpha=0.5)
+        fwd_zone = patches.Rectangle((0, pitch_length - gkp_height - def_height - mid_height - fwd_height - space_between_zones * 3), pitch_width, fwd_height, linewidth=1, edgecolor='orange', facecolor='lightcoral', alpha=0.5)
         ax.add_patch(fwd_zone)
 
         # Draw reference lines for x and y axes outside the pitch
@@ -239,7 +237,6 @@ with col3:
         ax.axvline(0, color='blue', linewidth=0.5, linestyle='--', label='X=0')  # Vertical line at X=0
         ax.axvline(pitch_width, color='blue', linewidth=0.5, linestyle='--', label=f'X={pitch_width}')  # Vertical line at X=pitch_width
 
-        # Filter for players that have played
         # Filter for players that have played
         played_players = test[test['Played'] == True]
 
@@ -254,17 +251,17 @@ with col3:
             
             if num_players > 0:
                 # Calculate the starting y position for the zone
-                y_position = pitch_length - sum([gkp_height, def_height, mid_height, fwd_height][:space_factor]) - (height / 2)
+                y_position = pitch_length - sum([gkp_height, def_height, mid_height, fwd_height][:space_factor]) - height / 2
 
                 # Calculate spacing between players
-                spacing = (pitch_width - 3) / num_players  # Adjust this based on desired spacing
+                spacing = pitch_width / (num_players + 1)  # Adjust this for desired spacing
 
                 for i, row in pos_players.iterrows():
                     # Load the image
                     img = Image.open(urlopen(row['code']))
                     
                     # Calculate the horizontal position based on index and spacing
-                    x_position = (spacing * i) - (pitch_width / 2) + 1.5  # Center the players in the zone
+                    x_position = spacing * (i + 1) - 0.75  # Center the players in the zone
 
                     # Place the image in the calculated position
                     ax.imshow(img, extent=(x_position, x_position + 1.5, y_position - 1.5, y_position + 1.5))
@@ -274,7 +271,6 @@ with col3:
 
         plt.show()
         st.pyplot(fig)
-
         
 ###############################################################################################################
 with col2:
