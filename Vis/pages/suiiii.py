@@ -211,7 +211,7 @@ with col3:
             'MID': [0.5] * 3,
             'FWD': [0.8] * 3
         }
-        num_players=11
+        num_players = {'GK': 1, 'DEF': 4, 'MID': 3, 'FWD': 3}
         positions = {pos: [] for pos in num_players}
         for pos, num in num_players.items():
             for i in range(num):
