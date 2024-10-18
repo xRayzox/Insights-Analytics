@@ -225,18 +225,22 @@ with col3:
 
         # Assign position IDs for each player
         position_ids = []
+        def_line_count = 0
+        mid_line_count = 0
+        fwd_line_count = 0
+
         for index, row in lineup.iterrows():
             if row['Pos'] == 'GKP':
                 position_ids.append(1)  # Position ID for the goalkeeper
             elif row['Pos'] == 'DEF':
-                position_ids.append(3 + (len([p for p in position_ids if p == 3])))  # Increment for the next defender
+                position_ids.append(3 + def_line_count)  # Start at position 3 for DEF
+                def_line_count += 1  # Increment for the next defender
             elif row['Pos'] == 'MID':
-                position_ids.append(8 + (len([p for p in position_ids if p == 8])))  # Increment for the next midfielder
+                position_ids.append(8 + mid_line_count)  # Start at position 8 for MID
+                mid_line_count += 1  # Increment for the next midfielder
             elif row['Pos'] == 'FWD':
-                position_ids.append(12 + (len([p for p in position_ids if p == 12])))  # Increment for the next forward
-
-        # Normalize positions for pitch plotting
-        normalized_positions = [pos / 14 for pos in position_ids]
+                position_ids.append(12 + fwd_line_count)  # Start at position 12 for FWD
+                fwd_line_count += 1  # Increment for the next forward
 
         # Create the text annotations for players
         ax_text = pitch.formation(
@@ -271,7 +275,6 @@ with col3:
         # Display the pitch
         st.pyplot(fig)
 
-        
         
 ###############################################################################################################
 with col2:
