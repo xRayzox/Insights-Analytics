@@ -283,7 +283,7 @@ if fpl_id and gw_complete_list:
 
             # Create a rounded rectangle patch at the correct location
             rounded_rect = FancyBboxPatch(
-                (x_image - rect_width / 2, y_image - rect_height - 8),  # Center the rectangle
+                (x_image - rect_width / 2, y_image - rect_height - 7),  # Center the rectangle
                 rect_width,
                 rect_height,
                 boxstyle=f"round,pad=0.2,rounding_size={rounding}",
