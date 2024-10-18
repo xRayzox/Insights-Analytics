@@ -234,8 +234,8 @@ if fpl_id and gw_complete_list:
 
         # Define placements for each position zone
         zone_height = pitch_length / 6  # Height for each zone
-        space_between_zones = 3  # Space between zones
-
+        space_between_zones = zone_height/10  # Space between zones
+        st.write(space_between_zones)
         # Position calculations
         positions = {
             'GKP': pitch_length + 3 * zone_height-1/2 * zone_height,
