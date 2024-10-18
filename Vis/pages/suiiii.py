@@ -11,7 +11,7 @@ from mplsoccer import Pitch, VerticalPitch
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-
+import random
 
 pd.set_option('future.no_silent_downcasting', True)
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'FPL')))
@@ -195,28 +195,43 @@ with col3:
         manager_team_df['vs'] = manager_team_df['vs'].fillna('BLANK')
         
         test = manager_team_df.reset_index()
-        # Sample player positions (replace with your actual data)
+        # Example: Generate random positions for 22 players (two teams)
         positions = {
-            'GK': [(0.5, 0.1)],  # Example GK position
-            'DEF': [(0.3, 0.2), (0.7, 0.2), (0.2, 0.3), (0.8, 0.3)], # Example DEF positions
-            'MID': [(0.2, 0.5), (0.5, 0.5), (0.8, 0.5)],  # Example MID positions
-            'FWD': [(0.4, 0.8), (0.6, 0.8)],  # Example FWD positions
+            'GK': [],
+            'DEF': [],
+            'MID': [],
+            'FWD': []
         }
 
+        # Distribute players randomly across positions (adjust numbers as needed)
+        num_players = {'GK': 2, 'DEF': 8, 'MID': 6, 'FWD': 4} 
+
+        for pos, num in num_players.items():
+            for _ in range(num):
+                x = random.uniform(0.1, 0.9)  # Avoid placing players right on the edge
+                # Adjust y-coordinate range based on position
+                if pos == 'GK':
+                    y = random.uniform(0.05, 0.15)
+                elif pos == 'DEF':
+                    y = random.uniform(0.15, 0.4)
+                elif pos == 'MID':
+                    y = random.uniform(0.4, 0.7)
+                else:  # FWD
+                    y = random.uniform(0.7, 0.95)
+                positions[pos].append((x, y))
+
+        # --- Plotting ---
         pitch = VerticalPitch(pitch_color='grass', line_color='white', stripe=True, corner_arcs=True, half=True)
         fig, ax = pitch.draw()
 
-        # Plot points for each position group with different markers and labels
         for pos, coords in positions.items():
             x, y = zip(*coords)
-            ax.scatter(x, y, label=pos, marker='o' if pos != 'GK' else 'x', s=100)  # 'x' for GK
+            ax.scatter(x, y, label=pos, marker='o' if pos != 'GK' else 'x', s=100)
 
-        # Add a legend
         ax.legend()
-
         plt.show()
         st.pyplot(fig)
-        
+                
         
         
 ###############################################################################################################
