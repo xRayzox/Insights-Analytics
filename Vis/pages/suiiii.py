@@ -232,42 +232,9 @@ with col3:
         # Forwards Zone (at the bottom)
         fwd_zone = patches.Rectangle((0, pitch_length - gkp_height - def_height - mid_height - fwd_height - space_between_zones * 3 + pitch_length), pitch_width + (pitch_width / 3), fwd_height, linewidth=1, edgecolor='orange', facecolor='lightcoral', alpha=0.5)
         ax.add_patch(fwd_zone)
-
-        
-
-        
-        # Filter for players that have played
-        played_players = test[test['Played'] == True]
-
-        # Place players on the pitch
-        for pos, height, space_factor in [('GKP', gkp_height, 0),
-                                   ('DEF', def_height, 1),
-                                   ('MID', mid_height, 2),
-                                   ('FWD', fwd_height, 3)]:
-        # Filter players for the current position
-            pos_players = played_players[played_players['Pos'] == pos]
-            num_players = len(pos_players)
-            if num_players > 0:
-                # Calculate the starting y position for the zone
-                y_position = pitch_length - sum([gkp_height, def_height, mid_height, fwd_height][:space_factor]) - (height / 2)
-                st.write(y_position)
-                # Calculate spacing between players
-                spacing = (pitch_width - 3) / (num_players - 1) if num_players > 1 else 0  # Adjust this based on desired spacing
-
-                for i, row in pos_players.iterrows():
-                    # Load the image
-                    img = Image.open(urlopen(row['code']))
-                    
-                    # Calculate the horizontal position based on index and spacing
-                    x_position = (spacing * i) - (pitch_width / 2) + 1.5  # Center the players in the zone
-                    st.write(x_position)
-                    # Place the image in the calculated position
-                    ax.imshow(img, extent=(x_position, x_position + 1.5, y_position - 1.5, y_position + 1.5))
-
-        # Add legend for reference lines
-        ax.legend()
-
-        plt.show()
+        IMAGE_URL = 'https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_3-110.png'
+        image = Image.open(urlopen(IMAGE_URL))
+        ax_image = pitch.inset_image(pitch_length + gkp_height,(pitch_width+(pitch_width/3))/2 , image, height=10, ax=ax)
         st.pyplot(fig)
             
 ###############################################################################################################
