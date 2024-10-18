@@ -209,11 +209,7 @@ with col3:
         def_len = len(def_count)
         mid_len = len(mid_count)
         fwd_len = len(fwd_count)
-        st.write(gkp_len)
-        st.write(def_len)
-        st.write(mid_len)
-        st.write(fwd_len)
-
+        
 
         # Ensure the lineup adheres to the specified constraints
         if gkp_len > 1:
@@ -246,8 +242,12 @@ with col3:
 
         
         formation=f"{def_len}{mid_len}{fwd_len}"
-        formation
-        print(formation)
+
+        st.write(gkp_len)
+        st.write(def_len)
+        st.write(mid_len)
+        st.write(fwd_len)
+        st.write(formation)
         # Draw player names on the pitch
         ax_text = pitch.formation(
             formation=formation,
