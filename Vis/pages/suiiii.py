@@ -211,7 +211,7 @@ with col2:
         plt.plot([0, 0, 1, 1, 0], [0, 1, 1, 0, 0], color="black")  # Pitch outline
         plt.xlim(0, 1)
         plt.ylim(0, 1)
-
+        """"
         # Plot players
         for index, row in lineup.iterrows():
             pos = row['Pos']
@@ -227,7 +227,7 @@ with col2:
         # Plot bench
         for index, row in bench.iterrows():
             ax.text(0.9, 0.5 + index * 0.05, row['Player'], fontsize=9, bbox=dict(facecolor='gray', edgecolor='black'))
-
+        """
         # Add labels
         ax.set_title('Football Lineup', fontsize=16)
         ax.axis('off')
