@@ -46,7 +46,8 @@ ele_df = pd.DataFrame(ele_data)
 
 # Map element types and teams
 ele_df['element_type'] = ele_df['element_type'].map(ele_types_df.set_index('id')['singular_name_short'])
-ele_df['code'] = ele_df['team'].apply(lambda x: f"https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_{x}-110.png")
+ele_df['code'] = ele_df['team'].map(teams_df.set_index('id')['code'])
+ele_df['code'] = ele_df['code'].apply(lambda x: f"https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_{x}-110.png")
 ele_df['team'] = ele_df['team'].map(teams_df.set_index('id')['short_name'])
 
 col1, col2, col3 = st.columns([3, 2, 10])
