@@ -216,31 +216,39 @@ with col3:
         pitch = VerticalPitch(pitch_color='grass', line_color='white', stripe=True, corner_arcs=True, half=True, pitch_length=pitch_length, pitch_width=pitch_width)
         fig, ax = pitch.draw(figsize=(8, 8), tight_layout=False)  # Adjust figsize as needed
 
+        # Calculate y-coordinates for each zone starting from the top of the pitch
+        y_gkp = pitch_length  # Goalkeeper zone starts at the top
+        y_def = y_gkp - gkp_height - space_between_zones
+        y_mid = y_def - def_height - space_between_zones
+        y_fwd = y_mid - mid_height - space_between_zones
+
         # Draw pitch zones
         # Goalkeeper Zone (at the top)
-        gkp_zone = patches.Rectangle((0, pitch_length - gkp_height + pitch_length), pitch_width + (pitch_width / 3), gkp_height, linewidth=1, edgecolor='blue', facecolor='lightblue', alpha=0.5)
+        gkp_zone = patches.Rectangle((0, y_gkp - gkp_height), pitch_width + (pitch_width / 3), gkp_height, linewidth=1, edgecolor='blue', facecolor='lightblue', alpha=0.5)
         ax.add_patch(gkp_zone)
 
         # Defenders Zone (below the goalkeeper)
-        def_zone = patches.Rectangle((0, pitch_length - gkp_height - def_height - space_between_zones + pitch_length), pitch_width + (pitch_width / 3), def_height, linewidth=1, edgecolor='black', facecolor='blue', alpha=0.5)
+        def_zone = patches.Rectangle((0, y_def - def_height), pitch_width + (pitch_width / 3), def_height, linewidth=1, edgecolor='black', facecolor='blue', alpha=0.5)
         ax.add_patch(def_zone)
 
         # Midfielders Zone (below the defenders)
-        mid_zone = patches.Rectangle((0, pitch_length - gkp_height - def_height - mid_height - space_between_zones * 2 + pitch_length), pitch_width + (pitch_width / 3), mid_height, linewidth=1, edgecolor='black', facecolor='blue', alpha=0.5)
+        mid_zone = patches.Rectangle((0, y_mid - mid_height), pitch_width + (pitch_width / 3), mid_height, linewidth=1, edgecolor='black', facecolor='blue', alpha=0.5)
         ax.add_patch(mid_zone)
 
         # Forwards Zone (at the bottom)
-        fwd_zone = patches.Rectangle((0, pitch_length - gkp_height - def_height - mid_height - fwd_height - space_between_zones * 3 + pitch_length), pitch_width + (pitch_width / 3), fwd_height, linewidth=1, edgecolor='orange', facecolor='lightcoral', alpha=0.5)
+        fwd_zone = patches.Rectangle((0, y_fwd - fwd_height), pitch_width + (pitch_width / 3), fwd_height, linewidth=1, edgecolor='orange', facecolor='lightcoral', alpha=0.5)
         ax.add_patch(fwd_zone)
+
+        # Centering image in the GKP zone
         IMAGE_URL = 'https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_3-110.png'
         image = Image.open(urlopen(IMAGE_URL))
-        x_image = 1/4*pitch_width+1/2*pitch_width+2/3 * pitch_width  # Centered horizontally in the GKP zone
-        y_image = 2 * pitch_length - gkp_height / 2  # Centered vertically in the GKP zone
+        x_image = (pitch_width / 2) + (pitch_width / 3) / 2  # Centered horizontally in the GKP zone
+        y_image = y_gkp - gkp_height / 2  # Centered vertically in the GKP zone
 
         # Insert the image
         ax_image = pitch.inset_image(x_image, y_image, image, height=10, ax=ax)
         st.pyplot(fig)
-                    
+
 ###############################################################################################################
 with col2:
     # st.write(manager_name + '\'s Past Results')
