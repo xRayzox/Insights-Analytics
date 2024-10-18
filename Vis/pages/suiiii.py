@@ -214,12 +214,11 @@ with col3:
         zone_height = pitch_length / 6  # Height for each zone
         space_between_zones = 1  # Space between zones
 
-        # Position calculations
         positions = {
-            'GKP': pitch_length + 2 * zone_height,
-            'DEF': pitch_length + zone_height - space_between_zones,
-            'MID': pitch_length - 1/zone_height  - space_between_zones * 2,
-            'FWD': pitch_length - zone_height - space_between_zones * 3
+            'GKP': pitch_length + 1 * zone_height,
+            'DEF': pitch_length + 2 * zone_height - space_between_zones,
+            'MID': pitch_length + 3 * zone_height - space_between_zones * 2,
+            'FWD': pitch_length + 4 * zone_height - space_between_zones * 3
         }
         df=test
         # Loop through DataFrame and place images
