@@ -211,8 +211,9 @@ with col3:
 
         # Define space between zones
         space_between_zones = 2  # Space between zones
-        pitch = VerticalPitch(pitch_color='grass', line_color='white', stripe=True, corner_arcs=True,  pitch_length=pitch_length, pitch_width=pitch_width)
+        pitch = VerticalPitch(pitch_color='grass', line_color='white', stripe=True, corner_arcs=True, half=True, pitch_length=pitch_length, pitch_width=pitch_width)
         fig, ax = pitch.draw(figsize=(8, 8), tight_layout=False)  # Adjust 
+
         ax.set_xlim(0, pitch_width)
         ax.set_ylim(pitch_length, 0)  # Invert y-axis
 
@@ -243,20 +244,6 @@ with col3:
         ax.set_title('Vertical Football Pitch with Zones')
         plt.axis('off')  # Turn off the axis
         plt.show()
-
-        # Invert the y-axis
-        
-
-        """
-        # Centering image in the GKP zone
-        IMAGE_URL = 'https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_3-110.png'
-        image = Image.open(urlopen(IMAGE_URL))
-        x_image = (pitch_width / 2) + (pitch_width / 3) / 2  # Centered horizontally in the GKP zone
-        y_image = y_gkp - gkp_height / 2  # Centered vertically in the GKP zone
-
-        # Insert the image
-        ax_image = pitch.inset_image(x_image, y_image, image, height=10, ax=ax)
-        """
         st.pyplot(fig)
 
 
