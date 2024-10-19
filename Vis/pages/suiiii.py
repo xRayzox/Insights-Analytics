@@ -312,12 +312,6 @@ with col5:
                 va='center'                           
             )
 
-
-
-
-
-
-
             # Function to draw player images and details
             def draw_players(df, positions):
                 for index, row in df.iterrows():
@@ -457,7 +451,7 @@ else:
             selected_teams = st.multiselect(
                 label='Show teams',
                 options=options,
-                default=options,
+                default=options.head(),
                 format_func=lambda x: x,
             )
 
