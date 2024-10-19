@@ -373,33 +373,33 @@ with col4:
             st.pyplot(fig)
 
 ###############################################################################
-
-if fpl_id == '':
-    st.write('')
-else:
-    curr_df = pd.DataFrame(get_manager_history_data(fpl_id)['current'])
-    if len(curr_df) == 0:
+with col5:
+    if fpl_id == '':
         st.write('')
     else:
-        try:
-            man_data = get_manager_details(fpl_id)
-            curr_df['Manager'] = man_data['player_first_name'] + ' ' + man_data['player_last_name']
-            ave_df = pd.DataFrame(get_bootstrap_data()['events'])[['id', 'average_entry_score']]
-            ave_df.columns=['event', 'points']
-            ave_df['Manager'] = 'GW Average'
-            ave_cut = ave_df.loc[ave_df['event'] <= max(curr_df['event'])]
-            concat_df = pd.concat([curr_df, ave_cut])
-            c = alt.Chart(concat_df).mark_line().encode(
-                x=alt.X('event', axis=alt.Axis(tickMinStep=1, title='GW'), scale=alt.Scale(domain=[1, len(curr_df)+1])),
-                y=alt.Y('points', axis=alt.Axis(title='GW Points')),
-                color='Manager').properties(
-                    height=400)
-            st.altair_chart(c, use_container_width=True)
-        except KeyError:
+        curr_df = pd.DataFrame(get_manager_history_data(fpl_id)['current'])
+        if len(curr_df) == 0:
             st.write('')
+        else:
+            try:
+                man_data = get_manager_details(fpl_id)
+                curr_df['Manager'] = man_data['player_first_name'] + ' ' + man_data['player_last_name']
+                ave_df = pd.DataFrame(get_bootstrap_data()['events'])[['id', 'average_entry_score']]
+                ave_df.columns=['event', 'points']
+                ave_df['Manager'] = 'GW Average'
+                ave_cut = ave_df.loc[ave_df['event'] <= max(curr_df['event'])]
+                concat_df = pd.concat([curr_df, ave_cut])
+                c = alt.Chart(concat_df).mark_line().encode(
+                    x=alt.X('event', axis=alt.Axis(tickMinStep=1, title='GW'), scale=alt.Scale(domain=[1, len(curr_df)+1])),
+                    y=alt.Y('points', axis=alt.Axis(title='GW Points')),
+                    color='Manager').properties(
+                        height=400)
+                st.altair_chart(c, use_container_width=True)
+            except KeyError:
+                st.write('')
 
-def collate_manager_history(fpl_id):
-    df = pd.DataFrame(get_manager_history_data(fpl_id)['current'])
-    data = get_manager_details(fpl_id)
-    df['Manager'] = data['player_first_name'] + ' ' + data['player_last_name']
-    return df
+    def collate_manager_history(fpl_id):
+        df = pd.DataFrame(get_manager_history_data(fpl_id)['current'])
+        data = get_manager_details(fpl_id)
+        df['Manager'] = data['player_first_name'] + ' ' + data['player_last_name']
+        return df
