@@ -14,6 +14,8 @@ from urllib.request import urlopen
 import random
 from matplotlib.patches import FancyBboxPatch
 from matplotlib.textpath import TextPath
+from PIL import Image, ImageDraw, ImageOps
+
 
 
 
@@ -225,6 +227,21 @@ if fpl_id and gw_complete_list:
         manager_team_df['vs'] = manager_team_df['vs'].fillna('BLANK')
         
         test = manager_team_df.reset_index()
+        def make_circular_image(image, size=(100, 100)):
+            # Resize image
+            image = image.resize(size, Image.ANTIALIAS)
+            # Create a mask to crop the image into a circle
+            mask = Image.new('L', size, 0)
+            draw = ImageDraw.Draw(mask)
+            draw.ellipse((0, 0) + size, fill=255)
+            # Apply the mask to the image
+            result = ImageOps.fit(image, size, centering=(0.5, 0.5))
+            result.putalpha(mask)
+            
+            # Add white background
+            background = Image.new("RGBA", size, (255, 255, 255, 255))
+            background.paste(result, (0, 0), result)
+            return background
 
 
         # Define the figure size
@@ -255,6 +272,7 @@ if fpl_id and gw_complete_list:
         for index, row in df.iterrows():
             IMAGE_URL = row['code']
             image = Image.open(urlopen(IMAGE_URL))
+            circular_image = make_circular_image(image, size=(50, 50))
 
             pos = row['Pos']
             if pos == 'GKP':
@@ -274,7 +292,7 @@ if fpl_id and gw_complete_list:
                 x_image = (pitch_width / (num_fwd + 1)) * (index % num_fwd + 1)  # Centered and distributed
 
             # Draw the image on the pitch
-            ax_image = pitch.inset_image(y_image, x_image, image, height=8, ax=ax)
+            ax_image = pitch.inset_image(y_image, x_image, circular_image, height=8, ax=ax)
             # Add a rounded rectangle behind the player's name
             player_name = row['Player']  # Assuming the DataFrame has a 'Player' column
             gwp_points = row['GWP']  # Assuming the DataFrame has a 'GWP' column
@@ -357,13 +375,14 @@ if fpl_id and gw_complete_list:
         for i, row in enumerate(df_bench.itertuples()):
                 IMAGE_URL = row.code
                 image = Image.open(urlopen(IMAGE_URL))
-                
+                circular_image = make_circular_image(image, size=(50, 50))
+
                 # Horizontal distribution of players within the bench slots
                 x_bench = bench_x + (slot_width * (i + 0.5))  # Center each image within its slot
                 y_bench = bench_y + (bench_height / 2) + 1
 
                 # Place player images in the bench area
-                ax_image = pitch.inset_image(y_bench, x_bench, image, height=10, ax=ax)  # Smaller image size for bench players
+                ax_image = pitch.inset_image(y_bench, x_bench, circular_image, height=10, ax=ax)  # Smaller image size for bench players
 
                 # Add player name below the image
                 player_name = row.Player
