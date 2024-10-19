@@ -234,13 +234,14 @@ if fpl_id and gw_complete_list:
             mask = Image.new('L', size, 0)
             draw = ImageDraw.Draw(mask)
             draw.ellipse((0, 0) + size, fill=255)
+
             # Apply the mask to the image
             result = ImageOps.fit(image, size, centering=(0.5, 0.5))
             result.putalpha(mask)
-            
+
             # Add white background
             background = Image.new("RGBA", size, (255, 255, 255, 255))
-            background.paste(result, (0, 0), result)
+            background.paste(result, (0, 0), result)  # Use 'result' for mask here
             return background
 
 
