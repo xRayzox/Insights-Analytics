@@ -368,7 +368,6 @@ if fpl_id and gw_complete_list:
 
             # Add player name below the image
             player_name = row.Player
-            ax.text(x_bench, bench_y + 1, player_name, fontsize=7, ha='center', color='black')
             
             tp = TextPath((0, 0), player_name, size=2)  # Specify size of the text
             bb = tp.get_extents()
@@ -386,6 +385,7 @@ if fpl_id and gw_complete_list:
                 alpha=0.8
             )
             ax.add_patch(rounded_rect)
+            ax.text(x_bench, bench_y , player_name, fontsize=7, ha='center', color='black')
             # Get GWP points for the player
             gwp_points = row.GWP  # Assuming the DataFrame has a 'GWP' column
             gwp_rect_width = 2  # Width of the GWP rectangle
