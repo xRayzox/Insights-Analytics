@@ -380,12 +380,12 @@ def color_fixtures(val):
     return style
 
 ############
-@dataclass
 class Entry:
-    team_id: int
-    name: str
-    player_name: str
-    rank: int
+    def __init__(self, team_id: int, name: str, player_name: str, rank: int):
+        self.team_id = team_id
+        self.name = name
+        self.player_name = player_name
+        self.rank = rank
 
 def entry_from_standings(standings) -> Entry:
     return Entry(
@@ -394,11 +394,13 @@ def entry_from_standings(standings) -> Entry:
         player_name=standings["player_name"],
         rank=standings['rank']
     )
-@dataclass
+
 class LeagueInfo:
-    id: int
-    name: str
-    entries: list[Entry]
+    def __init__(self, id: int, name: str, entries: list[Entry]):
+        self.id = id
+        self.name = name
+        self.entries = entries
+
 def fetch_league_info(league_id) -> LeagueInfo:
     r: dict = requests.get(base_url + f"leagues-classic/{league_id}/standings/").json()
     if "league" not in r:
