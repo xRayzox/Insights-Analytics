@@ -301,11 +301,11 @@ if fpl_id and gw_complete_list:
             ax.add_patch(rounded_rect)
 
             # Position and create a rectangle patch for the GWP below the player's rectangle
-            gwp_rect_y = y_image - rect_height - 5 - 3  # Adjust y position to be below the player's rectangle
+            gwp_rect_y = y_image - rect_height - 5 - 2  # Adjust y position to be below the player's rectangle
             gwp_rect_height = 1  # Height for the GWP rectangle
 
             gwp_rect = FancyBboxPatch(
-                (x_image - rect_width / 2, gwp_rect_y+1),  # Center the rectangle
+                (x_image - rect_width / 2, gwp_rect_y),  # Center the rectangle
                 rect_width,
                 gwp_rect_height,
                 facecolor=(55/255, 0/255, 60/255),  # RGB color specified as a tuple normalized to [0, 1]
