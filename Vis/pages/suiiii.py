@@ -438,69 +438,65 @@ def fetch_league_info(league_id):
     }
 ################################################################################
 if fpl_id == '':
-    st.write('')
+    st.write('No FPL ID provided.')
 else:
-
-    curr_df = pd.DataFrame(get_manager_history_data(fpl_id)['current'])
-    
     if len(curr_df) == 0:
-        st.write('')
+        st.write('No current data available.')
     else:
         try:
-            
             leagues = manager_data['leagues']['classic']
             filtered_leagues = [league for league in leagues if league.get('league_type') == 'x']
             leagues_names_ids = [(league['id'], league['name']) for league in filtered_leagues]
-            #st.write(leagues_names_ids)
-            ########################################
-            league_ids = [league[0] for league in leagues_names_ids]  # Extract IDs
-            league_names = [league[1] for league in leagues_names_ids]  # Extract Names
+            
+            # Check if there are any leagues to select
+            if not leagues_names_ids:
+                st.write('No leagues available.')
+            else:
+                # Extract IDs and Names
+                league_ids = [league[0] for league in leagues_names_ids]
+                league_names = [league[1] for league in leagues_names_ids]
 
-            # Streamlit selectbox
-            selected_league_id = st.selectbox('List of Leagues', league_ids, format_func=lambda x: league_names[league_ids.index(x)])
-            ss=fetch_league_info(selected_league_id)
+                # Streamlit selectbox
+                selected_league_id = st.selectbox('List of Leagues', league_ids, 
+                                                    format_func=lambda x: league_names[league_ids.index(x)])
+                ss = fetch_league_info(selected_league_id)
 
-            teams_managers = [entry['team_id'] for entry in ss['entries']]
+                teams_managers = [entry['team_id'] for entry in ss['entries']]
 
-            ##########################################
-            # Initialize an empty list to store individual manager data
-            manager_data = []
+                # Initialize an empty list to store individual manager data
+                manager_data = []
 
-            for team_id in teams_managers:
-                man_data = get_manager_details(team_id)   
-                curr_df['Manager'] = man_data['player_first_name'] + ' ' + man_data['player_last_name']
-                
-                # Create average points DataFrame
-                ave_df = pd.DataFrame(get_bootstrap_data()['events'])[['id', 'average_entry_score']]
-                ave_df.columns = ['event', 'points']
-                ave_df['Manager'] = 'GW Average'
-                
-                # Combine the current manager's data and average data
-                ave_cut = ave_df.loc[ave_df['event'] <= max(curr_df['event'])]
-                combined_df = pd.concat([curr_df, ave_cut])
-                
-                # Append to manager data list
-                manager_data.append(combined_df)
+                for team_id in teams_managers:
+                    man_data = get_manager_details(team_id)
+                    curr_df = pd.DataFrame(get_manager_history_data(team_id)['current'])
+                    curr_df['Manager'] = f"{man_data['player_first_name']} {man_data['player_last_name']}"
 
-            # Concatenate all managers' data into one DataFrame
-            final_df = pd.concat(manager_data)
+                    # Create average points DataFrame
+                    ave_df = pd.DataFrame(get_bootstrap_data()['events'])[['id', 'average_entry_score']]
+                    ave_df.columns = ['event', 'points']
+                    ave_df['Manager'] = 'GW Average'
 
-            # Create the chart
-            c = alt.Chart(final_df).mark_line().encode(
-                x=alt.X('event', axis=alt.Axis(tickMinStep=1, title='GW'), scale=alt.Scale(domain=[1, len(curr_df) + 1])),
-                y=alt.Y('points', axis=alt.Axis(title='GW Points')),
-                color='Manager'
-            ).properties(
-                height=400
-            )
+                    # Combine the current manager's data and average data
+                    ave_cut = ave_df.loc[ave_df['event'] <= max(curr_df['event'])]
+                    combined_df = pd.concat([curr_df, ave_cut])
 
-            # Display the chart
-            st.altair_chart(c, use_container_width=True)
+                    # Append to manager data list
+                    manager_data.append(combined_df)
+
+                # Concatenate all managers' data into one DataFrame
+                final_df = pd.concat(manager_data)
+
+                # Create the chart
+                c = alt.Chart(final_df).mark_line().encode(
+                    x=alt.X('event', axis=alt.Axis(tickMinStep=1, title='GW'), 
+                             scale=alt.Scale(domain=[1, len(curr_df) + 1])),
+                    y=alt.Y('points', axis=alt.Axis(title='GW Points')),
+                    color='Manager'
+                ).properties(height=400)
+
+                # Display the chart
+                st.altair_chart(c, use_container_width=True)
         except KeyError:
-            st.write('')
+            st.write('Error retrieving data. Please try again.')
 
-def collate_manager_history(fpl_id):
-    df = pd.DataFrame(get_manager_history_data(fpl_id)['current'])
-    data = get_manager_details(fpl_id)
-    df['Manager'] = data['player_first_name'] + ' ' + data['player_last_name']
-    return df
+
