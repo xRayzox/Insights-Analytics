@@ -270,11 +270,11 @@ with col5:
             # Create a rectangle in the top left corner of the pitch
             rect = plt.Rectangle(
                 (0, pitch_length + 1.8 * zone_height),  # Bottom left corner of the rectangle
-                pitch_width / 5,                   # Width of the rectangle
-                pitch_width / 5,                   # Height of the rectangle
-                color='lightblue',                  # Rectangle color
-                alpha=0.7,                          # Transparency
-                zorder=5                             # Layering order
+                pitch_width / 5,                         # Width of the rectangle
+                pitch_width / 5,                         # Height of the rectangle
+                color='lightblue',                       # Rectangle color
+                alpha=0.7,                               # Transparency
+                zorder=5                                  # Layering order
             )
 
             # Add rectangle to the plot
@@ -282,13 +282,13 @@ with col5:
 
             # Add text to the rectangle
             ax.text(
-                0.1,                               # x position (inside rectangle)
-                pitch_length + 2.7 * zone_height / 4,  # y position (centered vertically)
-                f'Total GWP: {total_gwp}\nGW 8',  # Text content
-                fontsize=12,                       # Font size
-                color='black',                     # Text color
-                ha='left',                         # Horizontal alignment
-                va='center'                        # Vertical alignment
+                0.5 * (pitch_width / 5),                # x position (centered horizontally within the rectangle)
+                pitch_length + 1.8 * zone_height + (pitch_width / 5) / 2,  # y position (centered vertically within the rectangle)
+                f'Total GWP: {total_gwp}\nGW 8',       # Text content
+                fontsize=12,                            # Font size
+                color='black',                          # Text color
+                ha='center',                            # Horizontal alignment
+                va='center'                             # Vertical alignment
             )
 
 
