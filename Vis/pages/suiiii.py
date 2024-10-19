@@ -236,7 +236,7 @@ if fpl_id and gw_complete_list:
 
             # Apply the mask to the image
             result = ImageOps.fit(image, size, centering=(0.5, 0.5))
-            result.putalpha(mask)
+            #result.putalpha(mask)
 
             # Add white background
             background = Image.new("RGBA", size, (255, 255, 255, 255))
