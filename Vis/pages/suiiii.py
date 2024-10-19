@@ -372,18 +372,7 @@ if fpl_id and gw_complete_list:
                 gwp_rect_x = x_bench - 5  # Upper left corner X position of the rectangle
                 gwp_rect_y = y_bench + 5  # Upper left corner Y position of the rectangle
 
-                # Draw the GWP rectangle
-                gwp_rect = FancyBboxPatch(
-                    (gwp_rect_x, gwp_rect_y),
-                    gwp_rect_width,
-                    gwp_rect_height,
-                    boxstyle="round,pad=0.1",
-                    facecolor='blue',
-                    edgecolor='white',
-                    linewidth=1,
-                    alpha=0.9
-                )
-                ax.add_patch(gwp_rect)
+                
 
                 # Add the GWP text inside the rectangle
                 ax.text(gwp_rect_x + gwp_rect_width / 2, gwp_rect_y + gwp_rect_height / 2, 
