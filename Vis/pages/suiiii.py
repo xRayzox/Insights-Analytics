@@ -463,21 +463,39 @@ else:
             teams_managers = [entry['team_id'] for entry in ss['entries']]
 
             ##########################################
-            for team_id in teams_managers:
+            # Initialize an empty list to store individual manager data
+            manager_data = []
 
+            for team_id in teams_managers:
                 man_data = get_manager_details(team_id)   
                 curr_df['Manager'] = man_data['player_first_name'] + ' ' + man_data['player_last_name']
+                
+                # Create average points DataFrame
                 ave_df = pd.DataFrame(get_bootstrap_data()['events'])[['id', 'average_entry_score']]
-                ave_df.columns=['event', 'points']
+                ave_df.columns = ['event', 'points']
                 ave_df['Manager'] = 'GW Average'
+                
+                # Combine the current manager's data and average data
                 ave_cut = ave_df.loc[ave_df['event'] <= max(curr_df['event'])]
-                concat_df = pd.concat([curr_df, ave_cut])
-                c = alt.Chart(concat_df).mark_line().encode(
-                    x=alt.X('event', axis=alt.Axis(tickMinStep=1, title='GW'), scale=alt.Scale(domain=[1, len(curr_df)+1])),
-                    y=alt.Y('points', axis=alt.Axis(title='GW Points')),
-                    color='Manager').properties(
-                        height=400)
-                st.altair_chart(c, use_container_width=True)
+                combined_df = pd.concat([curr_df, ave_cut])
+                
+                # Append to manager data list
+                manager_data.append(combined_df)
+
+            # Concatenate all managers' data into one DataFrame
+            final_df = pd.concat(manager_data)
+
+            # Create the chart
+            c = alt.Chart(final_df).mark_line().encode(
+                x=alt.X('event', axis=alt.Axis(tickMinStep=1, title='GW'), scale=alt.Scale(domain=[1, len(curr_df) + 1])),
+                y=alt.Y('points', axis=alt.Axis(title='GW Points')),
+                color='Manager'
+            ).properties(
+                height=400
+            )
+
+            # Display the chart
+            st.altair_chart(c, use_container_width=True)
         except KeyError:
             st.write('')
 
