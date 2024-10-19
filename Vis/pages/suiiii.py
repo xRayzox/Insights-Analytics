@@ -239,11 +239,10 @@ with col5:
             pitch = VerticalPitch(
                 pitch_color='grass', 
                 line_color='white', 
-                stripe=True, 
+                stripe=False, 
                 corner_arcs=True, 
                 half=True,
-                pad_bottom=20,
-                pad_left=-10
+                pad_bottom=20
             )
 
             fig, ax = pitch.draw(figsize=fig_size, tight_layout=False)  # Draw the pitch
