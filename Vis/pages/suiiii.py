@@ -447,7 +447,7 @@ else:
         st.write('')
     else:
         try:
-            man_data = get_manager_details(fpl_id)
+            
             leagues = manager_data['leagues']['classic']
             filtered_leagues = [league for league in leagues if league.get('league_type') == 'x']
             leagues_names_ids = [(league['id'], league['name']) for league in filtered_leagues]
@@ -459,22 +459,25 @@ else:
             # Streamlit selectbox
             selected_league_id = st.selectbox('List of Leagues', league_ids, format_func=lambda x: league_names[league_ids.index(x)])
             ss=fetch_league_info(selected_league_id)
-            st.write(ss)
-            teams_managers = [(sa['team_id'], sa['name']) for sa in ss['entries']]
-            #st.write(teams_managers)
+
+            teams_managers = [entry['team_id'] for entry in ss['entries']]
+
             ##########################################
-            curr_df['Manager'] = man_data['player_first_name'] + ' ' + man_data['player_last_name']
-            ave_df = pd.DataFrame(get_bootstrap_data()['events'])[['id', 'average_entry_score']]
-            ave_df.columns=['event', 'points']
-            ave_df['Manager'] = 'GW Average'
-            ave_cut = ave_df.loc[ave_df['event'] <= max(curr_df['event'])]
-            concat_df = pd.concat([curr_df, ave_cut])
-            c = alt.Chart(concat_df).mark_line().encode(
-                x=alt.X('event', axis=alt.Axis(tickMinStep=1, title='GW'), scale=alt.Scale(domain=[1, len(curr_df)+1])),
-                y=alt.Y('points', axis=alt.Axis(title='GW Points')),
-                color='Manager').properties(
-                    height=400)
-            st.altair_chart(c, use_container_width=True)
+            for team_id in teams_managers:
+
+                man_data = get_manager_details(team_id)   
+                curr_df['Manager'] = man_data['player_first_name'] + ' ' + man_data['player_last_name']
+                ave_df = pd.DataFrame(get_bootstrap_data()['events'])[['id', 'average_entry_score']]
+                ave_df.columns=['event', 'points']
+                ave_df['Manager'] = 'GW Average'
+                ave_cut = ave_df.loc[ave_df['event'] <= max(curr_df['event'])]
+                concat_df = pd.concat([curr_df, ave_cut])
+                c = alt.Chart(concat_df).mark_line().encode(
+                    x=alt.X('event', axis=alt.Axis(tickMinStep=1, title='GW'), scale=alt.Scale(domain=[1, len(curr_df)+1])),
+                    y=alt.Y('points', axis=alt.Axis(title='GW Points')),
+                    color='Manager').properties(
+                        height=400)
+                st.altair_chart(c, use_container_width=True)
         except KeyError:
             st.write('')
 
