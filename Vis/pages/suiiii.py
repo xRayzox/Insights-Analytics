@@ -451,13 +451,15 @@ else:
             leagues = manager_data['leagues']['classic']
             filtered_leagues = [league for league in leagues if league.get('league_type') == 'x']
             leagues_names_ids = [(league['id'], league['name']) for league in filtered_leagues]
-            st.write(leagues_names_ids)
+            #st.write(leagues_names_ids)
             ########################################
-            st.selectbox('List of Leagues', leagues_names_ids[0])
+            for league_id, league_name in leagues_names_ids:
+                print(f"{league_id}\t{league_name}")
+            st.selectbox('List of Leagues', leagues_names_ids)
             ss=fetch_league_info(1911702)
-            st.write(ss)
+            #st.write(ss)
             teams_managers = [(sa['team_id'], sa['name']) for sa in ss['entries']]
-            st.write(teams_managers)
+            #st.write(teams_managers)
             ##########################################
             curr_df['Manager'] = man_data['player_first_name'] + ' ' + man_data['player_last_name']
             ave_df = pd.DataFrame(get_bootstrap_data()['events'])[['id', 'average_entry_score']]
