@@ -317,7 +317,8 @@ with col5:
                 for index, row in df.iterrows():
                     IMAGE_URL = row['code']
                     image = Image.open(urlopen(IMAGE_URL))
-
+                    image=image.resize((60, 60))
+                    
                     pos = row['Pos']
                     num_players = len(df[df['Pos'] == pos])  # Number of players in this position
                     y_image = positions[pos]
@@ -402,6 +403,7 @@ with col5:
                 for i, row in enumerate(df_bench.itertuples()):
                     IMAGE_URL = row.code  # Access using attribute-style access
                     image = Image.open(urlopen(IMAGE_URL))
+                    image=image.resize((60, 60))
 
                     # Calculate x position for bench players
                     x_bench = bench_x + (slot_width * (i + 0.5))
