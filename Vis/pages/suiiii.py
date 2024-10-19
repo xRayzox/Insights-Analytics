@@ -322,7 +322,7 @@ if fpl_id and gw_complete_list:
             ax.add_patch(rounded_rect)
 
             # Add the player's name centered below the image
-            ax.text(x_image, y_image - rect_height - 6, player_name, fontsize=8, ha='center', color='black')
+            ax.text(x_image, y_image - rect_height - 6, player_name, fontsize=9, ha='center', color='black')
 
 
             # Bench players (df['Played'] == False)
@@ -362,7 +362,7 @@ if fpl_id and gw_complete_list:
                 y_bench = bench_y + (bench_height / 2) + 1
 
                 # Place player images in the bench area
-                ax_image = pitch.inset_image(y_bench, x_bench, image, height=8, ax=ax)  # Smaller image size for bench players
+                ax_image = pitch.inset_image(y_bench, x_bench, image, height=9, ax=ax)  # Smaller image size for bench players
 
                 # Add player name below the image
                 player_name = row.Player
