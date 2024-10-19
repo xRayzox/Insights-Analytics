@@ -303,7 +303,7 @@ def get_current_season():
     current_season = start_year + '/' + end_year
     return current_season
     
-@lru_cache(maxsize=128)
+@ttl_cache(maxsize=128, ttl=3600)
 def get_player_url_list():
     id_dict = get_player_id_dict(order_by_col='id')
     url_list = [base_url + f'element-summary/{k}/' for k, v in id_dict.items()]
