@@ -374,7 +374,7 @@ if fpl_id and gw_complete_list:
 
             # Position for the GWP rectangle
             gwp_rect_x = x_bench - gwp_rect_width / 2  # Center the rectangle
-            gwp_rect_y = y_bench - 2  # Adjust the y position as needed
+            gwp_rect_y = y_bench  # Adjust the y position as needed
 
             # Draw the GWP rectangle
             gwp_rect = FancyBboxPatch(
