@@ -290,7 +290,7 @@ if fpl_id and gw_complete_list:
 
             # Create a rounded rectangle patch for the player's name
             rounded_rect = FancyBboxPatch(
-                (x_image - rect_width / 2, y_image - rect_height - 4),  # Center the rectangle
+                (x_image - rect_width / 2, y_image - rect_height - 5),  # Center the rectangle
                 rect_width,
                 rect_height,
                 facecolor='white',
@@ -320,8 +320,8 @@ if fpl_id and gw_complete_list:
                     f"{gwp_points}", fontsize=6, ha='center', color='white', va='center') 
 
             # Add the player's name centered below the image
-            ax.text(x_image, y_image - rect_height - 3, player_name, fontsize=9, ha='center', color='black')
-
+            ax.text(x_image, y_image - rect_height - 5 + rect_height / 2, player_name, 
+                    fontsize=9, ha='center', color='black', va='center')
 
 
             # Bench players (df['Played'] == False)
