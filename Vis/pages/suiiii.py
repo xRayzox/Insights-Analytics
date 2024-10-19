@@ -453,7 +453,7 @@ else:
             leagues_names_ids = [(league['id'], league['name']) for league in filtered_leagues]
             st.write(leagues_names_ids)
             ########################################
-            st.selectbox('List of Leagues', leagues_names_ids)
+            st.selectbox('List of Leagues', leagues_names_ids[0])
             ss=fetch_league_info(1911702)
             st.write(ss)
             teams_managers = [(sa['team_id'], sa['name']) for sa in ss['entries']]
