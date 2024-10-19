@@ -450,7 +450,7 @@ else:
             man_data = get_manager_details(fpl_id)
             leagues = manager_data['leagues']['classic']
             leagues_names_ids = [(league['id'], league['name']) for league in leagues]
-            #st.write(leagues_names_ids)
+            st.write(leagues_names_ids)
             ########################################
             st.selectbox('List of Managers', leagues_names_ids)
             ss=fetch_league_info(1911702)
