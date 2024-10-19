@@ -286,7 +286,7 @@ if fpl_id and gw_complete_list:
 
             # Calculate text dimensions
             tp = TextPath((0, 0), player_name, size=2)
-            rect_width = tp.get_extents().width + 0.2  # Add padding
+            rect_width = tp.get_extents().width  # Add padding
             rect_height = 1
 
             # Draw player's name rectangle
