@@ -276,7 +276,30 @@ if fpl_id and gw_complete_list:
             ax_image = pitch.inset_image(y_image, x_image, image, height=10, ax=ax)
             # Add a rounded rectangle behind the player's name
             player_name = row['Player']  # Assuming the DataFrame has a 'Player' column
+            gwp_points = row['GWP']  # Assuming the DataFrame has a 'GWP' column
+            gwp_rect_width = 3  # Width of the GWP rectangle
+            gwp_rect_height = 2  # Height of the GWP rectangle
+            gwp_rect_x = x_image - 5  # Upper left corner X position of the rectangle
+            gwp_rect_y = y_image + 5  # Upper left corner Y position of the rectangle
 
+            # Draw the GWP rectangle
+            gwp_rect = FancyBboxPatch(
+                (gwp_rect_x, gwp_rect_y),
+                gwp_rect_width,
+                gwp_rect_height,
+                boxstyle="round,pad=0.1",
+                facecolor='blue',
+                edgecolor='white',
+                linewidth=1,
+                alpha=0.9
+            )
+            ax.add_patch(gwp_rect)
+
+            # Add the GWP text inside the rectangle
+            ax.text(gwp_rect_x + gwp_rect_width / 2, gwp_rect_y + gwp_rect_height / 2, 
+                    f"{gwp_points}", fontsize=6, ha='center', color='white', va='center') 
+            
+            
             # Get the width of the text to determine the size of the rounded rectangle
             tp = TextPath((0, 0), player_name, size=2)  # Specify size of the text
             bb = tp.get_extents()
@@ -346,30 +369,6 @@ if fpl_id and gw_complete_list:
                 ax.text(x_bench, bench_y - 4, player_name, fontsize=6, ha='center', color='black')
 
             # Show the pitch with player images and bench
-        gwp_points = row['GWP']  # Assuming the DataFrame has a 'GWP' column
-
-        # Define the size and position of the GWP rectangle
-        gwp_rect_width = 3  # Width of the GWP rectangle
-        gwp_rect_height = 2  # Height of the GWP rectangle
-        gwp_rect_x = x_image - 5  # Upper left corner X position of the rectangle
-        gwp_rect_y = y_image + 5  # Upper left corner Y position of the rectangle
-
-        # Draw the GWP rectangle
-        gwp_rect = FancyBboxPatch(
-            (gwp_rect_x, gwp_rect_y),
-            gwp_rect_width,
-            gwp_rect_height,
-            boxstyle="round,pad=0.1",
-            facecolor='blue',
-            edgecolor='white',
-            linewidth=1,
-            alpha=0.9
-        )
-        ax.add_patch(gwp_rect)
-
-        # Add the GWP text inside the rectangle
-        ax.text(gwp_rect_x + gwp_rect_width / 2, gwp_rect_y + gwp_rect_height / 2, 
-                f"{gwp_points}", fontsize=6, ha='center', color='white', va='center')   
         plt.show()
         st.pyplot(fig)
 
