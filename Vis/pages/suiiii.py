@@ -324,13 +324,13 @@ if fpl_id and gw_complete_list:
             ax.text(x_image, y_image - rect_height - 6, player_name, fontsize=8, ha='center', color='black')
 
 
-            # Bench players (df['Played'] == False)
+            # Limit to 4 players
             df_bench = test[test['Played'] == False]  # Limit to 4 players
 
             # Define bench position and dimensions
             bench_width = pitch_width  # 25% of pitch width
             bench_height = pitch_length / 9  # 25% of pitch length
-            bench_x = pitch_width - bench_width   # Position bench on the right side
+            bench_x = pitch_width - bench_width  # Position bench on the right side
             bench_y = pitch_length - 2.5 * zone_height  # Position bench at the bottom of the figure
 
             # Create a rectangle for the bench area
@@ -349,24 +349,24 @@ if fpl_id and gw_complete_list:
             # Set the total number of bench slots (4)
             bench_slots = 4
 
-            # Calculate the horizontal space for each slot
-            slot_width = bench_width / bench_slots
+            # Calculate the vertical space for each slot
+            slot_height = bench_height / bench_slots
 
             # Place the bench players in the rectangle
-        for i, row in enumerate(df_bench.itertuples()):
+            for i, row in enumerate(df_bench.itertuples()):
                 IMAGE_URL = row.code
                 image = Image.open(urlopen(IMAGE_URL))
                 
-                # Horizontal distribution of players within the bench slots
-                x_bench = bench_x + (slot_width * (i + 0.5))  # Center each image within its slot
-                y_bench = bench_y + (bench_height / 2) - (3 / 2)
+                # Vertical distribution of players within the bench slots
+                x_bench = bench_x + (bench_width / 2)  # Centering the images in the bench width
+                y_bench = bench_y + (slot_height * (i + 0.5))  # Center each image within its slot
 
                 # Place player images in the bench area
                 ax_image = pitch.inset_image(y_bench, x_bench, image, height=10, ax=ax)  # Smaller image size for bench players
 
                 # Add player name below the image
                 player_name = row.Player
-                ax.text(x_bench, bench_y - 4, player_name, fontsize=6, ha='center', color='black')
+                ax.text(x_bench, y_bench - 4, player_name, fontsize=6, ha='center', color='black')
                 gwp_points = row.GWP  # Assuming the DataFrame has a 'GWP' column
                 gwp_rect_width = 2  # Width of the GWP rectangle
                 gwp_rect_height = 2  # Height of the GWP rectangle
@@ -388,7 +388,7 @@ if fpl_id and gw_complete_list:
 
                 # Add the GWP text inside the rectangle
                 ax.text(gwp_rect_x + gwp_rect_width / 2, gwp_rect_y + gwp_rect_height / 2, 
-                        f"{gwp_points}", fontsize=6, ha='center', color='white', va='center') 
+                        f"{gwp_points}", fontsize=6, ha='center', color='white', va='center')
                 # Show the pitch with player images and bench
         plt.show()
         st.pyplot(fig)
