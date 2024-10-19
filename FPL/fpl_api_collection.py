@@ -1,10 +1,30 @@
 import pandas as pd
 import requests
-
+from dataclasses import dataclass
+from functools import lru_cache
 
 base_url = 'https://fantasy.premierleague.com/api/'
+@dataclass
+class Entry:
+    team_id: int
+    name: str
+    player_name: str
+    rank: int
 
+def entry_from_standings(standings) -> Entry:
+    return Entry(
+        team_id=standings['entry'],
+        name=standings['entry_name'],
+        player_name=standings["player_name"],
+        rank=standings['rank']
+    )
+@dataclass
+class LeagueInfo:
+    id: int
+    name: str
+    entries: list[Entry]
 # Function to get general data (bootstrap data) from the FPL API
+@lru_cache(maxsize=128)
 def get_bootstrap_data() -> dict:
     """
     Options
@@ -25,6 +45,7 @@ def get_bootstrap_data() -> dict:
         return resp.json()
 
 # Function to get fixture data (upcoming matches)
+@lru_cache(maxsize=128)
 def get_fixture_data() -> dict:
     resp = requests.get(f'{base_url}fixtures/')
     if resp.status_code != 200:
@@ -48,6 +69,7 @@ def get_player_data(player_id) -> dict:
         return resp.json()
 
 # Function to get FPL manager details
+@lru_cache(maxsize=128)
 def get_manager_details(manager_id) -> dict:
     resp = requests.get(f'{base_url}entry/{manager_id}/')
     if resp.status_code != 200:
@@ -56,6 +78,7 @@ def get_manager_details(manager_id) -> dict:
         return resp.json()
 
 # Function to get FPL manager's history (past seasons' performances)
+@lru_cache(maxsize=128)
 def get_manager_history_data(manager_id) -> dict:
     resp = requests.get(f'{base_url}entry/{manager_id}/history/')
     if resp.status_code != 200:
@@ -64,6 +87,7 @@ def get_manager_history_data(manager_id) -> dict:
         return resp.json()
 
 # Function to get a manager's selected team for a given gameweek (GW)
+@lru_cache(maxsize=128)
 def get_manager_team_data(manager_id, gw):
     """
     Options
@@ -108,6 +132,7 @@ def get_player_id_dict(order_by_col, web_name=True) -> dict:
     return id_dict
 
 # Function to gather historic gameweek data for all players
+@lru_cache(maxsize=128)
 def collate_player_hist():
     res = []
     p_dict = get_player_id_dict()
@@ -294,7 +319,7 @@ def get_current_season():
     current_season = start_year + '/' + end_year
     return current_season
     
-    
+@lru_cache(maxsize=128)
 def get_player_url_list():
     id_dict = get_player_id_dict(order_by_col='id')
     url_list = [base_url + f'element-summary/{k}/' for k, v in id_dict.items()]
@@ -371,3 +396,15 @@ def color_fixtures(val):
         bg_color += ''
     style = bg_color + '; ' + font_color
     return style
+@lru_cache(maxsize=128)
+def fetch_league_info(league_id: int) -> LeagueInfo:
+    r: dict = requests.get(base_url + f"leagues-classic/{league_id}/standings/").json()
+    if "league" not in r:
+        r = requests.get(base_url + f"leagues-h2h/{league_id}/standings").json()
+    if "league" not in r:
+        raise ValueError(f"Could not find data for league_id: {league_id}")
+    return LeagueInfo(
+        id=r["league"]['id'],
+        name=r["league"]["name"],
+        entries=[entry_from_standings(e) for e in r['standings']['results']]
+    )
