@@ -230,7 +230,7 @@ if fpl_id and gw_complete_list:
         test = manager_team_df.reset_index()
 
         # Define the figure size
-        fig_size = (8, 8)  # Set to desired size (width, height)
+        fig_size = (6, 6)  # Set to desired size (width, height)
 
         # Create a vertical pitch with specified size
         pitch = VerticalPitch(
