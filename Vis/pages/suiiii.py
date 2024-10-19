@@ -14,9 +14,6 @@ from urllib.request import urlopen
 import random
 from matplotlib.patches import FancyBboxPatch
 from matplotlib.textpath import TextPath
-from PIL import Image, ImageOps, ImageDraw
-from io import BytesIO
-
 
 
 
@@ -257,20 +254,7 @@ if fpl_id and gw_complete_list:
         # Loop through DataFrame and place images
         for index, row in df.iterrows():
             IMAGE_URL = row['code']
-            response = urlopen(IMAGE_URL)
-            image = Image.open(BytesIO(response.read()))
-
-            # Resize the image (reduce size)
-            new_size = (50, 50)  # Adjust size as needed
-            image = image.resize(new_size, Image.Resampling.LANCZOS)
-
-            # Create a circular mask
-            mask = Image.new("L", new_size, 0)
-            draw = ImageDraw.Draw(mask)
-            draw.ellipse((0, 0, new_size[0], new_size[1]), fill=255)
-
-            # Apply the mask to the image to make it round
-            image.putalpha(mask)
+            image = Image.open(urlopen(IMAGE_URL))
 
             pos = row['Pos']
             if pos == 'GKP':
@@ -291,9 +275,6 @@ if fpl_id and gw_complete_list:
 
             # Draw the image on the pitch
             ax_image = pitch.inset_image(y_image, x_image, image, height=10, ax=ax)
-
-
-
             # Add a rounded rectangle behind the player's name
             player_name = row['Player']  # Assuming the DataFrame has a 'Player' column
             gwp_points = row['GWP']  # Assuming the DataFrame has a 'GWP' column
