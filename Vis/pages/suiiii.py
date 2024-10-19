@@ -301,12 +301,11 @@ if fpl_id and gw_complete_list:
             ax.text(x_image, y_image - rect_height - 6, player_name, fontsize=8, ha='center', color='black')
 
 
-            # Bench players (df['Played'] == False)
-            df_bench = test[test['Played'] == False].head(4)  # Limit to 4 players
+            df_bench = test[test['Played'] == False]  # Limit to 4 players
 
             # Define bench position and dimensions
-            bench_width = pitch_width / 4  # 25% of pitch width
-            bench_height = pitch_length / 4  # 25% of pitch length
+            bench_width = pitch_width   # 25% of pitch width
+            bench_height = pitch_length   # 25% of pitch length
             bench_x = pitch_width - bench_width - 5  # Position bench on the right side
             bench_y = pitch_length - 2.5 * zone_height  # Position bench at the bottom of the figure
 
