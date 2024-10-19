@@ -233,9 +233,6 @@ if fpl_id and gw_complete_list:
         # Create a vertical pitch with specified size
         pitch = VerticalPitch(pitch_color='grass', line_color='white', stripe=True, 
                               corner_arcs=True,half=True,
-                              pad_left=-10,
-                              pad_right=-10,
-                              pad_top=10,
                               pad_bottom=20)
         fig, ax = pitch.draw(figsize=fig_size, tight_layout=False)  # Draw the pitch
 
