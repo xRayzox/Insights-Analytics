@@ -255,7 +255,7 @@ elif selected_display == '⚔️Premier League Fixtures':
         unsafe_allow_html=True,
     )
 
-    current_gameweek_fixtures = fixtures_df[fixtures_df['event'] <= selected_gw]
+    current_gameweek_fixtures = fixtures_df[fixtures_df['event'] == selected_gw]
     grouped_fixtures = current_gameweek_fixtures.groupby('local_date')
 
         # Use centered container for fixtures
