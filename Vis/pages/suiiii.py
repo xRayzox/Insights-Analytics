@@ -446,12 +446,12 @@ else:
             # Prepare options for the multiselect
             options = [entry[2] for entry in teams_managers]  # Player names
             team_ids = [entry[0] for entry in teams_managers]  # Team IDs
-
+            default = options[:5]
             # Show teams selection
             selected_teams = st.multiselect(
                 label='Show teams',
                 options=options,
-                default=options.head(),
+                default=default,
                 format_func=lambda x: x,
             )
 
