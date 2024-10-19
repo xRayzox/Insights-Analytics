@@ -274,7 +274,7 @@ if fpl_id and gw_complete_list:
                 x_image = (pitch_width / (num_players + 1)) * (index % num_players + 1) if num_players > 1 else pitch_width / 2
 
                 # Draw the player image on the pitch
-                pitch.inset_image(y_image, x_image, image, height=8, ax=ax)
+                pitch.inset_image(y_image, x_image, image, height=9, ax=ax)
 
                 # Draw player's name and GWP points
                 draw_player_details(ax, row, x_image, y_image)
