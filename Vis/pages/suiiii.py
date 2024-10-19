@@ -306,7 +306,7 @@ if fpl_id and gw_complete_list:
 
             # Define bench position and dimensions
             bench_width = pitch_width  # 25% of pitch width
-            bench_height = pitch_length / 9  # 25% of pitch length
+            bench_height = pitch_length / 8  # 25% of pitch length
             bench_x = pitch_width - bench_width   # Position bench on the right side
             bench_y = pitch_length - 2.5 * zone_height  # Position bench at the bottom of the figure
 
