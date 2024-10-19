@@ -304,7 +304,7 @@ if fpl_id and gw_complete_list:
             # Get the width of the text to determine the size of the rounded rectangle
             tp = TextPath((0, 0), player_name, size=2)  # Specify size of the text
             bb = tp.get_extents()
-            rect_width = bb.width * 1.1  # Add a little padding (10%)
+            rect_width = bb.width   # Add a little padding (10%)
             rect_height = 1 
             rounding = 1 
 
