@@ -67,8 +67,7 @@ with col1:
             if fpl_id <= 0:
                 st.write('Please enter a valid FPL ID.')
             elif fpl_id <= total_players:
-                manager_data = get_manager_details(fpl_id)
-                st.write(manager_data['leagues']['classic'])
+                manager_data = get_manager_details(fpl_id)  
                 manager_name = f"{manager_data['player_first_name']} {manager_data['player_last_name']}"
                 manager_team = manager_data['name']
                 season = get_current_season()
@@ -423,11 +422,15 @@ if fpl_id == '':
 else:
 
     curr_df = pd.DataFrame(get_manager_history_data(fpl_id)['current'])
+    
     if len(curr_df) == 0:
         st.write('')
     else:
         try:
             man_data = get_manager_details(fpl_id)
+            leagues = manager_data['leagues']['classic']
+            leagues_names_ids = [(league['id'], league['name']) for league in leagues]
+            st.write(leagues_names_ids)
             curr_df['Manager'] = man_data['player_first_name'] + ' ' + man_data['player_last_name']
             ave_df = pd.DataFrame(get_bootstrap_data()['events'])[['id', 'average_entry_score']]
             ave_df.columns=['event', 'points']
