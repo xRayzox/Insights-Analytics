@@ -377,7 +377,7 @@ if fpl_id and gw_complete_list:
             rounding = 1
 
             rounded_rect = FancyBboxPatch(
-                (x_bench - rect_width / 2, y_bench - rect_height - 5),  # Center the rectangle
+                (x_bench - rect_width / 2, y_bench - rect_height - 4),  # Center the rectangle
                 rect_width,
                 rect_height,
                 facecolor='white',
