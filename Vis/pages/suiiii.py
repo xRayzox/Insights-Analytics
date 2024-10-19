@@ -267,19 +267,6 @@ with col5:
             df = test[test['Played'] == True]
             total_gwp = df['GWP'].sum()
 
-            rect = plt.Rectangle(
-                (0, pitch_length + 1.8 * zone_height),  # Bottom left corner of the rectangle
-                pitch_width / 5,                         # Width of the rectangle
-                pitch_width / 5,                         # Height of the rectangle
-                color=(55/255, 0/255, 60/255),           # Rectangle color (rgb(55, 0, 60))
-                alpha=1,                               # Transparency
-                zorder=5                                  # Layering order
-            )
-
-            # Add rectangle to the plot
-            ax.add_patch(rect)
-
-            # Add text to the rectangle
             ax.text(
                 0.5 * (pitch_width / 5),                # x position (centered horizontally within the rectangle)
                 (pitch_length + 1.8 * zone_height + (pitch_width / 5) / 2)+3,  # y position (centered vertically within the rectangle)
@@ -302,6 +289,19 @@ with col5:
                 ha='center',                            # Horizontal alignment
                 va='center'                             # Vertical alignment
             )
+            rect = plt.Rectangle(
+                (0, pitch_length + 1.8 * zone_height),  # Bottom left corner of the rectangle
+                pitch_width / 5,                         # Width of the rectangle
+                pitch_width / 5,                         # Height of the rectangle
+                color=(55/255, 0/255, 60/255),           # Rectangle color (rgb(55, 0, 60))
+                alpha=1,                               # Transparency
+                zorder=5                                  # Layering order
+            )
+
+            # Add rectangle to the plot
+            ax.add_patch(rect)
+
+            
 
 
 
