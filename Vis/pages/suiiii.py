@@ -308,7 +308,7 @@ if fpl_id and gw_complete_list:
             bench_width = pitch_width / 4  # 25% of pitch width
             bench_height = pitch_length / 4  # 25% of pitch length
             bench_x = pitch_width - bench_width - 5  # Position bench on the right side
-            bench_y = 5  # Position bench at the bottom of the figure
+            bench_y = pitch_length - zone_height  # Position bench at the bottom of the figure
 
             # Create a rectangle for the bench area
             bench_rect = FancyBboxPatch(
@@ -333,7 +333,7 @@ if fpl_id and gw_complete_list:
                 y_bench = bench_y  # Vertically centered in the bench
 
                 # Draw the bench player image
-                ax_image = pitch.inset_image(y_bench, x_bench, image, height=5, ax=ax)  # Smaller image size for bench players
+                ax_image = pitch.inset_image(y_bench, x_bench, image, height=10, ax=ax)  # Smaller image size for bench players
 
                 # Add player's name below image
                 player_name = row.Player
