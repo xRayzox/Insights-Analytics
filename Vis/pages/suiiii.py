@@ -399,12 +399,12 @@ if fpl_id and gw_complete_list:
 
             # Get GWP points for the player
             gwp_points = row.GWP  # Assuming the DataFrame has a 'GWP' column
-            gwp_rect_width = 2  # Width of the GWP rectangle
+            gwp_rect_width = rect_width  # Set the GWP rectangle width to be the same as the previous rectangle
             gwp_rect_height = 1  # Adjusted height for the GWP rectangle
 
             # Position for the GWP rectangle
             gwp_rect_x = x_bench - gwp_rect_width / 2  # Center the rectangle
-            gwp_rect_y = y_bench - 2  # Adjust the y position as needed
+            gwp_rect_y = y_bench - rect_height - 5 - gwp_rect_height - 2  # Adjust the y position to place it below the first rectangle
 
             # Draw the GWP rectangle
             gwp_rect = FancyBboxPatch(
@@ -420,8 +420,15 @@ if fpl_id and gw_complete_list:
             ax.add_patch(gwp_rect)
 
             # Add the GWP text inside the rectangle
-            ax.text(gwp_rect_x + gwp_rect_width / 2, gwp_rect_y + gwp_rect_height / 2, 
-                    f"{gwp_points}", fontsize=6, ha='center', color='white', va='center')
+            ax.text(
+                gwp_rect_x + gwp_rect_width / 2, 
+                gwp_rect_y + gwp_rect_height / 2, 
+                f"{gwp_points}", 
+                fontsize=6, 
+                ha='center', 
+                color='white', 
+                va='center'
+            )
         plt.show()
         st.pyplot(fig)
 
