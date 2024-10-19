@@ -359,9 +359,9 @@ if fpl_id and gw_complete_list:
                 image = Image.open(urlopen(IMAGE_URL))
 
                 # Step 2: Create a mask for the round shape
-                mask = Image.new("L", image.size, 0)
+                mask = Image.new("L", image.size, 255)
                 draw = ImageDraw.Draw(mask)
-                draw.ellipse((0, 0, image.size[0], image.size[1]), fill=50)
+                draw.ellipse((0, 0, image.size[0], image.size[1]), fill=255)
 
                 # Step 3: Apply the mask to create a round image
                 image = ImageOps.fit(image, mask.size, centering=(0.5, 0.5))
