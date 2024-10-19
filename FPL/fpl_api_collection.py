@@ -398,7 +398,7 @@ def color_fixtures(val):
     return style
 
 
-def fetch_league_info(league_id: int) -> LeagueInfo:
+def fetch_league_info(league_id) -> LeagueInfo:
     r: dict = requests.get(base_url + f"leagues-classic/{league_id}/standings/").json()
     if "league" not in r:
         r = requests.get(base_url + f"leagues-h2h/{league_id}/standings").json()
