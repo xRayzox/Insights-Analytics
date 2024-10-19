@@ -325,15 +325,14 @@ if fpl_id and gw_complete_list:
 
 ###############################bench##################
             # Bench players (df['Played'] == False)
-            df_bench = test[test['Played'] == False]  # Limit to 4 players
+            df_bench = test[test['Played'] == False]  # Limit to players who didn't play
 
             # Define bench position and dimensions
             bench_width = pitch_width  # 25% of pitch width
-            bench_height = pitch_length / 5.3 # 25% of pitch length
-            bench_x = pitch_width - bench_width   # Position bench on the right side
+            bench_height = pitch_length / 5.3  # 25% of pitch length
+            bench_x = pitch_width - bench_width  # Position bench on the right side
             bench_y = pitch_length - 3 * zone_height  # Position bench at the bottom of the figure
 
-            
             # Create a rectangle for the bench area
             bench_rect = FancyBboxPatch(
                 (bench_x, bench_y),
@@ -354,56 +353,67 @@ if fpl_id and gw_complete_list:
             slot_width = bench_width / bench_slots
 
             # Place the bench players in the rectangle
-        for i, row in enumerate(df_bench.itertuples()):
-            IMAGE_URL = row.code
-            image = Image.open(urlopen(IMAGE_URL))
-            # Horizontal distribution of players within the bench slots
-            x_bench = bench_x + (slot_width * (i + 0.5))  # Center each image within its slot
-            y_bench = bench_y + (bench_height / 2) + 1
-            rounded_rect = FancyBboxPatch(
-                (x_bench - rect_width / 2, y_bench - rect_height - 5),  # Center the rectangle
-                rect_width,
-                rect_height,
-                facecolor='white',
-                edgecolor='white',
-                linewidth=1,
-                alpha=0.8
-            )
-            ax.add_patch(rounded_rect)
-            # Place player images in the bench area
-            ax_image = pitch.inset_image(y_bench, x_bench, image, height=9, ax=ax)  # Smaller image size for bench players
+            for i, row in enumerate(df_bench.itertuples()):
+                IMAGE_URL = row.code
+                image = Image.open(urlopen(IMAGE_URL))
 
-            # Add player name below the image
-            player_name = row.Player
-            ax.text(x_bench, bench_y + 1, player_name, fontsize=6, ha='center', color='black')
-            
-            # Get GWP points for the player
-            gwp_points = row.GWP  # Assuming the DataFrame has a 'GWP' column
-            gwp_rect_width = 2  # Width of the GWP rectangle
-            gwp_rect_height = 1  # Adjusted height for the GWP rectangle
+                # Horizontal distribution of players within the bench slots
+                x_bench = bench_x + (slot_width * (i + 0.5))  # Center each image within its slot
+                y_bench = bench_y + (bench_height / 2) + 1  # Adjust the y position as needed
 
-            # Position for the GWP rectangle
-            gwp_rect_x = x_bench - gwp_rect_width / 2  # Center the rectangle
-            gwp_rect_y = y_bench - 2  # Adjust the y position as needed
+                # Place player images in the bench area
+                ax_image = pitch.inset_image(y_bench, x_bench, image, height=9, ax=ax)  # Smaller image size for bench players
 
-            # Draw the GWP rectangle
-            gwp_rect = FancyBboxPatch(
-                (gwp_rect_x, gwp_rect_y),
-                gwp_rect_width,
-                gwp_rect_height,
-                boxstyle="round,pad=0.1",
-                facecolor=(55/255, 0/255, 60/255),  # Using your specified color
-                edgecolor='white',
-                linewidth=1,
-                alpha=0.9
-            )
-            ax.add_patch(gwp_rect)
+                # Add player name below the image
+                player_name = row.Player  # Moved this line up to ensure player_name is defined before use
+                ax.text(x_bench, bench_y + 1, player_name, fontsize=6, ha='center', color='black')
 
-            # Add the GWP text inside the rectangle
-            ax.text(gwp_rect_x + gwp_rect_width / 2, gwp_rect_y + gwp_rect_height / 2, 
-                    f"{gwp_points}", fontsize=6, ha='center', color='white', va='center')
-        plt.show()
-        st.pyplot(fig)
+                # Create a rounded rectangle for the player's name
+                tp = TextPath((0, 0), player_name, size=2)  # Specify size of the text
+                bb = tp.get_extents()
+                rect_width = bb.width * 1.1  # Add a little padding (10%)
+                rect_height = 1
+
+                rounded_rect = FancyBboxPatch(
+                    (x_bench - rect_width / 2, y_bench - rect_height - 5),  # Center the rectangle
+                    rect_width,
+                    rect_height,
+                    facecolor='white',
+                    edgecolor='white',
+                    linewidth=1,
+                    alpha=0.8
+                )
+                ax.add_patch(rounded_rect)
+
+                # Get GWP points for the player
+                gwp_points = row.GWP  # Assuming the DataFrame has a 'GWP' column
+                gwp_rect_width = 2  # Width of the GWP rectangle
+                gwp_rect_height = 1  # Height for the GWP rectangle
+
+                # Position for the GWP rectangle
+                gwp_rect_x = x_bench - gwp_rect_width / 2  # Center the rectangle
+                gwp_rect_y = y_bench - 3  # Adjust the y position as needed
+
+                # Draw the GWP rectangle
+                gwp_rect = FancyBboxPatch(
+                    (gwp_rect_x, gwp_rect_y),
+                    gwp_rect_width,
+                    gwp_rect_height,
+                    boxstyle="round,pad=0.1",
+                    facecolor=(55/255, 0/255, 60/255),  # Using your specified color
+                    edgecolor='white',
+                    linewidth=1,
+                    alpha=0.9
+                )
+                ax.add_patch(gwp_rect)
+
+                # Add the GWP text inside the rectangle
+                ax.text(gwp_rect_x + gwp_rect_width / 2, gwp_rect_y + gwp_rect_height / 2, 
+                        f"{gwp_points}", fontsize=6, ha='center', color='white', va='center')
+
+            plt.show()
+            st.pyplot(fig)
+
 
 ###############################################################################
 
