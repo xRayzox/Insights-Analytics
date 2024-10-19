@@ -368,7 +368,7 @@ if fpl_id and gw_complete_list:
 
             # Add player name below the image
             player_name = row.Player
-            
+
             tp = TextPath((0, 0), player_name, size=2)  # Specify size of the text
             bb = tp.get_extents()
             rect_width = bb.width  # Add a little padding (10%)
@@ -385,7 +385,18 @@ if fpl_id and gw_complete_list:
                 alpha=0.8
             )
             ax.add_patch(rounded_rect)
-            ax.text(x_bench, bench_y + 2, player_name, fontsize=7, ha='center', color='black')
+
+            # Adjust the text position to center it in the rectangle
+            ax.text(
+                x_bench, 
+                y_bench - rect_height - 5 + rect_height / 2,  # Center vertically within the rectangle
+                player_name, 
+                fontsize=7, 
+                ha='center', 
+                va='center',  # Center vertically with respect to the text
+                color='black'
+            )
+
             # Get GWP points for the player
             gwp_points = row.GWP  # Assuming the DataFrame has a 'GWP' column
             gwp_rect_width = 2  # Width of the GWP rectangle
