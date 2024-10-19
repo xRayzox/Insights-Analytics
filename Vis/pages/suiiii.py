@@ -385,7 +385,7 @@ if fpl_id and gw_complete_list:
                 alpha=0.8
             )
             ax.add_patch(rounded_rect)
-            ax.text(x_bench, bench_y , player_name, fontsize=7, ha='center', color='black')
+            ax.text(x_bench, bench_y + 2, player_name, fontsize=7, ha='center', color='black')
             # Get GWP points for the player
             gwp_points = row.GWP  # Assuming the DataFrame has a 'GWP' column
             gwp_rect_width = 2  # Width of the GWP rectangle
