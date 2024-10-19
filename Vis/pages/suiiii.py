@@ -286,31 +286,36 @@ if fpl_id and gw_complete_list:
 
             
 
-            # Get the width of the text to determine the size of the rounded rectangle
+           # Get the width of the text to determine the size of the rounded rectangle
             tp = TextPath((0, 0), player_name, size=2)  # Specify size of the text
             bb = tp.get_extents()
-            rect_width = bb.width   # Add a little padding (10%)
-            rect_height = 1 
-            rounding = 1 
+            rect_width = bb.width  # Add a little padding (10%)
+            rect_height = 1
+            rounding = 1
 
-            # Create a rounded rectangle patch at the correct location
+            # Create a rounded rectangle patch for the player's name
             rounded_rect = FancyBboxPatch(
-                (x_image - rect_width / 2, y_image - rect_height - 4),  # Center the rectangle
+                (x_image - rect_width / 2, y_image - rect_height - 5),  # Center the rectangle
                 rect_width,
                 rect_height,
+                boxstyle="round,pad=0.1",
                 facecolor='white',
                 edgecolor='white',
                 linewidth=1,
                 alpha=0.8
             )
             ax.add_patch(rounded_rect)
-                        # Draw the GWP rectangle
+
+            # Position and create a rectangle patch for the GWP below the player's rectangle
+            gwp_rect_y = y_image - rect_height - 5 - 3  # Adjust y position to be below the player's rectangle
+            gwp_rect_height = 1  # Height for the GWP rectangle
+
             gwp_rect = FancyBboxPatch(
-                (gwp_rect_x, gwp_rect_y),
-                gwp_rect_width,
+                (x_image - rect_width / 2, gwp_rect_y),  # Center the rectangle
+                rect_width,
                 gwp_rect_height,
                 boxstyle="round,pad=0.1",
-                facecolor='blue',
+                facecolor=(55/255, 0/255, 60/255),  # RGB color specified as a tuple normalized to [0, 1]
                 edgecolor='white',
                 linewidth=1,
                 alpha=0.9
@@ -318,11 +323,12 @@ if fpl_id and gw_complete_list:
             ax.add_patch(gwp_rect)
 
             # Add the GWP text inside the rectangle
-            ax.text(gwp_rect_x + gwp_rect_width / 2, gwp_rect_y + gwp_rect_height / 2, 
+            ax.text(x_image, gwp_rect_y + gwp_rect_height / 2, 
                     f"{gwp_points}", fontsize=6, ha='center', color='white', va='center') 
-            
+
             # Add the player's name centered below the image
             ax.text(x_image, y_image - rect_height - 3, player_name, fontsize=9, ha='center', color='black')
+
 
 
             # Bench players (df['Played'] == False)
