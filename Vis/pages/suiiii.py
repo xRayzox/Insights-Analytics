@@ -339,7 +339,7 @@ if fpl_id and gw_complete_list:
                 (bench_x, bench_y),
                 bench_width,
                 bench_height,
-                boxstyle="round,pad=0.9",
+                boxstyle="round,pad=0.1",
                 facecolor='#72cf9f',
                 edgecolor='#72cf9f',
                 linewidth=2,
