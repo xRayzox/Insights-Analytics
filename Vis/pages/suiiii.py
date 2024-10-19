@@ -434,8 +434,6 @@ def fetch_league_info(league_id):
         raise ValueError(f"Could not find data for league_id: {league_id}")
 
     return {
-        'id': r["league"]['id'],
-        'name': r["league"]["name"],
         'entries': [entry_from_standings(e) for e in r['standings']['results']]
     }
 ################################################################################
