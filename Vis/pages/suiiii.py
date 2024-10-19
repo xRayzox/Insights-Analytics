@@ -365,15 +365,6 @@ if fpl_id and gw_complete_list:
 
         # Draw bench players
         draw_bench_players(df_bench)
-        def set_text_sizes(ax, scaling_factor):
-            for text in ax.texts:  # Loop through all text objects in the axes
-                text.set_fontsize(text.get_fontsize() * scaling_factor)  # Scale font size
-        fig.set_size_inches(4, 4)  # Change to your desired display size
-
-        # Set the font size scaling factor (reduce for smaller figure)
-        scaling_factor = 0.4  # Adjust as necessary
-        set_text_sizes(ax, scaling_factor)
-
         # Show the plot
         plt.show()
         st.pyplot(fig)
