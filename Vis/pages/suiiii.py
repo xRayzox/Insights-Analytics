@@ -357,15 +357,6 @@ if fpl_id and gw_complete_list:
         for i, row in enumerate(df_bench.itertuples()):
                 IMAGE_URL = row.code
                 image = Image.open(urlopen(IMAGE_URL))
-
-                # Step 2: Create a mask for the round shape
-                mask = Image.new("L", image.size, 0)
-                draw = ImageDraw.Draw(mask)
-                draw.ellipse((0, 0, image.size[0], image.size[1]), fill=255)
-
-                # Step 3: Apply the mask to create a round image
-                image = ImageOps.fit(image, mask.size, centering=(0.5, 0.5))
-                image.putalpha(mask)
                 # Horizontal distribution of players within the bench slots
                 x_bench = bench_x + (slot_width * (i + 0.5))  # Center each image within its slot
                 y_bench = bench_y + (bench_height / 2) + 1
