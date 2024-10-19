@@ -1,24 +1,16 @@
 import requests
-from functools import lru_cache
-import time
+from cachetools import TTLCache, cached
+from cachetools.func import ttl_cache
 
+# Base URL for FPL API
 base_url = 'https://fantasy.premierleague.com/api/'
 
-# Cache dictionary to manually manage TTL
-cache = {}
-
-def cache_with_ttl(key, ttl=120):
-    current_time = time.time()
-    if key in cache:
-        value, timestamp = cache[key]
-        if current_time - timestamp < ttl:
-            return value
-    return None
-
-def set_cache(key, value):
-    cache[key] = (value, time.time())
+# Define cache TTL and max size
+cache_maxsize = 128  # Maximum number of cache entries
+cache_ttl = 120  # Time-to-Live in seconds
 
 def entry_from_standings(standings):
+    """Extract relevant information from league standings."""
     return {
         'team_id': standings['entry'],
         'name': standings['entry_name'],
@@ -26,52 +18,33 @@ def entry_from_standings(standings):
         'rank': standings['rank']
     }
 
+@ttl_cache(maxsize=cache_maxsize, ttl=cache_ttl)
 def fetch_league_info(league_id):
-    cache_key = f'league_info_{league_id}'
-    cached_value = cache_with_ttl(cache_key)
-    if cached_value is not None:
-        return cached_value
-
-    # Make API request
+    """Fetch league standings, either classic or head-to-head."""
     r = requests.get(base_url + f"leagues-classic/{league_id}/standings/").json()
     if "league" not in r:
         r = requests.get(base_url + f"leagues-h2h/{league_id}/standings").json()
     if "league" not in r:
         raise ValueError(f"Could not find data for league_id: {league_id}")
 
-    league_data = {
+    return {
         'entries': [entry_from_standings(e) for e in r['standings']['results']]
     }
-    
-    set_cache(cache_key, league_data)
-    return league_data
 
+@ttl_cache(maxsize=cache_maxsize, ttl=cache_ttl)
 def get_manager_details(team_id):
-    cache_key = f'manager_details_{team_id}'
-    cached_value = cache_with_ttl(cache_key)
-    if cached_value is not None:
-        return cached_value
-
+    """Fetch detailed information about a manager's team."""
     r = requests.get(base_url + f"entry/{team_id}/").json()
-    set_cache(cache_key, r)
     return r
 
+@ttl_cache(maxsize=cache_maxsize, ttl=cache_ttl)
 def get_manager_history_data(team_id):
-    cache_key = f'manager_history_{team_id}'
-    cached_value = cache_with_ttl(cache_key)
-    if cached_value is not None:
-        return cached_value
-
+    """Fetch historical data about a manager's team."""
     r = requests.get(base_url + f"entry/{team_id}/history/").json()
-    set_cache(cache_key, r)
     return r
 
+@ttl_cache(maxsize=cache_maxsize, ttl=cache_ttl)
 def get_bootstrap_data():
-    cache_key = 'bootstrap_data'
-    cached_value = cache_with_ttl(cache_key)
-    if cached_value is not None:
-        return cached_value
-
+    """Fetch static data that includes all players and game information."""
     r = requests.get(base_url + "bootstrap-static/").json()
-    set_cache(cache_key, r)
     return r
