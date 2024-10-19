@@ -188,15 +188,7 @@ def get_league_table():
 
 def get_current_gw():
     events_df = pd.DataFrame(get_bootstrap_data()['events'])
-    current_gw = events_df.loc[
-        events_df['is_current'] == True
-    ].reset_index()['id'][0]
-
-    # If no current game week, get the next game week
-    if current_gw.empty:
-        current_gw = events_df.loc[
-            events_df['is_next'] == True
-        ].reset_index()['id'][0]
+    current_gw = events_df.loc[events_df['is_current'] == True].reset_index()['id'][0]
     return current_gw
 
 
