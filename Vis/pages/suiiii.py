@@ -321,7 +321,7 @@ if fpl_id and gw_complete_list:
 
             # Add the player's name centered below the image
             ax.text(x_image, y_image - rect_height - 5 + rect_height / 2, player_name, 
-                    fontsize=9, ha='center', color='black', va='center')
+                    fontsize=7, ha='center', color='black', va='center')
 
 
             # Bench players (df['Played'] == False)
