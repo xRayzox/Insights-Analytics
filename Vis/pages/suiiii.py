@@ -365,7 +365,7 @@ if fpl_id and gw_complete_list:
 
         # Draw bench players
         draw_bench_players(df_bench)
-        fig.set_size_inches(6, 6)  # Change to your desired size
+        fig.set_size_inches(2, 2)  # Change to your desired size
 
         # Show the plot
         plt.show()
