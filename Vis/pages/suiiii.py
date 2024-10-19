@@ -352,42 +352,42 @@ if fpl_id and gw_complete_list:
             slot_width = bench_width / bench_slots
 
             # Place the bench players in the rectangle
-            for i, row in enumerate(df_bench.itertuples()):
-                    IMAGE_URL = row.code
-                    image = Image.open(urlopen(IMAGE_URL))
-                    
-                    # Horizontal distribution of players within the bench slots
-                    x_bench = bench_x + (slot_width * (i + 0.5))  # Center each image within its slot
-                    y_bench = bench_y + (bench_height / 2) - (3 / 2)
+        for i, row in enumerate(df_bench.itertuples()):
+                IMAGE_URL = row.code
+                image = Image.open(urlopen(IMAGE_URL))
+                
+                # Horizontal distribution of players within the bench slots
+                x_bench = bench_x + (slot_width * (i + 0.5))  # Center each image within its slot
+                y_bench = bench_y + (bench_height / 2) - (3 / 2)
 
-                    # Place player images in the bench area
-                    ax_image = pitch.inset_image(y_bench, x_bench, image, height=10, ax=ax)  # Smaller image size for bench players
+                # Place player images in the bench area
+                ax_image = pitch.inset_image(y_bench, x_bench, image, height=10, ax=ax)  # Smaller image size for bench players
 
-                    # Add player name below the image
-                    player_name = row.Player
-                    ax.text(x_bench, bench_y - 4, player_name, fontsize=6, ha='center', color='black')
-                    gwp_points = row.GWP  # Assuming the DataFrame has a 'GWP' column
-                    gwp_rect_width = 2  # Width of the GWP rectangle
-                    gwp_rect_height = 2  # Height of the GWP rectangle
-                    gwp_rect_x = x_bench - 5  # Upper left corner X position of the rectangle
-                    gwp_rect_y = y_bench + 5  # Upper left corner Y position of the rectangle
+                # Add player name below the image
+                player_name = row.Player
+                ax.text(x_bench, bench_y - 4, player_name, fontsize=6, ha='center', color='black')
+                gwp_points = row.GWP  # Assuming the DataFrame has a 'GWP' column
+                gwp_rect_width = 2  # Width of the GWP rectangle
+                gwp_rect_height = 2  # Height of the GWP rectangle
+                gwp_rect_x = x_bench - 5  # Upper left corner X position of the rectangle
+                gwp_rect_y = y_bench + 5  # Upper left corner Y position of the rectangle
 
-                    # Draw the GWP rectangle
-                    gwp_rect = FancyBboxPatch(
-                        (gwp_rect_x, gwp_rect_y),
-                        gwp_rect_width,
-                        gwp_rect_height,
-                        boxstyle="round,pad=0.1",
-                        facecolor='blue',
-                        edgecolor='white',
-                        linewidth=1,
-                        alpha=0.9
-                    )
-                    ax.add_patch(gwp_rect)
+                # Draw the GWP rectangle
+                gwp_rect = FancyBboxPatch(
+                    (gwp_rect_x, gwp_rect_y),
+                    gwp_rect_width,
+                    gwp_rect_height,
+                    boxstyle="round,pad=0.1",
+                    facecolor='blue',
+                    edgecolor='white',
+                    linewidth=1,
+                    alpha=0.9
+                )
+                ax.add_patch(gwp_rect)
 
-                    # Add the GWP text inside the rectangle
-                    ax.text(gwp_rect_x + gwp_rect_width / 2, gwp_rect_y + gwp_rect_height / 2, 
-                            f"{gwp_points}", fontsize=6, ha='center', color='white', va='center')
+                # Add the GWP text inside the rectangle
+                ax.text(gwp_rect_x + gwp_rect_width / 2, gwp_rect_y + gwp_rect_height / 2, 
+                        f"{gwp_points}", fontsize=6, ha='center', color='white', va='center')
         plt.show()
         st.pyplot(fig)
 
