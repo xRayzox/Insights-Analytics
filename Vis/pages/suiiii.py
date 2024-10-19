@@ -280,8 +280,6 @@ if fpl_id and gw_complete_list:
             gwp_points = row['GWP']  # Assuming the DataFrame has a 'GWP' column
             gwp_rect_width = 2  # Width of the GWP rectangle
             gwp_rect_height = 2  # Height of the GWP rectangle
-            gwp_rect_x = x_image - 5  # Upper left corner X position of the rectangle
-            gwp_rect_y = y_image + 5  # Upper left corner Y position of the rectangle
 
 
             
@@ -298,7 +296,6 @@ if fpl_id and gw_complete_list:
                 (x_image - rect_width / 2, y_image - rect_height - 5),  # Center the rectangle
                 rect_width,
                 rect_height,
-                boxstyle="round,pad=0.1",
                 facecolor='white',
                 edgecolor='white',
                 linewidth=1,
@@ -314,7 +311,6 @@ if fpl_id and gw_complete_list:
                 (x_image - rect_width / 2, gwp_rect_y),  # Center the rectangle
                 rect_width,
                 gwp_rect_height,
-                boxstyle="round,pad=0.1",
                 facecolor=(55/255, 0/255, 60/255),  # RGB color specified as a tuple normalized to [0, 1]
                 edgecolor='white',
                 linewidth=1,
