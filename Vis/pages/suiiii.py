@@ -343,7 +343,7 @@ if fpl_id and gw_complete_list:
 
                 # Add player name below the image
                 player_name = row.Player
-                ax.text(x_bench, bench_y - 7, player_name, fontsize=6, ha='center', color='black')
+                ax.text(x_bench, bench_y - 10, player_name, fontsize=6, ha='center', color='black')
 
             # Show the pitch with player images and bench
         plt.show()
