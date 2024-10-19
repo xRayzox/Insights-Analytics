@@ -486,7 +486,7 @@ else:
             teams_managers = [(entry['team_id'], entry['name'], entry['player_name']) for entry in ss['entries']]
 
             # Prepare options for the multiselect
-            options = [entry[1] for entry in teams_managers]  # This assumes entry[1] is the team name
+            options = [entry[2] for entry in teams_managers]  # This assumes entry[1] is the team name
             team_ids = [entry[0] for entry in teams_managers]  # This assumes entry[0] is the team_id
 
             # Show teams selection
