@@ -454,7 +454,7 @@ else:
             ########################################
 
             ss=fetch_league_info(1911702)
-            
+            st.write(ss)
             teams_managers=[(sa['team_id'], sa['name']) for sa in ss]
             st.write(teams_managers)
             ##########################################
