@@ -242,7 +242,8 @@ with col5:
                 stripe=True, 
                 corner_arcs=True, 
                 half=True,
-                pad_bottom=20
+                pad_bottom=20,
+                pad_left=-10
             )
 
             fig, ax = pitch.draw(figsize=fig_size, tight_layout=False)  # Draw the pitch
