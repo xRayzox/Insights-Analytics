@@ -455,7 +455,7 @@ else:
 
             ss=fetch_league_info(1911702)
             st.write(ss)
-            teams_managers=[(sa['team_id'], sa['name']) for sa in ss]
+            teams_managers = [(sa['team_id'], sa['name']) for sa in ss['entries']]
             st.write(teams_managers)
             ##########################################
             curr_df['Manager'] = man_data['player_first_name'] + ' ' + man_data['player_last_name']
