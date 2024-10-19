@@ -336,7 +336,7 @@ if fpl_id and gw_complete_list:
 
                 # Horizontal distribution of players within the bench slots
                 x_bench = bench_x + (slot_width * (i + 0.5))  # Center each image within its slot
-                y_bench = bench_y + (bench_height / 2) - (4 / 2)
+                y_bench = bench_y + (bench_height / 2) - (3 / 2)
 
                 # Place player images in the bench area
                 ax_image = pitch.inset_image(y_bench, x_bench, image, height=10, ax=ax)  # Smaller image size for bench players
