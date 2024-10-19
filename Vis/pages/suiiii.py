@@ -274,7 +274,7 @@ if fpl_id and gw_complete_list:
                 x_image = (pitch_width / (num_fwd + 1)) * (index % num_fwd + 1)  # Centered and distributed
 
             # Draw the image on the pitch
-            ax_image = pitch.inset_image(y_image, x_image, image, height=10, ax=ax)
+            ax_image = pitch.inset_image(y_image, x_image, image, height=5, ax=ax)
             # Add a rounded rectangle behind the player's name
             player_name = row['Player']  # Assuming the DataFrame has a 'Player' column
             gwp_points = row['GWP']  # Assuming the DataFrame has a 'GWP' column
