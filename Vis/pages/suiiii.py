@@ -68,6 +68,7 @@ with col1:
                 st.write('Please enter a valid FPL ID.')
             elif fpl_id <= total_players:
                 manager_data = get_manager_details(fpl_id)
+                st.write(manager_data['leagues']['classic'])
                 manager_name = f"{manager_data['player_first_name']} {manager_data['player_last_name']}"
                 manager_team = manager_data['name']
                 season = get_current_season()
@@ -420,6 +421,7 @@ with col5:
 if fpl_id == '':
     st.write('')
 else:
+
     curr_df = pd.DataFrame(get_manager_history_data(fpl_id)['current'])
     if len(curr_df) == 0:
         st.write('')
