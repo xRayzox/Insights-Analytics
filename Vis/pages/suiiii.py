@@ -258,7 +258,7 @@ if fpl_id and gw_complete_list:
             image = Image.open(urlopen(IMAGE_URL))
             # Resize the image (reduce size)
             new_size = (100, 100)  # Adjust size as needed
-            image = image.resize(new_size, Image.ANTIALIAS)
+            image = image.resize(new_size, Image.Resampling.LANCZOS)
 
             # Create a circular mask
             mask = Image.new("L", new_size, 0)
@@ -289,7 +289,7 @@ if fpl_id and gw_complete_list:
             ax_image = pitch.inset_image(y_image, x_image, image, height=10, ax=ax)
 
 
-            
+
             # Add a rounded rectangle behind the player's name
             player_name = row['Player']  # Assuming the DataFrame has a 'Player' column
             gwp_points = row['GWP']  # Assuming the DataFrame has a 'GWP' column
