@@ -333,6 +333,7 @@ if fpl_id and gw_complete_list:
             bench_x = pitch_width - bench_width   # Position bench on the right side
             bench_y = pitch_length - 3 * zone_height  # Position bench at the bottom of the figure
 
+            
             # Create a rectangle for the bench area
             bench_rect = FancyBboxPatch(
                 (bench_x, bench_y),
@@ -359,7 +360,16 @@ if fpl_id and gw_complete_list:
             # Horizontal distribution of players within the bench slots
             x_bench = bench_x + (slot_width * (i + 0.5))  # Center each image within its slot
             y_bench = bench_y + (bench_height / 2) + 1
-
+            rounded_rect = FancyBboxPatch(
+                (x_bench - rect_width / 2, y_bench - rect_height - 5),  # Center the rectangle
+                rect_width,
+                rect_height,
+                facecolor='white',
+                edgecolor='white',
+                linewidth=1,
+                alpha=0.8
+            )
+            ax.add_patch(rounded_rect)
             # Place player images in the bench area
             ax_image = pitch.inset_image(y_bench, x_bench, image, height=9, ax=ax)  # Smaller image size for bench players
 
@@ -374,7 +384,7 @@ if fpl_id and gw_complete_list:
 
             # Position for the GWP rectangle
             gwp_rect_x = x_bench - gwp_rect_width / 2  # Center the rectangle
-            gwp_rect_y = y_bench  # Adjust the y position as needed
+            gwp_rect_y = y_bench - 2  # Adjust the y position as needed
 
             # Draw the GWP rectangle
             gwp_rect = FancyBboxPatch(
