@@ -317,7 +317,7 @@ if fpl_id and gw_complete_list:
 
             # Add the GWP text inside the rectangle
             ax.text(x_image, gwp_rect_y + gwp_rect_height / 2, 
-                    f"{gwp_points}", fontsize=6, ha='center', color='white', va='center') 
+                    f"{gwp_points}", fontsize=7, ha='center', color='white', va='center') 
 
             # Add the player's name centered below the image
             ax.text(x_image, y_image - rect_height - 5 + rect_height / 2, player_name, 
