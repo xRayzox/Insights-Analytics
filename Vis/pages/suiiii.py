@@ -164,7 +164,7 @@ with col2:
 col4,col5,col6 = st.columns([1,20,1])
 with col5:
     events_df = pd.DataFrame(get_bootstrap_data()['events'])
-    complete_df = events_df.loc[events_df['deadline_time'] < str(dt.datetime.now())]
+    complete_df = events_df.loc[events_df['deadline_time'] ]
     gw_complete_list = sorted(complete_df['id'].tolist(), reverse=True)
     fpl_gw = st.selectbox('Team on Gameweek', gw_complete_list)
 
