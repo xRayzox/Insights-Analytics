@@ -2,11 +2,12 @@ import pandas as pd
 import requests
 from dataclasses import dataclass
 from functools import lru_cache
+from cachetools import ttl_cache
 
 base_url = 'https://fantasy.premierleague.com/api/'
 
 # Function to get general data (bootstrap data) from the FPL API
-@lru_cache(maxsize=128)
+@ttl_cache(maxsize=128, ttl=3600)
 def get_bootstrap_data() -> dict:
     """
     Options
@@ -27,14 +28,15 @@ def get_bootstrap_data() -> dict:
         return resp.json()
 
 # Function to get fixture data (upcoming matches)
-@lru_cache(maxsize=128)
+@ttl_cache(maxsize=128, ttl=3600)
 def get_fixture_data() -> dict:
     resp = requests.get(f'{base_url}fixtures/')
     if resp.status_code != 200:
         raise Exception(f'Response was status code {resp.status_code}')
     else:
         return resp.json()
-
+    
+@ttl_cache(maxsize=128, ttl=3600)
 # Function to get player-specific data
 def get_player_data(player_id) -> dict:
     """
@@ -51,7 +53,7 @@ def get_player_data(player_id) -> dict:
         return resp.json()
 
 # Function to get FPL manager details
-@lru_cache(maxsize=128)
+@ttl_cache(maxsize=128, ttl=3600)
 def get_manager_details(manager_id) -> dict:
     resp = requests.get(f'{base_url}entry/{manager_id}/')
     if resp.status_code != 200:
@@ -60,7 +62,7 @@ def get_manager_details(manager_id) -> dict:
         return resp.json()
 
 # Function to get FPL manager's history (past seasons' performances)
-@lru_cache(maxsize=128)
+@ttl_cache(maxsize=128, ttl=3600)
 def get_manager_history_data(manager_id) -> dict:
     resp = requests.get(f'{base_url}entry/{manager_id}/history/')
     if resp.status_code != 200:
@@ -69,7 +71,7 @@ def get_manager_history_data(manager_id) -> dict:
         return resp.json()
 
 # Function to get a manager's selected team for a given gameweek (GW)
-@lru_cache(maxsize=128)
+@ttl_cache(maxsize=128, ttl=3600)
 def get_manager_team_data(manager_id, gw):
     """
     Options
@@ -114,7 +116,7 @@ def get_player_id_dict(order_by_col, web_name=True) -> dict:
     return id_dict
 
 # Function to gather historic gameweek data for all players
-@lru_cache(maxsize=128)
+@ttl_cache(maxsize=128, ttl=3600)
 def collate_player_hist():
     res = []
     p_dict = get_player_id_dict()
@@ -380,26 +382,3 @@ def color_fixtures(val):
     return style
 
 ############
-
-
-def entry_from_standings(standings):
-    return {
-        'team_id': standings['entry'],
-        'name': standings['entry_name'],
-        'player_name': standings["player_name"],
-        'rank': standings['rank']
-    }
-
-
-def fetch_league_info(league_id):
-    r: dict = requests.get(base_url + f"leagues-classic/{league_id}/standings/").json()
-    if "league" not in r:
-        r = requests.get(base_url + f"leagues-h2h/{league_id}/standings").json()
-    if "league" not in r:
-        raise ValueError(f"Could not find data for league_id: {league_id}")
-
-    return {
-        'id': r["league"]['id'],
-        'name': r["league"]["name"],
-        'entries': [entry_from_standings(e) for e in r['standings']['results']]
-    }
