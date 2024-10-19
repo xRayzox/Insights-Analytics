@@ -331,7 +331,7 @@ with col5:
             bench_width = pitch_width
             bench_height = pitch_length / 5.3
             bench_x = pitch_width - bench_width
-            bench_y = pitch_length - 3 * zone_height
+            bench_y = pitch_length - 4 * zone_height
 
             # Create a rectangle for the bench area
             bench_rect = FancyBboxPatch(
