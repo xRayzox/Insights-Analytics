@@ -281,8 +281,8 @@ if fpl_id and gw_complete_list:
 
         # Function to draw player details
         def draw_player_details(ax, row, x_image, y_image):
-            player_name = row['Player']
-            gwp_points = row['GWP']  
+            player_name = row.Player  # Access using attribute-style access
+            gwp_points = row.GWP  
 
             # Calculate text dimensions
             tp = TextPath((0, 0), player_name, size=2)
@@ -350,7 +350,7 @@ if fpl_id and gw_complete_list:
         # Function to draw bench players
         def draw_bench_players(df_bench):
             for i, row in enumerate(df_bench.itertuples()):
-                IMAGE_URL = row.code
+                IMAGE_URL = row.code  # Access using attribute-style access
                 image = Image.open(urlopen(IMAGE_URL))
 
                 # Calculate x position for bench players
