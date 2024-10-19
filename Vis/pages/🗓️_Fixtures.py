@@ -115,8 +115,7 @@ if selected_display == '📊Fixture Difficulty Rating':
         if value in fdr_colors:
             background_color, text_color = fdr_colors[value]
             return f'background-color: {background_color}; color: {text_color}; text-align: center;'
-        else:
-            return ''
+        return ''  # Return an empty string for default styling
 
     # Define a coloring function for GA/GF values
     def color_ga_gf(value):
