@@ -15,6 +15,8 @@ import random
 from matplotlib.patches import FancyBboxPatch
 from matplotlib.textpath import TextPath
 from PIL import Image, ImageOps, ImageDraw
+from io import BytesIO
+
 
 
 
@@ -255,7 +257,9 @@ if fpl_id and gw_complete_list:
         # Loop through DataFrame and place images
         for index, row in df.iterrows():
             IMAGE_URL = row['code']
-            image = Image.open(urlopen(IMAGE_URL))
+            response = urlopen(IMAGE_URL)
+            image = Image.open(BytesIO(response.read()))
+
             # Resize the image (reduce size)
             new_size = (50, 50)  # Adjust size as needed
             image = image.resize(new_size, Image.Resampling.LANCZOS)
@@ -265,9 +269,9 @@ if fpl_id and gw_complete_list:
             draw = ImageDraw.Draw(mask)
             draw.ellipse((0, 0, new_size[0], new_size[1]), fill=255)
 
-            # Apply the mask to the image to make it round and transparent background
-            image = ImageOps.fit(image, mask.size, centering=(0.5, 0.5))
+            # Apply the mask to the image to make it round
             image.putalpha(mask)
+
             pos = row['Pos']
             if pos == 'GKP':
                 y_image = positions['GKP']
