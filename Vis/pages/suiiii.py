@@ -269,7 +269,7 @@ with col5:
 
             # Create a rectangle in the top left corner of the pitch
             rect = plt.Rectangle(
-                (0, pitch_length + 2.5 * zone_height),  # Bottom left corner of the rectangle
+                (0, pitch_length + 2 * zone_height),  # Bottom left corner of the rectangle
                 pitch_width / 5,                   # Width of the rectangle
                 pitch_width / 5,                   # Height of the rectangle
                 color='lightblue',                  # Rectangle color
