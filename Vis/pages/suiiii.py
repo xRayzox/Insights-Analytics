@@ -263,7 +263,7 @@ if fpl_id and gw_complete_list:
             # Create a circular mask
             mask = Image.new("L", new_size, 0)
             draw = ImageDraw.Draw(mask)
-            draw.ellipse((0, 0, new_size[0], new_size[1]), fill=1)
+            draw.ellipse((0, 0, new_size[0], new_size[1]), fill=255)
 
             # Apply the mask to the image to make it round and transparent background
             image = ImageOps.fit(image, mask.size, centering=(0.5, 0.5))
