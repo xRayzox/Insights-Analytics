@@ -282,7 +282,7 @@ with col5:
             # Add text to the rectangle
             ax.text(
                 0.5 * (pitch_width / 5),                # x position (centered horizontally within the rectangle)
-                (pitch_length + 1.8 * zone_height + (pitch_width / 5) / 2)+1,  # y position (centered vertically within the rectangle)
+                (pitch_length + 1.8 * zone_height + (pitch_width / 5) / 2)+3,  # y position (centered vertically within the rectangle)
                 f'GW{fpl_gw}',             # Text content
                 fontsize=20,                            # Font size
                 color='white',                          # Text color for 'GW{fpl_gw}' (changed to white)
