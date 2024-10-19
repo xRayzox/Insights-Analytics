@@ -256,12 +256,16 @@ if fpl_id and gw_complete_list:
         for index, row in df.iterrows():
             IMAGE_URL = row['code']
             image = Image.open(urlopen(IMAGE_URL))
-            # Create a circular mask
-            mask = Image.new("L", image.size, 0)
-            draw = ImageDraw.Draw(mask)
-            draw.ellipse((0, 0, image.size[0], image.size[1]), fill=255)
+            # Resize the image (reduce size)
+            new_size = (100, 100)  # Adjust size as needed
+            image = image.resize(new_size, Image.ANTIALIAS)
 
-            # Apply the mask to the image to make it round
+            # Create a circular mask
+            mask = Image.new("L", new_size, 0)
+            draw = ImageDraw.Draw(mask)
+            draw.ellipse((0, 0, new_size[0], new_size[1]), fill=255)
+
+            # Apply the mask to the image to make it round and transparent background
             image = ImageOps.fit(image, mask.size, centering=(0.5, 0.5))
             image.putalpha(mask)
             pos = row['Pos']
@@ -283,6 +287,9 @@ if fpl_id and gw_complete_list:
 
             # Draw the image on the pitch
             ax_image = pitch.inset_image(y_image, x_image, image, height=10, ax=ax)
+
+
+            
             # Add a rounded rectangle behind the player's name
             player_name = row['Player']  # Assuming the DataFrame has a 'Player' column
             gwp_points = row['GWP']  # Assuming the DataFrame has a 'GWP' column
