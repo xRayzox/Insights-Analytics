@@ -377,6 +377,18 @@ if fpl_id and gw_complete_list:
                 # Add the GWP text inside the rectangle
                 ax.text(gwp_rect_x + gwp_rect_width / 2, gwp_rect_y + gwp_rect_height / 2, 
                         f"{gwp_points}", fontsize=6, ha='center', color='white', va='center')
+                # Draw the GWP rectangle
+                gwp_rect = FancyBboxPatch(
+                    (gwp_rect_x, gwp_rect_y),
+                    gwp_rect_width,
+                    gwp_rect_height,
+                    boxstyle="round,pad=0.1",
+                    facecolor='blue',
+                    edgecolor='white',
+                    linewidth=1,
+                    alpha=0.9
+                )
+                ax.add_patch(gwp_rect)
         plt.show()
         st.pyplot(fig)
 
