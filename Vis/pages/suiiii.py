@@ -481,26 +481,35 @@ else:
                                                 format_func=lambda x: league_names[league_ids.index(x)])
             ss = fetch_league_info(selected_league_id)
             st.write(ss)
+            teams_managers = [(entry['team_id'], entry['name'],entry['player_name']) for entry in ss['entries']]
+            # Create teams_managers list
+            teams_managers = [(entry['team_id'], entry['name'], entry['player_name']) for entry in ss['entries']]
+
+            # Prepare options for the multiselect
+            options = [entry[1] for entry in teams_managers]  # This assumes entry[1] is the team name
+            team_ids = [entry[0] for entry in teams_managers]  # This assumes entry[0] is the team_id
+
+            # Show teams selection
             selected_teams = st.multiselect(
                 label='Show teams',
-                options=league_info.entries,
-                default=league_info.entries,
-                format_func=lambda x: x.name
+                options=options,
+                default=options,
+                format_func=lambda x: x,  # Assuming you want to display the team name
             )
 
             # Extract team IDs from the selected teams
-            selected_team_ids = [team.team_id for team in selected_teams]
-
-            # Create teams_managers list
-            teams_managers = [(entry['team_id'], entry['name'], entry['player_name']) for entry in ss['entries']]
+            selected_team_ids = [team_ids[options.index(team)] for team in selected_teams]
 
             # Filter teams_managers to only include selected teams
             filtered_teams_managers = [manager for manager in teams_managers if manager[0] in selected_team_ids]
 
+
+            
+
             # Initialize an empty list to store individual manager data
             manager_data = []
 
-            for team_id,name, player_name in filtered_teams_managers:
+            for team_id,name, player_name in teams_managers:
                 man_data = get_manager_details(team_id)
                 curr_df = pd.DataFrame(get_manager_history_data(team_id)['current'])
                 curr_df['Manager'] = f"{man_data['player_first_name']} {man_data['player_last_name']}"
