@@ -449,7 +449,6 @@ else:
         try:
             man_data = get_manager_details(fpl_id)
             leagues = manager_data['leagues']['classic']
-            st.write(leagues)
             filtered_leagues = [league for league in leagues if league.get('league_type') == 's']
             leagues_names_ids = [(league['id'], league['name']) for league in filtered_leagues]
             st.write(leagues_names_ids)
