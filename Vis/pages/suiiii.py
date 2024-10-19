@@ -376,7 +376,7 @@ if fpl_id and gw_complete_list:
 
         # Show the plot
         plt.show()
-        st.pyplot(fig, figsize=(6, 6))
+        st.pyplot(fig)
 
 ###############################################################################
 
