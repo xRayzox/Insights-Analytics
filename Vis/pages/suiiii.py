@@ -454,7 +454,7 @@ else:
             #st.write(leagues_names_ids)
             ########################################
             for league_id, league_name in leagues_names_ids:
-                print(f"{league_id}\t{league_name}")
+                st.write(f"{league_id}\t{league_name}")
             st.selectbox('List of Leagues', leagues_names_ids)
             ss=fetch_league_info(1911702)
             #st.write(ss)
