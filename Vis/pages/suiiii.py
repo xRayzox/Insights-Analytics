@@ -367,7 +367,7 @@ if fpl_id and gw_complete_list:
 
                 # Add player name below the image
                 player_name = row.Player
-                ax.text(x_bench, bench_y - 4, player_name, fontsize=6, ha='center', color='black')
+                ax.text(x_bench, bench_y - 9, player_name, fontsize=6, ha='center', color='black')
                 gwp_points = row.GWP  # Assuming the DataFrame has a 'GWP' column
                 gwp_rect_width = 2  # Width of the GWP rectangle
                 gwp_rect_height = 2  # Height of the GWP rectangle
