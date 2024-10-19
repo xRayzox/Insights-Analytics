@@ -24,7 +24,7 @@ pd.set_option('future.no_silent_downcasting', True)
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'FPL')))
 from fpl_api_collection import (
     get_bootstrap_data, get_manager_history_data, get_manager_team_data,
-    get_manager_details, get_player_data, get_current_season
+    get_manager_details, get_player_data, get_current_season,fetch_league_info
 )
 from fpl_utils import (
     define_sidebar, chip_converter
@@ -431,6 +431,7 @@ else:
             leagues = manager_data['leagues']['classic']
             leagues_names_ids = [(league['id'], league['name']) for league in leagues]
             st.write(leagues_names_ids)
+            st.write(fetch_league_info(1911702))
             curr_df['Manager'] = man_data['player_first_name'] + ' ' + man_data['player_last_name']
             ave_df = pd.DataFrame(get_bootstrap_data()['events'])[['id', 'average_entry_score']]
             ave_df.columns=['event', 'points']
