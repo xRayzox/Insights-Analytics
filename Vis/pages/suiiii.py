@@ -481,13 +481,26 @@ else:
                                                 format_func=lambda x: league_names[league_ids.index(x)])
             ss = fetch_league_info(selected_league_id)
             st.write(ss)
-            teams_managers = [(entry['team_id'], entry['player_name'], entry['name']) for entry in ss['entries']]
+            selected_teams = st.multiselect(
+                label='Show teams',
+                options=league_info.entries,
+                default=league_info.entries,
+                format_func=lambda x: x.name
+            )
 
+            # Extract team IDs from the selected teams
+            selected_team_ids = [team.team_id for team in selected_teams]
+
+            # Create teams_managers list
+            teams_managers = [(entry['team_id'], entry['name'], entry['player_name']) for entry in ss['entries']]
+
+            # Filter teams_managers to only include selected teams
+            filtered_teams_managers = [manager for manager in teams_managers if manager[0] in selected_team_ids]
 
             # Initialize an empty list to store individual manager data
             manager_data = []
 
-            for team_id in teams_managers:
+            for team_id,name, player_name in filtered_teams_managers:
                 man_data = get_manager_details(team_id)
                 curr_df = pd.DataFrame(get_manager_history_data(team_id)['current'])
                 curr_df['Manager'] = f"{man_data['player_first_name']} {man_data['player_last_name']}"
