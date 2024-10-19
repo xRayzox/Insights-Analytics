@@ -283,7 +283,7 @@ with col5:
             ax.text(
                 0.5 * (pitch_width / 5),                # x position (centered horizontally within the rectangle)
                 pitch_length + 1.8 * zone_height + (pitch_width / 5) / 2,  # y position (centered vertically within the rectangle)
-                f'GW{fpl_gw}\n{total_gwp}',             # Text content
+                f'GW{fpl_gw}',             # Text content
                 fontsize=12,                            # Font size
                 color='white',                          # Text color for 'GW{fpl_gw}' (changed to white)
                 ha='center',                            # Horizontal alignment
@@ -295,7 +295,7 @@ with col5:
             # Assuming total_gwp is just a number or a string, add it separately
             ax.text(
                 0.5 * (pitch_width / 5),                # x position (centered horizontally within the rectangle)
-                pitch_length + 1.8 * zone_height + (pitch_width / 5) / 2 - 0.1,  # Adjust y position if needed
+                pitch_length + 1.8 * zone_height + (pitch_width / 5) / 2 - 1,  # Adjust y position if needed
                 str(total_gwp),                        # Text content for total_gwp
                 fontsize=12,                            # Font size
                 color=total_gwp_color,                  # Text color for total_gwp
