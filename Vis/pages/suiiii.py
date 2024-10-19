@@ -305,7 +305,7 @@ if fpl_id and gw_complete_list:
             gwp_rect_height = 1  # Height for the GWP rectangle
 
             gwp_rect = FancyBboxPatch(
-                (x_image - rect_width / 2, gwp_rect_y),  # Center the rectangle
+                (x_image - rect_width / 2, gwp_rect_y-1),  # Center the rectangle
                 rect_width,
                 gwp_rect_height,
                 facecolor=(55/255, 0/255, 60/255),  # RGB color specified as a tuple normalized to [0, 1]
@@ -323,7 +323,7 @@ if fpl_id and gw_complete_list:
             ax.text(x_image, y_image - rect_height - 5 + rect_height / 2, player_name, 
                     fontsize=7, ha='center', color='black', va='center')
 
-
+###############################bench##################
             # Bench players (df['Played'] == False)
             df_bench = test[test['Played'] == False]  # Limit to 4 players
 
