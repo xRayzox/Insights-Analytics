@@ -458,10 +458,8 @@ else:
 
             # Streamlit selectbox
             selected_league_id = st.selectbox('List of Leagues', league_ids, format_func=lambda x: league_names[league_ids.index(x)])
-            st.write(selected_league_id)
-            
-            ss=fetch_league_info(1911702)
-            #st.write(ss)
+            ss=fetch_league_info(selected_league_id)
+            st.write(ss)
             teams_managers = [(sa['team_id'], sa['name']) for sa in ss['entries']]
             #st.write(teams_managers)
             ##########################################
