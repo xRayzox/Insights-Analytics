@@ -316,8 +316,8 @@ if fpl_id and gw_complete_list:
                 bench_width,
                 bench_height,
                 boxstyle="round,pad=0.2",
-                facecolor='lightgray',
-                edgecolor='white',
+                facecolor='#72cf9f',
+                edgecolor='#72cf9f',
                 linewidth=2,
                 alpha=0.8
             )
