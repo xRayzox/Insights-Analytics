@@ -4,25 +4,7 @@ from dataclasses import dataclass
 from functools import lru_cache
 
 base_url = 'https://fantasy.premierleague.com/api/'
-@dataclass
-class Entry:
-    team_id: int
-    name: str
-    player_name: str
-    rank: int
 
-def entry_from_standings(standings) -> Entry:
-    return Entry(
-        team_id=standings['entry'],
-        name=standings['entry_name'],
-        player_name=standings["player_name"],
-        rank=standings['rank']
-    )
-@dataclass
-class LeagueInfo:
-    id: int
-    name: str
-    entries: list[Entry]
 # Function to get general data (bootstrap data) from the FPL API
 @lru_cache(maxsize=128)
 def get_bootstrap_data() -> dict:
@@ -397,7 +379,26 @@ def color_fixtures(val):
     style = bg_color + '; ' + font_color
     return style
 
+############
+@dataclass
+class Entry:
+    team_id: int
+    name: str
+    player_name: str
+    rank: int
 
+def entry_from_standings(standings) -> Entry:
+    return Entry(
+        team_id=standings['entry'],
+        name=standings['entry_name'],
+        player_name=standings["player_name"],
+        rank=standings['rank']
+    )
+@dataclass
+class LeagueInfo:
+    id: int
+    name: str
+    entries: list[Entry]
 def fetch_league_info(league_id) -> LeagueInfo:
     r: dict = requests.get(base_url + f"leagues-classic/{league_id}/standings/").json()
     if "league" not in r:
