@@ -359,7 +359,7 @@ if fpl_id and gw_complete_list:
                 image = Image.open(urlopen(IMAGE_URL))
 
                 # Step 2: Create a mask for the round shape
-                mask = Image.new(255, image.size, 0)
+                mask = Image.new("L", image.size, 0)
                 draw = ImageDraw.Draw(mask)
                 draw.ellipse((0, 0, image.size[0], image.size[1]), fill=255)
 
