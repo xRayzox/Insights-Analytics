@@ -239,7 +239,7 @@ with col5:
             pitch = VerticalPitch(
                 pitch_color='grass', 
                 line_color='white', 
-                stripe=False, 
+                stripe=True, 
                 corner_arcs=True, 
                 half=True,
                 pad_bottom=20
