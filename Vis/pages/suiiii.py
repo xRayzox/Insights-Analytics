@@ -284,7 +284,7 @@ with col5:
             ax.text(
                 0.1,                               # x position (inside rectangle)
                 pitch_length - zone_height + zone_height / 4,  # y position (centered vertically)
-                f'Total GWP: {total_gwp:.2f}\nGW 8',  # Text content
+                f'Total GWP: {total_gwp}\nGW 8',  # Text content
                 fontsize=12,                       # Font size
                 color='black',                     # Text color
                 ha='left',                         # Horizontal alignment
