@@ -281,9 +281,6 @@ if fpl_id and gw_complete_list:
             gwp_rect_width = 2  # Width of the GWP rectangle
             gwp_rect_height = 2  # Height of the GWP rectangle
 
-
-            
-
            # Get the width of the text to determine the size of the rounded rectangle
             tp = TextPath((0, 0), player_name, size=2)  # Specify size of the text
             bb = tp.get_extents()
@@ -293,7 +290,7 @@ if fpl_id and gw_complete_list:
 
             # Create a rounded rectangle patch for the player's name
             rounded_rect = FancyBboxPatch(
-                (x_image - rect_width / 2, y_image - rect_height - 5),  # Center the rectangle
+                (x_image - rect_width / 2, y_image - rect_height - 4),  # Center the rectangle
                 rect_width,
                 rect_height,
                 facecolor='white',
