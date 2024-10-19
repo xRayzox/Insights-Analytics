@@ -160,214 +160,217 @@ with col2:
         hist_df.set_index('Season', inplace=True)
         st.dataframe(hist_df)
 #############################################################################
-events_df = pd.DataFrame(get_bootstrap_data()['events'])
-complete_df = events_df.loc[events_df['deadline_time'] < str(dt.datetime.now())]
-gw_complete_list = sorted(complete_df['id'].tolist(), reverse=True)
-fpl_gw = st.selectbox('Team on Gameweek', gw_complete_list)
 
-if fpl_id and gw_complete_list:
-        man_picks_data = get_manager_team_data(fpl_id, fpl_gw)
-        manager_team_df = pd.DataFrame(man_picks_data['picks'])
-        ele_cut = ele_df[['id', 'web_name', 'team', 'element_type','code']].copy()
-        ele_cut.rename(columns={'id': 'element'}, inplace=True)
-        
-        manager_team_df = manager_team_df.merge(ele_cut, how='left', on='element')
-        
-        # Pull GW data for each player
-        gw_players_list = manager_team_df['element'].tolist()
-        pts_list = []
-        for player_id in gw_players_list:
-            test = pd.DataFrame(get_player_data(player_id)['history'])
-            pl_cols = ['element', 'opponent_team', 'total_points', 'round']
-            test_cut = test[pl_cols]
-            test_new = test_cut.loc[test_cut['round'] == fpl_gw]
+col4 = st.columns([10])
+with col4:
+    events_df = pd.DataFrame(get_bootstrap_data()['events'])
+    complete_df = events_df.loc[events_df['deadline_time'] < str(dt.datetime.now())]
+    gw_complete_list = sorted(complete_df['id'].tolist(), reverse=True)
+    fpl_gw = st.selectbox('Team on Gameweek', gw_complete_list)
 
-            if test_new.empty:
-                test_new = pd.DataFrame([[player_id, 'BLANK', 0, fpl_gw]], columns=pl_cols)
+    if fpl_id and gw_complete_list:
+            man_picks_data = get_manager_team_data(fpl_id, fpl_gw)
+            manager_team_df = pd.DataFrame(man_picks_data['picks'])
+            ele_cut = ele_df[['id', 'web_name', 'team', 'element_type','code']].copy()
+            ele_cut.rename(columns={'id': 'element'}, inplace=True)
+            
+            manager_team_df = manager_team_df.merge(ele_cut, how='left', on='element')
+            
+            # Pull GW data for each player
+            gw_players_list = manager_team_df['element'].tolist()
+            pts_list = []
+            for player_id in gw_players_list:
+                test = pd.DataFrame(get_player_data(player_id)['history'])
+                pl_cols = ['element', 'opponent_team', 'total_points', 'round']
+                test_cut = test[pl_cols]
+                test_new = test_cut.loc[test_cut['round'] == fpl_gw]
 
-            pts_list.append(test_new)
+                if test_new.empty:
+                    test_new = pd.DataFrame([[player_id, 'BLANK', 0, fpl_gw]], columns=pl_cols)
 
-        pts_df = pd.concat(pts_list)
-        manager_team_df = manager_team_df.merge(pts_df, how='left', on='element')
+                pts_list.append(test_new)
 
-        # Calculate total points based on multiplier and captaincy
-        manager_team_df.loc[((manager_team_df['multiplier'] == 2) |
-                             (manager_team_df['multiplier'] == 3)),
-                            'total_points'] *= manager_team_df['multiplier']
-        
-        manager_team_df.loc[(manager_team_df['is_captain'] == True) & (manager_team_df['multiplier'] == 2),
-                            'web_name'] += ' (C)'
-        
-        manager_team_df.loc[manager_team_df['multiplier'] == 3,
-                            'web_name'] += ' (TC)'
-        
-        manager_team_df.loc[manager_team_df['is_vice_captain'] == True,
-                            'web_name'] += ' (VC)'
-        
-        manager_team_df.loc[manager_team_df['multiplier'] != 0, 'Played'] = True
+            pts_df = pd.concat(pts_list)
+            manager_team_df = manager_team_df.merge(pts_df, how='left', on='element')
 
-        # Fill NaN values
-        manager_team_df['Played'] = manager_team_df['Played'].fillna(False)
+            # Calculate total points based on multiplier and captaincy
+            manager_team_df.loc[((manager_team_df['multiplier'] == 2) |
+                                (manager_team_df['multiplier'] == 3)),
+                                'total_points'] *= manager_team_df['multiplier']
+            
+            manager_team_df.loc[(manager_team_df['is_captain'] == True) & (manager_team_df['multiplier'] == 2),
+                                'web_name'] += ' (C)'
+            
+            manager_team_df.loc[manager_team_df['multiplier'] == 3,
+                                'web_name'] += ' (TC)'
+            
+            manager_team_df.loc[manager_team_df['is_vice_captain'] == True,
+                                'web_name'] += ' (VC)'
+            
+            manager_team_df.loc[manager_team_df['multiplier'] != 0, 'Played'] = True
 
-        # Convert to appropriate dtypes after filling NaN values
-        manager_team_df = manager_team_df.infer_objects()
+            # Fill NaN values
+            manager_team_df['Played'] = manager_team_df['Played'].fillna(False)
 
-        # Select relevant columns and rename them
-        manager_team_df = manager_team_df[['web_name', 'element_type', 'team', 'opponent_team', 'total_points', 'Played','code']]
-        rn_cols = {
-            'web_name': 'Player', 'element_type': 'Pos',
-            'team': 'Team', 'opponent_team': 'vs',
-            'total_points': 'GWP'
-        }
-        manager_team_df.rename(columns=rn_cols, inplace=True)
-        manager_team_df.set_index('Player', inplace=True)
+            # Convert to appropriate dtypes after filling NaN values
+            manager_team_df = manager_team_df.infer_objects()
 
-        # Map teams
-        manager_team_df['vs'] = manager_team_df['vs'].map(teams_df.set_index('id')['short_name'])
-        manager_team_df['vs'] = manager_team_df['vs'].fillna('BLANK')
-        
-        # Reset index of the manager's team DataFrame
-        test = manager_team_df.reset_index()
+            # Select relevant columns and rename them
+            manager_team_df = manager_team_df[['web_name', 'element_type', 'team', 'opponent_team', 'total_points', 'Played','code']]
+            rn_cols = {
+                'web_name': 'Player', 'element_type': 'Pos',
+                'team': 'Team', 'opponent_team': 'vs',
+                'total_points': 'GWP'
+            }
+            manager_team_df.rename(columns=rn_cols, inplace=True)
+            manager_team_df.set_index('Player', inplace=True)
 
-        # Define the figure size
-        fig_size = (8, 8)  # Set to desired size (width, height)
+            # Map teams
+            manager_team_df['vs'] = manager_team_df['vs'].map(teams_df.set_index('id')['short_name'])
+            manager_team_df['vs'] = manager_team_df['vs'].fillna('BLANK')
+            
+            # Reset index of the manager's team DataFrame
+            test = manager_team_df.reset_index()
 
-        # Create a vertical pitch with specified size
-        pitch = VerticalPitch(
-            pitch_color='grass', 
-            line_color='white', 
-            stripe=True, 
-            corner_arcs=True, 
-            half=True,
-            pad_bottom=20
-        )
+            # Define the figure size
+            fig_size = (8, 8)  # Set to desired size (width, height)
 
-        fig, ax = pitch.draw(figsize=fig_size, tight_layout=False)  # Draw the pitch
+            # Create a vertical pitch with specified size
+            pitch = VerticalPitch(
+                pitch_color='grass', 
+                line_color='white', 
+                stripe=True, 
+                corner_arcs=True, 
+                half=True,
+                pad_bottom=20
+            )
 
-        # Extract pitch dimensions from the figure
-        pitch_length = fig.get_figheight() * 10  # Scaling factor
-        pitch_width = fig.get_figwidth() * 10  # Scaling factor
+            fig, ax = pitch.draw(figsize=fig_size, tight_layout=False)  # Draw the pitch
 
-        # Define placements for each position zone
-        zone_height = pitch_length / 6  
+            # Extract pitch dimensions from the figure
+            pitch_length = fig.get_figheight() * 10  # Scaling factor
+            pitch_width = fig.get_figwidth() * 10  # Scaling factor
 
-        # Position calculations
-        positions = {
-            'GKP': pitch_length + 2.7 * zone_height,
-            'DEF': pitch_length + 1.5 * zone_height,
-            'MID': pitch_length + 1/3 * zone_height,
-            'FWD': pitch_length - zone_height
-        }
+            # Define placements for each position zone
+            zone_height = pitch_length / 6  
 
-        # Filter DataFrame for players who played
-        df = test[test['Played'] == True]
+            # Position calculations
+            positions = {
+                'GKP': pitch_length + 2.7 * zone_height,
+                'DEF': pitch_length + 1.5 * zone_height,
+                'MID': pitch_length + 1/3 * zone_height,
+                'FWD': pitch_length - zone_height
+            }
 
-        # Function to draw player images and details
-        def draw_players(df, positions):
-            for index, row in df.iterrows():
-                IMAGE_URL = row['code']
-                image = Image.open(urlopen(IMAGE_URL))
+            # Filter DataFrame for players who played
+            df = test[test['Played'] == True]
 
-                pos = row['Pos']
-                num_players = len(df[df['Pos'] == pos])  # Number of players in this position
-                y_image = positions[pos]
-                x_image = (pitch_width / (num_players + 1)) * (index % num_players + 1) if num_players > 1 else pitch_width / 2
+            # Function to draw player images and details
+            def draw_players(df, positions):
+                for index, row in df.iterrows():
+                    IMAGE_URL = row['code']
+                    image = Image.open(urlopen(IMAGE_URL))
 
-                # Draw the player image on the pitch
-                pitch.inset_image(y_image, x_image, image, height=9, ax=ax)
+                    pos = row['Pos']
+                    num_players = len(df[df['Pos'] == pos])  # Number of players in this position
+                    y_image = positions[pos]
+                    x_image = (pitch_width / (num_players + 1)) * (index % num_players + 1) if num_players > 1 else pitch_width / 2
 
-                # Draw player's name and GWP points
-                draw_player_details(ax, row, x_image, y_image)
+                    # Draw the player image on the pitch
+                    pitch.inset_image(y_image, x_image, image, height=9, ax=ax)
 
-        # Function to draw player details
-        def draw_player_details(ax, row, x_image, y_image):
-            player_name = row.Player  # Access using attribute-style access
-            gwp_points = row.GWP  
+                    # Draw player's name and GWP points
+                    draw_player_details(ax, row, x_image, y_image)
 
-            # Calculate text dimensions
-            tp = TextPath((0, 0), player_name, size=2)
-            rect_width = tp.get_extents().width  # Add padding
-            rect_height = 1
+            # Function to draw player details
+            def draw_player_details(ax, row, x_image, y_image):
+                player_name = row.Player  # Access using attribute-style access
+                gwp_points = row.GWP  
 
-            # Draw player's name rectangle
-            rounded_rect = FancyBboxPatch(
-                (x_image - rect_width / 2, y_image - rect_height - 5),
-                rect_width,
-                rect_height,
-                facecolor='white',
-                edgecolor='white',
-                linewidth=1,
+                # Calculate text dimensions
+                tp = TextPath((0, 0), player_name, size=2)
+                rect_width = tp.get_extents().width  # Add padding
+                rect_height = 1
+
+                # Draw player's name rectangle
+                rounded_rect = FancyBboxPatch(
+                    (x_image - rect_width / 2, y_image - rect_height - 5),
+                    rect_width,
+                    rect_height,
+                    facecolor='white',
+                    edgecolor='white',
+                    linewidth=1,
+                    alpha=0.8
+                )
+                ax.add_patch(rounded_rect)
+
+                # Draw GWP rectangle
+                gwp_rect_y = y_image - rect_height - 7  # Adjust y position for GWP rectangle
+                gwp_rect = FancyBboxPatch(
+                    (x_image - rect_width / 2, gwp_rect_y),
+                    rect_width,
+                    rect_height,
+                    facecolor=(55 / 255, 0 / 255, 60 / 255),
+                    edgecolor='white',
+                    linewidth=1,
+                    alpha=0.9
+                )
+                ax.add_patch(gwp_rect)
+
+                # Add text
+                ax.text(x_image, gwp_rect_y + rect_height / 2, f"{gwp_points}", fontsize=7, ha='center', color='white', va='center') 
+                ax.text(x_image, y_image - rect_height - 5 + rect_height / 2, player_name, fontsize=7, ha='center', color='black', va='center')
+
+            # Draw players who played
+            draw_players(df, positions)
+
+            ############################### Bench Players ##################
+            df_bench = test[test['Played'] == False]  # Bench players
+
+            # Define bench position and dimensions
+            bench_width = pitch_width
+            bench_height = pitch_length / 5.3
+            bench_x = pitch_width - bench_width
+            bench_y = pitch_length - 3 * zone_height
+
+            # Create a rectangle for the bench area
+            bench_rect = FancyBboxPatch(
+                (bench_x, bench_y),
+                bench_width,
+                bench_height,
+                boxstyle="round,pad=0.2",
+                facecolor='#72cf9f',
+                edgecolor='#72cf9f',
+                linewidth=2,
                 alpha=0.8
             )
-            ax.add_patch(rounded_rect)
+            ax.add_patch(bench_rect)
 
-            # Draw GWP rectangle
-            gwp_rect_y = y_image - rect_height - 7  # Adjust y position for GWP rectangle
-            gwp_rect = FancyBboxPatch(
-                (x_image - rect_width / 2, gwp_rect_y),
-                rect_width,
-                rect_height,
-                facecolor=(55 / 255, 0 / 255, 60 / 255),
-                edgecolor='white',
-                linewidth=1,
-                alpha=0.9
-            )
-            ax.add_patch(gwp_rect)
+            # Set the total number of bench slots
+            bench_slots = 4
+            slot_width = bench_width / bench_slots
 
-            # Add text
-            ax.text(x_image, gwp_rect_y + rect_height / 2, f"{gwp_points}", fontsize=7, ha='center', color='white', va='center') 
-            ax.text(x_image, y_image - rect_height - 5 + rect_height / 2, player_name, fontsize=7, ha='center', color='black', va='center')
+            # Function to draw bench players
+            def draw_bench_players(df_bench):
+                for i, row in enumerate(df_bench.itertuples()):
+                    IMAGE_URL = row.code  # Access using attribute-style access
+                    image = Image.open(urlopen(IMAGE_URL))
 
-        # Draw players who played
-        draw_players(df, positions)
+                    # Calculate x position for bench players
+                    x_bench = bench_x + (slot_width * (i + 0.5))
+                    y_bench = bench_y + (bench_height / 2) + 1
 
-        ############################### Bench Players ##################
-        df_bench = test[test['Played'] == False]  # Bench players
+                    # Place player images in the bench area
+                    pitch.inset_image(y_bench, x_bench, image, height=9, ax=ax)  # Smaller image size for bench players
 
-        # Define bench position and dimensions
-        bench_width = pitch_width
-        bench_height = pitch_length / 5.3
-        bench_x = pitch_width - bench_width
-        bench_y = pitch_length - 3 * zone_height
+                    # Draw player details on bench
+                    draw_player_details(ax, row, x_bench, y_bench)
 
-        # Create a rectangle for the bench area
-        bench_rect = FancyBboxPatch(
-            (bench_x, bench_y),
-            bench_width,
-            bench_height,
-            boxstyle="round,pad=0.2",
-            facecolor='#72cf9f',
-            edgecolor='#72cf9f',
-            linewidth=2,
-            alpha=0.8
-        )
-        ax.add_patch(bench_rect)
-
-        # Set the total number of bench slots
-        bench_slots = 4
-        slot_width = bench_width / bench_slots
-
-        # Function to draw bench players
-        def draw_bench_players(df_bench):
-            for i, row in enumerate(df_bench.itertuples()):
-                IMAGE_URL = row.code  # Access using attribute-style access
-                image = Image.open(urlopen(IMAGE_URL))
-
-                # Calculate x position for bench players
-                x_bench = bench_x + (slot_width * (i + 0.5))
-                y_bench = bench_y + (bench_height / 2) + 1
-
-                # Place player images in the bench area
-                pitch.inset_image(y_bench, x_bench, image, height=9, ax=ax)  # Smaller image size for bench players
-
-                # Draw player details on bench
-                draw_player_details(ax, row, x_bench, y_bench)
-
-        # Draw bench players
-        draw_bench_players(df_bench)
-        # Show the plot
-        plt.show()
-        st.pyplot(fig)
+            # Draw bench players
+            draw_bench_players(df_bench)
+            # Show the plot
+            plt.show()
+            st.pyplot(fig)
 
 ###############################################################################
 
