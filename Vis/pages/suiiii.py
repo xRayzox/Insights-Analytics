@@ -453,8 +453,10 @@ else:
             st.write(leagues_names_ids)
             ########################################
 
-            st.write(fetch_league_info(1911702))
-
+            ss=fetch_league_info(1911702)
+            
+            teams_managers=[(ss['team_id'], ss['name']) for ss in leagues]
+            st.write(teams_managers)
             ##########################################
             curr_df['Manager'] = man_data['player_first_name'] + ' ' + man_data['player_last_name']
             ave_df = pd.DataFrame(get_bootstrap_data()['events'])[['id', 'average_entry_score']]
