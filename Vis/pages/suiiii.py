@@ -371,8 +371,8 @@ if fpl_id and gw_complete_list:
         fig.set_size_inches(6, 6)  # Change to your desired display size
 
         # Set the font size scaling factor (reduce for smaller figure)
-        scaling_factor = 0.75  # Adjust as necessary
-        set_text_sizes(ax, scaling_factor)
+        #scaling_factor = 0.75  # Adjust as necessary
+        #set_text_sizes(ax, scaling_factor)
 
         # Show the plot
         plt.show()
