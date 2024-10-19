@@ -267,41 +267,41 @@ with col5:
             df = test[test['Played'] == True]
             total_gwp = df['GWP'].sum()
 
-            ax.text(
-                0.5 * (pitch_width / 5),                # x position (centered horizontally within the rectangle)
-                (pitch_length + 1.8 * zone_height + (pitch_width / 5) / 2)+3,  # y position (centered vertically within the rectangle)
-                f'GW{fpl_gw}',             # Text content
-                fontsize=20,                            # Font size
-                color='white',                          # Text color for 'GW{fpl_gw}' (changed to white)
-                ha='center',                            # Horizontal alignment
-                va='center'                             # Vertical alignment
-            )
-
-            # If total_gwp is an RGB color, you can set it like this
-            total_gwp_color = (5/255, 250/255, 135/255)  # rgb(5, 250, 135)
-            # Assuming total_gwp is just a number or a string, add it separately
-            ax.text(
-                0.5 * (pitch_width / 5),                # x position (centered horizontally within the rectangle)
-                (pitch_length + 1.8 * zone_height + (pitch_width / 5) / 2) - 2,  # Adjust y position if needed
-                str(total_gwp),                        # Text content for total_gwp
-                fontsize=20,                            # Font size
-                color=total_gwp_color,                  # Text color for total_gwp
-                ha='center',                            # Horizontal alignment
-                va='center'                             # Vertical alignment
-            )
             rect = plt.Rectangle(
                 (0, pitch_length + 1.8 * zone_height),  # Bottom left corner of the rectangle
                 pitch_width / 5,                         # Width of the rectangle
                 pitch_width / 5,                         # Height of the rectangle
                 color=(55/255, 0/255, 60/255),           # Rectangle color (rgb(55, 0, 60))
                 alpha=1,                               # Transparency
-                zorder=5                                  # Layering order
+                zorder=10                                  # Layering order
             )
 
             # Add rectangle to the plot
             ax.add_patch(rect)
 
-            
+            # Add text to the rectangle
+            ax.text(
+                0.5 * (pitch_width / 5),                
+                (pitch_length + 1.8 * zone_height + (pitch_width / 5) / 2)+3,  
+                f'GW{fpl_gw}',          
+                fontsize=20,                            
+                color='white',                          
+                ha='center',                            
+                va='center'                             
+            )
+
+            # If total_gwp is an RGB color, you can set it like this
+            total_gwp_color = (5/255, 250/255, 135/255)  # rgb(5, 250, 135)
+            # Assuming total_gwp is just a number or a string, add it separately
+            ax.text(
+                0.5 * (pitch_width / 5),               
+                (pitch_length + 1.8 * zone_height + (pitch_width / 5) / 2) - 2,  
+                str(total_gwp),                        
+                fontsize=20,                         
+                color=total_gwp_color,              
+                ha='center',                           
+                va='center'                           
+            )
 
 
 
