@@ -324,22 +324,22 @@ if fpl_id and gw_complete_list:
             ax.add_patch(bench_rect)
 
             # Place bench players inside the rectangle
+        # Distribute bench players evenly within the bench width
         for i, row in enumerate(df_bench.itertuples()):
-                IMAGE_URL = row.code
-                image = Image.open(urlopen(IMAGE_URL))
-                
-                # Distribute bench players within the bench rectangle
-                x_bench = bench_x + (bench_width / len(df_bench)) * (i + 0.5)  # Center each image
-                y_bench = bench_y  # Vertically centered in the bench
+            IMAGE_URL = row.code
+            image = Image.open(urlopen(IMAGE_URL))
 
-                # Draw the bench player image
-                ax_image = pitch.inset_image(y_bench, x_bench, image, height=10, ax=ax)  # Smaller image size for bench players
+            # Horizontal distribution of players within the bench width
+            x_bench = bench_x + (bench_width / len(df_bench)) * (i + 0.5)  # Center each image
 
-                # Add player's name below image
-                player_name = row.Player
-                ax.text(x_bench, y_bench - 7, player_name, fontsize=6, ha='center', color='black')
+            # Place player images in the bench area
+            ax_image = pitch.inset_image(y_bench, x_bench, image, height=10, ax=ax)  # Smaller image size for bench players
 
-            # Show the pitch with player images and bench
+            # Add player name below the image
+            player_name = row.Player
+            ax.text(x_bench, bench_y - 7, player_name, fontsize=6, ha='center', color='black')
+
+        # Show the pitch with player images and bench
         plt.show()
         st.pyplot(fig)
 
