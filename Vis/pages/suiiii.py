@@ -257,7 +257,7 @@ if fpl_id and gw_complete_list:
             IMAGE_URL = row['code']
             image = Image.open(urlopen(IMAGE_URL))
             # Resize the image (reduce size)
-            new_size = (100, 100)  # Adjust size as needed
+            new_size = (50, 50)  # Adjust size as needed
             image = image.resize(new_size, Image.Resampling.LANCZOS)
 
             # Create a circular mask
