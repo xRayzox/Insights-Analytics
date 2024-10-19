@@ -161,7 +161,7 @@ with col2:
         st.dataframe(hist_df)
 #############################################################################
 
-col4,col5,col6 = st.columns([5,10,5])
+col4,col5,col6 = st.columns([3,10,3])
 with col5:
     events_df = pd.DataFrame(get_bootstrap_data()['events'])
     complete_df = events_df.loc[events_df['deadline_time'] < str(dt.datetime.now())]
