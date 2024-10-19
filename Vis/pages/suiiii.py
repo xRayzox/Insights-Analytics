@@ -358,7 +358,7 @@ with col5:
 
                     # Calculate x position for bench players
                     x_bench = bench_x + (slot_width * (i + 0.5))
-                    y_bench = bench_y + (bench_height / 2) + 1
+                    y_bench = bench_y + (bench_height / 2) + 2
 
                     # Place player images in the bench area
                     pitch.inset_image(y_bench, x_bench, image, height=9, ax=ax)  # Smaller image size for bench players
