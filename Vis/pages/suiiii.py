@@ -305,7 +305,7 @@ if fpl_id and gw_complete_list:
             tp = TextPath((0, 0), player_name, size=2)  # Specify size of the text
             bb = tp.get_extents()
             rect_width = bb.width * 1.1  # Add a little padding (10%)
-            rect_height = 2 
+            rect_height = 1 
             rounding = 1 
 
             # Create a rounded rectangle patch at the correct location
