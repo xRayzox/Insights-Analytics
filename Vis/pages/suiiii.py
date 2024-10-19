@@ -362,13 +362,13 @@ if fpl_id and gw_complete_list:
             y_bench = bench_y + (bench_height / 2) + 1
 
 
-            ax.add_patch(rounded_rect)
+           
             # Place player images in the bench area
             ax_image = pitch.inset_image(y_bench, x_bench, image, height=9, ax=ax)  # Smaller image size for bench players
 
             # Add player name below the image
             player_name = row.Player
-            ax.text(x_bench, bench_y + 1, player_name, fontsize=6, ha='center', color='black')
+            ax.text(x_bench, bench_y + 1, player_name, fontsize=7, ha='center', color='black')
             
             tp = TextPath((0, 0), player_name, size=2)  # Specify size of the text
             bb = tp.get_extents()
@@ -385,6 +385,7 @@ if fpl_id and gw_complete_list:
                 linewidth=1,
                 alpha=0.8
             )
+            ax.add_patch(rounded_rect)
             # Get GWP points for the player
             gwp_points = row.GWP  # Assuming the DataFrame has a 'GWP' column
             gwp_rect_width = 2  # Width of the GWP rectangle
