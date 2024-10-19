@@ -386,7 +386,7 @@ if fpl_id and gw_complete_list:
                     gwp_rect_height,
                     boxstyle="round,pad=0.1",
                     facecolor='blue',
-                    edgecolor='black',
+                    edgecolor='White',
                     linewidth=1,
                     alpha=0.9
                 )
