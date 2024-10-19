@@ -302,48 +302,52 @@ if fpl_id and gw_complete_list:
 
 
             # Bench players (df['Played'] == False)
-            df_bench = test[test['Played'] == False]
+            df_bench = test[test['Played'] == False].head(4)  # Limit to 4 players
 
             # Define bench position and dimensions
             bench_width = pitch_width / 4  # 25% of pitch width
             bench_height = pitch_length / 4  # 25% of pitch length
             bench_x = pitch_width - bench_width - 5  # Position bench on the right side
-            bench_y = pitch_length -2.5* zone_height  # Position bench at the bottom of the figure
+            bench_y = pitch_length - 2.5 * zone_height  # Position bench at the bottom of the figure
 
             # Create a rectangle for the bench area
             bench_rect = FancyBboxPatch(
-                (bench_x, bench_y), 
-                bench_width, 
-                bench_height, 
-                boxstyle="round,pad=0.2", 
-                facecolor='lightgray', 
-                edgecolor='white', 
+                (bench_x, bench_y),
+                bench_width,
+                bench_height,
+                boxstyle="round,pad=0.2",
+                facecolor='lightgray',
+                edgecolor='white',
                 linewidth=2,
                 alpha=0.8
             )
             ax.add_patch(bench_rect)
 
-            # Place bench players inside the rectangle
-        # Distribute bench players evenly within the bench width
-        for i, row in enumerate(df_bench.itertuples()):
-            IMAGE_URL = row.code
-            image = Image.open(urlopen(IMAGE_URL))
+            # Set the total number of bench slots (4)
+            bench_slots = 4
 
-            # Horizontal distribution of players within the bench width
-            x_bench = bench_x + (bench_width / len(df_bench)) * (i + 0.5)  # Center each image
-            y_bench = bench_y + (bench_height / 2) - (10 / 2)
- 
-            # Place player images in the bench area
-            ax_image = pitch.inset_image(y_bench, x_bench, image, height=10, ax=ax)  # Smaller image size for bench players
+            # Calculate the horizontal space for each slot
+            slot_width = bench_width / bench_slots
 
-            # Add player name below the image
-            player_name = row.Player
-            ax.text(x_bench, bench_y - 7, player_name, fontsize=6, ha='center', color='black')
+            # Place the bench players in the rectangle
+            for i, row in enumerate(df_bench.itertuples()):
+                IMAGE_URL = row.code
+                image = Image.open(urlopen(IMAGE_URL))
 
-        # Show the pitch with player images and bench
-        plt.show()
-        st.pyplot(fig)
+                # Horizontal distribution of players within the bench slots
+                x_bench = bench_x + (slot_width * (i + 0.5))  # Center each image within its slot
+                y_bench = bench_y + (bench_height / 2) - (10 / 2)
 
+                # Place player images in the bench area
+                ax_image = pitch.inset_image(y_bench, x_bench, image, height=10, ax=ax)  # Smaller image size for bench players
+
+                # Add player name below the image
+                player_name = row.Player
+                ax.text(x_bench, bench_y - 7, player_name, fontsize=6, ha='center', color='black')
+
+            # Show the pitch with player images and bench
+            plt.show()
+            st.pyplot(fig)
 
 ###############################################################################
 
