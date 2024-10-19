@@ -26,29 +26,52 @@ def entry_from_standings(standings):
         'rank': standings['rank']
     }
 
-@lru_cache(maxsize=128)
 def fetch_league_info(league_id):
-    r: dict = requests.get(base_url + f"leagues-classic/{league_id}/standings/").json()
+    cache_key = f'league_info_{league_id}'
+    cached_value = cache_with_ttl(cache_key)
+    if cached_value is not None:
+        return cached_value
+
+    # Make API request
+    r = requests.get(base_url + f"leagues-classic/{league_id}/standings/").json()
     if "league" not in r:
         r = requests.get(base_url + f"leagues-h2h/{league_id}/standings").json()
     if "league" not in r:
         raise ValueError(f"Could not find data for league_id: {league_id}")
 
-    return {
+    league_data = {
         'entries': [entry_from_standings(e) for e in r['standings']['results']]
     }
+    
+    set_cache(cache_key, league_data)
+    return league_data
 
-@lru_cache(maxsize=128)
 def get_manager_details(team_id):
+    cache_key = f'manager_details_{team_id}'
+    cached_value = cache_with_ttl(cache_key)
+    if cached_value is not None:
+        return cached_value
+
     r = requests.get(base_url + f"entry/{team_id}/").json()
+    set_cache(cache_key, r)
     return r
 
-@lru_cache(maxsize=128)
 def get_manager_history_data(team_id):
+    cache_key = f'manager_history_{team_id}'
+    cached_value = cache_with_ttl(cache_key)
+    if cached_value is not None:
+        return cached_value
+
     r = requests.get(base_url + f"entry/{team_id}/history/").json()
+    set_cache(cache_key, r)
     return r
 
-@lru_cache(maxsize=128)
 def get_bootstrap_data():
+    cache_key = 'bootstrap_data'
+    cached_value = cache_with_ttl(cache_key)
+    if cached_value is not None:
+        return cached_value
+
     r = requests.get(base_url + "bootstrap-static/").json()
+    set_cache(cache_key, r)
     return r
