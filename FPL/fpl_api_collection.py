@@ -189,6 +189,7 @@ def get_league_table():
 def get_current_gw():
     events_df = pd.DataFrame(get_bootstrap_data()['events'])
     current_gw = events_df.loc[events_df['is_current'] == True].reset_index()['id'][0]
+    print(current_gw)
     return current_gw
 
 
