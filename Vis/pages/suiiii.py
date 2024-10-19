@@ -417,6 +417,7 @@ with col5:
 
 ###############################################################################
 base_url = 'https://fantasy.premierleague.com/api/'
+
 def entry_from_standings(standings):
     return {
         'team_id': standings['entry'],
@@ -425,7 +426,7 @@ def entry_from_standings(standings):
         'rank': standings['rank']
     }
 
-
+@st.cache_data
 def fetch_league_info(league_id):
     r: dict = requests.get(base_url + f"leagues-classic/{league_id}/standings/").json()
     if "league" not in r:
@@ -436,6 +437,28 @@ def fetch_league_info(league_id):
     return {
         'entries': [entry_from_standings(e) for e in r['standings']['results']]
     }
+
+@st.cache_data
+def get_manager_details(team_id):
+    # Add your logic to fetch manager details here
+    # Example:
+    r = requests.get(base_url + f"entry/{team_id}/").json()
+    return r
+
+@st.cache_data
+def get_manager_history_data(team_id):
+    # Add your logic to fetch manager history data here
+    # Example:
+    r = requests.get(base_url + f"entry/{team_id}/history/").json()
+    return r
+
+@st.cache_data
+def get_bootstrap_data():
+    # Add your logic to fetch bootstrap data here
+    # Example:
+    r = requests.get(base_url + "bootstrap-static/").json()
+    return r
+
 ################################################################################
 if fpl_id == '':
     st.write('No FPL ID provided.')
