@@ -480,7 +480,7 @@ else:
             selected_league_id = st.selectbox('List of Leagues', league_ids, 
                                                 format_func=lambda x: league_names[league_ids.index(x)])
             ss = fetch_league_info(selected_league_id)
-
+            st.write(ss)
             teams_managers = [(entry['team_id'], entry['player_name'], entry['name']) for entry in ss['entries']]
 
 
