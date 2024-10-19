@@ -380,35 +380,26 @@ def color_fixtures(val):
     return style
 
 ############
-class Entry:
-    def __init__(self, team_id: int, name: str, player_name: str, rank: int):
-        self.team_id = team_id
-        self.name = name
-        self.player_name = player_name
-        self.rank = rank
 
-def entry_from_standings(standings) -> Entry:
-    return Entry(
-        team_id=standings['entry'],
-        name=standings['entry_name'],
-        player_name=standings["player_name"],
-        rank=standings['rank']
-    )
 
-class LeagueInfo:
-    def __init__(self, id: int, name: str, entries: list[Entry]):
-        self.id = id
-        self.name = name
-        self.entries = entries
+def entry_from_standings(standings):
+    return {
+        'team_id': standings['entry'],
+        'name': standings['entry_name'],
+        'player_name': standings["player_name"],
+        'rank': standings['rank']
+    }
 
-def fetch_league_info(league_id) -> LeagueInfo:
+
+def fetch_league_info(league_id):
     r: dict = requests.get(base_url + f"leagues-classic/{league_id}/standings/").json()
     if "league" not in r:
         r = requests.get(base_url + f"leagues-h2h/{league_id}/standings").json()
     if "league" not in r:
         raise ValueError(f"Could not find data for league_id: {league_id}")
-    return LeagueInfo(
-        id=r["league"]['id'],
-        name=r["league"]["name"],
-        entries=[entry_from_standings(e) for e in r['standings']['results']]
-    )
+
+    return {
+        'id': r["league"]['id'],
+        'name': r["league"]["name"],
+        'entries': [entry_from_standings(e) for e in r['standings']['results']]
+    }
