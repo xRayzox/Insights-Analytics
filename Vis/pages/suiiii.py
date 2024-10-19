@@ -272,8 +272,7 @@ with col5:
                 pitch_width / 5,                         # Width of the rectangle
                 pitch_width / 5,                         # Height of the rectangle
                 color=(55/255, 0/255, 60/255),           # Rectangle color (rgb(55, 0, 60))
-                alpha=1,                               # Transparency
-                zorder=10                                  # Layering order
+
             )
 
             # Add rectangle to the plot
