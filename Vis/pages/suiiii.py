@@ -267,12 +267,11 @@ with col5:
             df = test[test['Played'] == True]
             total_gwp = df['GWP'].sum()
 
-            # Create a rectangle in the top left corner of the pitch
             rect = plt.Rectangle(
                 (0, pitch_length + 1.8 * zone_height),  # Bottom left corner of the rectangle
                 pitch_width / 5,                         # Width of the rectangle
                 pitch_width / 5,                         # Height of the rectangle
-                color='lightblue',                       # Rectangle color
+                color=(55/255, 0/255, 60/255),           # Rectangle color (rgb(55, 0, 60))
                 alpha=0.7,                               # Transparency
                 zorder=5                                  # Layering order
             )
@@ -284,9 +283,22 @@ with col5:
             ax.text(
                 0.5 * (pitch_width / 5),                # x position (centered horizontally within the rectangle)
                 pitch_length + 1.8 * zone_height + (pitch_width / 5) / 2,  # y position (centered vertically within the rectangle)
-                f'GW{fpl_gw}\n{total_gwp}',       # Text content
+                f'GW{fpl_gw}\n{total_gwp}',             # Text content
                 fontsize=12,                            # Font size
-                color='black',                          # Text color
+                color='white',                          # Text color for 'GW{fpl_gw}' (changed to white)
+                ha='center',                            # Horizontal alignment
+                va='center'                             # Vertical alignment
+            )
+
+            # If total_gwp is an RGB color, you can set it like this
+            total_gwp_color = (5/255, 250/255, 135/255)  # rgb(5, 250, 135)
+            # Assuming total_gwp is just a number or a string, add it separately
+            ax.text(
+                0.5 * (pitch_width / 5),                # x position (centered horizontally within the rectangle)
+                pitch_length + 1.8 * zone_height + (pitch_width / 5) / 2 - 0.1,  # Adjust y position if needed
+                str(total_gwp),                        # Text content for total_gwp
+                fontsize=12,                            # Font size
+                color=total_gwp_color,                  # Text color for total_gwp
                 ha='center',                            # Horizontal alignment
                 va='center'                             # Vertical alignment
             )
