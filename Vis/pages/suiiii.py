@@ -324,7 +324,7 @@ if fpl_id and gw_complete_list:
             ax.add_patch(bench_rect)
 
             # Place bench players inside the rectangle
-            for i, row in enumerate(df_bench.itertuples()):
+        for i, row in enumerate(df_bench.itertuples()):
                 IMAGE_URL = row.code
                 image = Image.open(urlopen(IMAGE_URL))
                 
@@ -340,8 +340,8 @@ if fpl_id and gw_complete_list:
                 ax.text(x_bench, y_bench - 7, player_name, fontsize=6, ha='center', color='black')
 
             # Show the pitch with player images and bench
-            plt.show()
-            st.pyplot(fig)
+        plt.show()
+        st.pyplot(fig)
 
 
 ###############################################################################
