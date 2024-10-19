@@ -283,7 +283,28 @@ if fpl_id and gw_complete_list:
             gwp_rect_x = x_image - 5  # Upper left corner X position of the rectangle
             gwp_rect_y = y_image + 5  # Upper left corner Y position of the rectangle
 
-            # Draw the GWP rectangle
+
+            
+
+            # Get the width of the text to determine the size of the rounded rectangle
+            tp = TextPath((0, 0), player_name, size=2)  # Specify size of the text
+            bb = tp.get_extents()
+            rect_width = bb.width   # Add a little padding (10%)
+            rect_height = 1 
+            rounding = 1 
+
+            # Create a rounded rectangle patch at the correct location
+            rounded_rect = FancyBboxPatch(
+                (x_image - rect_width / 2, y_image - rect_height - 4),  # Center the rectangle
+                rect_width,
+                rect_height,
+                facecolor='white',
+                edgecolor='white',
+                linewidth=1,
+                alpha=0.8
+            )
+            ax.add_patch(rounded_rect)
+                        # Draw the GWP rectangle
             gwp_rect = FancyBboxPatch(
                 (gwp_rect_x, gwp_rect_y),
                 gwp_rect_width,
@@ -300,26 +321,6 @@ if fpl_id and gw_complete_list:
             ax.text(gwp_rect_x + gwp_rect_width / 2, gwp_rect_y + gwp_rect_height / 2, 
                     f"{gwp_points}", fontsize=6, ha='center', color='white', va='center') 
             
-
-            # Get the width of the text to determine the size of the rounded rectangle
-            tp = TextPath((0, 0), player_name, size=2)  # Specify size of the text
-            bb = tp.get_extents()
-            rect_width = bb.width   # Add a little padding (10%)
-            rect_height = 1 
-            rounding = 1 
-
-            # Create a rounded rectangle patch at the correct location
-            rounded_rect = FancyBboxPatch(
-                (x_image - rect_width / 2, y_image - rect_height - 5),  # Center the rectangle
-                rect_width,
-                rect_height,
-                facecolor='white',
-                edgecolor='white',
-                linewidth=1,
-                alpha=0.8
-            )
-            ax.add_patch(rounded_rect)
-
             # Add the player's name centered below the image
             ax.text(x_image, y_image - rect_height - 3, player_name, fontsize=9, ha='center', color='black')
 
