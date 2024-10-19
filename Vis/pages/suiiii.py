@@ -453,16 +453,9 @@ else:
             leagues = manager_data['leagues']['classic']
             leagues_names_ids = [(league['id'], league['name']) for league in leagues]
             st.write(leagues_names_ids)
-            #st.write(fetch_league_info(1911702))
-
-
             ########################################
-            league_id = 1911702  # Replace with your actual league ID
-            league_info= fetch_league_info(league_id)
-            print(f"League Name: {league_info.name}")
-            for entry in league_info.entries:
-                print(f"{entry.rank}: {entry.player_name} from {entry.name}")
 
+            st.write(fetch_league_info(1911702))
 
             ##########################################
             curr_df['Manager'] = man_data['player_first_name'] + ' ' + man_data['player_last_name']
