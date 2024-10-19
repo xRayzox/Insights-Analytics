@@ -229,7 +229,7 @@ if fpl_id and gw_complete_list:
         test = manager_team_df.reset_index()
         def make_circular_image(image, size=(100, 100)):
             # Resize image
-            image = image.resize(size, Image.ANTIALIAS)
+            image = image.resize(size, Image.Resampling.LANCZOS)
             # Create a mask to crop the image into a circle
             mask = Image.new('L', size, 0)
             draw = ImageDraw.Draw(mask)
