@@ -397,7 +397,7 @@ def color_fixtures(val):
     style = bg_color + '; ' + font_color
     return style
 
-@lru_cache(maxsize=128)
+
 def fetch_league_info(league_id: int) -> LeagueInfo:
     r: dict = requests.get(base_url + f"leagues-classic/{league_id}/standings/").json()
     if "league" not in r:
