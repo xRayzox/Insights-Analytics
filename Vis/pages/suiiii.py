@@ -486,13 +486,14 @@ else:
             ave_df['Manager'] = 'GW Average'
 
             # Combine current manager's data and average data
-            ave_cut = ave_df.loc[ave_df['event'] <= max(final_df['event'])]
+            max_event = max(final_df['event']) if not final_df.empty else 0
+            ave_cut = ave_df.loc[ave_df['event'] <= max_event]
             final_df = pd.concat([final_df, ave_cut])
 
             # Create the chart
             c = alt.Chart(final_df).mark_line().encode(
                 x=alt.X('event', axis=alt.Axis(tickMinStep=1, title='GW'), 
-                         scale=alt.Scale(domain=[1, len(final_df) + 1])),
+                         scale=alt.Scale(domain=[1, max_event + 1])),
                 y=alt.Y('points', axis=alt.Axis(title='GW Points')),
                 color='Manager'
             ).properties(height=400)
