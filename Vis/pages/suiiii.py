@@ -310,18 +310,7 @@ if fpl_id and gw_complete_list:
             bench_x = pitch_width - bench_width - 5  # Position bench on the right side
             bench_y = pitch_length - 2.5 * zone_height  # Position bench at the bottom of the figure
 
-            # Create a rectangle for the bench area
-            bench_rect = FancyBboxPatch(
-                (bench_x, bench_y),
-                bench_width,
-                bench_height,
-                boxstyle="round,pad=0.2",
-                facecolor='lightgray',
-                edgecolor='white',
-                linewidth=2,
-                alpha=0.8
-            )
-            ax.add_patch(bench_rect)
+            
 
             # Set the total number of bench slots (4)
             bench_slots = 4
