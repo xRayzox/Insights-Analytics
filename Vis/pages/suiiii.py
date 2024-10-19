@@ -260,10 +260,6 @@ if fpl_id and gw_complete_list:
             new_size = (100, 100)  # Adjust size as needed
             image = image.resize(new_size, Image.Resampling.LANCZOS)
 
-            
-            # Apply the mask to the image to make it round and transparent background
-            image = ImageOps.fit(image, mask.size, centering=(0.5, 0.5))
-            image.putalpha(mask)
             pos = row['Pos']
             if pos == 'GKP':
                 y_image = positions['GKP']
