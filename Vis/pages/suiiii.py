@@ -308,7 +308,7 @@ if fpl_id and gw_complete_list:
             bench_width = pitch_width  # 25% of pitch width
             bench_height = pitch_length / 9  # 25% of pitch length
             bench_x = pitch_width - bench_width   # Position bench on the right side
-            bench_y = 50+pitch_length - 2.5 * zone_height  # Position bench at the bottom of the figure
+            bench_y = pitch_length - 2.5 * zone_height  # Position bench at the bottom of the figure
 
             # Create a rectangle for the bench area
             bench_rect = FancyBboxPatch(
