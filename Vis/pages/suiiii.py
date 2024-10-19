@@ -24,7 +24,7 @@ pd.set_option('future.no_silent_downcasting', True)
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'FPL')))
 from fpl_api_collection import (
     get_bootstrap_data, get_manager_history_data, get_manager_team_data,
-    get_manager_details, get_player_data, get_current_season,fetch_league_info, LeagueInfo, Entry
+    get_manager_details, get_player_data, get_current_season,
 )
 from fpl_utils import (
     define_sidebar, chip_converter
@@ -416,7 +416,29 @@ with col5:
             st.pyplot(fig)
 
 ###############################################################################
+base_url = 'https://fantasy.premierleague.com/api/'
+def entry_from_standings(standings):
+    return {
+        'team_id': standings['entry'],
+        'name': standings['entry_name'],
+        'player_name': standings["player_name"],
+        'rank': standings['rank']
+    }
 
+
+def fetch_league_info(league_id):
+    r: dict = requests.get(base_url + f"leagues-classic/{league_id}/standings/").json()
+    if "league" not in r:
+        r = requests.get(base_url + f"leagues-h2h/{league_id}/standings").json()
+    if "league" not in r:
+        raise ValueError(f"Could not find data for league_id: {league_id}")
+
+    return {
+        'id': r["league"]['id'],
+        'name': r["league"]["name"],
+        'entries': [entry_from_standings(e) for e in r['standings']['results']]
+    }
+################################################################################
 if fpl_id == '':
     st.write('')
 else:
