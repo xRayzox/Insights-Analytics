@@ -437,27 +437,24 @@ else:
             st.write('No leagues available.')
         else:
             # Extract IDs and Names
-            league_ids = [league[0] for league in leagues_names_ids]
-            league_names = [league[1] for league in leagues_names_ids]
+            league_ids, league_names = zip(*leagues_names_ids)
 
             # Streamlit selectbox
-            selected_league_id = st.selectbox('List of Leagues', league_ids, 
+            selected_league_id = st.selectbox('List of Leagues', league_ids,
                                                 format_func=lambda x: league_names[league_ids.index(x)])
             ss = fetch_league_info(selected_league_id)
-            teams_managers = [(entry['team_id'], entry['name'],entry['player_name']) for entry in ss['entries']]
-            # Create teams_managers list
             teams_managers = [(entry['team_id'], entry['name'], entry['player_name']) for entry in ss['entries']]
 
             # Prepare options for the multiselect
-            options = [entry[2] for entry in teams_managers]  # This assumes entry[1] is the team name
-            team_ids = [entry[0] for entry in teams_managers]  # This assumes entry[0] is the team_id
+            options = [entry[2] for entry in teams_managers]  # Player names
+            team_ids = [entry[0] for entry in teams_managers]  # Team IDs
 
             # Show teams selection
             selected_teams = st.multiselect(
                 label='Show teams',
                 options=options,
                 default=options,
-                format_func=lambda x: x,  # Assuming you want to display the team name
+                format_func=lambda x: x,
             )
 
             # Extract team IDs from the selected teams
@@ -466,36 +463,36 @@ else:
             # Filter teams_managers to only include selected teams
             filtered_teams_managers = [manager for manager in teams_managers if manager[0] in selected_team_ids]
 
-
-            
-
             # Initialize an empty list to store individual manager data
             manager_data = []
 
-            for team_id,name, player_name in teams_managers:
-                man_data = get_manager_details(team_id)
-                curr_df = pd.DataFrame(get_manager_history_data(team_id)['current'])
-                curr_df['Manager'] = f"{man_data['player_first_name']} {man_data['player_last_name']}"
+            # Using caching for manager details and history data
+            @st.cache_data
+            def get_all_managers_data(filtered_teams):
+                data = []
+                for team_id, name, player_name in filtered_teams:
+                    man_data = get_manager_details(team_id)
+                    curr_df = pd.DataFrame(get_manager_history_data(team_id)['current'])
+                    curr_df['Manager'] = f"{man_data['player_first_name']} {man_data['player_last_name']}"
+                    data.append(curr_df)
+                return pd.concat(data)
 
-                # Create average points DataFrame
-                ave_df = pd.DataFrame(get_bootstrap_data()['events'])[['id', 'average_entry_score']]
-                ave_df.columns = ['event', 'points']
-                ave_df['Manager'] = 'GW Average'
+            # Fetch manager data
+            final_df = get_all_managers_data(filtered_teams_managers)
 
-                # Combine the current manager's data and average data
-                ave_cut = ave_df.loc[ave_df['event'] <= max(curr_df['event'])]
-                combined_df = pd.concat([curr_df, ave_cut])
+            # Create average points DataFrame
+            ave_df = pd.DataFrame(get_bootstrap_data()['events'])[['id', 'average_entry_score']]
+            ave_df.columns = ['event', 'points']
+            ave_df['Manager'] = 'GW Average'
 
-                # Append to manager data list
-                manager_data.append(combined_df)
-
-            # Concatenate all managers' data into one DataFrame
-            final_df = pd.concat(manager_data)
+            # Combine current manager's data and average data
+            ave_cut = ave_df.loc[ave_df['event'] <= max(final_df['event'])]
+            final_df = pd.concat([final_df, ave_cut])
 
             # Create the chart
             c = alt.Chart(final_df).mark_line().encode(
                 x=alt.X('event', axis=alt.Axis(tickMinStep=1, title='GW'), 
-                         scale=alt.Scale(domain=[1, len(curr_df) + 1])),
+                         scale=alt.Scale(domain=[1, len(final_df) + 1])),
                 y=alt.Y('points', axis=alt.Axis(title='GW Points')),
                 color='Manager'
             ).properties(height=400)
