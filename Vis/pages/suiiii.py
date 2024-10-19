@@ -14,6 +14,7 @@ from urllib.request import urlopen
 import random
 from matplotlib.patches import FancyBboxPatch
 from matplotlib.textpath import TextPath
+from PIL import Image, ImageOps, ImageDraw
 
 
 
@@ -255,7 +256,14 @@ if fpl_id and gw_complete_list:
         for index, row in df.iterrows():
             IMAGE_URL = row['code']
             image = Image.open(urlopen(IMAGE_URL))
+            # Create a circular mask
+            mask = Image.new("L", image.size, 0)
+            draw = ImageDraw.Draw(mask)
+            draw.ellipse((0, 0, image.size[0], image.size[1]), fill=255)
 
+            # Apply the mask to the image to make it round
+            image = ImageOps.fit(image, mask.size, centering=(0.5, 0.5))
+            image.putalpha(mask)
             pos = row['Pos']
             if pos == 'GKP':
                 y_image = positions['GKP']
