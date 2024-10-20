@@ -67,31 +67,6 @@ col1, col2 = st.columns([10, 3])
 
 with col1:
     fpl_id = st.text_input('Please enter your FPL ID:', MY_FPL_ID)
-
-    def get_names_managers():
-        total_players = get_total_fpl_players()  # Assuming this function returns a list of players
-        managers_list = []  # Initialize an empty list to hold manager data
-        
-        # Iterate directly over the list of players
-        for player in range(1,total_players):  
-            managers_list.append(player)
-        return managers_list      
-
-    manager_list = get_names_managers()
-    st.write(manager_list)
-    
-    """
-    if not manager_list.empty:
-        # Create a selectbox with manager names as display and IDs as values
-        selected_manager_id = st.selectbox(
-            label='Show teams',
-            options=manager_list['id'],  # Use the IDs as the values
-            index=0,  # Set default value to the first manager
-            format_func=lambda x: manager_list[manager_list['id'] == x]['Manager'].values[0]  # Display the manager name
-        )
-    else:
-        st.warning("No managers found.")
-"""
     if fpl_id:
         try:
             fpl_id = int(fpl_id)
