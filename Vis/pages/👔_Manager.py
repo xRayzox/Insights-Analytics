@@ -76,7 +76,7 @@ with col1:
         for player in range(1,100):  
             st.write(player)
             try:
-                man_data = get_manager_details(player['id'])  # Get manager details for the player using their ID
+                man_data = get_manager_details(1)  # Get manager details for the player using their ID
                 st.write(man_data)
                 curr_df = pd.DataFrame({
                     'id': [man_data['id']],  # Add manager ID to the DataFrame
