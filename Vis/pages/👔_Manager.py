@@ -74,11 +74,11 @@ with col1:
         
         # Iterate directly over the list of players
         for player in range(1,total_players):  
-            st.write(player)
-            
+            manager_list.append(player)
+        return managers_list      
 
     manager_list = get_names_managers()
-
+    st.write(manager_list)
     if not manager_list.empty:
         # Create a selectbox with manager names as display and IDs as values
         selected_manager_id = st.selectbox(
