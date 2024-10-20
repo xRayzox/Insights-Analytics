@@ -71,9 +71,13 @@ with col1:
     def get_names_managers():
         total_players = get_total_fpl_players()  # Assuming this function returns a list of players
         managers_list = []  # Initialize an empty list to hold manager data
-        st.write(total_players)
         
-        for player in range(1, 2):  # Iterate directly over the list of players
+        # Ensure total_players is not empty
+        if not total_players:
+            return pd.DataFrame(columns=['id', 'Manager'])  # Return an empty DataFrame if no players found
+
+        # Iterate directly over the list of players
+        for player in total_players:  
             try:
                 man_data = get_manager_details(player['id'])  # Get manager details for the player using their ID
                 curr_df = pd.DataFrame({
