@@ -74,7 +74,7 @@ with col1:
         
         # Iterate directly over the list of players
         for player in range(1,total_players):  
-            manager_list.append(player)
+            managers_list.append(player)
         return managers_list      
 
     manager_list = get_names_managers()
