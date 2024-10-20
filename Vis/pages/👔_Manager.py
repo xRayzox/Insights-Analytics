@@ -72,7 +72,7 @@ with col1:
         total_players = get_total_fpl_players()  # Assuming this function returns a list of players
         managers_list = []  # Initialize an empty list to hold manager data
 
-        for player in int(total_players):
+        for player in range(total_players):
             try:
                 man_data = get_manager_details(player['id'])  # Get manager details for the player using their ID
                 curr_df = pd.DataFrame({
