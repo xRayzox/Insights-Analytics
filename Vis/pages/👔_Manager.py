@@ -79,6 +79,7 @@ with col1:
 
     manager_list = get_names_managers()
     st.write(manager_list)
+    
     """
     if not manager_list.empty:
         # Create a selectbox with manager names as display and IDs as values
