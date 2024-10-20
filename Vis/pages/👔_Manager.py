@@ -73,25 +73,9 @@ with col1:
         managers_list = []  # Initialize an empty list to hold manager data
         
         # Iterate directly over the list of players
-        for player in range(1,100):  
+        for player in range(1,total_players):  
             st.write(player)
-            try:
-                man_data = get_manager_details(1)  # Get manager details for the player using their ID
-                st.write(man_data)
-                curr_df = pd.DataFrame({
-                    'id': [man_data['id']],  # Add manager ID to the DataFrame
-                    'Manager': [f"{man_data['player_first_name']} {man_data['player_last_name']}"]  # Add manager name
-                })
-
-                managers_list.append(curr_df)  # Add the current DataFrame to the list
-            except Exception as e:
-                print(f"Error fetching manager details for player ID {player['id']}: {e}")
-
-        # Concatenate all individual DataFrames into a single DataFrame
-        if managers_list:
-            return pd.concat(managers_list, ignore_index=True)  # Return a single DataFrame of managers
-        else:
-            return pd.DataFrame(columns=['id', 'Manager'])  # Return an empty DataFrame if no managers found
+            
 
     manager_list = get_names_managers()
 
