@@ -34,7 +34,7 @@ from fpl_league import (
     get_manager_details,
     get_manager_history_data,
     get_bootstrap_data,
-    get_names_managers
+    get_names_managers,
 )
 
 from fpl_params import MY_FPL_ID, BASE_URL
