@@ -9,3 +9,4 @@ plotly
 altair
 mplsoccer 
 cachetools
+aiohttp
