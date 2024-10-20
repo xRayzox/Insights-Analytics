@@ -1,9 +1,7 @@
 import requests
-from cachetools import TTLCache, cached
-from cachetools.func import ttl_cache
 import pandas as pd
 from fpl_api_collection import get_total_fpl_players
-
+import streamlit as st
 # Base URL for FPL API
 base_url = 'https://fantasy.premierleague.com/api/'
 
@@ -20,7 +18,7 @@ def entry_from_standings(standings):
         'rank': standings['rank']
     }
 
-@ttl_cache(maxsize=cache_maxsize, ttl=cache_ttl)
+@st.cache
 def fetch_league_info(league_id):
     """Fetch league standings, either classic or head-to-head."""
     r = requests.get(base_url + f"leagues-classic/{league_id}/standings/").json()
@@ -33,19 +31,19 @@ def fetch_league_info(league_id):
         'entries': [entry_from_standings(e) for e in r['standings']['results']]
     }
 
-@ttl_cache(maxsize=cache_maxsize, ttl=cache_ttl)
+@st.cache
 def get_manager_details(team_id):
     """Fetch detailed information about a manager's team."""
     r = requests.get(base_url + f"entry/{team_id}/").json()
     return r
 
-@ttl_cache(maxsize=cache_maxsize, ttl=cache_ttl)
+@st.cache
 def get_manager_history_data(team_id):
     """Fetch historical data about a manager's team."""
     r = requests.get(base_url + f"entry/{team_id}/history/").json()
     return r
 
-@ttl_cache(maxsize=cache_maxsize, ttl=cache_ttl)
+@st.cache
 def get_bootstrap_data():
     """Fetch static data that includes all players and game information."""
     r = requests.get(base_url + "bootstrap-static/").json()
