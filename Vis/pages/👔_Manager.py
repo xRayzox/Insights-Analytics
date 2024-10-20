@@ -27,14 +27,14 @@ from fpl_api_collection import (
     get_manager_details, get_player_data, get_current_season
 )
 from fpl_utils import (
-    define_sidebar, chip_converter
+    define_sidebar, chip_converter,get_total_fpl_players
 )
 from fpl_league import (
     fetch_league_info,
     get_manager_details,
     get_manager_history_data,
     get_bootstrap_data,
-    get_names_managers,
+    get_names_managers
 )
 
 from fpl_params import MY_FPL_ID, BASE_URL
@@ -66,7 +66,29 @@ ele_df['team'] = ele_df['team'].map(teams_df.set_index('id')['short_name'])
 col1, col2 = st.columns([10, 3])
 
 with col1:
-    fpl_id = st.text_input('Please enter your FPL ID:', MY_FPL_ID)
+    #fpl_id = st.text_input('Please enter your FPL ID:', MY_FPL_ID)
+    def get_names_managers():
+        total_players = get_total_fpl_players()  # Assuming this function returns a list of players
+        managers_list = []  # Initialize an empty list to hold manager data
+
+        for player in total_players:
+            try:
+                man_data = get_manager_details(player['id'])  # Get manager details for the player using their ID
+                curr_df = pd.DataFrame({
+                    'id': [man_data['id']],  # Add manager ID to the DataFrame
+                    'Manager': [f"{man_data['player_first_name']} {man_data['player_last_name']}"]  # Add manager name
+                })
+
+                managers_list.append(curr_df)  # Add the current DataFrame to the list
+            except Exception as e:
+                print(f"Error fetching manager details for player ID {player['id']}: {e}")
+
+        # Concatenate all individual DataFrames into a single DataFrame
+        if managers_list:
+            return pd.concat(managers_list, ignore_index=True)  # Return a single DataFrame of managers
+        else:
+            return pd.DataFrame(columns=['id', 'Manager'])  # Return an empty DataFrame if no managers found
+
     manager_list=get_names_managers()
     fpl_id = st.selectbox(
     label='Show teams',
