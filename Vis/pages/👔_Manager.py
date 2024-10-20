@@ -66,7 +66,7 @@ ele_df['team'] = ele_df['team'].map(teams_df.set_index('id')['short_name'])
 col1, col2 = st.columns([10, 3])
 
 with col1:
-    fpl_id = st.text_input('Please enter your FPL ID:', MY_FPL_ID)
+    #fpl_id = st.text_input('Please enter your FPL ID:', MY_FPL_ID)
 
     def get_names_managers():
         total_players = get_total_fpl_players()  # Assuming this function returns a list of players
