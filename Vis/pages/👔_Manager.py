@@ -80,6 +80,7 @@ with col1:
         for player in total_players:  
             try:
                 man_data = get_manager_details(player['id'])  # Get manager details for the player using their ID
+                st.write(man_data)
                 curr_df = pd.DataFrame({
                     'id': [man_data['id']],  # Add manager ID to the DataFrame
                     'Manager': [f"{man_data['player_first_name']} {man_data['player_last_name']}"]  # Add manager name
