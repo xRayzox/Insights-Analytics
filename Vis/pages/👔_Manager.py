@@ -73,7 +73,7 @@ with col1:
         managers_list = []  # Initialize an empty list to hold manager data
         
         # Iterate directly over the list of players
-        for player in range(1,100):  
+        for player in range(1,99):  
             st.write(player)
             
 
