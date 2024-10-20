@@ -1,11 +1,10 @@
 import pandas as pd
 import requests
-import streamlit as st
 
 base_url = 'https://fantasy.premierleague.com/api/'
 
 # Function to get general data (bootstrap data) from the FPL API
-@st.cache
+
 def get_bootstrap_data() -> dict:
     """
     Options
@@ -26,7 +25,7 @@ def get_bootstrap_data() -> dict:
         return resp.json()
 
 # Function to get fixture data (upcoming matches)
-@st.cache
+
 def get_fixture_data() -> dict:
     resp = requests.get(f'{base_url}fixtures/')
     if resp.status_code != 200:
@@ -34,7 +33,7 @@ def get_fixture_data() -> dict:
     else:
         return resp.json()
     
-@st.cache
+
 # Function to get player-specific data
 def get_player_data(player_id) -> dict:
     """
@@ -51,7 +50,7 @@ def get_player_data(player_id) -> dict:
         return resp.json()
 
 # Function to get FPL manager details
-@st.cache
+
 def get_manager_details(manager_id) -> dict:
     resp = requests.get(f'{base_url}entry/{manager_id}/')
     if resp.status_code != 200:
@@ -60,7 +59,7 @@ def get_manager_details(manager_id) -> dict:
         return resp.json()
 
 # Function to get FPL manager's history (past seasons' performances)
-@st.cache
+
 def get_manager_history_data(manager_id) -> dict:
     resp = requests.get(f'{base_url}entry/{manager_id}/history/')
     if resp.status_code != 200:
@@ -69,7 +68,7 @@ def get_manager_history_data(manager_id) -> dict:
         return resp.json()
 
 # Function to get a manager's selected team for a given gameweek (GW)
-@st.cache
+
 def get_manager_team_data(manager_id, gw):
     """
     Options
@@ -114,7 +113,7 @@ def get_player_id_dict(order_by_col, web_name=True) -> dict:
     return id_dict
 
 # Function to gather historic gameweek data for all players
-@st.cache
+
 def collate_player_hist():
     res = []
     p_dict = get_player_id_dict()
@@ -301,7 +300,7 @@ def get_current_season():
     current_season = start_year + '/' + end_year
     return current_season
     
-@st.cache
+
 def get_player_url_list():
     id_dict = get_player_id_dict(order_by_col='id')
     url_list = [base_url + f'element-summary/{k}/' for k, v in id_dict.items()]
