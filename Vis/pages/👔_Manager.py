@@ -73,7 +73,7 @@ with col1:
         managers_list = []  # Initialize an empty list to hold manager data
         st.write(total_players)
         
-        for player in range(1, total_players):  # Iterate directly over the list of players
+        for player in range(1, 1):  # Iterate directly over the list of players
             try:
                 man_data = get_manager_details(player['id'])  # Get manager details for the player using their ID
                 curr_df = pd.DataFrame({
