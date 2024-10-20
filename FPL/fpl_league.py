@@ -1,6 +1,10 @@
 import requests
 from cachetools import TTLCache, cached
 from cachetools.func import ttl_cache
+import pandas as pd
+from fpl_api_collection import get_total_fpl_players
+
+
 
 # Base URL for FPL API
 base_url = 'https://fantasy.premierleague.com/api/'
@@ -48,3 +52,19 @@ def get_bootstrap_data():
     """Fetch static data that includes all players and game information."""
     r = requests.get(base_url + "bootstrap-static/").json()
     return r
+
+
+
+def get_names_managers():
+    total_players = get_total_fpl_players()  # Assuming this function returns a list of players
+    managers_list = []  # Initialize an empty list to hold manager data
+
+    for player in total_players:
+        man_data = get_manager_details(player['id'])  # Get manager details for the player using their ID
+        curr_df = pd.DataFrame(columns=['id', 'Manager'])  # Create a DataFrame for the current manager
+        curr_df['id'] = [man_data['id']]  # Add manager ID to the DataFrame
+        curr_df['Manager'] = [f"{man_data['player_first_name']} {man_data['player_last_name']}"]  # Add manager name
+
+        managers_list.append(curr_df)  # Add the current DataFrame to the list
+
+    return managers_list  # Return the list of managers

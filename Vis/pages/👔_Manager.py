@@ -33,7 +33,8 @@ from fpl_league import (
     fetch_league_info,
     get_manager_details,
     get_manager_history_data,
-    get_bootstrap_data
+    get_bootstrap_data,
+    get_names_managers
 )
 
 from fpl_params import MY_FPL_ID, BASE_URL
@@ -66,6 +67,13 @@ col1, col2 = st.columns([10, 3])
 
 with col1:
     fpl_id = st.text_input('Please enter your FPL ID:', MY_FPL_ID)
+    manager_list=get_names_managers()
+    fpl_id = st.selectbox(
+    label='Show teams',
+    options=manager_list[0],
+    index=manager_list[0],  # Set default value
+    format_func=lambda x: x,
+)
     if fpl_id:
         try:
             fpl_id = int(fpl_id)
