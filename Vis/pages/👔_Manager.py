@@ -66,7 +66,8 @@ ele_df['team'] = ele_df['team'].map(teams_df.set_index('id')['short_name'])
 col1, col2 = st.columns([10, 3])
 
 with col1:
-    #fpl_id = st.text_input('Please enter your FPL ID:', MY_FPL_ID)
+    fpl_id = st.text_input('Please enter your FPL ID:', MY_FPL_ID)
+
     def get_names_managers():
         total_players = get_total_fpl_players()  # Assuming this function returns a list of players
         managers_list = []  # Initialize an empty list to hold manager data
@@ -89,14 +90,20 @@ with col1:
         else:
             return pd.DataFrame(columns=['id', 'Manager'])  # Return an empty DataFrame if no managers found
 
-    manager_list=get_names_managers()
-    fpl_id = st.selectbox(
-    label='Show teams',
-    options=manager_list[0],
-    index=manager_list[0],  # Set default value
-    format_func=lambda x: x,
-)
-    if fpl_id:
+    manager_list = get_names_managers()
+
+    if not manager_list.empty:
+        # Create a selectbox with manager names as display and IDs as values
+        selected_manager_id = st.selectbox(
+            label='Show teams',
+            options=manager_list['id'],  # Use the IDs as the values
+            index=0,  # Set default value to the first manager
+            format_func=lambda x: manager_list[manager_list['id'] == x]['Manager'].values[0]  # Display the manager name
+        )
+    else:
+        st.warning("No managers found.")
+
+    if selected_manager_id:
         try:
             fpl_id = int(fpl_id)
             total_players = get_total_fpl_players()
