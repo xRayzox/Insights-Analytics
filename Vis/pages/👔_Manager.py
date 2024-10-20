@@ -91,7 +91,7 @@ with col1:
             return pd.DataFrame(columns=['id', 'Manager'])  # Return an empty DataFrame if no managers found
 
     manager_list = get_names_managers()
-
+    st.write(manager_list)
     if not manager_list.empty:
         # Create a selectbox with manager names as display and IDs as values
         selected_manager_id = st.selectbox(
