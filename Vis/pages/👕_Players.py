@@ -4,7 +4,7 @@ import sys
 import os
 import plotly.graph_objects as go
 import numpy as np
-
+pd.set_option('future.no_silent_downcasting', True)
 # Assuming fpl_api_collection and fpl_utils are in the FPL directory
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..', 'FPL')))
 

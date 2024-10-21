@@ -3,6 +3,8 @@ import pandas as pd
 import altair as alt
 import sys
 import os
+
+pd.set_option('future.no_silent_downcasting', True)
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..', 'FPL')))
 
 
