@@ -1,6 +1,6 @@
 import streamlit as st
 import matplotlib.pyplot as plt
-import numpy as np
+import matplotlib.patches as patches
 
 def draw_pitch(ax):
     # Pitch outline & centre line
@@ -32,7 +32,7 @@ def draw_pitch(ax):
     ax.add_artist(circle)
 
     # Spot the ball
-    plt.plot([50], [50], marker="o", markersize=5, color="white")
+    plt.plot(,, marker="o", markersize=5, color="white")
 
     # Set the pitch color
     ax.set_facecolor('#3CB371')
@@ -40,44 +40,68 @@ def draw_pitch(ax):
     # Remove axis labels
     plt.axis('off')
 
-def add_player(ax, x, y, number, name, team):
+def add_player(ax, x, y, number, name, role, team):
     color = 'red' if team == 'Home' else 'blue'
     circle = plt.Circle((x, y), 2, color=color)
     ax.add_artist(circle)
     plt.text(x, y-3, number, ha='center', va='center', color='white', fontweight='bold')
     plt.text(x, y+3, name, ha='center', va='center', color='white', fontsize=8)
 
-st.title("Football/Soccer Match Lineup")
+    # Add tooltip
+    tooltip = patches.Rectangle((x-5, y-5), 10, 10, fill=False, edgecolor='white', linewidth=1, alpha=0)
+    tooltip.set_visible(False)
+    ax.add_patch(tooltip)
+    tooltip.set_label(f"{number} - {name} ({role})")
+    tooltip.set_picker(True)
 
-# Create two columns
-col1, col2 = st.columns(2)
+    def on_pick(event):
+        if event.artist == tooltip:
+            tooltip.set_visible(not tooltip.get_visible())
+            fig.canvas.draw_idle()
 
-with col1:
-    st.subheader("Home Team")
-    home_players = {}
-    for i in range(11):
-        name = st.text_input(f"Home Player {i+1} Name", key=f"home_name_{i}")
-        x = st.number_input(f"X position for {name}", min_value=0, max_value=100, value=50, key=f"home_x_{i}")
-        y = st.number_input(f"Y position for {name}", min_value=0, max_value=100, value=50, key=f"home_y_{i}")
-        home_players[i+1] = {"name": name, "x": x, "y": y}
+    fig.canvas.mpl_connect('pick_event', on_pick)
 
-with col2:
-    st.subheader("Away Team")
-    away_players = {}
-    for i in range(11):
-        name = st.text_input(f"Away Player {i+1} Name", key=f"away_name_{i}")
-        x = st.number_input(f"X position for {name}", min_value=0, max_value=100, value=50, key=f"away_x_{i}")
-        y = st.number_input(f"Y position for {name}", min_value=0, max_value=100, value=50, key=f"away_y_{i}")
-        away_players[i+1] = {"name": name, "x": x, "y": y}
+st.title("4-3-3 Soccer Formation with Tooltips")
+
+# Input player data
+home_players = {
+    'GK': {'name': 'John Doe', 'x': 5, 'y': 45},
+    'RB': {'name': 'Jane Smith', 'x': 20, 'y': 70},
+    'CB': {'name': 'Alice Brown', 'x': 40, 'y': 70},
+    'CB': {'name': 'Bob Johnson', 'x': 60, 'y': 70},
+    'LB': {'name': 'Charlie Davis', 'x': 80, 'y': 70},
+    'DM': {'name': 'Eve Wilson', 'x': 50, 'y': 55},
+    'CM': {'name': 'Frank Lee', 'x': 35, 'y': 45},
+    'CM': {'name': 'Grace Martin', 'x': 65, 'y': 45},
+    'RW': {'name': 'Hank Nelson', 'x': 20, 'y': 20},
+    'LW': {'name': 'Ivan Thompson', 'x': 80, 'y': 20},
+    'ST': {'name': 'Julia White', 'x': 50, 'y': 20}
+}
+
+away_players = {
+    'GK': {'name': 'Michael Black', 'x': 95, 'y': 45},
+    'RB': {'name': 'Nancy Green', 'x': 80, 'y': 70},
+    'CB': {'name': 'Oliver Brown', 'x': 60, 'y': 70},
+    'CB': {'name': 'Patricia Johnson', 'x': 40, 'y': 70},
+    'LB': {'name': 'Quentin Davis', 'x': 20, 'y': 70},
+    'DM': {'name': 'Rachel Wilson', 'x': 50, 'y': 55},
+    'CM': {'name': 'Samuel Lee', 'x': 65, 'y': 45},
+    'CM': {'name': 'Tina Martin', 'x': 35, 'y': 45},
+    'RW': {'name': 'Ursula Nelson', 'x': 80, 'y': 20},
+    'LW': {'name': 'Victor Thompson', 'x': 20, 'y': 20},
+    'ST': {'name': 'Wendy White', 'x': 50, 'y': 20}
+}
 
 if st.button("Generate Lineup"):
     fig, ax = plt.subplots(figsize=(12, 8))
     draw_pitch(ax)
 
-    for number, player in home_players.items():
-        add_player(ax, player['x'], player['y'], number, player['name'], 'Home')
+    # Add home team players
+    for role, player in home_players.items():
+        add_player(ax, player['x'], player['y'], "", player['name'], role, 'Home')
 
-    for number, player in away_players.items():
-        add_player(ax, player['x'], player['y'], number, player['name'], 'Away')
+    # Add away team players
+    for role, player in away_players.items():
+        add_player(ax, player['x'], player['y'], "", player['name'], role, 'Away')
 
     st.pyplot(fig)
