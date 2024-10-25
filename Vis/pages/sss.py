@@ -11,9 +11,13 @@ from fpl_api_collection import (
     get_fixt_dfs,
 )
 
-# Load data using provided functions
-team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
-events_df = pd.DataFrame(get_bootstrap_data()['events'])
+# Load data using provided functions with error handling
+try:
+    team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
+    events_df = pd.DataFrame(get_bootstrap_data()['events'])
+except Exception as e:
+    st.error(f"Error loading data: {e}")
+    sys.exit(1)
 
 # Get the current game week
 ct_gw = get_current_gw()
@@ -23,7 +27,6 @@ fx = team_fixt_df.reset_index()
 fx.rename(columns={0: 'Team'}, inplace=True)
 fx_matrix = fx.melt(id_vars='Team', var_name='GameWeek', value_name='Team_Away')
 
-
 # Prepare FDR data
 drf = team_fdr_df.reset_index()
 drf.rename(columns={0: 'Team'}, inplace=True)
@@ -32,15 +35,13 @@ fdr_matrix = drf.melt(id_vars='Team', var_name='GameWeek', value_name='FDR')
 # Merge fixture data with FDR data
 combined_matrix = pd.merge(fx_matrix, fdr_matrix, on=['Team', 'GameWeek'])
 
-st.write(combined_matrix)
-
 # Define the custom color mappings for FDR
 fdr_colors = {
-    1: ("#257d5a", "black"),
-    2: ("#00ff86", "black"),
-    3: ("#ebebe4", "black"),
-    4: ("#ff005a", "white"),
-    5: ("#861d46", "white"),
+    1: ("#257d5a", "black"),    # Very Easy
+    2: ("#00ff86", "black"),    # Easy
+    3: ("#ebebe4", "black"),    # Medium
+    4: ("#ff005a", "white"),    # Difficult
+    5: ("#861d46", "white"),    # Very Difficult
 }
 
 # Define FDR coloring function
@@ -53,11 +54,14 @@ def color_fdr(value):
 # Pivot the combined matrix for display
 display_matrix = combined_matrix.pivot(index='Team', columns='GameWeek', values='Team_Away')
 
+# Create a mapping of FDR values for styling
+fdr_values = combined_matrix.set_index(['Team', 'GameWeek'])['FDR'].unstack().fillna(0)
+
 # Apply styling based on FDR values
-styled_display_table = display_matrix.style.applymap(lambda x: color_fdr(fdr_values[x.name][x.name.index]))
+styled_display_table = display_matrix.style.applymap(lambda x: color_fdr(fdr_values.loc[x.name][x.name.index]))
 
 # Display the title and styled table
-st.markdown(f"**Fixture Difficulty Rating (FDR) for Away Matches**", unsafe_allow_html=True)
+st.markdown("**Fixture Difficulty Rating (FDR) for Away Matches**", unsafe_allow_html=True)
 st.write(styled_display_table)
 
 # Optionally display legend in the sidebar
