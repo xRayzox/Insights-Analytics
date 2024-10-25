@@ -132,64 +132,57 @@ gf_matrix['GF'] = gf_matrix['GF'].astype(float)
 
 combined_matrix_GF = pd.merge(fx_matrix, gf_matrix, on=['Team', 'GameWeek'])
 
-
-
-# Streamlit app
+# Title for the Streamlit app
 st.title("FPL Fixture Analysis")
 
-# Create a selection choice for the display
+# Sidebar for display selection
 with st.sidebar:
-    selected_display = st.radio(
-        "Select Display:", ['⚔️Premier League Fixtures', '📊Fixture Difficulty Rating']
-    )
+    selected_display = st.radio("Select Display:", ['⚔️ Premier League Fixtures', '📊 Fixture Difficulty Rating'])
 
-if selected_display == '📊Fixture Difficulty Rating':
-    # Create sliders for game week selection
+if selected_display == '📊 Fixture Difficulty Rating':
+    # Sliders for game week selection
     slider1, slider2 = st.slider('Gameweek Range:', int(ct_gw), gw_max, [int(ct_gw), int(ct_gw + 10)], 1)
-    # Create a selection choice for metrics
+
+    # Dropdown for metrics selection
     selected_metric = st.selectbox(
         "Select Metric:",
         ("Fixture Difficulty Rating (FDR)", "Average Goals Against (GA)", "Average Goals For (GF)")
     )
-    # Create a function to get the appropriate DataFrame based on the selection
+
+    # Function to retrieve the appropriate DataFrame based on the selected metric
     def get_selected_data(metric):
         if metric == "Fixture Difficulty Rating (FDR)":
-            filtered_fdr_matrix = combined_matrix_fdr[(combined_matrix_fdr['GameWeek'] >= slider1) & (combined_matrix_fdr['GameWeek'] <= slider2)]
-            fdr_values = filtered_fdr_matrix.set_index(['Team', 'GameWeek'])['FDR'].unstack().fillna(0)
-            pivot_fdr_matrix = filtered_fdr_matrix.pivot(index='Team', columns='GameWeek', values='Team_Away')
-            pivot_fdr_matrix.columns = [f'GW {col}' for col in pivot_fdr_matrix.columns].copy()
-            return pivot_fdr_matrix.copy() ,fdr_values
+            filtered_matrix = combined_matrix_fdr[(combined_matrix_fdr['GameWeek'] >= slider1) & (combined_matrix_fdr['GameWeek'] <= slider2)]
+            fdr_values = filtered_matrix.set_index(['Team', 'GameWeek'])['FDR'].unstack().fillna(0)
+            pivot_matrix = filtered_matrix.pivot(index='Team', columns='GameWeek', values='Team_Away')
         elif metric == "Average Goals Against (GA)":
-            filtered_ga_matrix = combined_matrix_GA[(combined_matrix_GA['GameWeek'] >= slider1) & (combined_matrix_GA['GameWeek'] <= slider2)]
-            ga_values = filtered_ga_matrix.set_index(['Team', 'GameWeek'])['GA'].unstack().fillna(0)
-            pivot_ga_matrix = filtered_ga_matrix.pivot(index='Team', columns='GameWeek', values='Team_Away')
-            pivot_ga_matrix.columns = [f'GW {col}' for col in pivot_ga_matrix.columns].copy() 
-            return pivot_ga_matrix.copy(),ga_values
+            filtered_matrix = combined_matrix_GA[(combined_matrix_GA['GameWeek'] >= slider1) & (combined_matrix_GA['GameWeek'] <= slider2)]
+            fdr_values = filtered_matrix.set_index(['Team', 'GameWeek'])['GA'].unstack().fillna(0)
+            pivot_matrix = filtered_matrix.pivot(index='Team', columns='GameWeek', values='Team_Away')
         elif metric == "Average Goals For (GF)":
-            filtered_gf_matrix = combined_matrix_GF[(combined_matrix_GF['GameWeek'] >= slider1) & (combined_matrix_GF['GameWeek'] <= slider2)]
-            gf_values = filtered_gf_matrix.set_index(['Team', 'GameWeek'])['GF'].unstack().fillna(0)
-            pivot_gf_matrix = filtered_gf_matrix.pivot(index='Team', columns='GameWeek', values='Team_Away')
-            pivot_gf_matrix.columns = [f'GW {col}' for col in pivot_gf_matrix.columns].copy() 
-            return pivot_gf_matrix.copy(),gf_values
+            filtered_matrix = combined_matrix_GF[(combined_matrix_GF['GameWeek'] >= slider1) & (combined_matrix_GF['GameWeek'] <= slider2)]
+            fdr_values = filtered_matrix.set_index(['Team', 'GameWeek'])['GF'].unstack().fillna(0)
+            pivot_matrix = filtered_matrix.pivot(index='Team', columns='GameWeek', values='Team_Away')
         
+        pivot_matrix.columns = [f'GW {col}' for col in pivot_matrix.columns]
+        return pivot_matrix, fdr_values
 
-    # Get the selected data
+    # Retrieve selected data
     selected_data = get_selected_data(selected_metric)
-    
+
     # Display the styled table based on the selected metric
-    if selected_metric == "Fixture Difficulty Rating (FDR)":
-        styled_table = selected_data[0].style.apply(
-            lambda x: selected_data[1].applymap(fdr_styler).values, axis=None
-        )
+    styled_table = selected_data[0].style.apply(
+        lambda x: selected_data[1].applymap(fdr_styler).values, axis=None
+    )
 
-        # Display the title with the selected metric (FDR)
-        st.markdown(
-            f"**{selected_metric} for the Next {slider2-slider1+1} Gameweeks (Starting GW {slider1})**",
-            unsafe_allow_html=True
-        )
+    # Display metric title and legend
+    st.markdown(
+        f"**{selected_metric} for the Next {slider2 - slider1 + 1} Gameweeks (Starting GW {slider1})**",
+        unsafe_allow_html=True
+    )
 
-        # FDR Legend (only if FDR is selected)
-        with st.sidebar:
+    with st.sidebar:
+        if selected_metric == "Fixture Difficulty Rating (FDR)":
             st.markdown("**Legend (FDR):**")
             for fdr, (bg_color, font_color) in fdr_colors.items():
                 st.sidebar.markdown(
@@ -198,52 +191,21 @@ if selected_display == '📊Fixture Difficulty Rating':
                     f"</span>",
                     unsafe_allow_html=True,
                 )
-    else:  # For GA and GF
-        if selected_metric == "Goals Against (GA)":
-            styled_table = selected_data[0].style.apply(
-            lambda x: selected_data[1].applymap(fdr_styler_ga).values, axis=None
-        )  # Use applymap for GA styling
+        else:  # For GA and GF
+            legend_colors = ga_gf_colors if selected_metric in ["Average Goals Against (GA)", "Average Goals For (GF)"] else {}
+            st.markdown(f"**Legend ({'GA' if 'GA' in selected_metric else 'GF'}):**")
+            for metric_val, (bg_color, font_color) in legend_colors.items():
+                st.sidebar.markdown(
+                    f"<span style='background-color: {bg_color}; color: {font_color}; padding: 2px 5px; border-radius: 3px;'>"
+                    f"{metric_val:.1f} - {metric_val + 0.4:.1f}"
+                    f"</span>",
+                    unsafe_allow_html=True,
+                )
 
-            # Display the title with the selected metric (GA)
-            st.markdown(
-                f"**{selected_metric} for the Next {slider2-slider1+1} Gameweeks (Starting GW {slider1})**",
-                unsafe_allow_html=True
-            )
-
-            # GA Legend (only if GA is selected)
-            with st.sidebar:
-                st.markdown("**Legend (GA):**")
-                for ga, (bg_color, font_color) in ga_gf_colors.items():
-                    st.sidebar.markdown(
-                        f"<span style='background-color: {bg_color}; color: {font_color}; padding: 2px 5px; border-radius: 3px;'>"
-                        f"{ga:.1f} - {ga + 0.4:.1f}"  # Display the range
-                        f"</span>",
-                        unsafe_allow_html=True,
-                    )
-        elif selected_metric == "Goals For (GF)":
-            styled_table = selected_data[0].style.apply(
-            lambda x: selected_data[1].applymap(fdr_styler_ga).values, axis=None
-        )  # Use applymap for GF styling
-
-            # Display the title with the selected metric (GF)
-            st.markdown(
-                f"**{selected_metric} for the Next {slider2-slider1+1} Gameweeks (Starting GW {slider1})**",
-                unsafe_allow_html=True
-            )
-
-            # GF Legend (only if GF is selected)
-            with st.sidebar:
-                st.markdown("**Legend (GF):**")
-                for gf, (bg_color, font_color) in ga_gf_colors.items():
-                    st.sidebar.markdown(
-                        f"<span style='background-color: {bg_color}; color: {font_color}; padding: 2px 5px; border-radius: 3px;'>"
-                        f"{gf:.1f} - {gf + 0.4:.1f}"  # Display the range
-                        f"</span>",
-                        unsafe_allow_html=True,
-                    )
-
-    # Streamlit app to display the styled table (outside the if/else)
+    # Display the styled table
     st.write(styled_table)
+
+
 
 
 
