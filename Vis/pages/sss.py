@@ -49,7 +49,7 @@ def color_fdr(value):
     return ''  # Default styling
 
 # Pivot the combined matrix for display
-display_matrix = combined_matrix.pivot(index='Team', columns='GameWeek', values='FDR')
+display_matrix = combined_matrix.pivot(index='Team', columns='GameWeek', values='Team_Away')
 
 # Apply styling based on FDR values
 styled_display_table = display_matrix.style.applymap(color_fdr)
