@@ -45,13 +45,17 @@ def fdr_styler(fdr_value):
     return color_fdr(fdr_value)
 
 
+
 # Define a coloring function for GA/GF values
 def color_ga_gf(value):
-        # Round the value to two decimal places for display and color mapping
-        rounded_value = round(value, 2)
-        closest_key = min(ga_gf_colors, key=lambda x: abs(x - rounded_value))
-        background_color, text_color = ga_gf_colors[closest_key]
-        return f'background-color: {background_color}; color: {text_color}; text-align: center;'
+        if value in ga_gf_colors:
+            background_color, text_color = ga_gf_colors[value]
+            return f'background-color: {background_color}; color: {text_color}; text-align: center;'
+        return ''  # Return an empty string for default styling
+
+def fdr_styler_ga(ga_value):
+    return color_ga_gf(ga_value)
+
 
 #############################################################
 # Load data
@@ -176,8 +180,6 @@ if selected_display == '📊Fixture Difficulty Rating':
     
     # Display the styled table based on the selected metric
     if selected_metric == "Fixture Difficulty Rating (FDR)":
-        st.write(selected_data.shape)
-        st.write(fdr_values.shape)
         styled_table = selected_data.style.apply(
     lambda x: fdr_values.applymap(fdr_styler).values, axis=None
 )
@@ -200,7 +202,9 @@ if selected_display == '📊Fixture Difficulty Rating':
                 )
     else:  # For GA and GF
         styled_table = selected_data.style.applymap(color_ga_gf)  # Use applymap for cell-wise styling
-
+        styled_table = selected_data.style.apply(
+    lambda x: fdr_values.applymap(fdr_styler_ga).values, axis=None
+)
         # Display the title with the selected metric (GA or GF)
         st.markdown(
             f"**{selected_metric} for the Next {slider2-slider1+1} Gameweeks (Starting GW {slider1})**",
