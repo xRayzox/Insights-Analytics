@@ -161,13 +161,13 @@ if selected_display == '📊Fixture Difficulty Rating':
             return pivot_fdr_matrix.copy() ,fdr_values
         elif metric == "Average Goals Against (GA)":
             filtered_ga_matrix = combined_matrix_GA[(combined_matrix_GA['GameWeek'] >= slider1) & (combined_matrix_GA['GameWeek'] <= slider2)]
-            ga_values = filtered_fdr_matrix.set_index(['Team', 'GameWeek'])['GA'].unstack().fillna(0)
+            ga_values = filtered_ga_matrix.set_index(['Team', 'GameWeek'])['GA'].unstack().fillna(0)
             pivot_ga_matrix = filtered_ga_matrix.pivot(index='Team', columns='GameWeek', values='Team_Away')
             pivot_ga_matrix.columns = [f'GW {col}' for col in pivot_ga_matrix.columns].copy() 
             return pivot_ga_matrix.copy(),ga_values
         elif metric == "Average Goals For (GF)":
             filtered_gf_matrix = combined_matrix_GF[(combined_matrix_GF['GameWeek'] >= slider1) & (combined_matrix_GF['GameWeek'] <= slider2)]
-            gf_values = filtered_fdr_matrix.set_index(['Team', 'GameWeek'])['GF'].unstack().fillna(0)
+            gf_values = filtered_gf_matrix.set_index(['Team', 'GameWeek'])['GF'].unstack().fillna(0)
             pivot_gf_matrix = filtered_gf_matrix.pivot(index='Team', columns='GameWeek', values='Team_Away')
             pivot_gf_matrix.columns = [f'GW {col}' for col in pivot_gf_matrix.columns].copy() 
             return pivot_gf_matrix.copy(),gf_values
