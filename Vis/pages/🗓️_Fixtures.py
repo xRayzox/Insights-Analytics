@@ -174,7 +174,7 @@ if selected_display == '📊Fixture Difficulty Rating':
     
     # Display the styled table based on the selected metric
     if selected_metric == "Fixture Difficulty Rating (FDR)":
-        styled_display_table = selected_data.style.apply(
+        styled_table = selected_data.style.apply(
     lambda x: fdr_values.applymap(fdr_styler).values, axis=None
 )
 
