@@ -33,34 +33,9 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-##########################################################
-# Define a coloring function based on the FDR values
-def color_fdr(value):
-        if value in fdr_colors:
-            background_color, text_color = fdr_colors[value]
-            return f'background-color: {background_color}; color: {text_color}; text-align: center;'
-        return ''  # Return an empty string for default styling
-
-def fdr_styler(fdr_value):
-    return color_fdr(fdr_value)
 
 
 
-
-# Define a coloring function for GA/GF values
-def color_ga_gf(value):
-        # Round the value to two decimal places for display and color mapping
-        rounded_value = round(value, 2)
-        closest_key = min(ga_gf_colors, key=lambda x: abs(x - rounded_value))
-        background_color, text_color = ga_gf_colors[closest_key]
-        return f'background-color: {background_color}; color: {text_color}; text-align: center;'
-
-
-def fdr_styler_ga(ga_value):
-    return color_ga_gf(ga_value)
-
-
-#############################################################
 # Load data
 team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
 events_df = pd.DataFrame(get_bootstrap_data()['events'])
@@ -93,16 +68,6 @@ fdr_matrix = fdr_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='FD
 # Convert FDR values to integers
 fdr_matrix['FDR'] = fdr_matrix['FDR'].astype(int)
 
-# Prepare fixture data
-fx = team_fixt_df.reset_index()
-fx.rename(columns={0: 'Team'}, inplace=True)
-fx_matrix = fx.melt(id_vars='Team', var_name='GameWeek', value_name='Team_Away')
-
-combined_matrix_fdr = pd.merge(fx_matrix, fdr_matrix, on=['Team', 'GameWeek'])
-
-
-
-
 # Streamlit app
 st.title("FPL Fixture Analysis")
 
@@ -117,11 +82,10 @@ if selected_display == '📊Fixture Difficulty Rating':
     slider1, slider2 = st.slider('Gameweek Range:', int(ct_gw), gw_max, [int(ct_gw), int(ct_gw + 10)], 1)
 
     # Filter FDR matrix based on selected game weeks
-    filtered_fdr_matrix = combined_matrix_fdr[(combined_matrix_fdr['GameWeek'] >= slider1) & (combined_matrix_fdr['GameWeek'] <= slider2)]
-    fdr_values = filtered_fdr_matrix.set_index(['Team', 'GameWeek'])['FDR'].unstack().fillna(0)
+    filtered_fdr_matrix = fdr_matrix[(fdr_matrix['GameWeek'] >= slider1) & (fdr_matrix['GameWeek'] <= slider2)]
 
     # Pivot the filtered FDR matrix for styling
-    pivot_fdr_matrix = filtered_fdr_matrix.pivot(index='Team', columns='GameWeek', values='Team_Away')
+    pivot_fdr_matrix = filtered_fdr_matrix.pivot(index='Team', columns='GameWeek', values='FDR')
 
     # Rename columns for display purposes
     pivot_fdr_matrix.columns = [f'GW {col}' for col in pivot_fdr_matrix.columns].copy()
@@ -146,7 +110,20 @@ if selected_display == '📊Fixture Difficulty Rating':
         3.0: ("#920947", "white"), 
     }
 
+    # Define a coloring function based on the FDR values
+    def color_fdr(value):
+        if value in fdr_colors:
+            background_color, text_color = fdr_colors[value]
+            return f'background-color: {background_color}; color: {text_color}; text-align: center;'
+        return ''  # Return an empty string for default styling
 
+    # Define a coloring function for GA/GF values
+    def color_ga_gf(value):
+        # Round the value to two decimal places for display and color mapping
+        rounded_value = round(value, 2)
+        closest_key = min(ga_gf_colors, key=lambda x: abs(x - rounded_value))
+        background_color, text_color = ga_gf_colors[closest_key]
+        return f'background-color: {background_color}; color: {text_color}; text-align: center;'
 
     # Create a selection choice for metrics
     selected_metric = st.selectbox(
@@ -160,33 +137,29 @@ if selected_display == '📊Fixture Difficulty Rating':
             return pivot_fdr_matrix.copy() 
         elif metric == "Average Goals Against (GA)":
             ga_matrix = ga.melt(id_vars='Team', var_name='GameWeek', value_name='GA')
-            combined_matrix_ga = pd.merge(fx_matrix, ga_matrix, on=['Team', 'GameWeek'])
-
             # Round GA values to 2 decimal places
-            combined_matrix_ga['GA'] = combined_matrix_ga['GA'].astype(float)
-            filtered_ga_matrix = combined_matrix_ga[(combined_matrix_ga['GameWeek'] >= slider1) & (combined_matrix_ga['GameWeek'] <= slider2)]
-            pivot_ga_matrix = filtered_ga_matrix.pivot(index='Team', columns='GameWeek', values='Team_Away')
+            ga_matrix['GA'] = ga_matrix['GA'].astype(float)
+            filtered_ga_matrix = ga_matrix[(ga_matrix['GameWeek'] >= slider1) & (ga_matrix['GameWeek'] <= slider2)]
+            pivot_ga_matrix = filtered_ga_matrix.pivot(index='Team', columns='GameWeek', values='GA')
             pivot_ga_matrix.columns = [f'GW {col}' for col in pivot_ga_matrix.columns].copy()
             return pivot_ga_matrix.copy()  
         elif metric == "Average Goals For (GF)":
             gf_matrix = gf.melt(id_vars='Team', var_name='GameWeek', value_name='GF')
-            combined_matrix_gf = pd.merge(fx_matrix, ga_matrix, on=['Team', 'GameWeek'])
             # Round GF values to 2 decimal places
-            combined_matrix_gf['GF'] = combined_matrix_gf['GF'].astype(float)
-            filtered_gf_matrix = combined_matrix_gf[(combined_matrix_gf['GameWeek'] >= slider1) & (combined_matrix_gf['GameWeek'] <= slider2)]
-            pivot_gf_matrix = filtered_gf_matrix.pivot(index='Team', columns='GameWeek', values='Team_Away')
+            gf_matrix['GF'] = gf_matrix['GF'].astype(float)
+            filtered_gf_matrix = gf_matrix[(gf_matrix['GameWeek'] >= slider1) & (gf_matrix['GameWeek'] <= slider2)]
+            pivot_gf_matrix = filtered_gf_matrix.pivot(index='Team', columns='GameWeek', values='GF')
             pivot_gf_matrix.columns = [f'GW {col}' for col in pivot_gf_matrix.columns].copy() 
             return pivot_gf_matrix.copy()
         
 
     # Get the selected data
     selected_data = get_selected_data(selected_metric)
+    #selected_data.index = selected_data.index.map(lambda team: f"<img src='{team_logo_mapping[team]}' style='width:20px; height:20px; vertical-align:middle; margin-right:5px;'/> {team}")
     
     # Display the styled table based on the selected metric
     if selected_metric == "Fixture Difficulty Rating (FDR)":
-        styled_table = selected_data.style.apply(
-    lambda x: fdr_values.applymap(fdr_styler).values, axis=None
-)
+        styled_table = selected_data.style.applymap(color_fdr)  # Use applymap for cell-wise styling
 
         # Display the title with the selected metric (FDR)
         st.markdown(
@@ -206,9 +179,7 @@ if selected_display == '📊Fixture Difficulty Rating':
                 )
     else:  # For GA and GF
         styled_table = selected_data.style.applymap(color_ga_gf)  # Use applymap for cell-wise styling
-        styled_table = selected_data.style.apply(
-    lambda x: fdr_values.applymap(fdr_styler_ga).values, axis=None
-)
+
         # Display the title with the selected metric (GA or GF)
         st.markdown(
             f"**{selected_metric} for the Next {slider2-slider1+1} Gameweeks (Starting GW {slider1})**",
