@@ -42,7 +42,7 @@ fx_matrix = fx.melt(id_vars='Team', var_name='GameWeek', value_name='Team_Away')
 
 
 
-st.write(fx)
+st.write(fx_matrix)
 #####################################
  
 # Define the custom color mappings for FDR
