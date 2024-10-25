@@ -160,10 +160,13 @@ if selected_display == '📊Fixture Difficulty Rating':
             pivot_fdr_matrix.columns = [f'GW {col}' for col in pivot_fdr_matrix.columns].copy()
             return pivot_fdr_matrix.copy() 
         elif metric == "Average Goals Against (GA)":
-            filtered_ga_matrix = Ga_matrix[(Ga_matrix['GameWeek'] >= slider1) & (Ga_matrix['GameWeek'] <= slider2)]
+            ga_matrix = ga.melt(id_vars='Team', var_name='GameWeek', value_name='GA')
+            # Round GA values to 2 decimal places
+            ga_matrix['GA'] = ga_matrix['GA'].astype(float)
+            filtered_ga_matrix = ga_matrix[(ga_matrix['GameWeek'] >= slider1) & (ga_matrix['GameWeek'] <= slider2)]
             pivot_ga_matrix = filtered_ga_matrix.pivot(index='Team', columns='GameWeek', values='GA')
             pivot_ga_matrix.columns = [f'GW {col}' for col in pivot_ga_matrix.columns].copy()
-            return pivot_ga_matrix.copy()  
+            return pivot_ga_matrix.copy()   
         elif metric == "Average Goals For (GF)":
             filtered_gf_matrix = gf_matrix[(gf_matrix['GameWeek'] >= slider1) & (gf_matrix['GameWeek'] <= slider2)]
             pivot_gf_matrix = filtered_gf_matrix.pivot(index='Team', columns='GameWeek', values='GF')
