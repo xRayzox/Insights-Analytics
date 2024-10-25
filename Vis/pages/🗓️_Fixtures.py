@@ -56,6 +56,8 @@ ga.rename(columns={0: 'Team'}, inplace=True)
 gf.rename(columns={0: 'Team'}, inplace=True)
 
 
+
+
 teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
 teams_df['logo_url'] = "https://resources.premierleague.com/premierleague/badges/70/t" + teams_df['code'].astype(str) + ".png"
 team_logo_mapping = pd.Series(teams_df.logo_url.values, index=teams_df.short_name).to_dict()
@@ -67,7 +69,14 @@ fdr_matrix = fdr_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='FD
 
 # Convert FDR values to integers
 fdr_matrix['FDR'] = fdr_matrix['FDR'].astype(int)
-
+#####################
+# Prepare fixture data
+fx = team_fixt_df.reset_index()
+fx.rename(columns={0: 'Team'}, inplace=True)
+fx_matrix = fx.melt(id_vars='Team', var_name='GameWeek', value_name='Team_Away')
+# Merge fixture data with FDR data
+combined_matrix = pd.merge(fx_matrix, fdr_matrix, on=['Team', 'GameWeek'])
+###############
 # Streamlit app
 st.title("FPL Fixture Analysis")
 
@@ -82,14 +91,22 @@ if selected_display == '📊Fixture Difficulty Rating':
     slider1, slider2 = st.slider('Gameweek Range:', int(ct_gw), gw_max, [int(ct_gw), int(ct_gw + 10)], 1)
 
     # Filter FDR matrix based on selected game weeks
-    filtered_fdr_matrix = fdr_matrix[(fdr_matrix['GameWeek'] >= slider1) & (fdr_matrix['GameWeek'] <= slider2)]
+    filtered_fdr_matrix = combined_matrix[(combined_matrix['GameWeek'] >= slider1) & (combined_matrix['GameWeek'] <= slider2)]
 
     # Pivot the filtered FDR matrix for styling
-    pivot_fdr_matrix = filtered_fdr_matrix.pivot(index='Team', columns='GameWeek', values='FDR')
+    pivot_fdr_matrix = filtered_fdr_matrix.pivot(index='Team', columns='GameWeek', values='Team_Away')
 
     # Rename columns for display purposes
     pivot_fdr_matrix.columns = [f'GW {col}' for col in pivot_fdr_matrix.columns].copy()
+    fdr_values = combined_matrix.set_index(['Team', 'GameWeek'])['FDR'].unstack().fillna(0)
+    # Function to apply styling based on FDR values
+    def fdr_styler(fdr_value):
+        return color_fdr(fdr_value)
 
+    # Apply styling based on FDR values
+    styled_display_table = pivot_fdr_matrix.style.apply(
+        lambda x: fdr_values.applymap(fdr_styler).values, axis=None
+    )
     # Define the custom color mapping for FDR values
     fdr_colors = {
         1: ("#257d5a", "black"),
@@ -134,7 +151,7 @@ if selected_display == '📊Fixture Difficulty Rating':
     # Create a function to get the appropriate DataFrame based on the selection
     def get_selected_data(metric):
         if metric == "Fixture Difficulty Rating (FDR)":
-            return pivot_fdr_matrix.copy() 
+            return styled_display_table.copy() 
         elif metric == "Average Goals Against (GA)":
             ga_matrix = ga.melt(id_vars='Team', var_name='GameWeek', value_name='GA')
             # Round GA values to 2 decimal places
