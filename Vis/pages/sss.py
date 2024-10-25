@@ -36,7 +36,14 @@ team_logo_mapping = pd.Series(teams_df.logo_url.values, index=teams_df.short_nam
 fdr_matrix = drf.copy()
 fdr_matrix = fdr_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='FDR')
 fdr_matrix['FDR'] = fdr_matrix['FDR'].astype(int)  # Convert FDR values to integers
+#####################################
+fx=team_fixt_df.reset_index()
 
+
+
+st.write(fx)
+#####################################
+ 
 # Define the custom color mappings for FDR
 fdr_colors = {
     1: ("#257d5a", "black"),
@@ -51,7 +58,6 @@ def get_fdr_data(slider1, slider2):
     filtered_fdr_matrix = fdr_matrix[(fdr_matrix['GameWeek'] >= slider1) & (fdr_matrix['GameWeek'] <= slider2)]
     st.write(filtered_fdr_matrix)
 
-    st.write(team_fixt_df)
     pivot_fdr_matrix = filtered_fdr_matrix.pivot(index='Team', columns='GameWeek', values='FDR')
     pivot_fdr_matrix.columns = [f'GW {col}' for col in pivot_fdr_matrix.columns]
     return pivot_fdr_matrix
