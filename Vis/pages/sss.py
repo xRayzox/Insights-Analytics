@@ -23,6 +23,7 @@ fx = team_fixt_df.reset_index()
 fx.rename(columns={0: 'Team'}, inplace=True)
 fx_matrix = fx.melt(id_vars='Team', var_name='GameWeek', value_name='Team_Away')
 
+
 # Prepare FDR data
 drf = team_fdr_df.reset_index()
 drf.rename(columns={0: 'Team'}, inplace=True)
