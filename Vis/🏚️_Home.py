@@ -2,6 +2,7 @@ import streamlit as st
 import sys
 import os
 import sys
+import pandas as pd
 pd.set_option('future.no_silent_downcasting', True)
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'FPL')))
 
