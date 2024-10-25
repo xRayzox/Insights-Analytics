@@ -93,7 +93,7 @@ fx_matrix = fx.melt(id_vars='Team', var_name='GameWeek', value_name='Team_Away')
 
 combined_matrix = pd.merge(fx_matrix, fdr_matrix, on=['Team', 'GameWeek'])
 fdr_values = combined_matrix.set_index(['Team', 'GameWeek'])['FDR'].unstack().fillna(0)
-
+st.write(fdr_values)
 
 
 # Streamlit app
