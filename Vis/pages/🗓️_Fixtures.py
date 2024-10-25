@@ -115,10 +115,9 @@ fdr_matrix['FDR'] = fdr_matrix['FDR'].astype(int)
 
 Ga_matrix = ga.copy()
 Ga_matrix = Ga_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='GA')
-# Convert FDR values to integers
 Ga_matrix['GA'] = fdr_matrix['GA'].astype(float)
 
-
+st.write(Ga_matrix)
 gf_matrix = gf.copy()
 gf_matrix = gf_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='GF')
 gf_matrix['GF'] = gf_matrix['GF'].astype(float)
