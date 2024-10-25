@@ -100,7 +100,6 @@ drf.rename(columns={0: 'Team'}, inplace=True)
 ga.rename(columns={0: 'Team'}, inplace=True)
 gf.rename(columns={0: 'Team'}, inplace=True)
 
-st.write(ga)
 
 teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
 teams_df['logo_url'] = "https://resources.premierleague.com/premierleague/badges/70/t" + teams_df['code'].astype(str) + ".png"
