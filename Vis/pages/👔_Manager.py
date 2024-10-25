@@ -171,7 +171,12 @@ col4,col5,col6 = st.columns([1,20,1])
 ###########################################
 with col5:
     events_df = pd.DataFrame(get_bootstrap_data()['events'])
-    complete_df = events_df.loc[events_df['deadline_time'] < str(dt.datetime.now()+ dt.timedelta(days=3))]
+    # Define the current epoch timestamp and add 3 days
+    # Define the current epoch timestamp and add 1 hour
+    current_epoch_plus_1_hour = int((dt.datetime.now() + dt.timedelta(hours=1)).timestamp())
+
+    # Filter events_df based on the 'deadline_time' as epoch
+    complete_df = events_df.loc[events_df['deadline_time_epoch'] < current_epoch_plus_1_hour]
     st.write(complete_df)
     gw_complete_list = sorted(complete_df['id'].tolist(), reverse=True)
     fpl_gw = st.selectbox('Team on Gameweek', gw_complete_list)
