@@ -106,6 +106,10 @@ teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
 teams_df['logo_url'] = "https://resources.premierleague.com/premierleague/badges/70/t" + teams_df['code'].astype(str) + ".png"
 team_logo_mapping = pd.Series(teams_df.logo_url.values, index=teams_df.short_name).to_dict()
 
+# Prepare fixture data
+fx = team_fixt_df.reset_index()
+fx.rename(columns={0: 'Team'}, inplace=True)
+fx_matrix = fx.melt(id_vars='Team', var_name='GameWeek', value_name='Team_Away')
 
 # Create FDR matrix directly from 'val' DataFrame
 fdr_matrix = drf.copy()
@@ -113,14 +117,21 @@ fdr_matrix = fdr_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='FD
 # Convert FDR values to integers
 fdr_matrix['FDR'] = fdr_matrix['FDR'].astype(int)
 
+combined_matrix_fdr = pd.merge(fx_matrix, fdr_matrix, on=['Team', 'GameWeek'])
+
 Ga_matrix = ga.copy()
 Ga_matrix = Ga_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='GA')
 Ga_matrix['GA'] = fdr_matrix['GA'].astype(float)
 
-st.write(Ga_matrix)
+combined_matrix_GA = pd.merge(fx_matrix, Ga_matrix, on=['Team', 'GameWeek'])
+
+
 gf_matrix = gf.copy()
 gf_matrix = gf_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='GF')
 gf_matrix['GF'] = gf_matrix['GF'].astype(float)
+
+combined_matrix_GF = pd.merge(fx_matrix, gf_matrix, on=['Team', 'GameWeek'])
+
 
 
 # Streamlit app
@@ -144,7 +155,7 @@ if selected_display == '📊Fixture Difficulty Rating':
     # Create a function to get the appropriate DataFrame based on the selection
     def get_selected_data(metric):
         if metric == "Fixture Difficulty Rating (FDR)":
-            filtered_fdr_matrix = fdr_matrix[(fdr_matrix['GameWeek'] >= slider1) & (fdr_matrix['GameWeek'] <= slider2)]
+            filtered_fdr_matrix = combined_matrix_fdr[(combined_matrix_fdr['GameWeek'] >= slider1) & (combined_matrix_fdr['GameWeek'] <= slider2)]
             pivot_fdr_matrix = filtered_fdr_matrix.pivot(index='Team', columns='GameWeek', values='FDR')
             pivot_fdr_matrix.columns = [f'GW {col}' for col in pivot_fdr_matrix.columns].copy()
             return pivot_fdr_matrix.copy() 
