@@ -41,6 +41,9 @@ def color_fdr(value):
             return f'background-color: {background_color}; color: {text_color}; text-align: center;'
         return ''  # Return an empty string for default styling
 
+def fdr_styler(fdr_value):
+    return color_fdr(fdr_value)
+
 
 # Define a coloring function for GA/GF values
 def color_ga_gf(value):
@@ -89,7 +92,7 @@ fx.rename(columns={0: 'Team'}, inplace=True)
 fx_matrix = fx.melt(id_vars='Team', var_name='GameWeek', value_name='Team_Away')
 
 combined_matrix = pd.merge(fx_matrix, fdr_matrix, on=['Team', 'GameWeek'])
-
+fdr_values = combined_matrix.set_index(['Team', 'GameWeek'])['FDR'].unstack().fillna(0)
 
 
 
@@ -171,7 +174,9 @@ if selected_display == '📊Fixture Difficulty Rating':
     
     # Display the styled table based on the selected metric
     if selected_metric == "Fixture Difficulty Rating (FDR)":
-        styled_table = selected_data.style.applymap(color_fdr)  # Use applymap for cell-wise styling
+        styled_display_table = selected_data.style.apply(
+    lambda x: fdr_values.applymap(fdr_styler).values, axis=None
+)
 
         # Display the title with the selected metric (FDR)
         st.markdown(
