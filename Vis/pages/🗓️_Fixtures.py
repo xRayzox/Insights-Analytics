@@ -6,7 +6,7 @@ import numpy as np
 from datetime import datetime, timezone
 import streamlit.components.v1 as components
 import pytz
-
+pd.set_option('future.no_silent_downcasting', True)
 # Adjust the path to your FPL API collection as necessary
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'FPL')))
 from fpl_api_collection import (
@@ -110,6 +110,14 @@ if selected_display == '📊Fixture Difficulty Rating':
         3.0: ("#920947", "white"), 
     }
 
+    def color_with_team_name(value, team_name):
+        if value in fdr_colors:
+            background_color, text_color = fdr_colors[value]
+            return f'background-color: {background_color}; color: {text_color}; text-align: center;', team_name
+        elif value in ga_gf_colors:
+            background_color, text_color = ga_gf_colors[value]
+            return f'background-color: {background_color}; color: {text_color}; text-align: center;', team_name
+        return '', team_name  # Default style with team name
     # Define a coloring function based on the FDR values
     def color_fdr(value):
         if value in fdr_colors:
@@ -156,7 +164,9 @@ if selected_display == '📊Fixture Difficulty Rating':
     # Get the selected data
     selected_data = get_selected_data(selected_metric)
     #selected_data.index = selected_data.index.map(lambda team: f"<img src='{team_logo_mapping[team]}' style='width:20px; height:20px; vertical-align:middle; margin-right:5px;'/> {team}")
-    
+    styled_table = selected_data.style.applymap(
+    lambda x: color_with_team_name(x, selected_data.index[selected_data.index.get_loc(x)])
+        )
     # Display the styled table based on the selected metric
     if selected_metric == "Fixture Difficulty Rating (FDR)":
         styled_table = selected_data.style.applymap(color_fdr)  # Use applymap for cell-wise styling
