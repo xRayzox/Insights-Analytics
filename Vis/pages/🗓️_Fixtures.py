@@ -46,12 +46,15 @@ def fdr_styler(fdr_value):
 
 
 
+
 # Define a coloring function for GA/GF values
 def color_ga_gf(value):
-        if value in ga_gf_colors:
-            background_color, text_color = ga_gf_colors[value]
-            return f'background-color: {background_color}; color: {text_color}; text-align: center;'
-        return ''  # Return an empty string for default styling
+        # Round the value to two decimal places for display and color mapping
+        rounded_value = round(value, 2)
+        closest_key = min(ga_gf_colors, key=lambda x: abs(x - rounded_value))
+        background_color, text_color = ga_gf_colors[closest_key]
+        return f'background-color: {background_color}; color: {text_color}; text-align: center;'
+
 
 def fdr_styler_ga(ga_value):
     return color_ga_gf(ga_value)
