@@ -156,9 +156,9 @@ if selected_display == '📊Fixture Difficulty Rating':
             combined_matrix_ga = pd.merge(fx_matrix, ga_matrix, on=['Team', 'GameWeek'])
 
             # Round GA values to 2 decimal places
-            ga_matrix['GA'] = ga_matrix['GA'].astype(float)
-            filtered_ga_matrix = ga_matrix[(ga_matrix['GameWeek'] >= slider1) & (ga_matrix['GameWeek'] <= slider2)]
-            pivot_ga_matrix = filtered_ga_matrix.pivot(index='Team', columns='GameWeek', values='GA')
+            combined_matrix_ga['GA'] = combined_matrix_ga['GA'].astype(float)
+            filtered_ga_matrix = combined_matrix_ga[(combined_matrix_ga['GameWeek'] >= slider1) & (combined_matrix_ga['GameWeek'] <= slider2)]
+            pivot_ga_matrix = filtered_ga_matrix.pivot(index='Team', columns='GameWeek', values='Team_Away')
             pivot_ga_matrix.columns = [f'GW {col}' for col in pivot_ga_matrix.columns].copy()
             return pivot_ga_matrix.copy()  
         elif metric == "Average Goals For (GF)":
