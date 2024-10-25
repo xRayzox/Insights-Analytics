@@ -33,7 +33,7 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-
+##########################################################
 # Define a coloring function based on the FDR values
 def color_fdr(value):
         if value in fdr_colors:
@@ -41,7 +41,8 @@ def color_fdr(value):
             return f'background-color: {background_color}; color: {text_color}; text-align: center;'
         return ''  # Return an empty string for default styling
 
-    # Define a coloring function for GA/GF values
+
+# Define a coloring function for GA/GF values
 def color_ga_gf(value):
         # Round the value to two decimal places for display and color mapping
         rounded_value = round(value, 2)
@@ -49,7 +50,7 @@ def color_ga_gf(value):
         background_color, text_color = ga_gf_colors[closest_key]
         return f'background-color: {background_color}; color: {text_color}; text-align: center;'
 
-
+#############################################################
 # Load data
 team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
 events_df = pd.DataFrame(get_bootstrap_data()['events'])
@@ -109,7 +110,7 @@ if selected_display == '📊Fixture Difficulty Rating':
     filtered_fdr_matrix = combined_matrix[(combined_matrix['GameWeek'] >= slider1) & (combined_matrix['GameWeek'] <= slider2)]
 
     # Pivot the filtered FDR matrix for styling
-    pivot_fdr_matrix = filtered_fdr_matrix.pivot(index='Team', columns='GameWeek', values='FDR')
+    pivot_fdr_matrix = filtered_fdr_matrix.pivot(index='Team', columns='GameWeek', values='Team_Away')
 
     # Rename columns for display purposes
     pivot_fdr_matrix.columns = [f'GW {col}' for col in pivot_fdr_matrix.columns].copy()
