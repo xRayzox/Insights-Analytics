@@ -173,7 +173,7 @@ with col5:
     events_df = pd.DataFrame(get_bootstrap_data()['events'])
     # Define the current epoch timestamp and add 3 days
     # Define the current epoch timestamp and add 1 hour
-    current_epoch_plus_1_hour = int((dt.datetime.now() + dt.timedelta(hours=1)).timestamp())
+    current_epoch_plus_1_hour = int((dt.datetime.now() + dt.timedelta(hours=24)).timestamp())
 
     # Filter events_df based on the 'deadline_time' as epoch
     complete_df = events_df.loc[events_df['deadline_time_epoch'] < current_epoch_plus_1_hour]
