@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 import streamlit.components.v1 as components
 import pytz
 pd.set_option('future.no_silent_downcasting', True)
+
 # Adjust the path to your FPL API collection as necessary
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'FPL')))
 from fpl_api_collection import (
@@ -23,6 +24,7 @@ from fpl_utils import (
     get_rotation,
     get_user_timezone
 )
+
 st.markdown(
     """
     <style>
@@ -33,28 +35,20 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
 ##########################################################
 # Define a coloring function based on the FDR values
 def color_fdr(value):
-        if value in fdr_colors:
-            background_color, text_color = fdr_colors[value]
-            return f'background-color: {background_color}; color: {text_color}; text-align: center;'
-        return ''  # Return an empty string for default styling
-
-def fdr_styler(fdr_value):
-    return color_fdr(fdr_value)
-
+    background_color, text_color = fdr_colors.get(value, ("", "")) 
+    return f'background-color: {background_color}; color: {text_color}; text-align: center;'
 
 
 # Define a coloring function for GA/GF values
 def color_ga_gf(value):
-        if value in ga_gf_colors:
-            background_color, text_color = ga_gf_colors[value]
-            return f'background-color: {background_color}; color: {text_color}; text-align: center;'
-        return ''  # Return an empty string for default styling
-
-def fdr_styler_ga(ga_value):
-    return color_ga_gf(ga_value)
+    for threshold, (bg_color, text_color) in ga_gf_colors.items():
+        if value <= threshold:
+            return f'background-color: {bg_color}; color: {text_color}; text-align: center;'
+    return ''  # Return an empty string for default styling
 
 
 #############################################################
@@ -82,7 +76,6 @@ teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
 teams_df['logo_url'] = "https://resources.premierleague.com/premierleague/badges/70/t" + teams_df['code'].astype(str) + ".png"
 team_logo_mapping = pd.Series(teams_df.logo_url.values, index=teams_df.short_name).to_dict()
 
-
 # Create FDR matrix directly from 'val' DataFrame
 fdr_matrix = drf.copy()
 fdr_matrix = fdr_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='FDR')
@@ -96,9 +89,6 @@ fx.rename(columns={0: 'Team'}, inplace=True)
 fx_matrix = fx.melt(id_vars='Team', var_name='GameWeek', value_name='Team_Away')
 
 combined_matrix_fdr = pd.merge(fx_matrix, fdr_matrix, on=['Team', 'GameWeek'])
-
-
-
 
 # Streamlit app
 st.title("FPL Fixture Analysis")
@@ -134,13 +124,13 @@ if selected_display == '📊Fixture Difficulty Rating':
 
     # Define the custom color mapping for GA and GF
     ga_gf_colors = {
-        0.0: ("#147d1b", "white"),
-        0.5: ("#00ff78", "black"),
-        1.0: ("#caf4bd", "black"),
-        1.5: ("#eceae6", "black"),
-        2.0: ("#fa8072", "black"),
-        2.5: ("#ff0057", "white"),
-        3.0: ("#920947", "white"), 
+        0.5: ("#147d1b", "white"),  # Values <= 0.5
+        1.0: ("#00ff78", "black"),  # Values <= 1.0
+        1.5: ("#caf4bd", "black"),  # Values <= 1.5
+        2.0: ("#eceae6", "black"),  # Values <= 2.0
+        2.5: ("#fa8072", "black"),  # Values <= 2.5
+        3.0: ("#ff0057", "white"),  # Values <= 3.0
+        float('inf'): ("#920947", "white")  # Values > 3.0 
     }
 
 
@@ -167,7 +157,7 @@ if selected_display == '📊Fixture Difficulty Rating':
             return pivot_ga_matrix.copy()  
         elif metric == "Average Goals For (GF)":
             gf_matrix = gf.melt(id_vars='Team', var_name='GameWeek', value_name='GF')
-            combined_matrix_gf = pd.merge(fx_matrix, ga_matrix, on=['Team', 'GameWeek'])
+            combined_matrix_gf = pd.merge(fx_matrix, gf_matrix, on=['Team', 'GameWeek'])
             # Round GF values to 2 decimal places
             combined_matrix_gf['GF'] = combined_matrix_gf['GF'].astype(float)
             filtered_gf_matrix = combined_matrix_gf[(combined_matrix_gf['GameWeek'] >= slider1) & (combined_matrix_gf['GameWeek'] <= slider2)]
@@ -178,20 +168,17 @@ if selected_display == '📊Fixture Difficulty Rating':
 
     # Get the selected data
     selected_data = get_selected_data(selected_metric)
-    
-    # Display the styled table based on the selected metric
+
+    # Display the title with the selected metric 
+    st.markdown(
+        f"**{selected_metric} for the Next {slider2-slider1+1} Gameweeks (Starting GW {slider1})**",
+        unsafe_allow_html=True
+    )
+
+    # Apply styling based on selected metric
     if selected_metric == "Fixture Difficulty Rating (FDR)":
-        styled_table = selected_data.style.apply(
-    lambda x: fdr_values.applymap(fdr_styler).values, axis=None
-)
-
-        # Display the title with the selected metric (FDR)
-        st.markdown(
-            f"**{selected_metric} for the Next {slider2-slider1+1} Gameweeks (Starting GW {slider1})**",
-            unsafe_allow_html=True
-        )
-
-        # FDR Legend (only if FDR is selected)
+        styled_table = selected_data.style.applymap(color_fdr)
+        # FDR Legend 
         with st.sidebar:
             st.markdown("**Legend (FDR):**")
             for fdr, (bg_color, font_color) in fdr_colors.items():
@@ -202,32 +189,26 @@ if selected_display == '📊Fixture Difficulty Rating':
                     unsafe_allow_html=True,
                 )
     else:  # For GA and GF
-        styled_table = selected_data.style.applymap(color_ga_gf)  # Use applymap for cell-wise styling
-        styled_table = selected_data.style.apply(
-    lambda x: fdr_values.applymap(fdr_styler_ga).values, axis=None
-)
-        # Display the title with the selected metric (GA or GF)
-        st.markdown(
-            f"**{selected_metric} for the Next {slider2-slider1+1} Gameweeks (Starting GW {slider1})**",
-            unsafe_allow_html=True
-        )
-
-        # GA/GF Legend (only if GA or GF is selected)
+        styled_table = selected_data.style.applymap(color_ga_gf)
+        # GA/GF Legend 
         with st.sidebar:
             st.markdown("**Legend (GA/GF):**")
-            for ga_gf, (bg_color, font_color) in ga_gf_colors.items():
+            for i, (threshold, (bg_color, font_color)) in enumerate(ga_gf_colors.items()):
+                if i == 0:
+                    label = f"≤ {threshold:.1f}"
+                elif threshold == float('inf'):
+                    label = f"> {list(ga_gf_colors.keys())[-2]:.1f}" 
+                else:
+                    label = f"≤ {threshold:.1f}"
                 st.sidebar.markdown(
                     f"<span style='background-color: {bg_color}; color: {font_color}; padding: 2px 5px; border-radius: 3px;'>"
-                    f"{ga_gf:.1f} - {ga_gf + 0.4:.1f}"  # Display the range
+                    f"{label}" 
                     f"</span>",
                     unsafe_allow_html=True,
                 )
 
-    # Streamlit app to display the styled table (outside the if/else)
+    # Streamlit app to display the styled table 
     st.write(styled_table)
-
-
-
 ###################################
 elif selected_display == '⚔️Premier League Fixtures':
 
