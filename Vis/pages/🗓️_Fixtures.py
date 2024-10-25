@@ -175,76 +175,53 @@ if selected_display == '📊Fixture Difficulty Rating':
 
     # Get the selected data
     selected_data = get_selected_data(selected_metric)
-    
-    # Display the styled table based on the selected metric
-    if selected_metric == "Fixture Difficulty Rating (FDR)":
+    # Function to handle styling and legend display
+    def display_metric_table(selected_metric, selected_data, slider1, slider2, colors):
         styled_table = selected_data[0].style.apply(
-            lambda x: selected_data[1].applymap(fdr_styler).values, axis=None
+            lambda x: selected_data[1].applymap(colors['styler']).values, axis=None
         )
-
-        # Display the title with the selected metric (FDR)
+        
+        # Display the title with the selected metric
         st.markdown(
             f"**{selected_metric} for the Next {slider2-slider1+1} Gameweeks (Starting GW {slider1})**",
             unsafe_allow_html=True
         )
-
-        # FDR Legend (only if FDR is selected)
+        
+        # Legend
         with st.sidebar:
-            st.markdown("**Legend (FDR):**")
-            for fdr, (bg_color, font_color) in fdr_colors.items():
+            st.markdown(f"**Legend ({selected_metric}):**")
+            for value, (bg_color, font_color) in colors['legend'].items():
                 st.sidebar.markdown(
                     f"<span style='background-color: {bg_color}; color: {font_color}; padding: 2px 5px; border-radius: 3px;'>"
-                    f"{fdr} - {'Very Easy' if fdr == 1 else 'Easy' if fdr == 2 else 'Medium' if fdr == 3 else 'Difficult' if fdr == 4 else 'Very Difficult'}"
+                    f"{value:.1f} - {value + 0.4:.1f}"  # Display the range
                     f"</span>",
                     unsafe_allow_html=True,
                 )
-    else:  # For GA and GF
-        if selected_metric == "Goals Against (GA)":
-            styled_table = selected_data[0].style.apply(
-            lambda x: selected_data[1].applymap(fdr_styler_ga).values, axis=None
-        )  # Use applymap for GA styling
+        
+        return styled_table
 
-            # Display the title with the selected metric (GA)
-            st.markdown(
-                f"**{selected_metric} for the Next {slider2-slider1+1} Gameweeks (Starting GW {slider1})**",
-                unsafe_allow_html=True
-            )
+    # Mapping for metrics
+    metrics_map = {
+        "Fixture Difficulty Rating (FDR)": {
+            'styler': fdr_styler,
+            'legend': fdr_colors
+        },
+        "Goals Against (GA)": {
+            'styler': fdr_styler_ga,
+            'legend': ga_gf_colors
+        },
+        "Goals For (GF)": {
+            'styler': fdr_styler_ga,
+            'legend': ga_gf_colors
+        }
+    }
 
-            # GA Legend (only if GA is selected)
-            with st.sidebar:
-                st.markdown("**Legend (GA):**")
-                for ga, (bg_color, font_color) in ga_gf_colors.items():
-                    st.sidebar.markdown(
-                        f"<span style='background-color: {bg_color}; color: {font_color}; padding: 2px 5px; border-radius: 3px;'>"
-                        f"{ga:.1f} - {ga + 0.4:.1f}"  # Display the range
-                        f"</span>",
-                        unsafe_allow_html=True,
-                    )
-        elif selected_metric == "Goals For (GF)":
-            styled_table = selected_data[0].style.apply(
-            lambda x: selected_data[1].applymap(fdr_styler_ga).values, axis=None
-        )  # Use applymap for GF styling
-
-            # Display the title with the selected metric (GF)
-            st.markdown(
-                f"**{selected_metric} for the Next {slider2-slider1+1} Gameweeks (Starting GW {slider1})**",
-                unsafe_allow_html=True
-            )
-
-            # GF Legend (only if GF is selected)
-            with st.sidebar:
-                st.markdown("**Legend (GF):**")
-                for gf, (bg_color, font_color) in ga_gf_colors.items():
-                    st.sidebar.markdown(
-                        f"<span style='background-color: {bg_color}; color: {font_color}; padding: 2px 5px; border-radius: 3px;'>"
-                        f"{gf:.1f} - {gf + 0.4:.1f}"  # Display the range
-                        f"</span>",
-                        unsafe_allow_html=True,
-                    )
-
-    # Streamlit app to display the styled table (outside the if/else)
-    st.write(styled_table)
-
+    # Display the styled table based on the selected metric
+    if selected_metric in metrics_map:
+        styled_table = display_metric_table(selected_metric, selected_data, slider1, slider2, metrics_map[selected_metric])
+        st.write(styled_table)
+    else:
+        st.error("Selected metric is not recognized.")
 
 
 ###################################
