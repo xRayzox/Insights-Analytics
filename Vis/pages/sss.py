@@ -50,6 +50,8 @@ fdr_colors = {
 def get_fdr_data(slider1, slider2):
     filtered_fdr_matrix = fdr_matrix[(fdr_matrix['GameWeek'] >= slider1) & (fdr_matrix['GameWeek'] <= slider2)]
     st.write(filtered_fdr_matrix)
+    test=team_fixt_df()
+    st.write(test)
     pivot_fdr_matrix = filtered_fdr_matrix.pivot(index='Team', columns='GameWeek', values='FDR')
     pivot_fdr_matrix.columns = [f'GW {col}' for col in pivot_fdr_matrix.columns]
     return pivot_fdr_matrix
