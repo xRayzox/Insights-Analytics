@@ -118,13 +118,13 @@ fdr_matrix = fdr_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='FD
 fdr_matrix['FDR'] = fdr_matrix['FDR'].astype(int)
 
 combined_matrix_fdr = pd.merge(fx_matrix, fdr_matrix, on=['Team', 'GameWeek'])
-
+"""
 Ga_matrix = ga.copy()
 Ga_matrix = Ga_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='GA')
 Ga_matrix['GA'] = fdr_matrix['GA'].astype(float)
 
 combined_matrix_GA = pd.merge(fx_matrix, Ga_matrix, on=['Team', 'GameWeek'])
-
+"""
 
 gf_matrix = gf.copy()
 gf_matrix = gf_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='GF')
