@@ -151,7 +151,7 @@ if selected_display == '📊Fixture Difficulty Rating':
     # Create a function to get the appropriate DataFrame based on the selection
     def get_selected_data(metric):
         if metric == "Fixture Difficulty Rating (FDR)":
-            return styled_display_table.copy() 
+            return styled_display_table
         elif metric == "Average Goals Against (GA)":
             ga_matrix = ga.melt(id_vars='Team', var_name='GameWeek', value_name='GA')
             # Round GA values to 2 decimal places
