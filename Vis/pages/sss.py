@@ -54,7 +54,7 @@ def color_fdr(value):
 display_matrix = combined_matrix.pivot(index='Team', columns='GameWeek', values='Team_Away')
 
 # Apply styling based on FDR values
-styled_display_table = display_matrix.style.applymap(color_fdr)
+styled_display_table = display_matrix.style.applymap(lambda x: color_fdr(fdr_values[x.name][x.name.index]))
 
 # Display the title and styled table
 st.markdown(f"**Fixture Difficulty Rating (FDR) for Away Matches**", unsafe_allow_html=True)
