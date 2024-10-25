@@ -175,7 +175,6 @@ with col5:
     current_epoch_plus_1_hour = int((dt.datetime.now() - dt.timedelta(hours=1)).timestamp())
     # Filter events_df based on the 'deadline_time' as epoch
     complete_df = events_df.loc[events_df['deadline_time_epoch'] < current_epoch_plus_1_hour]
-    st.write(complete_df)
     gw_complete_list = sorted(complete_df['id'].tolist(), reverse=True)
     fpl_gw = st.selectbox('Team on Gameweek', gw_complete_list)
 
