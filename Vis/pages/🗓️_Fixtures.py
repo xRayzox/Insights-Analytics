@@ -164,13 +164,12 @@ if selected_display == '📊Fixture Difficulty Rating':
     # Get the selected data
     selected_data = get_selected_data(selected_metric)
     #selected_data.index = selected_data.index.map(lambda team: f"<img src='{team_logo_mapping[team]}' style='width:20px; height:20px; vertical-align:middle; margin-right:5px;'/> {team}")
-    styled_table = selected_data.style.applymap(
-    lambda x: color_with_team_name(x, selected_data.index[selected_data.index.get_loc(x)])
-        )
+
     # Display the styled table based on the selected metric
     if selected_metric == "Fixture Difficulty Rating (FDR)":
-        styled_table = selected_data.style.applymap(color_fdr)  # Use applymap for cell-wise styling
-
+        styled_table = selected_data.style.applymap(
+    lambda x: color_with_team_name(x, selected_data.index[selected_data.index.get_loc(x)])
+        )
         # Display the title with the selected metric (FDR)
         st.markdown(
             f"**{selected_metric} for the Next {slider2-slider1+1} Gameweeks (Starting GW {slider1})**",
