@@ -151,14 +151,14 @@ if selected_display == '📊Fixture Difficulty Rating':
         "Select Metric:",
         ("Fixture Difficulty Rating (FDR)", "Average Goals Against (GA)", "Average Goals For (GF)")
     )
-
     # Create a function to get the appropriate DataFrame based on the selection
     def get_selected_data(metric):
         if metric == "Fixture Difficulty Rating (FDR)":
             filtered_fdr_matrix = combined_matrix_fdr[(combined_matrix_fdr['GameWeek'] >= slider1) & (combined_matrix_fdr['GameWeek'] <= slider2)]
+            fdr_values = filtered_fdr_matrix.set_index(['Team', 'GameWeek'])['FDR'].unstack().fillna(0)
             pivot_fdr_matrix = filtered_fdr_matrix.pivot(index='Team', columns='GameWeek', values='Team_Away')
             pivot_fdr_matrix.columns = [f'GW {col}' for col in pivot_fdr_matrix.columns].copy()
-            return pivot_fdr_matrix.copy() 
+            return pivot_fdr_matrix.copy() ,fdr_values
         elif metric == "Average Goals Against (GA)":
             filtered_ga_matrix = combined_matrix_GA[(combined_matrix_GA['GameWeek'] >= slider1) & (combined_matrix_GA['GameWeek'] <= slider2)]
             pivot_ga_matrix = filtered_ga_matrix.pivot(index='Team', columns='GameWeek', values='Team_Away')
@@ -176,7 +176,9 @@ if selected_display == '📊Fixture Difficulty Rating':
     
     # Display the styled table based on the selected metric
     if selected_metric == "Fixture Difficulty Rating (FDR)":
-        styled_table = selected_data.style.applymap(color_fdr)  # Use applymap for cell-wise styling
+        styled_table = selected_data[0].style.apply(
+    lambda x: selected_data[1].applymap(fdr_styler).values, axis=None
+)
 
         # Display the title with the selected metric (FDR)
         st.markdown(
