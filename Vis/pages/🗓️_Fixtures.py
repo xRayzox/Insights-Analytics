@@ -33,7 +33,52 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+########################################################
 
+    # Define the custom color mapping for FDR values
+fdr_colors = {
+        1: ("#257d5a", "black"),
+        2: ("#00ff86", "black"),
+        3: ("#ebebe4", "black"),
+        4: ("#ff005a", "white"),
+        5: ("#861d46", "white"),
+    }
+
+    # Define the custom color mapping for GA and GF
+ga_gf_colors = {
+        0.0: ("#147d1b", "white"),
+        0.5: ("#00ff78", "black"),
+        1.0: ("#caf4bd", "black"),
+        1.5: ("#eceae6", "black"),
+        2.0: ("#fa8072", "black"),
+        2.5: ("#ff0057", "white"),
+        3.0: ("#920947", "white"), 
+    }
+
+    # Define a coloring function based on the FDR values
+def color_fdr(value):
+        if value in fdr_colors:
+            background_color, text_color = fdr_colors[value]
+            return f'background-color: {background_color}; color: {text_color}; text-align: center;'
+        return ''  # Return an empty string for default styling
+
+def fdr_styler(fdr_value):
+    return color_fdr(fdr_value)
+
+
+    # Define a coloring function for GA/GF values
+def color_ga_gf(value):
+        # Round the value to two decimal places for display and color mapping
+        rounded_value = round(value, 2)
+        closest_key = min(ga_gf_colors, key=lambda x: abs(x - rounded_value))
+        background_color, text_color = ga_gf_colors[closest_key]
+        return f'background-color: {background_color}; color: {text_color}; text-align: center;'
+
+
+def fdr_styler_ga(ga_value):
+    return color_ga_gf(ga_value)
+
+##########################################################
 
 
 # Load data
@@ -54,6 +99,8 @@ fixt.rename(columns={0: 'Team'}, inplace=True)
 drf.rename(columns={0: 'Team'}, inplace=True)
 ga.rename(columns={0: 'Team'}, inplace=True)
 gf.rename(columns={0: 'Team'}, inplace=True)
+
+st.write(ga)
 
 
 teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
@@ -80,51 +127,6 @@ with st.sidebar:
 if selected_display == '📊Fixture Difficulty Rating':
     # Create sliders for game week selection
     slider1, slider2 = st.slider('Gameweek Range:', int(ct_gw), gw_max, [int(ct_gw), int(ct_gw + 10)], 1)
-
-    # Filter FDR matrix based on selected game weeks
-    filtered_fdr_matrix = fdr_matrix[(fdr_matrix['GameWeek'] >= slider1) & (fdr_matrix['GameWeek'] <= slider2)]
-
-    # Pivot the filtered FDR matrix for styling
-    pivot_fdr_matrix = filtered_fdr_matrix.pivot(index='Team', columns='GameWeek', values='FDR')
-
-    # Rename columns for display purposes
-    pivot_fdr_matrix.columns = [f'GW {col}' for col in pivot_fdr_matrix.columns].copy()
-
-    # Define the custom color mapping for FDR values
-    fdr_colors = {
-        1: ("#257d5a", "black"),
-        2: ("#00ff86", "black"),
-        3: ("#ebebe4", "black"),
-        4: ("#ff005a", "white"),
-        5: ("#861d46", "white"),
-    }
-
-    # Define the custom color mapping for GA and GF
-    ga_gf_colors = {
-        0.0: ("#147d1b", "white"),
-        0.5: ("#00ff78", "black"),
-        1.0: ("#caf4bd", "black"),
-        1.5: ("#eceae6", "black"),
-        2.0: ("#fa8072", "black"),
-        2.5: ("#ff0057", "white"),
-        3.0: ("#920947", "white"), 
-    }
-
-    # Define a coloring function based on the FDR values
-    def color_fdr(value):
-        if value in fdr_colors:
-            background_color, text_color = fdr_colors[value]
-            return f'background-color: {background_color}; color: {text_color}; text-align: center;'
-        return ''  # Return an empty string for default styling
-
-    # Define a coloring function for GA/GF values
-    def color_ga_gf(value):
-        # Round the value to two decimal places for display and color mapping
-        rounded_value = round(value, 2)
-        closest_key = min(ga_gf_colors, key=lambda x: abs(x - rounded_value))
-        background_color, text_color = ga_gf_colors[closest_key]
-        return f'background-color: {background_color}; color: {text_color}; text-align: center;'
-
     # Create a selection choice for metrics
     selected_metric = st.selectbox(
         "Select Metric:",
@@ -134,6 +136,9 @@ if selected_display == '📊Fixture Difficulty Rating':
     # Create a function to get the appropriate DataFrame based on the selection
     def get_selected_data(metric):
         if metric == "Fixture Difficulty Rating (FDR)":
+            filtered_fdr_matrix = fdr_matrix[(fdr_matrix['GameWeek'] >= slider1) & (fdr_matrix['GameWeek'] <= slider2)]
+            pivot_fdr_matrix = filtered_fdr_matrix.pivot(index='Team', columns='GameWeek', values='FDR')
+            pivot_fdr_matrix.columns = [f'GW {col}' for col in pivot_fdr_matrix.columns].copy()
             return pivot_fdr_matrix.copy() 
         elif metric == "Average Goals Against (GA)":
             ga_matrix = ga.melt(id_vars='Team', var_name='GameWeek', value_name='GA')
@@ -155,7 +160,6 @@ if selected_display == '📊Fixture Difficulty Rating':
 
     # Get the selected data
     selected_data = get_selected_data(selected_metric)
-    #selected_data.index = selected_data.index.map(lambda team: f"<img src='{team_logo_mapping[team]}' style='width:20px; height:20px; vertical-align:middle; margin-right:5px;'/> {team}")
     
     # Display the styled table based on the selected metric
     if selected_metric == "Fixture Difficulty Rating (FDR)":
