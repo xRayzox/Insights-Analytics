@@ -16,10 +16,6 @@ from matplotlib.patches import FancyBboxPatch
 from matplotlib.textpath import TextPath
 from PIL import Image, ImageDraw, ImageOps
 
-
-
-
-
 pd.set_option('future.no_silent_downcasting', True)
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'FPL')))
 from fpl_api_collection import (
@@ -176,6 +172,7 @@ col4,col5,col6 = st.columns([1,20,1])
 with col5:
     events_df = pd.DataFrame(get_bootstrap_data()['events'])
     complete_df = events_df.loc[events_df['deadline_time'] < str(dt.datetime.now()+ dt.timedelta(days=3))]
+    st.write(complete_df)
     gw_complete_list = sorted(complete_df['id'].tolist(), reverse=True)
     fpl_gw = st.selectbox('Team on Gameweek', gw_complete_list)
 
