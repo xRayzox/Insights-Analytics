@@ -91,7 +91,8 @@ fx = team_fixt_df.reset_index()
 fx.rename(columns={0: 'Team'}, inplace=True)
 fx_matrix = fx.melt(id_vars='Team', var_name='GameWeek', value_name='Team_Away')
 
-combined_matrix = pd.merge(fx_matrix, fdr_matrix, on=['Team', 'GameWeek'])
+combined_matrix_fdr = pd.merge(fx_matrix, fdr_matrix, on=['Team', 'GameWeek'])
+
 
 
 
@@ -109,7 +110,7 @@ if selected_display == '📊Fixture Difficulty Rating':
     slider1, slider2 = st.slider('Gameweek Range:', int(ct_gw), gw_max, [int(ct_gw), int(ct_gw + 10)], 1)
 
     # Filter FDR matrix based on selected game weeks
-    filtered_fdr_matrix = combined_matrix[(combined_matrix['GameWeek'] >= slider1) & (combined_matrix['GameWeek'] <= slider2)]
+    filtered_fdr_matrix = combined_matrix_fdr[(combined_matrix_fdr['GameWeek'] >= slider1) & (combined_matrix_fdr['GameWeek'] <= slider2)]
     fdr_values = filtered_fdr_matrix.set_index(['Team', 'GameWeek'])['FDR'].unstack().fillna(0)
 
     # Pivot the filtered FDR matrix for styling
@@ -152,6 +153,8 @@ if selected_display == '📊Fixture Difficulty Rating':
             return pivot_fdr_matrix.copy() 
         elif metric == "Average Goals Against (GA)":
             ga_matrix = ga.melt(id_vars='Team', var_name='GameWeek', value_name='GA')
+            combined_matrix_ga = pd.merge(fx_matrix, ga_matrix, on=['Team', 'GameWeek'])
+
             # Round GA values to 2 decimal places
             ga_matrix['GA'] = ga_matrix['GA'].astype(float)
             filtered_ga_matrix = ga_matrix[(ga_matrix['GameWeek'] >= slider1) & (ga_matrix['GameWeek'] <= slider2)]
