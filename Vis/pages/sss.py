@@ -32,6 +32,8 @@ fdr_matrix = drf.melt(id_vars='Team', var_name='GameWeek', value_name='FDR')
 # Merge fixture data with FDR data
 combined_matrix = pd.merge(fx_matrix, fdr_matrix, on=['Team', 'GameWeek'])
 
+st.write(combined_matrix)
+
 # Define the custom color mappings for FDR
 fdr_colors = {
     1: ("#257d5a", "black"),
