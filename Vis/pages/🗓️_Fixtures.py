@@ -206,11 +206,11 @@ if selected_display == '📊Fixture Difficulty Rating':
             'styler': fdr_styler,
             'legend': fdr_colors
         },
-        "Goals Against (GA)": {
+        "Average Goals Against (GA)": {
             'styler': fdr_styler_ga,
             'legend': ga_gf_colors
         },
-        "Goals For (GF)": {
+        "Average Goals For (GF)": {
             'styler': fdr_styler_ga,
             'legend': ga_gf_colors
         }
