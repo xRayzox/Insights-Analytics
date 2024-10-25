@@ -243,7 +243,7 @@ if selected_display == '📊Fixture Difficulty Rating':
                     )
 
     # Streamlit app to display the styled table (outside the if/else)
-        st.write(styled_table)
+    st.write(styled_table)
 
 
 
