@@ -92,8 +92,7 @@ fx.rename(columns={0: 'Team'}, inplace=True)
 fx_matrix = fx.melt(id_vars='Team', var_name='GameWeek', value_name='Team_Away')
 
 combined_matrix = pd.merge(fx_matrix, fdr_matrix, on=['Team', 'GameWeek'])
-fdr_values = combined_matrix.set_index(['Team', 'GameWeek'])['FDR'].unstack().fillna(0)
-st.write(fdr_values)
+
 
 
 # Streamlit app
@@ -111,7 +110,8 @@ if selected_display == '📊Fixture Difficulty Rating':
 
     # Filter FDR matrix based on selected game weeks
     filtered_fdr_matrix = combined_matrix[(combined_matrix['GameWeek'] >= slider1) & (combined_matrix['GameWeek'] <= slider2)]
-    filtered_fdr_values=fdr_values[(fdr_values['GameWeek'] >= slider1) & (fdr_values['GameWeek'] <= slider2)]
+    fdr_values = filtered_fdr_matrix.set_index(['Team', 'GameWeek'])['FDR'].unstack().fillna(0)
+
     # Pivot the filtered FDR matrix for styling
     pivot_fdr_matrix = filtered_fdr_matrix.pivot(index='Team', columns='GameWeek', values='Team_Away')
 
