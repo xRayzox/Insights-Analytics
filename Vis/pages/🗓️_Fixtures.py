@@ -100,7 +100,6 @@ drf.rename(columns={0: 'Team'}, inplace=True)
 ga.rename(columns={0: 'Team'}, inplace=True)
 gf.rename(columns={0: 'Team'}, inplace=True)
 
-st.write(ga)
 
 
 teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
@@ -111,9 +110,19 @@ team_logo_mapping = pd.Series(teams_df.logo_url.values, index=teams_df.short_nam
 # Create FDR matrix directly from 'val' DataFrame
 fdr_matrix = drf.copy()
 fdr_matrix = fdr_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='FDR')
-
 # Convert FDR values to integers
 fdr_matrix['FDR'] = fdr_matrix['FDR'].astype(int)
+
+Ga_matrix = ga.copy()
+Ga_matrix = Ga_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='GA')
+# Convert FDR values to integers
+Ga_matrix['GA'] = fdr_matrix['GA'].astype(float)
+
+
+gf_matrix = gf.copy()
+gf_matrix = gf_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='GF')
+gf_matrix['GF'] = gf_matrix['GF'].astype(float)
+
 
 # Streamlit app
 st.title("FPL Fixture Analysis")
@@ -141,17 +150,11 @@ if selected_display == '📊Fixture Difficulty Rating':
             pivot_fdr_matrix.columns = [f'GW {col}' for col in pivot_fdr_matrix.columns].copy()
             return pivot_fdr_matrix.copy() 
         elif metric == "Average Goals Against (GA)":
-            ga_matrix = ga.melt(id_vars='Team', var_name='GameWeek', value_name='GA')
-            # Round GA values to 2 decimal places
-            ga_matrix['GA'] = ga_matrix['GA'].astype(float)
-            filtered_ga_matrix = ga_matrix[(ga_matrix['GameWeek'] >= slider1) & (ga_matrix['GameWeek'] <= slider2)]
+            filtered_ga_matrix = Ga_matrix[(Ga_matrix['GameWeek'] >= slider1) & (Ga_matrix['GameWeek'] <= slider2)]
             pivot_ga_matrix = filtered_ga_matrix.pivot(index='Team', columns='GameWeek', values='GA')
             pivot_ga_matrix.columns = [f'GW {col}' for col in pivot_ga_matrix.columns].copy()
             return pivot_ga_matrix.copy()  
         elif metric == "Average Goals For (GF)":
-            gf_matrix = gf.melt(id_vars='Team', var_name='GameWeek', value_name='GF')
-            # Round GF values to 2 decimal places
-            gf_matrix['GF'] = gf_matrix['GF'].astype(float)
             filtered_gf_matrix = gf_matrix[(gf_matrix['GameWeek'] >= slider1) & (gf_matrix['GameWeek'] <= slider2)]
             pivot_gf_matrix = filtered_gf_matrix.pivot(index='Team', columns='GameWeek', values='GF')
             pivot_gf_matrix.columns = [f'GW {col}' for col in pivot_gf_matrix.columns].copy() 
