@@ -57,9 +57,15 @@ display_matrix = combined_matrix.pivot(index='Team', columns='GameWeek', values=
 # Create a mapping of FDR values for styling
 fdr_values = combined_matrix.set_index(['Team', 'GameWeek'])['FDR'].unstack().fillna(0)
 
+st.write(fdr_values)
+
 # Apply styling based on FDR values
-styled_display_table = display_matrix.style.applymap(
-    lambda cell_value: color_fdr(fdr_values.loc[display_matrix.index[cell_value.name[0]]][cell_value.name[1]])
+def fdr_styler(row_index, col_index):
+    fdr_value = fdr_values.loc[row_index, col_index]
+    return color_fdr(fdr_value)
+
+styled_display_table = display_matrix.style.apply(
+    lambda x: fdr_styler(x.name[0], x.name[1]), axis=None
 )
 
 # Display the title and styled table
