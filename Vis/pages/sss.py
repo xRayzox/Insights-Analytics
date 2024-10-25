@@ -38,6 +38,7 @@ fdr_matrix = fdr_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='FD
 fdr_matrix['FDR'] = fdr_matrix['FDR'].astype(int)  # Convert FDR values to integers
 #####################################
 fx=team_fixt_df.reset_index()
+fx.rename(columns={0: 'Team'}, inplace=True)
 fx_matrix = fx.melt(id_vars='Team', var_name='GameWeek', value_name='Team_Away')
 
 
