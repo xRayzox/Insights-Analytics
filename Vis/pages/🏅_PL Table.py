@@ -238,4 +238,54 @@ with chart_col:
 # Calculate points data
 season_dict = calculate_points_by_weeks()
 
-st.write(season_dict)
+ Streamlit interface
+st.title("Premier League 2019/20 Week-wise Standings")
+st.subheader("A comparison between Liverpool, Manchester City, and Manchester United")
+
+# Define match weeks and teams to highlight
+match_day = ["Week " + str(num) for num in range(1, 39)]
+highlight_dict = {
+    "Liverpool": "crimson",
+    "Man City": "skyblue",
+    "Man Utd": "gold"
+}
+
+# Instantiate Bumpy object
+bumpy = Bumpy(
+    scatter_color="#282A2C", line_color="#252525",
+    rotate_xticks=90,
+    ticklabel_size=17, label_size=30,
+    scatter_primary='D',
+    show_right=True,
+    plot_labels=True,
+    alignment_yvalue=0.1,
+    alignment_xvalue=0.065
+)
+
+# Plot Bumpy chart
+fig, ax = bumpy.plot(
+    x_list=match_day,
+    y_list=np.linspace(1, 20, 20).astype(int),
+    values=season_dict,
+    secondary_alpha=0.5,
+    highlight_dict=highlight_dict,
+    figsize=(20, 16),
+    x_label='Week', y_label='Position',
+    ylim=(-0.1, 23),
+    lw=2.5
+)
+
+# Add title and subtitle
+fig.text(0.09, 0.95, "Premier League 2019/20 Week-wise Standings:", size=29, color="#F2F2F2")
+fig_text(
+    0.09, 0.94, "A comparison between <Liverpool>, <Manchester City> and <Manchester United>",
+    color="#F2F2F2",
+    highlight_textprops=[{"color": 'crimson'}, {"color": 'skyblue'}, {"color": 'gold'}],
+    size=25, fig=fig
+)
+
+# Optionally add a logo
+# fig = add_image(epl, fig, 0.02, 0.9, 0.08, 0.08)
+
+# Show plot in Streamlit
+st.pyplot(fig)
