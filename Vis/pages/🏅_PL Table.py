@@ -238,7 +238,6 @@ with chart_col:
 # Calculate points data
 season_dict = calculate_points_by_weeks()
 
- Streamlit interface
 st.title("Premier League 2019/20 Week-wise Standings")
 st.subheader("A comparison between Liverpool, Manchester City, and Manchester United")
 
