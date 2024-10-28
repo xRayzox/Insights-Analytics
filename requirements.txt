@@ -11,3 +11,4 @@ mplsoccer
 cachetools
 aiohttp
 dask
+highlight_text
