@@ -192,50 +192,7 @@ def get_league_table():
     return league_df
 
 
-def calculate_points_by_weeks():
-    fixt_df = pd.DataFrame(get_fixture_data())
-    teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
-    teams_id_list = teams_df['id'].unique().tolist()
 
-    # Initialize dictionary to store cumulative points per team for each game week
-    season_dict = {team: [0] * 38 for team in teams_df['short_name'].values}
-
-    for t_id in teams_id_list:
-        # Filter fixtures for the specific team as home and away
-        home_data = fixt_df.loc[fixt_df['team_h'] == t_id].copy()
-        away_data = fixt_df.loc[fixt_df['team_a'] == t_id].copy()
-        home_data['was_home'] = True
-        away_data['was_home'] = False
-
-        # Combine home and away fixtures
-        df = pd.concat([home_data, away_data])
-        df.sort_values('event', inplace=True)  # Sort by game week (event)
-        
-        # Initialize cumulative points
-        points = 0
-        team_name = teams_df.loc[teams_df['id'] == t_id, 'short_name'].values[0]
-
-        # Calculate points for each week
-        for week in range(1, 39):  # Game weeks 1 to 38
-            weekly_fixtures = df[df['event'] == week]
-
-            for _, row in weekly_fixtures.iterrows():
-                # Check match result and award points
-                if row['was_home']:
-                    if row['team_h_score'] > row['team_a_score']:
-                        points += 3  # Home win
-                    elif row['team_h_score'] == row['team_a_score']:
-                        points += 1  # Draw
-                else:
-                    if row['team_a_score'] > row['team_h_score']:
-                        points += 3  # Away win
-                    elif row['team_a_score'] == row['team_h_score']:
-                        points += 1  # Draw
-
-            # Store cumulative points at the current week
-            season_dict[team_name][week - 1] = points
-
-    return season_dict
 
 
 def get_current_gw():
