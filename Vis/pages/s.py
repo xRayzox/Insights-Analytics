@@ -47,7 +47,7 @@ teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
 teams_df['logo_url'] = "https://resources.premierleague.com/premierleague/badges/70/t" + teams_df['code'].astype(str) + ".png"
 team_logo_mapping = pd.Series(teams_df.logo_url.values, index=teams_df.short_name).to_dict()
 
-league_df['logo_team'] = league_df['short_name'].map(team_logo_mapping)
+league_df['logo_team'] = league_df['Team'].map(team_logo_mapping)
 
 st.write(league_df)
 
