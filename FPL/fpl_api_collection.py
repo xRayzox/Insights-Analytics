@@ -192,7 +192,7 @@ def get_league_table():
     return league_df
 
 
-def calculate_points_by_week():
+def calculate_points_by_weeks():
     fixt_df = pd.DataFrame(get_fixture_data())
     teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
     teams_id_list = teams_df['id'].unique().tolist()

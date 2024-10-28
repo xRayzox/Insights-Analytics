@@ -3,6 +3,10 @@ import pandas as pd
 import sys
 import os
 import altair as alt
+from matplotlib import pyplot as plt
+from mplsoccer import Bumpy
+from highlight_text import fig_text
+from matplotlib.offsetbox import OffsetImage
 pd.set_option('future.no_silent_downcasting', True)
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..', 'FPL')))
 from fpl_api_collection import (
@@ -229,3 +233,9 @@ def_mean_line = (
 # Combine all chart elements
 with chart_col:
     st.altair_chart(scatter_plot + off_mean_line + def_mean_line, use_container_width=True)
+##########################################################################
+
+# Calculate points data
+season_dict = calculate_points_by_weeks()
+
+st.write(season_dict)
