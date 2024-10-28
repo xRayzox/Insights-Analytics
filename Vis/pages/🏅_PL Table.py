@@ -7,6 +7,9 @@ from matplotlib import pyplot as plt
 from mplsoccer import Bumpy
 from highlight_text import fig_text
 from matplotlib.offsetbox import OffsetImage
+
+import numpy as np
+
 pd.set_option('future.no_silent_downcasting', True)
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..', 'FPL')))
 from fpl_api_collection import (
