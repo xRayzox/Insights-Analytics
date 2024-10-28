@@ -10,3 +10,4 @@ altair
 mplsoccer 
 cachetools
 aiohttp
+dask
