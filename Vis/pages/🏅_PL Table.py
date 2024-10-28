@@ -6,7 +6,7 @@ import altair as alt
 pd.set_option('future.no_silent_downcasting', True)
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..', 'FPL')))
 from fpl_api_collection import (
-    get_league_table, get_current_gw, get_fixt_dfs, get_bootstrap_data
+    get_league_table, get_current_gw, get_fixt_dfs, get_bootstrap_data,calculate_points_by_weeks
 )
 from fpl_utils import (
     define_sidebar
@@ -37,7 +37,6 @@ league_df.index += 1
 
 league_df['GD'] = league_df['GD'].map('{:+}'.format)
 
-teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
 teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
 teams_df['logo_url'] = "https://resources.premierleague.com/premierleague/badges/70/t" + teams_df['code'].astype(str) + ".png"
 team_logo_mapping = pd.Series(teams_df.logo_url.values, index=teams_df.short_name).to_dict()
