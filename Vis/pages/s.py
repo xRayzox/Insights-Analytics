@@ -50,7 +50,6 @@ def form_color(form):
     return [color_mapping[char] for char in form if char in color_mapping]
 
 
-
 # --- Data Loading and Processing ---
 league_df = get_league_table()
 team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
@@ -72,8 +71,6 @@ team_logo_mapping = pd.Series(teams_df['logo_image'].values, index=teams_df['sho
 # Map each team's logo image to the league DataFrame
 league_df['logo_team'] = league_df['Team'].map(team_logo_mapping)
 # Calculate and assign rankings in the league DataFramae
-
-
 league_df['Rank'] = league_df['Pts'].rank(ascending=False, method='min').astype(int)
 
 def get_home_away_str_dict():
@@ -123,8 +120,10 @@ def color_fixtures(val):
             return color_map[key]
     return "#ffffff"  # Default color if no match
 
+
 # Assuming league_df is defined and populated.
 home_away_dict = get_home_away_str_dict()
+
 # --- Streamlit App ---
 st.title("Premier League Table")
 
@@ -247,25 +246,22 @@ col_defs = [
         textprops={'ha': "center"},
         width=1
     ),
-    ColumnDefinition(
-        name=f"GW{ct_gw}",
-        group="Fixtures",
-        textprops={'ha': "center"},
-        width=1
-    ),
-    ColumnDefinition(
-        name=f"GW{ct_gw+1}",
-        group="Fixtures",
-        textprops={'ha': "center"},
-        width=1
-    ),
-    ColumnDefinition(
-        name=f"GW{ct_gw+2}",
-        group="Fixtures",
-        textprops={'ha': "center"},
-        width=1
-    )
+    
 ]
+
+# Modify Fixture Column Definitions
+for gw in range(ct_gw, ct_gw + 3):
+    col_defs.append(
+        ColumnDefinition(
+            name=f"GW{gw}",
+            group="Fixtures",
+            textprops={'ha': "center"},
+            width=1,
+            formatter=lambda val, row: (val, {'backgroundcolor': color_fixtures(val)}) 
+        )
+    )
+
+
 # --- Plottable Table ---
 fig, ax = plt.subplots(figsize=(20, 20))  # Adjust figsize for Streamlit
 fig.set_facecolor(bg_color)
@@ -296,26 +292,6 @@ for idx in range(len(league_df)):
     elif league_df.iloc[idx]['Rank'] >= 18:  # Assuming relegation zone starts at 18
         table.rows[idx].set_facecolor(row_colors["relegation"])
 
-# Define the columns to color
-cols_to_color = [f"GW{ct_gw}", f"GW{ct_gw + 1}", f"GW{ct_gw + 2}"]
-
-# Color the specific columns
-# Color the specific columns
-for col in cols_to_color:
-    if col in league_df.columns:
-        col_index = league_df.columns.get_loc(col)  # Get the index of the column
-        for i in range(len(league_df)):
-            val = league_df.iloc[i][col]  # Get the value from the dataframe
-            color = color_fixtures(val)  # Get the background color
-            
-            # Access the specific cell using get_celld() method
-            cell = table.get_celld()[(i + 1, col_index)]
-            cell.set_facecolor(color)  # Set the background color
 
 # --- Display the Table in Streamlit ---
 st.pyplot(fig)
-
-
-
-
-################################################
