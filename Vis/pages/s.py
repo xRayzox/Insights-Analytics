@@ -223,15 +223,7 @@ fig, ax = plt.subplots(figsize=(20, 20))  # Adjust figsize for Streamlit
 fig.set_facecolor(bg_color)
 ax.set_facecolor(bg_color)
 
-form_column_index = col_defs.index(next(col for col in col_defs if col.name == "Form"))  # Find the index of the 'Form' column
-for index, form in enumerate(league_df['Form']):
-    colors = form_color(form)
-    for i, char in enumerate(form):
-        # Create a circle patch for each character
-        circle = mpatches.Circle((form_column_index + 0.5, index + 0.5), 0.3, color=colors[i], ec="none")
-        ax.add_patch(circle)
-        # Draw the character in the center of the circle
-        ax.text(form_column_index + 0.5, index + 0.5, char, ha='center', va='center', color='white', fontsize=14)
+
 table = Table(
     league_df,
     column_definitions=col_defs,
@@ -247,7 +239,15 @@ table = Table(
     ax=ax
 )
 # Draw form indicators with circular backgrounds
-
+form_column_index = 12  # Set this to the actual index of the 'Form' column in col_defs
+for index, form in enumerate(league_df['Form']):
+    colors = form_color(form)
+    for i, char in enumerate(form):
+        # Create a circle patch for each character, adjusting the x position for the 'Form' column
+        circle = mpatches.Circle((form_column_index + 0.5, index + 0.5), 0.3, color=colors[i], ec="none")
+        ax.add_patch(circle)
+        # Draw the character in the center of the circle
+        ax.text(form_column_index + 0.5, index + 0.5, char, ha='center', va='center', color='white', fontsize=14)
 # --- Display the Table in Streamlit ---
 st.pyplot(fig)
 
