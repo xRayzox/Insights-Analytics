@@ -4,7 +4,8 @@ import pandas as pd
 import urllib.request
 import os
 import sys
-from PIL import Image  # Importing Image from PIL
+from PIL import Image
+import numpy as np
 from bokeh.models import ColumnDataSource, TableColumn, DataTable, HTMLTemplateFormatter
 
 # Adjust the path to include the FPL directory (assuming it's one level up)
