@@ -274,7 +274,8 @@ for row_idx, row in enumerate(table.rows):
         text.set_fontsize(10)  # Adjust fontsize as needed
         text.set_color("white")
         text.set_va('center')  # Vertical alignment
-        text.set_ha('center')  # Horizontal alignment
+        text.set_ha('center')  # Horizontal alignment 
+
 
 
 
