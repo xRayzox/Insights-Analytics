@@ -299,7 +299,7 @@ for idx in range(len(league_df)):
         table.rows[idx].set_facecolor(row_colors["relegation"])
 
 # Find the index of the "Team" column based on the header row.
-team_col_idx = next(i for i, cell in enumerate(table.col_label_row.cells) if cell.content == "Team")
+team_col_idx = next(i for i, cell in enumerate(table.col_label_row.cells) if cell.content == f"GW{ct_gw}")
 
 # Access the first row (index 0) of the "Team" column.
 first_team_cell = table.rows[0].cells[team_col_idx].content
