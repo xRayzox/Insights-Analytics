@@ -291,7 +291,12 @@ for idx in range(len(league_df)):
         table.rows[idx].set_facecolor(row_colors["top6"])
     elif league_df.iloc[idx]['Rank'] >= 18:  # Assuming relegation zone starts at 18
         table.rows[idx].set_facecolor(row_colors["relegation"])
-
+        
+for col in range(league_df.columns.get_loc(f"GW{ct_gw}"), league_df.columns.get_loc(f"GW{ct_gw + 2}") + 1):
+    for row in range(1, len(league_df) + 1):
+        cell_value = table.get_celld()[(row, col)]._text.get_text() # Get cell value
+        color = color_fixtures(cell_value) # Apply your color logic
+        table.get_celld()[(row, col)].set_facecolor(color)  # Set background color
 
 # --- Display the Table in Streamlit ---
 st.pyplot(fig)
