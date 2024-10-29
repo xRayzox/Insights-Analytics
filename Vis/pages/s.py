@@ -250,6 +250,7 @@ for row_idx, row in enumerate(table.rows):
     st.write(f"Type of row_idx: {type(row_idx)}")
     st.write(f"DataFrame Index Type: {league_df.index}")  
     form_str = league_df.iloc[row_idx]['Form']   # Get the form string
+    st.write(form_str)
     form_colors = form_color(form_str)  # Get the colors
 
     # Style each character in the "Form" cell
