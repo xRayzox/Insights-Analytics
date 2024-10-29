@@ -238,17 +238,18 @@ table = Table(
     column_border_kw={"linewidth": .5, "linestyle": "-"},
     ax=ax
 )
-for index, row in league_df.iterrows():
-    form = row['Form']
+for (row_idx, row), form in zip(league_df.iterrows(), league_df['Form']):
     colors = form_color(form)
-    # Get the cell bounding box for the 'Form' column
-    cell_bbox = table.table_ax.texts[index * len(table.column_names) + table.column_names.index('Form')].get_window_extent()
-    cell_x = cell_bbox.x0  # Left x-coordinate of the cell
-    cell_width = cell_bbox.width
-    for i, char in enumerate(form):
-        char_x = cell_x + (i + 0.5) * (cell_width / len(form))  # Calculate character x-position
-        char_y = cell_bbox.y0 + cell_bbox.height / 2  # Calculate character y-position
-        ax.text(char_x, char_y, char, ha='center', va='center', color=colors[i], fontsize=14)
+
+    for col_idx, char in enumerate(form):
+        cell = table.cells[(row_idx, col_idx + len(table.column_names) - 3)]  # Adjust the column offset as needed
+        cell.text_props['color'] = colors[col_idx]
+        cell.text = char
+
+# Hide the original 'Form' column text
+for cell in table.cells.values():
+    if cell.column_definition.name == 'Form':
+        cell.text = ""
 # --- Display the Table in Streamlit ---
 st.pyplot(fig)
 
