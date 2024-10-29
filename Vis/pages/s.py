@@ -89,18 +89,18 @@ col_defs = [
     ColumnDefinition(
         name="Rank",
         textprops={'ha': "center"},
-        width=0.5
+        width=1
     ),
     ColumnDefinition(
         name="logo_team",
         textprops={'ha': "center", 'va': "center", 'color': "white"},
         plot_fn=image,
-        width=0.5,
+        width=1,
     ),
     ColumnDefinition(
         name="Team",
-        textprops={'ha': "left", 'weight': "bold"},
-        width=1.75
+        textprops={'ha': "center"},
+        width=1
     ),
     ColumnDefinition(
         name="GP",
@@ -129,79 +129,79 @@ col_defs = [
     ColumnDefinition(
         name="GF",
         group="Goals",
-        textprops={'ha': "left", 'weight': "bold"},
+        textprops={'ha': "center"},
         width=0.5
     ),
     ColumnDefinition(
         name="GA",
         group="Goals",
-        textprops={'ha': "left", 'weight': "bold"},
+        textprops={'ha': "center"},
         width=0.5
     ),
     ColumnDefinition(
         name="GD",
         group="Goals",
-        textprops={'ha': "left", 'weight': "bold"},
+        textprops={'ha': "center"},
         width=0.5
     ),
     ColumnDefinition(
         name="CS",
         group="Goals",
-        textprops={'ha': "left", 'weight': "bold"},
+        textprops={'ha': "center"},
         width=0.5
     ),
     ColumnDefinition(
         name="Pts",
         group="Points",
-        textprops={'ha': "left", 'weight': "bold"},
-        width=1
+        textprops={'ha': "center"},
+        width=0.5
     ),
     ColumnDefinition(
         name="Pts/Game",
         group="Points",
-        textprops={'ha': "left", 'weight': "bold"},
-        width=1
+        textprops={'ha': "center"},
+        width=0.5
     ),
     ColumnDefinition(
         name="Form",
         group="Points",
-        textprops={'ha': "left", 'weight': "bold"},
+        textprops={'ha': "center"},
         width=1
     ),
     ColumnDefinition(
         name="GF/Game",
         group="ByGame",
-        textprops={'ha': "left", 'weight': "bold"},
+        textprops={'ha': "center"},
         width=1
     ),
     ColumnDefinition(
         name="GA/Game",
         group="ByGame",
-        textprops={'ha': "left", 'weight': "bold"},
+        textprops={'ha': "center"},
         width=1
     ),
     ColumnDefinition(
         name="CS/Game",
         group="ByGame",
-        textprops={'ha': "left", 'weight': "bold"},
+        textprops={'ha': "center"},
         width=1
     ),
     ColumnDefinition(
         name="GW10",
         group="Fixtures",
-        textprops={'ha': "left", 'weight': "bold"},
+        textprops={'ha': "center"},
         width=1
     ),
     ColumnDefinition(
         name="GW11",
         group="Fixtures",
-        textprops={'ha': "left", 'weight': "bold"},
+        textprops={'ha': "center"},
         width=1
     ),
     ColumnDefinition(
         name="GW12",
         group="Fixtures",
-        textprops={'ha': "left", 'weight': "bold"},
+        textprops={'ha': "center"},
         width=1
     )
 ]
@@ -213,8 +213,8 @@ ax.set_facecolor(bg_color)
 table = Table(
     league_df,
     column_definitions=col_defs,
-    columns=['logo_team','Team', 'GP', 'W', 'D', 'L', 'GF', 'GA', 'GD', 'CS', 'Pts', 'Form',
-             'Pts/Game', 'GF/Game', 'GA/Game', 'CS/Game', 'GW10', 'GW11', 'GW12'], 
+    columns=['logo_team','Team', 'GP', 'W', 'D', 'L', 'GF', 'GA', 'GD', 'CS', 'Pts', 
+             'Pts/Game','Form', 'GF/Game', 'GA/Game', 'CS/Game', 'GW10', 'GW11', 'GW12'], 
     index_col="Rank",
     row_dividers=True,
     row_divider_kw={"linewidth": 1, "linestyle": (0, (1, 5))},
