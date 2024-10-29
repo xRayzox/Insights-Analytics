@@ -43,9 +43,12 @@ def load_image_from_url(url):
 ## Optimized function to get the fixture dictionary
 
 # --- Data Loading and Processing ---
+
+
 league_df = get_league_table()
 team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
 ct_gw = get_current_gw()
+
 new_fixt_df = team_fixt_df.loc[:, ct_gw:(ct_gw+2)]
 new_fixt_cols = ['GW' + str(col) for col in new_fixt_df.columns.tolist()]
 new_fixt_df.columns = new_fixt_cols
@@ -68,19 +71,42 @@ league_df['logo_team'] = league_df['Team'].map(team_logo_mapping)
 league_df['Rank'] = league_df['Pts'].rank(ascending=False, method='min').astype(int)
 
 ########################################
-def get_home_away_str_dict(new_fdr_df, new_fixt_df):
+def get_home_away_str_dict():
     new_fdr_df.columns = new_fixt_cols
     result_dict = {}
-    
     for col in new_fdr_df.columns:
-        for value, string in zip(new_fdr_df[col], new_fixt_df[col]):
-            if value not in result_dict:
-                result_dict[value] = set()
-            result_dict[value].add(string)
+        values = list(new_fdr_df[col])
+        max_length = new_fixt_df[col].str.len().max()
+        if max_length > 7:
+            new_fixt_df.loc[new_fixt_df[col].str.len() <= 7, col] = new_fixt_df[col].str.pad(width=max_length+9, side='both', fillchar=' ')
+        strings = list(new_fixt_df[col])
+        value_dict = {}
+        for value, string in zip(values, strings):
+            if value not in value_dict:
+                value_dict[value] = []
+            value_dict[value].append(string)
+        result_dict[col] = value_dict
+    
+    merged_dict = {}
+    merged_dict[1.5] = []
+    merged_dict[2.5] = []
+    merged_dict[3.5] = []
+    merged_dict[4.5] = []
+    for k, dict1 in result_dict.items():
+        for key, value in dict1.items():
+            if key in merged_dict:
+                merged_dict[key].extend(value)
+            else:
+                merged_dict[key] = value
+    for k, v in merged_dict.items():
+        decoupled_list = list(set(v))
+        merged_dict[k] = decoupled_list
+    for i in range(1,6):
+        if i not in merged_dict:
+            merged_dict[i] = []
+    return merged_dict
 
-    for key in [1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]:
-        result_dict.setdefault(key, [])
-    return result_dict
+
 
 home_away_dict = get_home_away_str_dict()
 
