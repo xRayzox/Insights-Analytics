@@ -40,6 +40,14 @@ def load_image_from_url(url):
     image.save(temp_filename)
     return temp_filename
 
+def get_form_color(form):
+    colors = {
+        'W': '#28a745',  # Green for Win
+        'D': '#ffc107',  # Orange for Draw
+        'L': '#dc3545',  # Red for Loss
+    }
+    # Return a list of colors based on the form string
+    return [colors[char] if char in colors else '#FFFFFF' for char in form]
 
 
 # --- Data Loading and Processing ---
@@ -66,6 +74,7 @@ league_df['logo_team'] = league_df['Team'].map(team_logo_mapping)
 
 
 league_df['Rank'] = league_df['Pts'].rank(ascending=False, method='min').astype(int)
+league_df['Form_Color'] = league_df['Form'].apply(get_form_color)
 
 # --- Streamlit App ---
 st.title("Premier League Table")
@@ -169,6 +178,7 @@ col_defs = [
         name="Form",
         group="Points",
         textprops={'ha': "center"},
+        cell_style_fn=lambda idx: {"facecolor": league_df['Form_Color'].iloc[idx]}
         width=1
     ),
     ColumnDefinition(
@@ -236,60 +246,3 @@ st.pyplot(fig)
 
 
 ################################################
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-from matplotlib.colors import LinearSegmentedColormap
-
-from plottable import ColumnDefinition, Table
-from plottable.formatters import decimal_to_percent
-from plottable.plots import bar, percentile_bars, percentile_stars, progress_donut
-
-cmap = LinearSegmentedColormap.from_list(
-    name="bugw", colors=["#ffffff", "#f2fbd2", "#c9ecb4", "#93d3ab", "#35b0ab"], N=256
-)
-
-fig, ax = plt.subplots(figsize=(6, 10))
-
-d = pd.DataFrame(np.random.random((10, 4)), columns=["A", "B", "C", "D"]).round(2)
-
-tab = Table(
-    d,
-    cell_kw={
-        "linewidth": 0,
-        "edgecolor": "k",
-    },
-    textprops={"ha": "center"},
-    column_definitions=[
-        ColumnDefinition("index", textprops={"ha": "left"}),
-        ColumnDefinition("A", plot_fn=percentile_bars, plot_kw={"is_pct": True}),
-        ColumnDefinition(
-            "B", width=1.5, plot_fn=percentile_stars, plot_kw={"is_pct": True}
-        ),
-        ColumnDefinition(
-            "C",
-            plot_fn=progress_donut,
-            plot_kw={
-                "is_pct": True,
-                "formatter": "{:.0%}"
-                },
-            ),
-        ColumnDefinition(
-            "D",
-            width=1.25,
-            plot_fn=bar,
-            plot_kw={
-                "cmap": cmap,
-                "plot_bg_bar": True,
-                "annotate": True,
-                "height": 0.5,
-                "lw": 0.5,
-                "formatter": decimal_to_percent,
-            },
-        ),
-    ],
-)
-
-plt.show()
-
-st.pyplot(fig)
