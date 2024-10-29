@@ -160,7 +160,7 @@ col_defs = [
         name="Pts/Game",
         group="Points",
         textprops={'ha': "center"},
-        width=0.5
+        width=1
     ),
     ColumnDefinition(
         name="Form",
@@ -224,6 +224,5 @@ table = Table(
     column_border_kw={"linewidth": .5, "linestyle": "-"},
     ax=ax
 )
-st.write(ct_gw)
 # --- Display the Table in Streamlit ---
 st.pyplot(fig)
