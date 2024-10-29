@@ -214,7 +214,7 @@ table = Table(
     league_df,
     column_definitions=col_defs,
     columns=['logo_team','Team', 'GP', 'W', 'D', 'L', 'GF', 'GA', 'GD', 'CS', 'Pts', 
-             'Pts/Game','Form', 'GF/Game', 'GA/Game', 'CS/Game', 'GW10', 'GW11', 'GW12'], 
+             'Pts/Game','Form', 'GF/Game', 'GA/Game', 'CS/Game'], 
     index_col="Rank",
     row_dividers=True,
     row_divider_kw={"linewidth": 1, "linestyle": (0, (1, 5))},
