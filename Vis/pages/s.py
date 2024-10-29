@@ -104,7 +104,6 @@ def get_home_away_str_dict():
     return merged_dict
 home_away_dict = get_home_away_str_dict()
 def color_fixtures(val):
-    st.write(val+"sui")
     color_map = {
         1: "#147d1b",
         1.5: "#0ABE4A",
@@ -127,11 +126,9 @@ def color_fixtures(val):
 
 # Modify cmap for Fixture Column Definitions
 def fixture_cmap(val):
-    st.write(val+"sui")
     return color_fixtures(val)  # Directly return the color
 
-aaaa=fixture_cmap("BOU (A)")
-st.write(aaaa)
+
 # --- Streamlit App ---
 st.title("Premier League Table")
 
@@ -301,6 +298,7 @@ for idx in range(len(league_df)):
     elif league_df.iloc[idx]['Rank'] >= 18:  # Assuming relegation zone starts at 18
         table.rows[idx].set_facecolor(row_colors["relegation"])
 
+st.write(table.columns[f'GW{ct_gw}'])
 
 # --- Display the Table in Streamlit ---
 st.pyplot(fig)
