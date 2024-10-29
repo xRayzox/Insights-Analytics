@@ -281,7 +281,6 @@ col_defs = [
     ColumnDefinition(
         name=f"GW{ct_gw+1}",
         group="Fixtures",
-        bgcolor=gw2_colors,
         textprops={'ha': "center"},
         width=1
     ),
@@ -312,6 +311,12 @@ table = Table(
     column_border_kw={"linewidth": .5, "linestyle": "-"},
     ax=ax
 )
+
+for idx in range(len(league_df)):
+    gw_value = league_df.iloc[idx][f'GW{ct_gw+1}']
+    color = color_fixtures(gw_value)
+    table.rows[idx].cells[-2].set_facecolor(color)  # Assuming GW{ct_gw+1} is the second to last cell in the row
+
 for idx in range(len(league_df)):
     if league_df.iloc[idx]['Rank'] <= 4:
         table.rows[idx].set_facecolor(row_colors["top4"])
