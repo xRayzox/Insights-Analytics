@@ -247,6 +247,8 @@ for idx in range(len(league_df)):
         table.rows[idx].set_facecolor(row_colors["relegation"])
 
 for row_idx, row in enumerate(table.rows):
+    st.write(f"Type of row_idx: {type(row_idx)}")
+    st.write(f"DataFrame Index Type: {league_df.index}")  
     form_str = league_df.iloc[row_idx, 'Form']  # Get the form string
     form_colors = form_color(form_str)  # Get the colors
 
