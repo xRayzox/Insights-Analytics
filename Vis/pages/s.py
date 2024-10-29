@@ -61,7 +61,7 @@ league_df['logo_team'] = league_df['Team'].map(team_logo_mapping)
 
 
 league_df['Rank'] = league_df['Pts'].rank(ascending=False, method='min').astype(int)
-league_df = league_df.set_index(['Rank', 'Team']) 
+
 st.write(league_df)
 # --- Streamlit App ---
 st.title("Premier League Table")
@@ -211,7 +211,7 @@ table = Table(
     league_df,
     column_definitions=col_defs,
     columns=['Team', 'logo_team', 'GP', 'W', 'D', 'L', 'GF', 'GA', 'GD', 'CS', 'Pts', 'Form',
-             'Pts/Game', 'GF/Game', 'GA/Game', 'CS/Game', 'GW10', 'GW11', 'GW12', 'Rank'], 
+             'Pts/Game', 'GF/Game', 'GA/Game', 'CS/Game', 'GW10', 'GW11', 'GW12'], 
     index_col="Rank",
     row_dividers=True,
     row_divider_kw={"linewidth": 1, "linestyle": (0, (1, 5))},
