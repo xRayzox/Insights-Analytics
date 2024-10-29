@@ -300,14 +300,17 @@ for idx in range(len(league_df)):
 cols_to_color = [f"GW{ct_gw}", f"GW{ct_gw + 1}", f"GW{ct_gw + 2}"]
 
 # Color the specific columns
+# Color the specific columns
 for col in cols_to_color:
     if col in league_df.columns:
         col_index = league_df.columns.get_loc(col)  # Get the index of the column
         for i in range(len(league_df)):
             val = league_df.iloc[i][col]  # Get the value from the dataframe
             color = color_fixtures(val)  # Get the background color
-            # Access the specific cell using get_celld()
-            table[(i + 1, col_index)].set_facecolor(color)  
+            
+            # Access the specific cell using get_celld() method
+            cell = table.get_celld()[(i + 1, col_index)]
+            cell.set_facecolor(color)  # Set the background color
 
 # --- Display the Table in Streamlit ---
 st.pyplot(fig)
