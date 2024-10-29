@@ -191,16 +191,23 @@ table = Table(
     col_label_divider_kw={"linewidth": 1, "linestyle": "-"},
     column_border_kw={"linewidth": .5, "linestyle": "-"},
     ax=ax,
-    cell_textprops={'fontsize': 12, 'color': text_color},
+     # Use cell_textprops if available, otherwise apply styling later
+    cell_textprops={'fontsize': 12, 'color': text_color} if hasattr(Table, 'cell_textprops') else None, 
     cell_linewidth=0.8,
 )
+
+# Apply cell styling if cell_textprops is not available in your plottable version
+if not hasattr(Table, 'cell_textprops'):
+    for (row, col), cell in table.table.get_celld().items():
+        cell.set_text_props(fontsize=12, color=text_color)
+
+# Color the fixture cells
 for i, col in enumerate([f'GW{ct_gw}', f'GW{ct_gw + 1}', f'GW{ct_gw + 2}']):
     for j in range(len(league_df)):
         color = color_fixtures(league_df[col].iloc[j])
         if color != 'none':
-            ax.table.cell[j + 1, i + len(col_defs) - 3].set_facecolor(color)  # Adjust index for column position
+            table.table.get_celld()[(j + 1, i + len(col_defs) - 3)].set_facecolor(color)
 
 plt.axis('tight')
 plt.axis('off')
-# --- Display the Table in Streamlit ---
 st.pyplot(fig)
