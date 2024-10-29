@@ -307,5 +307,10 @@ first_team_cell = table.rows[0].cells[team_col_idx].content
 # Display or use the content
 st.write("First team:", first_team_cell)
 
+table.rows[0].cells[team_col_idx].set_facecolor("#f0f0f0")
+
+# Render the table or update the display.
+st.write(table)
+
 # --- Display the Table in Streamlit ---
 st.pyplot(fig)
