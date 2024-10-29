@@ -13,7 +13,6 @@ from plottable.cmap import normed_cmap
 from plottable.formatters import decimal_to_percent
 from plottable.plots import circled_image
 from plottable.plots import image
-
 import sys
 import os
 pd.set_option('future.no_silent_downcasting', True)
@@ -76,75 +75,7 @@ league_df['logo_team'] = league_df['Team'].map(team_logo_mapping)
 
 league_df['Rank'] = league_df['Pts'].rank(ascending=False, method='min').astype(int)
 
-#############################################################
-def get_home_away_str_dict():
-    new_fdr_df.columns = new_fixt_cols
-    result_dict = {}
-    for col in new_fdr_df.columns:
-        values = list(new_fdr_df[col])
-        max_length = new_fixt_df[col].str.len().max()
-        if max_length > 7:
-            new_fixt_df.loc[new_fixt_df[col].str.len() <= 7, col] = new_fixt_df[col].str.pad(width=max_length+9, side='both', fillchar=' ')
-        strings = list(new_fixt_df[col])
-        value_dict = {}
-        for value, string in zip(values, strings):
-            if value not in value_dict:
-                value_dict[value] = []
-            value_dict[value].append(string)
-        result_dict[col] = value_dict
-    
-    merged_dict = {}
-    merged_dict[1.5] = []
-    merged_dict[2.5] = []
-    merged_dict[3.5] = []
-    merged_dict[4.5] = []
-    for k, dict1 in result_dict.items():
-        for key, value in dict1.items():
-            if key in merged_dict:
-                merged_dict[key].extend(value)
-            else:
-                merged_dict[key] = value
-    for k, v in merged_dict.items():
-        decoupled_list = list(set(v))
-        merged_dict[k] = decoupled_list
-    for i in range(1,6):
-        if i not in merged_dict:
-            merged_dict[i] = []
-    return merged_dict
 
-
-home_away_dict = get_home_away_str_dict()
-
-def color_fixtures(val):
-    bg_color = 'background-color: '
-    font_color = 'color: '
-    if val in home_away_dict[1]:
-        bg_color += '#147d1b'
-    if val in home_away_dict[1.5]:
-        bg_color += '#0ABE4A'
-    elif val in home_away_dict[2]:
-        bg_color += '#00ff78'
-    elif val in home_away_dict[2.5]:
-        bg_color += "#caf4bd"
-    elif val in home_away_dict[3]:
-        bg_color += '#eceae6'
-    elif val in home_away_dict[3.5]:
-        bg_color += "#fa8072"
-    elif val in home_away_dict[4]:
-        bg_color += '#ff0057'
-        font_color += 'white'
-    elif val in home_away_dict[4.5]:
-        bg_color += '#C9054F'
-        font_color += 'white'
-    elif val in home_away_dict[5]:
-        bg_color += '#920947'
-        font_color += 'white'
-    else:
-        bg_color += ''
-    style = bg_color + '; ' + font_color
-    return style
-
-###############################################################
 # --- Streamlit App ---
 st.title("Premier League Table")
 
@@ -307,8 +238,6 @@ table = Table(
     column_border_kw={"linewidth": .5, "linestyle": "-"},
     ax=ax
 )
-
-
 for idx in range(len(league_df)):
     if league_df.iloc[idx]['Rank'] <= 4:
         table.rows[idx].set_facecolor(row_colors["top4"])
@@ -317,10 +246,6 @@ for idx in range(len(league_df)):
     elif league_df.iloc[idx]['Rank'] >= 18:  # Assuming relegation zone starts at 18
         table.rows[idx].set_facecolor(row_colors["relegation"])
 
-for idx in range(len(league_df)):
-    gw_value = league_df.iloc[idx][f'GW{ct_gw+1}']
-    color = color_fixtures(gw_value)
-    table.rows[idx].cells[-2].set_facecolor(color)  # Assuming GW{ct_gw+1} is the second to last cell in the row
 
 
 # --- Display the Table in Streamlit ---
