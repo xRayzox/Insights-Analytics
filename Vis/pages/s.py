@@ -4,6 +4,8 @@ import pandas as pd
 import urllib.request
 import os
 import sys
+from PIL import Image  # Importing Image from PIL
+from bokeh.models import ColumnDataSource, TableColumn, DataTable, HTMLTemplateFormatter
 
 # Adjust the path to include the FPL directory (assuming it's one level up)
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'FPL')))
@@ -92,19 +94,33 @@ columns = ['Rank', 'Logo', 'Team', 'GP', 'W', 'D', 'L', 'GF', 'GA', 'GD', 'CS', 
            'Pts/Game', 'Form', 'GF/Game', 'GA/Game', 'CS/Game', f'GW{ct_gw}', f'GW{ct_gw+1}', f'GW{ct_gw+2}']
 
 # Create a Bokeh DataTable
-from bokeh.models import ColumnDataSource, TableColumn
-from bokeh.io import curdoc
-from bokeh.layouts import column
-
 source = ColumnDataSource(data=dict(
-    columns=columns,
-    data=table_data
+    Rank=[row[0] for row in table_data],
+    Logo=[row[1] for row in table_data],
+    Team=[row[2] for row in table_data],
+    GP=[row[3] for row in table_data],
+    W=[row[4] for row in table_data],
+    D=[row[5] for row in table_data],
+    L=[row[6] for row in table_data],
+    GF=[row[7] for row in table_data],
+    GA=[row[8] for row in table_data],
+    GD=[row[9] for row in table_data],
+    CS=[row[10] for row in table_data],
+    Pts=[row[11] for row in table_data],
+    Pts_Game=[row[12] for row in table_data],
+    Form=[row[13] for row in table_data],
+    GF_Game=[row[14] for row in table_data],
+    GA_Game=[row[15] for row in table_data],
+    CS_Game=[row[16] for row in table_data],
+    GW_Current=[row[17] for row in table_data],
+    GW_Next1=[row[18] for row in table_data],
+    GW_Next2=[row[19] for row in table_data],
 ))
 
 # Define the table columns
 table_columns = [
     TableColumn(field='Rank', title='Rank'),
-    TableColumn(field='Logo', title='Logo', formatter=ImageFormatter()),
+    TableColumn(field='Logo', title='Logo', formatter=HTMLTemplateFormatter()),
     TableColumn(field='Team', title='Team'),
     TableColumn(field='GP', title='GP'),
     TableColumn(field='W', title='W'),
@@ -115,19 +131,17 @@ table_columns = [
     TableColumn(field='GD', title='GD'),
     TableColumn(field='CS', title='CS'),
     TableColumn(field='Pts', title='Pts'),
-    TableColumn(field='Pts/Game', title='Pts/Game'),
+    TableColumn(field='Pts_Game', title='Pts/Game'),
     TableColumn(field='Form', title='Form'),
-    TableColumn(field='GF/Game', title='GF/Game'),
-    TableColumn(field='GA/Game', title='GA/Game'),
-    TableColumn(field='CS/Game', title='CS/Game'),
-    TableColumn(field=f'GW{ct_gw}', title=f'GW{ct_gw}'),
-    TableColumn(field=f'GW{ct_gw + 1}', title=f'GW{ct_gw + 1}'),
-    TableColumn(field=f'GW{ct_gw + 2}', title=f'GW{ct_gw + 2}'),
+    TableColumn(field='GF_Game', title='GF/Game'),
+    TableColumn(field='GA_Game', title='GA/Game'),
+    TableColumn(field='CS_Game', title='CS/Game'),
+    TableColumn(field='GW_Current', title=f'GW{ct_gw}'),
+    TableColumn(field='GW_Next1', title=f'GW{ct_gw+1}'),
+    TableColumn(field='GW_Next2', title=f'GW{ct_gw+2}'),
 ]
 
 # Create a Bokeh DataTable
-from bokeh.models import DataTable
-
 data_table = DataTable(source=source, columns=table_columns, width=1000, height=800)
 
 # --- Display the Table in Streamlit ---
