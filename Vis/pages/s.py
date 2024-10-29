@@ -18,7 +18,7 @@ import os
 pd.set_option('future.no_silent_downcasting', True)
 
 # Adjust the path to include the FPL directory (assuming it's one level up)
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'FPL')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'FPL')))
 
 # Now you can import your modules
 from fpl_api_collection import (
