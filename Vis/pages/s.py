@@ -76,7 +76,78 @@ league_df['logo_team'] = league_df['Team'].map(team_logo_mapping)
 
 league_df['Rank'] = league_df['Pts'].rank(ascending=False, method='min').astype(int)
 
+#############################################################
+def get_home_away_str_dict():
+    new_fdr_df.columns = new_fixt_cols
+    result_dict = {}
+    for col in new_fdr_df.columns:
+        values = list(new_fdr_df[col])
+        max_length = new_fixt_df[col].str.len().max()
+        if max_length > 7:
+            new_fixt_df.loc[new_fixt_df[col].str.len() <= 7, col] = new_fixt_df[col].str.pad(width=max_length+9, side='both', fillchar=' ')
+        strings = list(new_fixt_df[col])
+        value_dict = {}
+        for value, string in zip(values, strings):
+            if value not in value_dict:
+                value_dict[value] = []
+            value_dict[value].append(string)
+        result_dict[col] = value_dict
+    
+    merged_dict = {}
+    merged_dict[1.5] = []
+    merged_dict[2.5] = []
+    merged_dict[3.5] = []
+    merged_dict[4.5] = []
+    for k, dict1 in result_dict.items():
+        for key, value in dict1.items():
+            if key in merged_dict:
+                merged_dict[key].extend(value)
+            else:
+                merged_dict[key] = value
+    for k, v in merged_dict.items():
+        decoupled_list = list(set(v))
+        merged_dict[k] = decoupled_list
+    for i in range(1,6):
+        if i not in merged_dict:
+            merged_dict[i] = []
+    return merged_dict
 
+
+home_away_dict = get_home_away_str_dict()
+
+def color_fixtures(val):
+    bg_color = 'background-color: '
+    font_color = 'color: '
+    if val in home_away_dict[1]:
+        bg_color += '#147d1b'
+    if val in home_away_dict[1.5]:
+        bg_color += '#0ABE4A'
+    elif val in home_away_dict[2]:
+        bg_color += '#00ff78'
+    elif val in home_away_dict[2.5]:
+        bg_color += "#caf4bd"
+    elif val in home_away_dict[3]:
+        bg_color += '#eceae6'
+    elif val in home_away_dict[3.5]:
+        bg_color += "#fa8072"
+    elif val in home_away_dict[4]:
+        bg_color += '#ff0057'
+        font_color += 'white'
+    elif val in home_away_dict[4.5]:
+        bg_color += '#C9054F'
+        font_color += 'white'
+    elif val in home_away_dict[5]:
+        bg_color += '#920947'
+        font_color += 'white'
+    else:
+        bg_color += ''
+    style = bg_color + '; ' + font_color
+    return style
+
+gw1_colors = league_df[f'GW{ct_gw}'].apply(color_fixtures)
+gw2_colors = league_df[f'GW{ct_gw+1}'].apply(color_fixtures)
+gw3_colors = league_df[f'GW{ct_gw+2}'].apply(color_fixtures)
+###############################################################
 # --- Streamlit App ---
 st.title("Premier League Table")
 
@@ -210,7 +281,7 @@ col_defs = [
     ColumnDefinition(
         name=f"GW{ct_gw+1}",
         group="Fixtures",
-        cmap=normed_cmap(league_df['CS/Game'], cmap=matplotlib.cm.PiYG, num_stds=2),
+        bgcolor=gw2_colors,
         textprops={'ha': "center"},
         width=1
     ),
@@ -240,7 +311,7 @@ table = Table(
     col_label_divider_kw={"linewidth": 1, "linestyle": "-"},
     column_border_kw={"linewidth": .5, "linestyle": "-"},
     ax=ax
-).autoset_fontcolors(colnames=["CS/Game"])
+)
 for idx in range(len(league_df)):
     if league_df.iloc[idx]['Rank'] <= 4:
         table.rows[idx].set_facecolor(row_colors["top4"])
