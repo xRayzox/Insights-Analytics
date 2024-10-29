@@ -211,7 +211,6 @@ col_defs = [
     ColumnDefinition(
         name=f"GW{ct_gw}",
         group="Fixtures",
-        cell_format=lambda val, row: {'background-color': get_fixture_color(row[f'GW{ct_gw}'])},
         textprops={'ha': "center"},
         width=1
     ),
@@ -258,7 +257,7 @@ for idx in range(len(league_df)):
     elif league_df.iloc[idx]['Rank'] >= 18:  # Assuming relegation zone starts at 18
         table.rows[idx].set_facecolor(row_colors["relegation"])
 
-
+table.columns[f"GW{ct_gw}"].set_facecolor("#f0f0f0")
 
 # --- Display the Table in Streamlit ---
 st.pyplot(fig)
