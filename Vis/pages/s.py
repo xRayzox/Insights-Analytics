@@ -227,7 +227,69 @@ table = Table(
     col_label_divider_kw={"linewidth": 1, "linestyle": "-"},
     column_border_kw={"linewidth": .5, "linestyle": "-"},
     ax=ax
-).autoset_fontcolors(colnames=["GP", "W"])
+)
 
 # --- Display the Table in Streamlit ---
+st.pyplot(fig)
+
+
+
+
+################################################
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from matplotlib.colors import LinearSegmentedColormap
+
+from plottable import ColumnDefinition, Table
+from plottable.formatters import decimal_to_percent
+from plottable.plots import bar, percentile_bars, percentile_stars, progress_donut
+
+cmap = LinearSegmentedColormap.from_list(
+    name="bugw", colors=["#ffffff", "#f2fbd2", "#c9ecb4", "#93d3ab", "#35b0ab"], N=256
+)
+
+fig, ax = plt.subplots(figsize=(6, 10))
+
+d = pd.DataFrame(np.random.random((10, 4)), columns=["A", "B", "C", "D"]).round(2)
+
+tab = Table(
+    d,
+    cell_kw={
+        "linewidth": 0,
+        "edgecolor": "k",
+    },
+    textprops={"ha": "center"},
+    column_definitions=[
+        ColumnDefinition("index", textprops={"ha": "left"}),
+        ColumnDefinition("A", plot_fn=percentile_bars, plot_kw={"is_pct": True}),
+        ColumnDefinition(
+            "B", width=1.5, plot_fn=percentile_stars, plot_kw={"is_pct": True}
+        ),
+        ColumnDefinition(
+            "C",
+            plot_fn=progress_donut,
+            plot_kw={
+                "is_pct": True,
+                "formatter": "{:.0%}"
+                },
+            ),
+        ColumnDefinition(
+            "D",
+            width=1.25,
+            plot_fn=bar,
+            plot_kw={
+                "cmap": cmap,
+                "plot_bg_bar": True,
+                "annotate": True,
+                "height": 0.5,
+                "lw": 0.5,
+                "formatter": decimal_to_percent,
+            },
+        ),
+    ],
+)
+
+plt.show()
+
 st.pyplot(fig)
