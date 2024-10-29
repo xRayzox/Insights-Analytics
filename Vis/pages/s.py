@@ -210,6 +210,7 @@ col_defs = [
     ColumnDefinition(
         name=f"GW{ct_gw+1}",
         group="Fixtures",
+        cmap=normed_cmap(league_df['CS/Game'], cmap=matplotlib.cm.PiYG, num_stds=2),
         textprops={'ha': "center"},
         width=1
     ),
@@ -239,7 +240,7 @@ table = Table(
     col_label_divider_kw={"linewidth": 1, "linestyle": "-"},
     column_border_kw={"linewidth": .5, "linestyle": "-"},
     ax=ax
-)
+).autoset_fontcolors(colnames=["CS/Game"])
 for idx in range(len(league_df)):
     if league_df.iloc[idx]['Rank'] <= 4:
         table.rows[idx].set_facecolor(row_colors["top4"])
