@@ -257,7 +257,7 @@ for gw in range(ct_gw, ct_gw + 3):
             group="Fixtures",
             textprops={'ha': "center"},
             width=1,
-            formatter=lambda val, row: (val, {'backgroundcolor': color_fixtures(val)}) 
+            formatter=lambda val: (val, {'backgroundcolor': color_fixtures(val)})  # Correct formatter
         )
     )
 
