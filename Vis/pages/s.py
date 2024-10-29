@@ -130,6 +130,8 @@ def fixture_cmap(val):
     st.write(val+"sui")
     return color_fixtures(val)  # Directly return the color
 
+aaaa=fixture_cmap("BOU (A)")
+st.write(aaaa)
 # --- Streamlit App ---
 st.title("Premier League Table")
 
