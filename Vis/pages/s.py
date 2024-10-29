@@ -303,15 +303,9 @@ for gw in range(ct_gw, ct_gw + 3):
         cell_value = league_df[f"GW{gw}"].iloc[row_index]
         cell_color = color_fixtures(cell_value)
 
-        # Find column index manually
-        col_index = None
-        for i, col_def in enumerate(table.column_definitions):
-            if col_def.name == f"GW{gw}":
-                col_index = i
-                break
-
-        if col_index is not None:
-            table.cells[row_index, col_index].set_facecolor(cell_color)
+        # Get column index directly from table.columns
+        col_index = table.columns.index(f"GW{gw}")  
+        table.cells[row_index, col_index].set_facecolor(cell_color)
 
 # --- Display the Table in Streamlit ---
 st.pyplot(fig)
