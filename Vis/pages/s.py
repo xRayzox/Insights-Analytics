@@ -213,7 +213,6 @@ col_defs = [
         name="CS/Game",
         group="ByGame",
         textprops={'ha': "center"},
-        cmap=normed_cmap(league_df['CS/Game'], cmap=matplotlib.cm.PiYG, num_stds=2),
         width=1
     ),
     ColumnDefinition(
@@ -227,7 +226,7 @@ col_defs = [
         group="Fixtures",
         textprops={'ha': "center"},
         width=1,
-        cell_format=lambda val, row: {'background-color': get_fixture_color(row[f'GW{ct_gw+1}_FDR'])}, 
+        cell_format=lambda val, row: {'background-color': get_fixture_color(row[f'GW{ct_gw+1}'])}, 
     ),
     ColumnDefinition(
         name=f"GW{ct_gw+2}",
