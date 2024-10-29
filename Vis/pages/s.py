@@ -213,7 +213,7 @@ ax.set_facecolor(bg_color)
 table = Table(
     league_df,
     column_definitions=col_defs,
-    columns=['Team', 'logo_team', 'GP', 'W', 'D', 'L', 'GF', 'GA', 'GD', 'CS', 'Pts', 'Form',
+    columns=['logo_team','Team', 'GP', 'W', 'D', 'L', 'GF', 'GA', 'GD', 'CS', 'Pts', 'Form',
              'Pts/Game', 'GF/Game', 'GA/Game', 'CS/Game', 'GW10', 'GW11', 'GW12'], 
     index_col="Rank",
     row_dividers=True,
