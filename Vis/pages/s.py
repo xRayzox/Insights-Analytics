@@ -9,33 +9,23 @@ from PIL import Image
 from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.patches as mpatches
 from plottable import ColumnDefinition, Table
-from plottable.cmap import normed_cmap
-from plottable.formatters import decimal_to_percent
-from plottable.plots import circled_image
-from plottable.plots import image
 import sys
 import os
-pd.set_option('future.no_silent_downcasting', True)
 
-# Adjust the path to include the FPL directory (assuming it's one level up)
+# Adjust the path to include the FPL directory
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'FPL')))
 
-# Now you can import your modules
 from fpl_api_collection import (
     get_league_table, get_current_gw, get_fixt_dfs, get_bootstrap_data
 )
-from fpl_utils import (
-    define_sidebar
-)
 
 # --- Streamlit Configuration ---
-st.set_page_config(layout="wide")  # Use wide layout for better table visualization
+st.set_page_config(layout="wide")
 
 # --- Functions ---
 def load_image_from_url(url):
     with urllib.request.urlopen(url) as response:
         image = Image.open(response).convert("RGBA")
-    # Save the image to a temporary file
     temp_filename = f"temp_{os.path.basename(url)}"
     image.save(temp_filename)
     return temp_filename
@@ -46,41 +36,19 @@ def form_color(form):
         'D': '#ffc107',  # Orange for Draw
         'L': '#dc3545',  # Red for Loss
     }
-    # Create a list of colors for the form string
     return [color_mapping[char] for char in form if char in color_mapping]
 
-
-# --- Data Loading and Processing ---
-league_df = get_league_table()
-team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
-ct_gw = get_current_gw()
-new_fixt_df = team_fixt_df.loc[:, ct_gw:(ct_gw+2)]
-new_fixt_cols = ['GW' + str(col) for col in new_fixt_df.columns.tolist()]
-new_fixt_df.columns = new_fixt_cols
-new_fdr_df = team_fdr_df.loc[:, ct_gw:(ct_gw+2)]
-league_df = league_df.join(new_fixt_df)
-float_cols = league_df.select_dtypes(include='float64').columns.values
-league_df = league_df.reset_index()
-league_df.rename(columns={'team': 'Team'}, inplace=True)
-league_df.index += 1
-league_df['GD'] = league_df['GD'].map('{:+}'.format)
-teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
-teams_df['logo_url'] = "https://resources.premierleague.com/premierleague/badges/70/t" + teams_df['code'].astype(str) + "@x2.png"
-teams_df['logo_image'] = teams_df['logo_url'].apply(load_image_from_url)
-team_logo_mapping = pd.Series(teams_df['logo_image'].values, index=teams_df['short_name']).to_dict()
-# Map each team's logo image to the league DataFrame
-league_df['logo_team'] = league_df['Team'].map(team_logo_mapping)
-# Calculate and assign rankings in the league DataFramae
-league_df['Rank'] = league_df['Pts'].rank(ascending=False, method='min').astype(int)
-
 def get_home_away_str_dict():
+    new_fdr_df = team_fdr_df.copy()  # Use the existing fixture DataFrame
     new_fdr_df.columns = new_fixt_cols
     result_dict = {}
+    
     for col in new_fdr_df.columns:
         values = list(new_fdr_df[col])
         max_length = new_fixt_df[col].str.len().max()
         if max_length > 7:
             new_fixt_df.loc[new_fixt_df[col].str.len() <= 7, col] = new_fixt_df[col].str.pad(width=max_length + 9, side='both', fillchar=' ')
+        
         strings = list(new_fixt_df[col])
         value_dict = {}
         for value, string in zip(values, strings):
@@ -120,13 +88,30 @@ def color_fixtures(val):
             return color_map[key]
     return "#ffffff"  # Default color if no match
 
+# --- Data Loading and Processing ---
+league_df = get_league_table()
+team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
+ct_gw = get_current_gw()
+new_fixt_df = team_fixt_df.loc[:, ct_gw:(ct_gw+2)]
+new_fixt_cols = ['GW' + str(col) for col in new_fixt_df.columns.tolist()]
+new_fixt_df.columns = new_fixt_cols
+new_fdr_df = team_fdr_df.loc[:, ct_gw:(ct_gw+2)]
+league_df = league_df.join(new_fixt_df)
+float_cols = league_df.select_dtypes(include='float64').columns.values
+league_df = league_df.reset_index()
+league_df.rename(columns={'team': 'Team'}, inplace=True)
+league_df.index += 1
+league_df['GD'] = league_df['GD'].map('{:+}'.format)
 
-# Assuming league_df is defined and populated.
+teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
+teams_df['logo_url'] = "https://resources.premierleague.com/premierleague/badges/70/t" + teams_df['code'].astype(str) + "@x2.png"
+teams_df['logo_image'] = teams_df['logo_url'].apply(load_image_from_url)
+team_logo_mapping = pd.Series(teams_df['logo_image'].values, index=teams_df['short_name']).to_dict()
+league_df['logo_team'] = league_df['Team'].map(team_logo_mapping)
+league_df['Rank'] = league_df['Pts'].rank(ascending=False, method='min').astype(int)
+
+# Get the home/away fixture strings
 home_away_dict = get_home_away_str_dict()
-
-# Modify cmap for Fixture Column Definitions
-def fixture_cmap(val):
-    return color_fixtures(val)  # Directly return the color
 
 # --- Streamlit App ---
 st.title("Premier League Table")
@@ -167,14 +152,12 @@ col_defs = [
     ColumnDefinition(
         name="GP",
         group="Matches Played",
-
         textprops={'ha': "center"},
         width=0.5
     ),
     ColumnDefinition(
         name="W",
         group="Matches Played",
-
         textprops={'ha': "center"},
         width=0.5
     ),
@@ -250,7 +233,6 @@ col_defs = [
         textprops={'ha': "center"},
         width=1
     ),
-    
 ]
 
 # Modify Fixture Column Definitions
@@ -261,42 +243,24 @@ for gw in range(ct_gw, ct_gw + 3):
             group="Fixtures",
             textprops={'ha': "center"},
             width=1,
-            cmap=lambda val: normed_cmap(league_df[f'GW{gw}'], cmap=fixture_cmap, num_stds=2)(val)
+            cmap=lambda val: fixture_cmap(val)  # Use fixture_cmap directly
          )
     )
 
-
 # --- Plottable Table ---
-fig, ax = plt.subplots(figsize=(20, 20))  # Adjust figsize for Streamlit
+fig, ax = plt.subplots(figsize=(20, 20))
 fig.set_facecolor(bg_color)
 ax.set_facecolor(bg_color)
-
-
 
 table = Table(
     league_df,
     column_definitions=col_defs,
-    columns=['logo_team','Team', 'GP', 'W', 'D', 'L', 'GF', 'GA', 'GD', 'CS', 'Pts', 
-             'Pts/Game','Form', 'GF/Game', 'GA/Game', 'CS/Game', f'GW{ct_gw}', f'GW{ct_gw+1}', f'GW{ct_gw+2}'], 
-    index_col="Rank",
-    row_dividers=True,
-    row_divider_kw={"linewidth": 1, "linestyle": (0, (1, 5))},
-    footer_divider=True,
-    textprops={"fontsize": 14},  # Adjust fontsize for Streamlit
-    col_label_divider_kw={"linewidth": 1, "linestyle": "-"},
-    column_border_kw={"linewidth": .5, "linestyle": "-"},
-    ax=ax
+    columns=['logo_team', 'Team', 'GP', 'W', 'D', 'L', 'GF', 'GA', 'GD', 'CS', 'Pts', 
+             'Pts/Game', 'Form', 'GF/Game', 'GA/Game', 'CS/Game'] + [f"GW{gw}" for gw in range(ct_gw, ct_gw + 3)],
+    row_colors=row_colors,
+    ax=ax,
+    cellprops={'edgecolor': 'black'}
 )
 
-
-for idx in range(len(league_df)):
-    if league_df.iloc[idx]['Rank'] <= 4:
-        table.rows[idx].set_facecolor(row_colors["top4"])
-    elif league_df.iloc[idx]['Rank'] <= 6:
-        table.rows[idx].set_facecolor(row_colors["top6"])
-    elif league_df.iloc[idx]['Rank'] >= 18:  # Assuming relegation zone starts at 18
-        table.rows[idx].set_facecolor(row_colors["relegation"])
-
-
-# --- Display the Table in Streamlit ---
+# Render the table
 st.pyplot(fig)
