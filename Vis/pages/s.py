@@ -238,7 +238,14 @@ table = Table(
     column_border_kw={"linewidth": .5, "linestyle": "-"},
     ax=ax
 )
+for idx in [0, 1, 2, 3]:
+    table.rows[idx].set_facecolor(row_colors["top4"])
 
+for idx in [4, 5]:
+    table.rows[idx].set_facecolor(row_colors["top6"])
+
+for idx in [17, 18, 19]:
+    table.rows[idx].set_facecolor(row_colors["relegation"])
 
 # Draw form indicators with circular backgrounds
 for index, form in enumerate(table.columns['Form']):
