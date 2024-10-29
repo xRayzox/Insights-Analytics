@@ -268,35 +268,40 @@ for idx in range(len(league_df)):
     elif league_df.iloc[idx]['Rank'] >= 18:  # Assuming relegation zone starts at 18
         table.rows[idx].set_facecolor(row_colors["relegation"])
 
+
+
 for row_idx, row in enumerate(table.rows):
     st.write(f"Type of row_idx: {type(row_idx)}")
     st.write(f"DataFrame Index Type: {league_df.index}")  
     form_str = league_df.iloc[row_idx]['Form']   # Get the form string
-    st.write(form_str)
-    form_colors = form_color(form_str)  # Get the colors
+    st.write(form_str)  # Output the form string for debugging
+    form_colors = form_color(form_str)  # Get the colors for the string
 
-    # Style each character in the "Form" cell
+    # Assuming each cell should correspond with a character in form_str
     for col_idx, char in enumerate(form_str):
-        cell = row.cells[row_idx]['Form']  # Access the cell
-        text = cell.texts[0]  # Get the text object
+        cell = row.cells[0]['Form']  # Given it's the first cell or adjust accordingly
+        
+        if len(cell.texts) > 0:
+            text = cell.texts[0]  # Get the text object
 
-        # Create a rounded rectangle patch for each character
-        rect = mpatches.FancyBboxPatch(
-            (text.get_position()[0] + col_idx * 0.15, text.get_position()[1] - 0.05), # Adjust positioning
-            0.13,  # Width of the rectangle
-            0.1,  # Height of the rectangle
-            boxstyle="round,pad=0.02",  # Rounded corners
-            facecolor=form_colors[col_idx],  # Apply the color 
-            edgecolor="none"
-        )
-        ax.add_patch(rect)  # Add the patch to the axes
+            # Creating a rounded rectangle around each character
+            rect = mpatches.FancyBboxPatch(
+                (text.get_position()[0] + col_idx * 0.15, text.get_position()[1] - 0.05),  # Positioning
+                0.13,  # Width of the rectangle
+                0.1,   # Height of the rectangle
+                boxstyle="round,pad=0.02",  # Rounded corners
+                facecolor=form_colors[col_idx],  # Color from form_colors
+                edgecolor="none"  # No edge color
+            )
+            ax.add_patch(rect)  # Add the patch to the axes
 
-        # Style the text
-        text.set_text(char)  # Set the text
-        text.set_fontsize(10)  # Adjust fontsize as needed
-        text.set_color("white")
-        text.set_va('center')  # Vertical alignment
-        text.set_ha('center')  # Horizontal alignment 
+            # Update text attributes
+            text.set_text(char)  # Set the actual character
+            text.set_fontsize(10)  # Font size for visibility
+            text.set_color("white")  # Color of text
+            text.set_va('center')  # Vertical alignment
+            text.set_ha('center')  # Horizontal alignment
+
 
 
 
