@@ -104,6 +104,7 @@ def get_home_away_str_dict():
     return merged_dict
 home_away_dict = get_home_away_str_dict()
 def color_fixtures(val):
+    st.write(val+"sui")
     color_map = {
         1: "#147d1b",
         1.5: "#0ABE4A",
