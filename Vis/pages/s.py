@@ -10,7 +10,7 @@ import matplotlib.patches as mpatches
 import sys
 import os
 import reactable as rt
-from reactable.utils import preprocess_df
+
 
 pd.set_option('future.no_silent_downcasting', True)
 
@@ -68,7 +68,7 @@ league_df['logo_team'] = league_df['Team'].map(team_logo_mapping)
 league_df['Rank'] = league_df['Pts'].rank(ascending=False, method='min').astype(int)
 
 # --- Preprocess DataFrame for reactable ---
-league_df = preprocess_df(league_df)
+
 
 # --- Streamlit App ---
 st.title("Premier League Table")
