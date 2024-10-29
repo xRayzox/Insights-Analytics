@@ -13,3 +13,4 @@ aiohttp
 dask
 highlight_text
 plottable
+reactable

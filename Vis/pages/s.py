@@ -1,6 +1,5 @@
 import streamlit as st
 from pathlib import Path
-import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -8,17 +7,15 @@ import urllib.request
 from PIL import Image
 from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.patches as mpatches
-from plottable import ColumnDefinition, Table
-from plottable.cmap import normed_cmap
-from plottable.formatters import decimal_to_percent
-from plottable.plots import circled_image
-from plottable.plots import image
 import sys
 import os
+import reactable as rt
+from reactable.utils import preprocess_df
+
 pd.set_option('future.no_silent_downcasting', True)
 
-# Adjust the path to include the FPL directory (assuming it's one level up)
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'FPL')))
+# Adjust the path to include the FPL directory 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'FPL')))
 
 # Now you can import your modules
 from fpl_api_collection import (
@@ -29,48 +26,25 @@ from fpl_utils import (
 )
 
 # --- Streamlit Configuration ---
-st.set_page_config(layout="wide")  # Use wide layout for better table visualization
+st.set_page_config(layout="wide")
 
 # --- Functions ---
 def load_image_from_url(url):
     with urllib.request.urlopen(url) as response:
         image = Image.open(response).convert("RGBA")
-    # Save the image to a temporary file
-    temp_filename = f"temp_{os.path.basename(url)}"
-    image.save(temp_filename)
-    return temp_filename
+    return image
 
-def form_color(form):
+def style_form_string(value):
     color_mapping = {
-        'W': '#28a745',  # Green for Win
-        'D': '#ffc107',  # Orange for Draw
-        'L': '#dc3545',  # Red for Loss
+        'W': '#28a745',
+        'D': '#ffc107',
+        'L': '#dc3545',
     }
-    # Create a list of colors for the form string
-    return [color_mapping[char] for char in form if char in color_mapping]
-def plot_form_string(values, x, y, width, height, **kwargs):
-    ax = plt.gca()
-    for i, char in enumerate(values[0]):  # Assuming 'values' is a list of strings
-        rect = mpatches.FancyBboxPatch(
-            (x + i * 0.15, y - 0.05),  # Adjust positioning
-            0.13,  # Width
-            0.1,  # Height
-            boxstyle="round,pad=0.02", 
-            facecolor=form_color(char)[0],  # Get the color for the character
-            edgecolor="none"
-        )
-        ax.add_patch(rect)
-
-        # Add text (centered within the rectangle)
-        ax.text(
-            x + i * 0.15 + 0.065,  # Adjust text position
-            y - 0.05, 
-            char,
-            fontsize=10, 
-            color="white",
-            va='center', 
-            ha='center'
-        )
+    styled_chars = [
+        f"<span style='padding: 2px; border-radius: 3px; background-color: {color_mapping.get(char, '#FFFFFF')}'>{char}</span>" 
+        for char in value
+    ]
+    return ''.join(styled_chars)
 
 # --- Data Loading and Processing ---
 league_df = get_league_table()
@@ -90,231 +64,69 @@ teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
 teams_df['logo_url'] = "https://resources.premierleague.com/premierleague/badges/70/t" + teams_df['code'].astype(str) + "@x2.png"
 teams_df['logo_image'] = teams_df['logo_url'].apply(load_image_from_url)
 team_logo_mapping = pd.Series(teams_df['logo_image'].values, index=teams_df['short_name']).to_dict()
-# Map each team's logo image to the league DataFrame
 league_df['logo_team'] = league_df['Team'].map(team_logo_mapping)
-# Calculate and assign rankings in the league DataFramae
-
-
 league_df['Rank'] = league_df['Pts'].rank(ascending=False, method='min').astype(int)
 
+# --- Preprocess DataFrame for reactable ---
+league_df = preprocess_df(league_df)
 
 # --- Streamlit App ---
 st.title("Premier League Table")
 
-# --- Table Styling ---
-bg_color = "#FFFFFF"
-text_color = "#000000"
+# --- Reactable Table ---
+st.write(
+    rt.reactable(
+        league_df,
+        columns={
+            "Rank": rt.Col(
+                name="Rank",
+                cell_style={"text-align": "center"},
+                width=50, 
+            ),
+            "logo_team": rt.Col(
+                name="Team Logo",
+                cell_style={"text-align": "center", "vertical-align": "middle"},
+                width=70,
+                cell=rt.Image(src='logo_team'),
+            ),
+            "Team": rt.Col(
+                name="Team",
+                cell_style={"text-align": "left"},
+                width=150,
+            ),
+            "GP": rt.Col(name="GP", group="Matches Played", cell_style={"text-align": "center"}, width=50),
+            "W": rt.Col(name="W", group="Matches Played", cell_style={"text-align": "center"}, width=50),
+            "D": rt.Col(name="D", group="Matches Played", cell_style={"text-align": "center"}, width=50),
+            "L": rt.Col(name="L", group="Matches Played", cell_style={"text-align": "center"}, width=50),
+            "GF": rt.Col(name="GF", group="Goals", cell_style={"text-align": "center"}, width=50),
+            "GA": rt.Col(name="GA", group="Goals", cell_style={"text-align": "center"}, width=50),
+            "GD": rt.Col(name="GD", group="Goals", cell_style={"text-align": "center"}, width=50),
+            "CS": rt.Col(name="CS", group="Goals", cell_style={"text-align": "center"}, width=50),
+            "Pts": rt.Col(name="Pts", group="Points", cell_style={"text-align": "center"}, width=50),
+            "Pts/Game": rt.Col(name="Pts/Game", group="Points", cell_style={"text-align": "center"}, width=80),
+            "Form": rt.Col(
+                name="Form",
+                group="Points",
+                cell_style={"text-align": "center"},
+                width=80,  
+                cell=lambda value: rt.HTML(style_form_string(value))
+            ),
+            "GF/Game": rt.Col(name="GF/Game", group="By Game", cell_style={"text-align": "center"}, width=80),
+            "GA/Game": rt.Col(name="GA/Game", group="By Game", cell_style={"text-align": "center"}, width=80),
+            "CS/Game": rt.Col(name="CS/Game", group="By Game", cell_style={"text-align": "center"}, width=80),
+            f"GW{ct_gw}": rt.Col(name=f"GW{ct_gw}", group="Fixtures", cell_style={"text-align": "center"}, width=80),
+            f"GW{ct_gw+1}": rt.Col(name=f"GW{ct_gw+1}", group="Fixtures", cell_style={"text-align": "center"}, width=80),
+            f"GW{ct_gw+2}": rt.Col(name=f"GW{ct_gw+2}", group="Fixtures", cell_style={"text-align": "center"}, width=80)
 
-row_colors = {
-    "top4": "#E1FABC",
-    "top6": "#FFFC97",
-    "relegation": "#E79A9A",
-    "even": "#E2E2E1",
-    "odd": "#B3B0B0"
-}
-
-matplotlib.rcParams["text.color"] = text_color
-matplotlib.rcParams["font.family"] = "monospace"
-
-# --- Column Definitions ---
-col_defs = [
-    ColumnDefinition(
-        name="Rank",
-        textprops={'ha': "center"},
-        width=1
+        },
+        default_col_size=50,
+        pagination=False,
+        show_grid=True,
+        row_style={
+            "border-bottom": "1px solid #eee",
+        },
+        theme={
+            "row_highlight_background_color": "#f0f5f9"
+        }
     ),
-    ColumnDefinition(
-        name="logo_team",
-        textprops={'ha': "center", 'va': "center", 'color': "white"},
-        plot_fn=image,
-        width=1,
-    ),
-    ColumnDefinition(
-        name="Team",
-        textprops={'ha': "center"},
-        width=1
-    ),
-    ColumnDefinition(
-        name="GP",
-        group="Matches Played",
-
-        textprops={'ha': "center"},
-        width=0.5
-    ),
-    ColumnDefinition(
-        name="W",
-        group="Matches Played",
-
-        textprops={'ha': "center"},
-        width=0.5
-    ),
-    ColumnDefinition(
-        name="D",
-        group="Matches Played",
-        textprops={'ha': "center"},
-        width=0.5
-    ),
-    ColumnDefinition(
-        name="L",
-        group="Matches Played",
-        textprops={'ha': "center"},
-        width=0.5
-    ),
-    ColumnDefinition(
-        name="GF",
-        group="Goals",
-        textprops={'ha': "center"},
-        width=0.5
-    ),
-    ColumnDefinition(
-        name="GA",
-        group="Goals",
-        textprops={'ha': "center"},
-        width=0.5
-    ),
-    ColumnDefinition(
-        name="GD",
-        group="Goals",
-        textprops={'ha': "center"},
-        width=0.5
-    ),
-    ColumnDefinition(
-        name="CS",
-        group="Goals",
-        textprops={'ha': "center"},
-        width=0.5
-    ),
-    ColumnDefinition(
-        name="Pts",
-        group="Points",
-        textprops={'ha': "center"},
-        width=1
-    ),
-    ColumnDefinition(
-        name="Pts/Game",
-        group="Points",
-        textprops={'ha': "center"},
-        width=1
-    ),
-    ColumnDefinition(
-        name="Form",
-        group="Points",
-        textprops={'ha': "center"},
-        width=1
-    ),
-    ColumnDefinition(
-        name="GF/Game",
-        group="ByGame",
-        textprops={'ha': "center"},
-        width=1
-    ),
-    ColumnDefinition(
-        name="GA/Game",
-        group="ByGame",
-        textprops={'ha': "center"},
-        width=1
-    ),
-    ColumnDefinition(
-        name="CS/Game",
-        group="ByGame",
-        textprops={'ha': "center"},
-        width=1
-    ),
-    ColumnDefinition(
-        name=f"GW{ct_gw}",
-        group="Fixtures",
-
-        textprops={'ha': "center"},
-        width=1
-    ),
-    ColumnDefinition(
-        name=f"GW{ct_gw+1}",
-        group="Fixtures",
-        textprops={'ha': "center"},
-        width=1
-    ),
-    ColumnDefinition(
-        name=f"GW{ct_gw+2}",
-        group="Fixtures",
-        textprops={'ha': "center"},
-        width=1
-    )
-]
-# --- Plottable Table ---
-fig, ax = plt.subplots(figsize=(20, 20))  # Adjust figsize for Streamlit
-fig.set_facecolor(bg_color)
-ax.set_facecolor(bg_color)
-
-
-table = Table(
-    league_df,
-    column_definitions=col_defs,
-    columns=['logo_team','Team', 'GP', 'W', 'D', 'L', 'GF', 'GA', 'GD', 'CS', 'Pts', 
-             'Pts/Game','Form', 'GF/Game', 'GA/Game', 'CS/Game', f'GW{ct_gw}', f'GW{ct_gw+1}', f'GW{ct_gw+2}'], 
-    index_col="Rank",
-    row_dividers=True,
-    row_divider_kw={"linewidth": 1, "linestyle": (0, (1, 5))},
-    footer_divider=True,
-    textprops={"fontsize": 14},  # Adjust fontsize for Streamlit
-    col_label_divider_kw={"linewidth": 1, "linestyle": "-"},
-    column_border_kw={"linewidth": .5, "linestyle": "-"},
-    ax=ax
 )
-for idx in range(len(league_df)):
-    if league_df.iloc[idx]['Rank'] <= 4:
-        table.rows[idx].set_facecolor(row_colors["top4"])
-    elif league_df.iloc[idx]['Rank'] <= 6:
-        table.rows[idx].set_facecolor(row_colors["top6"])
-    elif league_df.iloc[idx]['Rank'] >= 18:  # Assuming relegation zone starts at 18
-        table.rows[idx].set_facecolor(row_colors["relegation"])
-
-
-
-import matplotlib.patches as mpatches
-import streamlit as st
-
-# Assuming 'league_df' is defined, and 'table' is structured correctly
-
-for row_idx, row in enumerate(table.rows):
-    # Debugging information
-    st.write(f"Row index: {row_idx}, Row: {row}")  # Check the content of row
-    st.write(f"DataFrame Index Type: {league_df.index}")  
-    form_str = league_df.iloc[row_idx]['Form']  # Get the form string
-    st.write(form_str)  # Output the form string for debugging
-    form_colors = form_color(form_str)  # Get the colors for the string
-
-    # Assuming you want to apply styling for the first cell's content
-    if len(row.cells) > 0:  # Ensure there are cells present
-        cell = row.cells[0]  # Access the first cell (adjust if needed)
-        text = cell.texts[0]  # Get the text object
-
-        # Style each character in the "Form" string
-        for col_idx, char in enumerate(form_str):
-            # Adjusted positioning for each character
-            rect = mpatches.FancyBboxPatch(
-                (text.get_position()[0] + col_idx * 0.15, text.get_position()[1] - 0.05),  # Positioning
-                0.13,  # Width of the rectangle
-                0.1,   # Height of the rectangle
-                boxstyle="round,pad=0.02",  # Rounded corners
-                facecolor=form_colors[col_idx],  # Color for the character
-                edgecolor="none"  # No edge color
-            )
-            ax.add_patch(rect)  # Add the patch to the axes
-
-            # Update text attributes
-            text.set_text(char)  # Set the actual character
-            text.set_fontsize(10)  # Font size for visibility
-            text.set_color("white")  # Color of text
-            text.set_va('center')  # Vertical alignment
-            text.set_ha('center')  # Horizontal alignment
-
-
-
-
-# --- Display the Table in Streamlit ---
-st.pyplot(fig)
-
-
-
-
-################################################
