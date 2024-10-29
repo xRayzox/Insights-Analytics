@@ -178,7 +178,7 @@ col_defs = [
         name="Form",
         group="Points",
         textprops={'ha': "center"},
-        cell_style_fn=lambda idx: {"facecolor": league_df['Form_Color'].iloc[idx]}
+        cell_style_fn=lambda idx: {"facecolor": league_df['Form_Color'].iloc[idx]},
         width=1
     ),
     ColumnDefinition(
