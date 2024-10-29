@@ -49,17 +49,56 @@ def form_color(form):
     # Create a list of colors for the form string
     return [color_mapping[char] for char in form if char in color_mapping]
 
-def get_fixture_color(fdr):
-    if fdr <= 1.5:
-        return '#147d1b' 
-    elif fdr <= 2.5:
-        return '#0ABE4A' 
-    elif fdr <= 3.5:
-        return '#eceae6'
-    elif fdr <= 4.5:
-        return '#ff0057'  
-    else:
-        return '#920947' 
+def get_home_away_str_dict():
+    new_fdr_df.columns = new_fixt_cols
+    result_dict = {}
+    for col in new_fdr_df.columns:
+        values = list(new_fdr_df[col])
+        max_length = new_fixt_df[col].str.len().max()
+        if max_length > 7:
+            new_fixt_df.loc[new_fixt_df[col].str.len() <= 7, col] = new_fixt_df[col].str.pad(width=max_length+9, side='both', fillchar=' ')
+        strings = list(new_fixt_df[col])
+        value_dict = {}
+        for value, string in zip(values, strings):
+            if value not in value_dict:
+                value_dict[value] = []
+            value_dict[value].append(string)
+        result_dict[col] = value_dict
+
+    merged_dict = {k: [] for k in [1.5, 2.5, 3.5, 4.5]}
+    for k, dict1 in result_dict.items():
+        for key, value in dict1.items():
+            if key in merged_dict:
+                merged_dict[key].extend(value)
+            else:
+                merged_dict[key] = value
+    for k, v in merged_dict.items():
+        merged_dict[k] = list(set(v))
+    for i in range(1, 6):
+        if i not in merged_dict:
+            merged_dict[i] = []
+    return merged_dict
+
+def color_fixtures(val):
+    color_map = {
+        1: "#147d1b",
+        1.5: "#0ABE4A",
+        2: "#00ff78",
+        2.5: "#caf4bd",
+        3: "#eceae6",
+        3.5: "#fa8072",
+        4: "#ff0057",
+        4.5: "#C9054F",
+        5: "#920947",
+    }
+    for key in color_map:
+        if val in home_away_dict[key]:
+            return color_map[key]
+    return "#ffffff"  # Default color if no match
+
+# Assuming league_df is defined and populated.
+home_away_dict = get_home_away_str_dict()
+
 # --- Data Loading and Processing ---
 league_df = get_league_table()
 team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
@@ -257,7 +296,9 @@ for idx in range(len(league_df)):
     elif league_df.iloc[idx]['Rank'] >= 18:  # Assuming relegation zone starts at 18
         table.rows[idx].set_facecolor(row_colors["relegation"])
 
-table.columns[f"GW{ct_gw}"].set_facecolor("#f0f0f0")
+for (i, j), val in np.ndenumerate(league_df.values):
+    color = color_fixtures(val)  # Get the background color
+    table[(i + 1, j)].set_facecolor(color)  # Offset by 1 for header row
 
 # --- Display the Table in Streamlit ---
 st.pyplot(fig)
