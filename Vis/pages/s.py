@@ -103,7 +103,6 @@ def get_home_away_str_dict():
             merged_dict[i] = []
     return merged_dict
 home_away_dict = get_home_away_str_dict()
-st.write(home_away_dict)
 def color_fixtures(val):
     color_map = {
         1: "#147d1b",
