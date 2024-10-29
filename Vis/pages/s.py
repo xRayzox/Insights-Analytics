@@ -7,7 +7,7 @@ import pandas as pd
 import urllib.request
 from PIL import Image
 from matplotlib.colors import LinearSegmentedColormap
-
+import matplotlib.patches as mpatches
 from plottable import ColumnDefinition, Table
 from plottable.cmap import normed_cmap
 from plottable.formatters import decimal_to_percent
@@ -40,14 +40,14 @@ def load_image_from_url(url):
     image.save(temp_filename)
     return temp_filename
 
-def form_color(form):
+def colored_form(form):
     color_mapping = {
         'W': '#28a745',  # Green for Win
         'D': '#ffc107',  # Orange for Draw
         'L': '#dc3545',  # Red for Loss
     }
-    # Create a list of colors for the form string
-    return [color_mapping[char] for char in form if char in color_mapping]
+    # Create a list of colored patches
+    return [mpatches.Patch(color=color_mapping[char], label=char) for char in form if char in color_mapping]
 
 
 # --- Data Loading and Processing ---
@@ -223,11 +223,6 @@ fig, ax = plt.subplots(figsize=(20, 20))  # Adjust figsize for Streamlit
 fig.set_facecolor(bg_color)
 ax.set_facecolor(bg_color)
 
-for index, form in enumerate(league_df['Form']):
-    colors = form_color(form)
-    for i, char in enumerate(form):
-        # Draw each character with its corresponding color
-        ax.text(i + 0.5, index + 0.5, char, ha='center', va='center', color=colors[i], fontsize=14)
 
 table = Table(
     league_df,
@@ -243,6 +238,11 @@ table = Table(
     column_border_kw={"linewidth": .5, "linestyle": "-"},
     ax=ax
 )
+for index, form in enumerate(league_df['Form']):
+    colors = colored_form(form)
+    # Add colored text for the form
+    for i, char in enumerate(form):
+        ax.text(11.5, index + 0.5, char, ha='center', va='center', fontsize=14, color=colors[i])
 
 # --- Display the Table in Streamlit ---
 st.pyplot(fig)
