@@ -40,14 +40,14 @@ def load_image_from_url(url):
     image.save(temp_filename)
     return temp_filename
 
-def colored_form(form):
+def form_color(form):
     color_mapping = {
         'W': '#28a745',  # Green for Win
         'D': '#ffc107',  # Orange for Draw
         'L': '#dc3545',  # Red for Loss
     }
-    # Create a list of colored patches
-    return [mpatches.Patch(color=color_mapping[char], label=char) for char in form if char in color_mapping]
+    # Create a list of colors for the form string
+    return [color_mapping[char] for char in form if char in color_mapping]
 
 
 # --- Data Loading and Processing ---
@@ -239,10 +239,10 @@ table = Table(
     ax=ax
 )
 for index, form in enumerate(league_df['Form']):
-    colors = colored_form(form)
-    # Add colored text for the form
+    colors = form_color(form)
     for i, char in enumerate(form):
-        ax.text(11.5, index + 0.5, char, ha='center', va='center', fontsize=14, color=colors[i])
+        # Draw each character with its corresponding color
+        ax.text(i + 0.5, index + 0.5, char, ha='center', va='center', color=colors[i], fontsize=14)
 
 # --- Display the Table in Streamlit ---
 st.pyplot(fig)
