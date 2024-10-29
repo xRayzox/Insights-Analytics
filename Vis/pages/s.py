@@ -298,15 +298,6 @@ for idx in range(len(league_df)):
     elif league_df.iloc[idx]['Rank'] >= 18:  # Assuming relegation zone starts at 18
         table.rows[idx].set_facecolor(row_colors["relegation"])
 
-# Find the index of the "GW{ct_gw}" column based on the header row
-column_idx = next(i for i, cell in enumerate(table.col_label_row.cells) if cell.content == f"GW{ct_gw}")
-
-# Extract all values from the column "GW{ct_gw}"
-column_values = [row.cells[column_idx].content for row in table.rows]
-
-# Display the values of the column
-st.write(f"Values in column GW{ct_gw}:", column_values)
-
 
 
 # --- Display the Table in Streamlit ---
