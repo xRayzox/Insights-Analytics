@@ -247,7 +247,7 @@ for index, form in enumerate(league_df['Form']):
         circle = mpatches.Circle((form_column_index + 0.5, index + 0.5), 0.3, color=colors[i], ec="none")
         ax.add_patch(circle)
         # Draw the character in the center of the circle
-        ax.text(form_column_index + 0.5, index + 0.5, char, ha='center', va='center', color='white', fontsize=14)
+        ax.text(form_column_index + 0.5, index + 0.5, char, ha='center', va='center', color='white', fontsize=2)
 # --- Display the Table in Streamlit ---
 st.pyplot(fig)
 
