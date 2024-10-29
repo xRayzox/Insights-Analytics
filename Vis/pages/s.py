@@ -127,6 +127,7 @@ def color_fixtures(val):
 
 # Modify cmap for Fixture Column Definitions
 def fixture_cmap(val):
+    st.write(val)
     return color_fixtures(val)  # Directly return the color
 
 # --- Streamlit App ---
