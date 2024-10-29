@@ -302,7 +302,7 @@ for gw in range(ct_gw, ct_gw + 3):
     for row_index in range(len(league_df)):
         cell_value = league_df[f"GW{gw}"].iloc[row_index]
         cell_color = color_fixtures(cell_value)
-        
+        st.write(cell_color)
         # Correct way to access and set cell facecolor:
         table.cells[row_index, table.columns.get_loc(f"GW{gw}")].set_facecolor(cell_color)
 
