@@ -251,12 +251,16 @@ for idx in [17, 18, 19]:
 for index, form in enumerate(league_df['Form']):
     colors = form_color(form)
     for i, char in enumerate(form):
-        # Create a circle patch for each character
-        circle = mpatches.Circle((i + 0.5, index + 0.5), 0.2, color=colors[i], ec="none")
+        # Create a smaller circle patch for each character
+        circle = mpatches.Circle((i + 0.5, index + 0.5), 0.15, color=colors[i], ec="none")  # Reduced radius
         ax.add_patch(circle)
         # Draw the character in the center of the circle
-        ax.text(i + 0.5, index + 0.5, char, ha='center', va='center', color='white', fontsize=14)
+        ax.text(i + 0.5, index + 0.5, char, ha='center', va='center', color='white', fontsize=12)  # Reduced fontsize
 
+# Set limits and remove axes
+ax.set_xlim(0, max(league_df['Form'].str.len()) + 1)  # Adjust x limits based on longest form
+ax.set_ylim(0, len(league_df) + 1)  # Adjust y limits based on number of forms
+ax.axis('off')  # Hide axes for a cleaner look
 # --- Display the Table in Streamlit ---
 st.pyplot(fig)
 
