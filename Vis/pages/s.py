@@ -214,7 +214,7 @@ col_defs = [
     )
 ]
 # --- Plottable Table ---
-fig, ax = plt.subplots(figsize=(16, 10))  # Adjust figsize for Streamlit
+fig, ax = plt.subplots(figsize=(16, 16))  # Adjust figsize for Streamlit
 fig.set_facecolor(bg_color)
 ax.set_facecolor(bg_color)
 
@@ -232,5 +232,6 @@ table = Table(
     column_border_kw={"linewidth": .5, "linestyle": "-"},
     ax=ax
 )
+
 # --- Display the Table in Streamlit ---
 st.pyplot(fig)
