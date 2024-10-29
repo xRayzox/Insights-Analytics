@@ -298,7 +298,14 @@ for idx in range(len(league_df)):
     elif league_df.iloc[idx]['Rank'] >= 18:  # Assuming relegation zone starts at 18
         table.rows[idx].set_facecolor(row_colors["relegation"])
 
-st.write(table.col_label_row)
+# Find the index of the "Team" column based on the header row.
+team_col_idx = next(i for i, cell in enumerate(table.col_label_row.cells) if cell.content == "Team")
+
+# Access the first row (index 0) of the "Team" column.
+first_team_cell = table.rows[0].cells[team_col_idx].content
+
+# Display or use the content
+st.write("First team:", first_team_cell)
 
 # --- Display the Table in Streamlit ---
 st.pyplot(fig)
