@@ -241,10 +241,14 @@ table = Table(
 for index, row in league_df.iterrows():
     form = row['Form']
     colors = form_color(form)
+    # Get the cell bounding box for the 'Form' column
+    cell_bbox = table.table_ax.texts[index * len(table.column_names) + table.column_names.index('Form')].get_window_extent()
+    cell_x = cell_bbox.x0  # Left x-coordinate of the cell
+    cell_width = cell_bbox.width
     for i, char in enumerate(form):
-        ax.text(table.get_cell_position(index, 'Form')[0] + i * 0.25,  # Adjust character spacing
-                table.get_cell_position(index, 'Form')[1], 
-                char, ha='center', va='center', color=colors[i], fontsize=14)
+        char_x = cell_x + (i + 0.5) * (cell_width / len(form))  # Calculate character x-position
+        char_y = cell_bbox.y0 + cell_bbox.height / 2  # Calculate character y-position
+        ax.text(char_x, char_y, char, ha='center', va='center', color=colors[i], fontsize=14)
 # --- Display the Table in Streamlit ---
 st.pyplot(fig)
 
