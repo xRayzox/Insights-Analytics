@@ -257,8 +257,8 @@ for gw in range(ct_gw, ct_gw + 3):
             group="Fixtures",
             textprops={'ha': "center"},
             width=1,
-            formatter=lambda val: (val, {'backgroundcolor': color_fixtures(val)})  # Correct formatter
-            #cmap=lambda val: (val, {'backgroundcolor': color_fixtures(val)})  # Correct formatter
+            #formatter=lambda val: (val, {'backgroundcolor': color_fixtures(val)})  # Correct formatter
+            cmap=lambda val: (val, {'backgroundcolor': color_fixtures(val)})  # Correct formatter
         )
     )
 
@@ -293,16 +293,6 @@ for idx in range(len(league_df)):
     elif league_df.iloc[idx]['Rank'] >= 18:  # Assuming relegation zone starts at 18
         table.rows[idx].set_facecolor(row_colors["relegation"])
 
-for (row, col), cell in table.get_celld().items():
-    if row == 0:  # Header row
-        cell.set_facecolor('#dddddd') # Example header color
-    else:
-        if col in range(7, 10):  # Fixture columns
-            cell_value = cell.get_text().get_text() 
-            color = color_fixtures(cell_value)  
-            cell.set_facecolor(color)
-
-###
 # --- Table Styling (Adjust as needed) ---
 table.auto_set_font_size(False)
 table.set_fontsize(10) 
