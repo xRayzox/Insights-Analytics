@@ -15,6 +15,7 @@ from plottable.plots import circled_image
 from plottable.plots import image
 import sys
 import os
+from plottable.plots import function_plot
 pd.set_option('future.no_silent_downcasting', True)
 
 # Adjust the path to include the FPL directory (assuming it's one level up)
@@ -48,7 +49,29 @@ def form_color(form):
     }
     # Create a list of colors for the form string
     return [color_mapping[char] for char in form if char in color_mapping]
+def plot_form_string(values, x, y, width, height, **kwargs):
+    ax = plt.gca()
+    for i, char in enumerate(values[0]):  # Assuming 'values' is a list of strings
+        rect = mpatches.FancyBboxPatch(
+            (x + i * 0.15, y - 0.05),  # Adjust positioning
+            0.13,  # Width
+            0.1,  # Height
+            boxstyle="round,pad=0.02", 
+            facecolor=form_color(char)[0],  # Get the color for the character
+            edgecolor="none"
+        )
+        ax.add_patch(rect)
 
+        # Add text (centered within the rectangle)
+        ax.text(
+            x + i * 0.15 + 0.065,  # Adjust text position
+            y - 0.05, 
+            char,
+            fontsize=10, 
+            color="white",
+            va='center', 
+            ha='center'
+        )
 
 # --- Data Loading and Processing ---
 league_df = get_league_table()
@@ -178,6 +201,7 @@ col_defs = [
         name="Form",
         group="Points",
         textprops={'ha': "center"},
+        plot_fn=function_plot(plot_form_string),
         width=1
     ),
     ColumnDefinition(
@@ -245,36 +269,6 @@ for idx in range(len(league_df)):
         table.rows[idx].set_facecolor(row_colors["top6"])
     elif league_df.iloc[idx]['Rank'] >= 18:  # Assuming relegation zone starts at 18
         table.rows[idx].set_facecolor(row_colors["relegation"])
-
-for row_idx, row in enumerate(table.rows):
-    st.write(f"Type of row_idx: {type(row_idx)}")
-    st.write(f"DataFrame Index Type: {league_df.index}")  
-    form_str = league_df.iloc[row_idx]['Form']   # Get the form string
-    st.write(form_str)
-    form_colors = form_color(form_str)  # Get the colors
-
-    # Style each character in the "Form" cell
-    for col_idx, char in enumerate(form_str):
-        cell = row.cells[(row_idx, 'Form')]  # Access the cell
-        text = cell.texts[0]  # Get the text object
-
-        # Create a rounded rectangle patch for each character
-        rect = mpatches.FancyBboxPatch(
-            (text.get_position()[0] + col_idx * 0.15, text.get_position()[1] - 0.05), # Adjust positioning
-            0.13,  # Width of the rectangle
-            0.1,  # Height of the rectangle
-            boxstyle="round,pad=0.02",  # Rounded corners
-            facecolor=form_colors[col_idx],  # Apply the color 
-            edgecolor="none"
-        )
-        ax.add_patch(rect)  # Add the patch to the axes
-
-        # Style the text
-        text.set_text(char)  # Set the text
-        text.set_fontsize(10)  # Adjust fontsize as needed
-        text.set_color("white")
-        text.set_va('center')  # Vertical alignment
-        text.set_ha('center')  # Horizontal alignment 
 
 
 
