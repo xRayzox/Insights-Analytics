@@ -298,7 +298,7 @@ for idx in range(len(league_df)):
     elif league_df.iloc[idx]['Rank'] >= 18:  # Assuming relegation zone starts at 18
         table.rows[idx].set_facecolor(row_colors["relegation"])
 
-st.write(table.columns[f'GW{ct_gw}'])
+st.write(table.columns[f'GW{ct_gw}'][0])
 
 # --- Display the Table in Streamlit ---
 st.pyplot(fig)
