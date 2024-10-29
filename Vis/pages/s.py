@@ -67,57 +67,55 @@ team_logo_mapping = pd.Series(teams_df['logo_image'].values, index=teams_df['sho
 league_df['logo_team'] = league_df['Team'].map(team_logo_mapping)
 league_df['Rank'] = league_df['Pts'].rank(ascending=False, method='min').astype(int)
 
-# --- Preprocess DataFrame for reactable ---
-
 
 # --- Streamlit App ---
 st.title("Premier League Table")
 
 # --- Reactable Table ---
+# --- Reactable Table ---
 st.write(
     rt.reactable(
         league_df,
         columns={
-            "Rank": rt.Col(
+            "Rank": rt.colDef(
                 name="Rank",
                 cell_style={"text-align": "center"},
                 width=50, 
             ),
-            "logo_team": rt.Col(
+            "logo_team": rt.colDef(
                 name="Team Logo",
                 cell_style={"text-align": "center", "vertical-align": "middle"},
                 width=70,
                 cell=rt.Image(src='logo_team'),
             ),
-            "Team": rt.Col(
+            "Team": rt.colDef(
                 name="Team",
                 cell_style={"text-align": "left"},
                 width=150,
             ),
-            "GP": rt.Col(name="GP", group="Matches Played", cell_style={"text-align": "center"}, width=50),
-            "W": rt.Col(name="W", group="Matches Played", cell_style={"text-align": "center"}, width=50),
-            "D": rt.Col(name="D", group="Matches Played", cell_style={"text-align": "center"}, width=50),
-            "L": rt.Col(name="L", group="Matches Played", cell_style={"text-align": "center"}, width=50),
-            "GF": rt.Col(name="GF", group="Goals", cell_style={"text-align": "center"}, width=50),
-            "GA": rt.Col(name="GA", group="Goals", cell_style={"text-align": "center"}, width=50),
-            "GD": rt.Col(name="GD", group="Goals", cell_style={"text-align": "center"}, width=50),
-            "CS": rt.Col(name="CS", group="Goals", cell_style={"text-align": "center"}, width=50),
-            "Pts": rt.Col(name="Pts", group="Points", cell_style={"text-align": "center"}, width=50),
-            "Pts/Game": rt.Col(name="Pts/Game", group="Points", cell_style={"text-align": "center"}, width=80),
-            "Form": rt.Col(
+            "GP": rt.colDef(name="GP", group="Matches Played", cell_style={"text-align": "center"}, width=50),
+            "W": rt.colDef(name="W", group="Matches Played", cell_style={"text-align": "center"}, width=50),
+            "D": rt.colDef(name="D", group="Matches Played", cell_style={"text-align": "center"}, width=50),
+            "L": rt.colDef(name="L", group="Matches Played", cell_style={"text-align": "center"}, width=50),
+            "GF": rt.colDef(name="GF", group="Goals", cell_style={"text-align": "center"}, width=50),
+            "GA": rt.colDef(name="GA", group="Goals", cell_style={"text-align": "center"}, width=50),
+            "GD": rt.colDef(name="GD", group="Goals", cell_style={"text-align": "center"}, width=50),
+            "CS": rt.colDef(name="CS", group="Goals", cell_style={"text-align": "center"}, width=50),
+            "Pts": rt.colDef(name="Pts", group="Points", cell_style={"text-align": "center"}, width=50),
+            "Pts/Game": rt.colDef(name="Pts/Game", group="Points", cell_style={"text-align": "center"}, width=80),
+            "Form": rt.colDef(
                 name="Form",
                 group="Points",
                 cell_style={"text-align": "center"},
                 width=80,  
                 cell=lambda value: rt.HTML(style_form_string(value))
             ),
-            "GF/Game": rt.Col(name="GF/Game", group="By Game", cell_style={"text-align": "center"}, width=80),
-            "GA/Game": rt.Col(name="GA/Game", group="By Game", cell_style={"text-align": "center"}, width=80),
-            "CS/Game": rt.Col(name="CS/Game", group="By Game", cell_style={"text-align": "center"}, width=80),
-            f"GW{ct_gw}": rt.Col(name=f"GW{ct_gw}", group="Fixtures", cell_style={"text-align": "center"}, width=80),
-            f"GW{ct_gw+1}": rt.Col(name=f"GW{ct_gw+1}", group="Fixtures", cell_style={"text-align": "center"}, width=80),
-            f"GW{ct_gw+2}": rt.Col(name=f"GW{ct_gw+2}", group="Fixtures", cell_style={"text-align": "center"}, width=80)
-
+            "GF/Game": rt.colDef(name="GF/Game", group="By Game", cell_style={"text-align": "center"}, width=80),
+            "GA/Game": rt.colDef(name="GA/Game", group="By Game", cell_style={"text-align": "center"}, width=80),
+            "CS/Game": rt.colDef(name="CS/Game", group="By Game", cell_style={"text-align": "center"}, width=80),
+            f"GW{ct_gw}": rt.colDef(name=f"GW{ct_gw}", group="Fixtures", cell_style={"text-align": "center"}, width=80),
+            f"GW{ct_gw + 1}": rt.colDef(name=f"GW{ct_gw + 1}", group="Fixtures", cell_style={"text-align": "center"}, width=80),
+            f"GW{ct_gw + 2}": rt.colDef(name=f"GW{ct_gw + 2}", group="Fixtures", cell_style={"text-align": "center"}, width=80)
         },
         default_col_size=50,
         pagination=False,
