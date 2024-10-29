@@ -247,7 +247,7 @@ for idx in range(len(league_df)):
         table.rows[idx].set_facecolor(row_colors["relegation"])
 
 for row_idx, row in enumerate(table.rows):
-    form_str = league_df.loc[row_idx, 'Form']  # Get the form string
+    form_str = league_df.loc[0, 'Form']  # Get the form string
     form_colors = form_color(form_str)  # Get the colors
 
     # Style each character in the "Form" cell
