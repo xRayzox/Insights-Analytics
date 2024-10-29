@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 from bokeh.models import ColumnDataSource, TableColumn, DataTable
 
 # --- Streamlit Configuration ---
