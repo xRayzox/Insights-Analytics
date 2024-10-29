@@ -159,7 +159,7 @@ col_defs = [
         name="Pts",
         group="Points",
         textprops={'ha': "center"},
-        width=0.5
+        width=1
     ),
     ColumnDefinition(
         name="Pts/Game",
