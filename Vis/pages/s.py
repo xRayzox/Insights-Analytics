@@ -187,19 +187,19 @@ col_defs = [
         width=1
     ),
     ColumnDefinition(
-        name="GW10",
+        name=f"GW{ct_gw}",
         group="Fixtures",
         textprops={'ha': "center"},
         width=1
     ),
     ColumnDefinition(
-        name="GW11",
+        name=f"GW{ct_gw+1}",
         group="Fixtures",
         textprops={'ha': "center"},
         width=1
     ),
     ColumnDefinition(
-        name="GW12",
+        name=f"GW{ct_gw+2}",
         group="Fixtures",
         textprops={'ha': "center"},
         width=1
