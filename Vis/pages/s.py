@@ -258,6 +258,7 @@ for gw in range(ct_gw, ct_gw + 3):
             textprops={'ha': "center"},
             width=1,
             formatter=lambda val: (val, {'backgroundcolor': color_fixtures(val)})  # Correct formatter
+            #cmap=lambda val: (val, {'backgroundcolor': color_fixtures(val)})  # Correct formatter
         )
     )
 
@@ -291,12 +292,20 @@ for idx in range(len(league_df)):
         table.rows[idx].set_facecolor(row_colors["top6"])
     elif league_df.iloc[idx]['Rank'] >= 18:  # Assuming relegation zone starts at 18
         table.rows[idx].set_facecolor(row_colors["relegation"])
-        
-for col in range(league_df.columns.get_loc(f"GW{ct_gw}"), league_df.columns.get_loc(f"GW{ct_gw + 2}") + 1):
-    for row in range(1, len(league_df) + 1):
-        cell_value = table.get_celld()[(row, col)]._text.get_text() # Get cell value
-        color = color_fixtures(cell_value) # Apply your color logic
-        table.get_celld()[(row, col)].set_facecolor(color)  # Set background color
+
+for (row, col), cell in table.get_celld().items():
+    if row == 0:  # Header row
+        cell.set_facecolor('#dddddd') # Example header color
+    else:
+        if col in range(7, 10):  # Fixture columns
+            cell_value = cell.get_text().get_text() 
+            color = color_fixtures(cell_value)  
+            cell.set_facecolor(color)
+
+# --- Table Styling (Adjust as needed) ---
+table.auto_set_font_size(False)
+table.set_fontsize(10) 
+table.scale(1.5, 1.5)
 
 # --- Display the Table in Streamlit ---
 st.pyplot(fig)
