@@ -183,7 +183,7 @@ col_defs = [
     ColumnDefinition(
         name="Form",
         group="Points",
-        plot_fn=lambda ax, df: [plot_form(ax, form, index) for index, form in enumerate(df['Form'])],
+        plot_fn=lambda ax, league_df: [plot_form(ax, form, index) for index, form in enumerate(league_df['Form'])],
         textprops={'ha': "center"},
         width=1
     ),
