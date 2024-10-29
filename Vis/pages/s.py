@@ -238,12 +238,13 @@ table = Table(
     column_border_kw={"linewidth": .5, "linestyle": "-"},
     ax=ax
 )
-for index, form in enumerate(league_df['Form']):
+for index, row in league_df.iterrows():
+    form = row['Form']
     colors = form_color(form)
     for i, char in enumerate(form):
-        # Draw each character with its corresponding color
-        ax.text(i + 0.5, index + 0.5, char, ha='center', va='center', color=colors[i], fontsize=14)
-
+        ax.text(table.get_cell_position(index, 'Form')[0] + i * 0.25,  # Adjust character spacing
+                table.get_cell_position(index, 'Form')[1], 
+                char, ha='center', va='center', color=colors[i], fontsize=14)
 # --- Display the Table in Streamlit ---
 st.pyplot(fig)
 
