@@ -239,7 +239,8 @@ table = Table(
     ax=ax
 )
 table.rows[0].set_facecolor("#f0f0f0")
-
+table.columns["Form"].set_facecolor("#f0f0f0")
+"""
 # Draw form indicators with circular backgrounds
 for index, form in enumerate(table.columns['Form']):
     colors = form_color(form)
@@ -249,7 +250,7 @@ for index, form in enumerate(table.columns['Form']):
         ax.add_patch(circle)
         # Draw the character in the center of the circle
         ax.text(i + 0.5, index + 0.5, char, ha='center', va='center', color='white', fontsize=14)
-
+"""
 # --- Display the Table in Streamlit ---
 st.pyplot(fig)
 
