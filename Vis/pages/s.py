@@ -124,6 +124,10 @@ def color_fixtures(val):
 # Assuming league_df is defined and populated.
 home_away_dict = get_home_away_str_dict()
 
+# Modify cmap for Fixture Column Definitions
+def fixture_cmap(val):
+    return color_fixtures(val)  # Directly return the color
+
 # --- Streamlit App ---
 st.title("Premier League Table")
 
@@ -258,7 +262,7 @@ for gw in range(ct_gw, ct_gw + 3):
             textprops={'ha': "center"},
             width=1,
             #formatter=lambda val: (val, {'backgroundcolor': color_fixtures(val)})  # Correct formatter
-            cmap=lambda val: (val, {'backgroundcolor': color_fixtures(val)})  # Correct formatter
+            cmap=fixture_cmap
         )
     )
 
