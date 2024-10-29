@@ -110,12 +110,14 @@ col_defs = [
     ColumnDefinition(
         name="GP",
         group="Matches Played",
+        cmap=cmap,
         textprops={'ha': "center"},
         width=0.5
     ),
     ColumnDefinition(
         name="W",
         group="Matches Played",
+        cmap=cmap,
         textprops={'ha': "center"},
         width=0.5
     ),
