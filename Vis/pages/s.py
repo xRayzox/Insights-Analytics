@@ -191,9 +191,6 @@ table = Table(
     col_label_divider_kw={"linewidth": 1, "linestyle": "-"},
     column_border_kw={"linewidth": .5, "linestyle": "-"},
     ax=ax,
-     # Use cell_textprops if available, otherwise apply styling later
-    cell_textprops={'fontsize': 12, 'color': text_color} if hasattr(Table, 'cell_textprops') else None, 
-    cell_linewidth=0.8,
 )
 
 # Apply cell styling if cell_textprops is not available in your plottable version
