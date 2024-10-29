@@ -41,6 +41,33 @@ def load_image_from_url(url):
     return temp_filename
 
 ## Optimized function to get the fixture dictionary
+
+# --- Data Loading and Processing ---
+league_df = get_league_table()
+team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
+ct_gw = get_current_gw()
+new_fixt_df = team_fixt_df.loc[:, ct_gw:(ct_gw+2)]
+new_fixt_cols = ['GW' + str(col) for col in new_fixt_df.columns.tolist()]
+new_fixt_df.columns = new_fixt_cols
+new_fdr_df = team_fdr_df.loc[:, ct_gw:(ct_gw+2)]
+league_df = league_df.join(new_fixt_df)
+float_cols = league_df.select_dtypes(include='float64').columns.values
+league_df = league_df.reset_index()
+league_df.rename(columns={'team': 'Team'}, inplace=True)
+league_df.index += 1
+league_df['GD'] = league_df['GD'].map('{:+}'.format)
+teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
+teams_df['logo_url'] = "https://resources.premierleague.com/premierleague/badges/70/t" + teams_df['code'].astype(str) + "@x2.png"
+teams_df['logo_image'] = teams_df['logo_url'].apply(load_image_from_url)
+team_logo_mapping = pd.Series(teams_df['logo_image'].values, index=teams_df['short_name']).to_dict()
+# Map each team's logo image to the league DataFrame
+league_df['logo_team'] = league_df['Team'].map(team_logo_mapping)
+# Calculate and assign rankings in the league DataFramae
+
+
+league_df['Rank'] = league_df['Pts'].rank(ascending=False, method='min').astype(int)
+
+########################################
 def get_home_away_str_dict(new_fdr_df, new_fixt_df):
     new_fdr_df.columns = new_fixt_cols
     result_dict = {}
@@ -79,32 +106,8 @@ def color_fixtures(val):
     else:
         return 'none'  # No background color
 
-# --- Data Loading and Processing ---
-league_df = get_league_table()
-team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
-ct_gw = get_current_gw()
-new_fixt_df = team_fixt_df.loc[:, ct_gw:(ct_gw+2)]
-new_fixt_cols = ['GW' + str(col) for col in new_fixt_df.columns.tolist()]
-new_fixt_df.columns = new_fixt_cols
-new_fdr_df = team_fdr_df.loc[:, ct_gw:(ct_gw+2)]
-league_df = league_df.join(new_fixt_df)
-float_cols = league_df.select_dtypes(include='float64').columns.values
-league_df = league_df.reset_index()
-league_df.rename(columns={'team': 'Team'}, inplace=True)
-league_df.index += 1
-league_df['GD'] = league_df['GD'].map('{:+}'.format)
-teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
-teams_df['logo_url'] = "https://resources.premierleague.com/premierleague/badges/70/t" + teams_df['code'].astype(str) + "@x2.png"
-teams_df['logo_image'] = teams_df['logo_url'].apply(load_image_from_url)
-team_logo_mapping = pd.Series(teams_df['logo_image'].values, index=teams_df['short_name']).to_dict()
-# Map each team's logo image to the league DataFrame
-league_df['logo_team'] = league_df['Team'].map(team_logo_mapping)
-# Calculate and assign rankings in the league DataFramae
 
-
-league_df['Rank'] = league_df['Pts'].rank(ascending=False, method='min').astype(int)
-
-
+#########################################
 # --- Streamlit App ---
 st.title("Premier League Table")
 
