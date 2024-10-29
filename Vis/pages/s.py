@@ -243,7 +243,7 @@ for index, form in enumerate(league_df['Form']):
     colors = form_color(form)
     for i, char in enumerate(form):
         # Create a circle patch for each character
-        circle = mpatches.Circle((i + 0.5, index + 0.5), 0.1, color=colors[i], ec="none")
+        circle = mpatches.Circle((i + 0.3, index + 0.3), 0.2, color=colors[i], ec="none")
         ax.add_patch(circle)
         # Draw the character in the center of the circle
         ax.text(i + 0.5, index + 0.5, char, ha='center', va='center', color='white', fontsize=14)
