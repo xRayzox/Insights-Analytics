@@ -83,7 +83,7 @@ def get_home_away_str_dict():
         values = list(new_fdr_df[col])
         max_length = new_fixt_df[col].str.len().max()
         if max_length > 7:
-            new_fixt_df.loc[new_fixt_df[col].str.len() <= 7, col] = new_fixt_df[col].str.pad(width=max_length+9, side='both', fillchar=' ')
+            new_fixt_df.loc[new_fixt_df[col].str.len() <= 7, col] = new_fixt_df[col].str.pad(width=max_length + 9, side='both', fillchar=' ')
         strings = list(new_fixt_df[col])
         value_dict = {}
         for value, string in zip(values, strings):
@@ -306,7 +306,8 @@ for col in cols_to_color:
         for i in range(len(league_df)):
             val = league_df.iloc[i][col]  # Get the value from the dataframe
             color = color_fixtures(val)  # Get the background color
-            table[(i + 1, col_index)].set_facecolor(color)  # Offset by 1 for header row
+            # Access the specific cell using get_celld()
+            table[(i + 1, col_index)].set_facecolor(color)  
 
 # --- Display the Table in Streamlit ---
 st.pyplot(fig)
