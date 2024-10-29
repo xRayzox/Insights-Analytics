@@ -59,9 +59,10 @@ team_logo_mapping = pd.Series(teams_df['logo_image'].values, index=teams_df['sho
 league_df['logo_team'] = league_df['Team'].map(team_logo_mapping)
 # Calculate and assign rankings in the league DataFramae
 
-st.write(league_df)
+
 league_df['Rank'] = league_df['Pts'].rank(ascending=False, method='min').astype(int)
 
+st.write(league_df)
 # --- Streamlit App ---
 st.title("Premier League Table")
 
