@@ -15,3 +15,4 @@ highlight_text
 plottable
 reactable
 great_tables
+bokeh
