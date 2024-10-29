@@ -262,7 +262,7 @@ for gw in range(ct_gw, ct_gw + 3):
             textprops={'ha': "center"},
             width=1,
             #formatter=lambda val: (val, {'backgroundcolor': color_fixtures(val)})  # Correct formatter
-            cmap=fixture_cmap
+            #cmap=fixture_cmap
         )
     )
 
@@ -271,6 +271,7 @@ for gw in range(ct_gw, ct_gw + 3):
 fig, ax = plt.subplots(figsize=(20, 20))  # Adjust figsize for Streamlit
 fig.set_facecolor(bg_color)
 ax.set_facecolor(bg_color)
+
 
 
 table = Table(
@@ -297,7 +298,11 @@ for idx in range(len(league_df)):
     elif league_df.iloc[idx]['Rank'] >= 18:  # Assuming relegation zone starts at 18
         table.rows[idx].set_facecolor(row_colors["relegation"])
 
-
+for gw in range(ct_gw, ct_gw + 3):
+    for row_index in range(len(league_df)):
+        cell_value = league_df[f"GW{gw}"].iloc[row_index]
+        cell_color = color_fixtures(cell_value)  # Get the color
+        table.columns[f"GW{gw}"].rows[row_index].set_facecolor(cell_color)
 
 # --- Display the Table in Streamlit ---
 st.pyplot(fig)
