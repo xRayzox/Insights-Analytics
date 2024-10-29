@@ -298,19 +298,16 @@ for idx in range(len(league_df)):
     elif league_df.iloc[idx]['Rank'] >= 18:  # Assuming relegation zone starts at 18
         table.rows[idx].set_facecolor(row_colors["relegation"])
 
-# Find the index of the "Team" column based on the header row.
-team_col_idx = next(i for i, cell in enumerate(table.col_label_row.cells) if cell.content == f"GW{ct_gw}")
+# Find the index of the "GW{ct_gw}" column based on the header row
+column_idx = next(i for i, cell in enumerate(table.col_label_row.cells) if cell.content == f"GW{ct_gw}")
 
-# Access the first row (index 0) of the "Team" column.
-first_team_cell = table.rows[0].cells[team_col_idx].content
+# Extract all values from the column "GW{ct_gw}"
+column_values = [row.cells[column_idx].content for row in table.rows]
 
-# Display or use the content
-st.write("First team:", first_team_cell)
+# Display the values of the column
+st.write(f"Values in column GW{ct_gw}:", column_values)
 
-table.rows[0].cells[team_col_idx].set_facecolor("#f0f0f0")
 
-# Render the table or update the display.
-st.write(table)
 
 # --- Display the Table in Streamlit ---
 st.pyplot(fig)
