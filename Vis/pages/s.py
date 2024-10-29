@@ -106,8 +106,6 @@ def get_home_away_str_dict():
             merged_dict[i] = []
     return merged_dict
 
-
-
 home_away_dict = get_home_away_str_dict()
 
 def color_fixtures(val):
@@ -194,10 +192,13 @@ table = Table(
     column_border_kw={"linewidth": .5, "linestyle": "-"},
     ax=ax
 )
-for i, col in enumerate([f'GW{ct_gw}', f'GW{ct_gw+1}', f'GW{ct_gw+2}']):
+for i, col in enumerate([f'GW{ct_gw}', f'GW{ct_gw + 1}', f'GW{ct_gw + 2}']):
     for j in range(len(league_df)):
         color = color_fixtures(league_df[col].iloc[j])
         if color != 'none':
             ax.table.cell[j + 1, i + len(col_defs) - 3].set_facecolor(color)  # Adjust index for column position
+
+plt.axis('tight')
+plt.axis('off')
 # --- Display the Table in Streamlit ---
 st.pyplot(fig)
