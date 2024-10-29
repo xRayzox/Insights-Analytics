@@ -241,7 +241,7 @@ table = Table(
 table.rows[0].set_facecolor("#f0f0f0")
 
 # Draw form indicators with circular backgrounds
-for index, form in enumerate(table['Form']):
+for index, form in enumerate(table.columns['Form']):
     colors = form_color(form)
     for i, char in enumerate(form):
         # Create a circle patch for each character
