@@ -238,6 +238,8 @@ table = Table(
     column_border_kw={"linewidth": .5, "linestyle": "-"},
     ax=ax
 )
+table.rows[0].set_facecolor("#f0f0f0")
+
 # Draw form indicators with circular backgrounds
 for index, form in enumerate(league_df['Form']):
     colors = form_color(form)
