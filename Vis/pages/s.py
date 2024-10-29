@@ -231,7 +231,7 @@ table = Table(
     col_label_divider_kw={"linewidth": 1, "linestyle": "-"},
     column_border_kw={"linewidth": .5, "linestyle": "-"},
     ax=ax
-).autoset_fontcolors(colnames=[f'GW{ct_gw}', f'GW{ct_gw+1}'])
+).autoset_fontcolors(colnames=["GP", "W"])
 
 # --- Display the Table in Streamlit ---
 st.pyplot(fig)
