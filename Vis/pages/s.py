@@ -301,11 +301,17 @@ for idx in range(len(league_df)):
 for gw in range(ct_gw, ct_gw + 3):
     for row_index in range(len(league_df)):
         cell_value = league_df[f"GW{gw}"].iloc[row_index]
-        st.write(cell_value)
         cell_color = color_fixtures(cell_value)
-        st.write(cell_color)
-        # Correct way to access and set cell facecolor:
-        table.cells[row_index, table.columns.get_loc(f"GW{gw}")].set_facecolor(cell_color)
+
+        # Find column index manually
+        col_index = None
+        for i, col_def in enumerate(table.column_definitions):
+            if col_def.name == f"GW{gw}":
+                col_index = i
+                break
+
+        if col_index is not None:
+            table.cells[row_index, col_index].set_facecolor(cell_color)
 
 # --- Display the Table in Streamlit ---
 st.pyplot(fig)
