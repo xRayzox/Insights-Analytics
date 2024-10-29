@@ -214,7 +214,7 @@ col_defs = [
     )
 ]
 # --- Plottable Table ---
-fig, ax = plt.subplots(figsize=(20, 20))  # Adjust figsize for Streamlit
+fig, ax = plt.subplots(figsize=(30, 30))  # Adjust figsize for Streamlit
 fig.set_facecolor(bg_color)
 ax.set_facecolor(bg_color)
 
