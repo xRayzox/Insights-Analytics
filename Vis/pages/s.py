@@ -144,9 +144,6 @@ def color_fixtures(val):
     style = bg_color + '; ' + font_color
     return style
 
-gw1_colors = league_df[f'GW{ct_gw}'].apply(color_fixtures)
-gw2_colors = league_df[f'GW{ct_gw+1}'].apply(color_fixtures)
-gw3_colors = league_df[f'GW{ct_gw+2}'].apply(color_fixtures)
 ###############################################################
 # --- Streamlit App ---
 st.title("Premier League Table")
@@ -268,7 +265,6 @@ col_defs = [
         name="CS/Game",
         group="ByGame",
         textprops={'ha': "center"},
-        cmap=normed_cmap(league_df['CS/Game'], cmap=matplotlib.cm.PiYG, num_stds=2),
         width=1
     ),
     ColumnDefinition(
@@ -321,6 +317,10 @@ for idx in range(len(league_df)):
     elif league_df.iloc[idx]['Rank'] >= 18:  # Assuming relegation zone starts at 18
         table.rows[idx].set_facecolor(row_colors["relegation"])
 
+for idx in range(len(league_df)):
+    gw_value = league_df.iloc[idx][f'GW{ct_gw+1}']
+    color = color_fixtures(gw_value)
+    table.rows[idx].cells[-2].set_facecolor(color)  # Assuming GW{ct_gw+1} is the second to last cell in the row
 
 
 # --- Display the Table in Streamlit ---
