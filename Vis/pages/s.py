@@ -13,6 +13,7 @@ from plottable.cmap import normed_cmap
 from plottable.formatters import decimal_to_percent
 from plottable.plots import circled_image
 from plottable.plots import image
+
 import sys
 import os
 pd.set_option('future.no_silent_downcasting', True)
@@ -196,6 +197,7 @@ col_defs = [
         name="CS/Game",
         group="ByGame",
         textprops={'ha': "center"},
+        cmap=normed_cmap(league_df['CS/Game'], cmap=matplotlib.cm.PiYG, num_stds=2)
         width=1
     ),
     ColumnDefinition(
