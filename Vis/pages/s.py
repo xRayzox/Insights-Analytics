@@ -43,8 +43,6 @@ def load_image_from_url(url):
 ## Optimized function to get the fixture dictionary
 
 # --- Data Loading and Processing ---
-
-
 league_df = get_league_table()
 team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
 ct_gw = get_current_gw()
@@ -65,9 +63,7 @@ teams_df['logo_image'] = teams_df['logo_url'].apply(load_image_from_url)
 team_logo_mapping = pd.Series(teams_df['logo_image'].values, index=teams_df['short_name']).to_dict()
 # Map each team's logo image to the league DataFrame
 league_df['logo_team'] = league_df['Team'].map(team_logo_mapping)
-# Calculate and assign rankings in the league DataFramae
-
-
+# Calculate and assign rankings in the league DataFrame
 league_df['Rank'] = league_df['Pts'].rank(ascending=False, method='min').astype(int)
 
 ########################################
@@ -110,23 +106,23 @@ home_away_dict = get_home_away_str_dict()
 
 def color_fixtures(val):
     if val in home_away_dict[1]:
-        return '#147d1b'
+        return '#147d1b'  # Green
     elif val in home_away_dict[1.5]:
-        return '#0ABE4A'
+        return '#0ABE4A'  # Light Green
     elif val in home_away_dict[2]:
-        return '#00ff78'
+        return '#00ff78'  # Bright Green
     elif val in home_away_dict[2.5]:
-        return "#caf4bd"
+        return "#caf4bd"  # Light Yellow
     elif val in home_away_dict[3]:
-        return '#eceae6'
+        return '#eceae6'  # Gray
     elif val in home_away_dict[3.5]:
-        return "#fa8072"
+        return "#fa8072"  # Light Red
     elif val in home_away_dict[4]:
-        return '#ff0057'
+        return '#ff0057'  # Red
     elif val in home_away_dict[4.5]:
-        return '#C9054F'
+        return '#C9054F'  # Dark Red
     elif val in home_away_dict[5]:
-        return '#920947'
+        return '#920947'  # Darker Red
     else:
         return 'none'  # No background color
 
@@ -173,32 +169,23 @@ col_defs = [
     ColumnDefinition(name=f"GW{ct_gw+1}", group="Fixtures", textprops={'ha': "center"}, width=1),
     ColumnDefinition(name=f"GW{ct_gw+2}", group="Fixtures", textprops={'ha': "center"}, width=1)
 ]
+
 # --- Plottable Table ---
 fig, ax = plt.subplots(figsize=(16, 10))  # Adjust figsize for Streamlit
 fig.set_facecolor(bg_color)
 ax.set_facecolor(bg_color)
 
-table = Table(
-    league_df,
-    column_definitions=col_defs,
-    columns=['logo_team','Team', 'GP', 'W', 'D', 'L', 'GF', 'GA', 'GD', 'CS', 'Pts', 
-             'Pts/Game','Form', 'GF/Game', 'GA/Game', 'CS/Game', f'GW{ct_gw}', f'GW{ct_gw+1}', f'GW{ct_gw+2}'], 
-    index_col="Rank",
-    row_dividers=True,
-    row_divider_kw={"linewidth": 1, "linestyle": (0, (1, 5))},
-    footer_divider=True,
-    textprops={"fontsize": 14},  # Adjust fontsize for Streamlit
-    col_label_divider_kw={"linewidth": 1, "linestyle": "-"},
-    column_border_kw={"linewidth": .5, "linestyle": "-"},
-    ax=ax
-)
+table = Table(data=league_df[col_defs], ax=ax, cell_textprops={'fontsize': 12, 'color': text_color}, cell_linewidth=0.8)
+
+# --- Applying Colors ---
 for i, col in enumerate([f'GW{ct_gw}', f'GW{ct_gw + 1}', f'GW{ct_gw + 2}']):
     for j in range(len(league_df)):
         color = color_fixtures(league_df[col].iloc[j])
         if color != 'none':
-            ax.table.cell[j + 1, i + len(col_defs) - 3].set_facecolor(color)  # Adjust index for column position
+            # Correctly set the facecolor for the table cell
+            table.cell[j + 1, i + len(col_defs) - 3].set_facecolor(color)
 
 plt.axis('tight')
 plt.axis('off')
-# --- Display the Table in Streamlit ---
-st.pyplot(fig)
+
+st.pyplot(fig)  # Display the table in Streamlit
