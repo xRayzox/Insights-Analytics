@@ -197,7 +197,7 @@ col_defs = [
         name="CS/Game",
         group="ByGame",
         textprops={'ha': "center"},
-        cmap=normed_cmap(league_df['CS/Game'], cmap=matplotlib.cm.PiYG, num_stds=2)
+        cmap=normed_cmap(league_df['CS/Game'], cmap=matplotlib.cm.PiYG, num_stds=2),
         width=1
     ),
     ColumnDefinition(
