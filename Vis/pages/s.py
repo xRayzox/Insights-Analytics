@@ -302,6 +302,7 @@ for (row, col), cell in table.get_celld().items():
             color = color_fixtures(cell_value)  
             cell.set_facecolor(color)
 
+###
 # --- Table Styling (Adjust as needed) ---
 table.auto_set_font_size(False)
 table.set_fontsize(10) 
