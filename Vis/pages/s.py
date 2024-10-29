@@ -65,7 +65,7 @@ league_df['logo_team'] = league_df['Team'].map(team_logo_mapping)
 
 league_df['Rank'] = league_df['Pts'].rank(ascending=False, method='min').astype(int)
 
-st.write(league_df)
+
 # --- Streamlit App ---
 st.title("Premier League Table")
 
