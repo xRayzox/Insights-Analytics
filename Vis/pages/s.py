@@ -40,14 +40,14 @@ def load_image_from_url(url):
     image.save(temp_filename)
     return temp_filename
 
-def get_form_color(form):
-    colors = {
+def form_color(form):
+    color_mapping = {
         'W': '#28a745',  # Green for Win
         'D': '#ffc107',  # Orange for Draw
         'L': '#dc3545',  # Red for Loss
     }
-    # Return a list of colors based on the form string
-    return [colors[char] if char in colors else '#FFFFFF' for char in form]
+    # Create a list of colors for the form string
+    return [color_mapping[char] for char in form if char in color_mapping]
 
 
 # --- Data Loading and Processing ---
@@ -74,7 +74,7 @@ league_df['logo_team'] = league_df['Team'].map(team_logo_mapping)
 
 
 league_df['Rank'] = league_df['Pts'].rank(ascending=False, method='min').astype(int)
-league_df['Form_Color'] = league_df['Form'].apply(get_form_color)
+
 
 # --- Streamlit App ---
 st.title("Premier League Table")
@@ -178,7 +178,6 @@ col_defs = [
         name="Form",
         group="Points",
         textprops={'ha': "center"},
-        cell_style_fn=lambda idx: {"facecolor": league_df['Form_Color'].iloc[idx]},
         width=1
     ),
     ColumnDefinition(
@@ -223,6 +222,12 @@ col_defs = [
 fig, ax = plt.subplots(figsize=(20, 20))  # Adjust figsize for Streamlit
 fig.set_facecolor(bg_color)
 ax.set_facecolor(bg_color)
+
+for index, form in enumerate(league_df['Form']):
+    colors = form_color(form)
+    for i, char in enumerate(form):
+        # Draw each character with its corresponding color
+        ax.text(i + 0.5, index + 0.5, char, ha='center', va='center', color=colors[i], fontsize=14)
 
 table = Table(
     league_df,
