@@ -40,6 +40,45 @@ def load_image_from_url(url):
     image.save(temp_filename)
     return temp_filename
 
+## Optimized function to get the fixture dictionary
+def get_home_away_str_dict(new_fdr_df, new_fixt_df):
+    new_fdr_df.columns = new_fixt_cols
+    result_dict = {}
+    
+    for col in new_fdr_df.columns:
+        for value, string in zip(new_fdr_df[col], new_fixt_df[col]):
+            if value not in result_dict:
+                result_dict[value] = set()
+            result_dict[value].add(string)
+
+    for key in [1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]:
+        result_dict.setdefault(key, [])
+    return result_dict
+
+home_away_dict = get_home_away_str_dict()
+
+def color_fixtures(val):
+    if val in home_away_dict[1]:
+        return '#147d1b'
+    elif val in home_away_dict[1.5]:
+        return '#0ABE4A'
+    elif val in home_away_dict[2]:
+        return '#00ff78'
+    elif val in home_away_dict[2.5]:
+        return "#caf4bd"
+    elif val in home_away_dict[3]:
+        return '#eceae6'
+    elif val in home_away_dict[3.5]:
+        return "#fa8072"
+    elif val in home_away_dict[4]:
+        return '#ff0057'
+    elif val in home_away_dict[4.5]:
+        return '#C9054F'
+    elif val in home_away_dict[5]:
+        return '#920947'
+    else:
+        return 'none'  # No background color
+
 # --- Data Loading and Processing ---
 league_df = get_league_table()
 team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
@@ -86,124 +125,26 @@ matplotlib.rcParams["font.family"] = "monospace"
 
 # --- Column Definitions ---
 col_defs = [
-    ColumnDefinition(
-        name="Rank",
-        textprops={'ha': "center"},
-        width=1
-    ),
-    ColumnDefinition(
-        name="logo_team",
-        textprops={'ha': "center", 'va': "center", 'color': "white"},
-        plot_fn=image,
-        width=1,
-    ),
-    ColumnDefinition(
-        name="Team",
-        textprops={'ha': "center"},
-        width=1
-    ),
-    ColumnDefinition(
-        name="GP",
-        group="Matches Played",
-        textprops={'ha': "center"},
-        width=0.5
-    ),
-    ColumnDefinition(
-        name="W",
-        group="Matches Played",
-        textprops={'ha': "center"},
-        width=0.5
-    ),
-    ColumnDefinition(
-        name="D",
-        group="Matches Played",
-        textprops={'ha': "center"},
-        width=0.5
-    ),
-    ColumnDefinition(
-        name="L",
-        group="Matches Played",
-        textprops={'ha': "center"},
-        width=0.5
-    ),
-    ColumnDefinition(
-        name="GF",
-        group="Goals",
-        textprops={'ha': "center"},
-        width=0.5
-    ),
-    ColumnDefinition(
-        name="GA",
-        group="Goals",
-        textprops={'ha': "center"},
-        width=0.5
-    ),
-    ColumnDefinition(
-        name="GD",
-        group="Goals",
-        textprops={'ha': "center"},
-        width=0.5
-    ),
-    ColumnDefinition(
-        name="CS",
-        group="Goals",
-        textprops={'ha': "center"},
-        width=0.5
-    ),
-    ColumnDefinition(
-        name="Pts",
-        group="Points",
-        textprops={'ha': "center"},
-        width=0.5
-    ),
-    ColumnDefinition(
-        name="Pts/Game",
-        group="Points",
-        textprops={'ha': "center"},
-        width=1
-    ),
-    ColumnDefinition(
-        name="Form",
-        group="Points",
-        textprops={'ha': "center"},
-        width=1
-    ),
-    ColumnDefinition(
-        name="GF/Game",
-        group="ByGame",
-        textprops={'ha': "center"},
-        width=1
-    ),
-    ColumnDefinition(
-        name="GA/Game",
-        group="ByGame",
-        textprops={'ha': "center"},
-        width=1
-    ),
-    ColumnDefinition(
-        name="CS/Game",
-        group="ByGame",
-        textprops={'ha': "center"},
-        width=1
-    ),
-    ColumnDefinition(
-        name=f"GW{ct_gw}",
-        group="Fixtures",
-        textprops={'ha': "center"},
-        width=1
-    ),
-    ColumnDefinition(
-        name=f"GW{ct_gw+1}",
-        group="Fixtures",
-        textprops={'ha': "center"},
-        width=1
-    ),
-    ColumnDefinition(
-        name=f"GW{ct_gw+2}",
-        group="Fixtures",
-        textprops={'ha': "center"},
-        width=1
-    )
+    ColumnDefinition(name="Rank", textprops={'ha': "center"}, width=1),
+    ColumnDefinition(name="logo_team", textprops={'ha': "center", 'va': "center"}, plot_fn=image, width=1),
+    ColumnDefinition(name="Team", textprops={'ha': "center"}, width=1),
+    ColumnDefinition(name="GP", group="Matches Played", textprops={'ha': "center"}, width=0.5),
+    ColumnDefinition(name="W", group="Matches Played", textprops={'ha': "center"}, width=0.5),
+    ColumnDefinition(name="D", group="Matches Played", textprops={'ha': "center"}, width=0.5),
+    ColumnDefinition(name="L", group="Matches Played", textprops={'ha': "center"}, width=0.5),
+    ColumnDefinition(name="GF", group="Goals", textprops={'ha': "center"}, width=0.5),
+    ColumnDefinition(name="GA", group="Goals", textprops={'ha': "center"}, width=0.5),
+    ColumnDefinition(name="GD", group="Goals", textprops={'ha': "center"}, width=0.5),
+    ColumnDefinition(name="CS", group="Goals", textprops={'ha': "center"}, width=0.5),
+    ColumnDefinition(name="Pts", group="Points", textprops={'ha': "center"}, width=0.5),
+    ColumnDefinition(name="Pts/Game", group="Points", textprops={'ha': "center"}, width=0.5),
+    ColumnDefinition(name="Form", group="Points", textprops={'ha': "center"}, width=1),
+    ColumnDefinition(name="GF/Game", group="ByGame", textprops={'ha': "center"}, width=1),
+    ColumnDefinition(name="GA/Game", group="ByGame", textprops={'ha': "center"}, width=1),
+    ColumnDefinition(name="CS/Game", group="ByGame", textprops={'ha': "center"}, width=1),
+    ColumnDefinition(name=f"GW{ct_gw}", group="Fixtures", textprops={'ha': "center"}, width=1),
+    ColumnDefinition(name=f"GW{ct_gw+1}", group="Fixtures", textprops={'ha': "center"}, width=1),
+    ColumnDefinition(name=f"GW{ct_gw+2}", group="Fixtures", textprops={'ha': "center"}, width=1)
 ]
 # --- Plottable Table ---
 fig, ax = plt.subplots(figsize=(16, 10))  # Adjust figsize for Streamlit
@@ -224,5 +165,10 @@ table = Table(
     column_border_kw={"linewidth": .5, "linestyle": "-"},
     ax=ax
 )
+for i, col in enumerate([f'GW{ct_gw}', f'GW{ct_gw+1}', f'GW{ct_gw+2}']):
+    for j in range(len(league_df)):
+        color = color_fixtures(league_df[col].iloc[j])
+        if color != 'none':
+            ax.table.cell[j + 1, i + len(col_defs) - 3].set_facecolor(color)  # Adjust index for column position
 # --- Display the Table in Streamlit ---
 st.pyplot(fig)
