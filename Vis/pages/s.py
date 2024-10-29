@@ -261,9 +261,8 @@ for gw in range(ct_gw, ct_gw + 3):
             group="Fixtures",
             textprops={'ha': "center"},
             width=1,
-            #formatter=lambda val: (val, {'backgroundcolor': color_fixtures(val)})  # Correct formatter
-            #cmap=fixture_cmap
-        )
+            cmap=lambda val: normed_cmap(league_df[f'GW{gw}'], cmap=fixture_cmap, num_stds=2)(val)
+         )
     )
 
 
@@ -298,14 +297,6 @@ for idx in range(len(league_df)):
     elif league_df.iloc[idx]['Rank'] >= 18:  # Assuming relegation zone starts at 18
         table.rows[idx].set_facecolor(row_colors["relegation"])
 
-for gw in range(ct_gw, ct_gw + 3):
-    for row_index in range(len(league_df)):
-        cell_value = league_df[f"GW{gw}"].iloc[row_index]
-        cell_color = color_fixtures(cell_value)
-
-        # Get column index directly from table.columns
-        col_index = table.columns.index(f"GW{gw}")  
-        table.cells[row_index, col_index].set_facecolor(cell_color)
 
 # --- Display the Table in Streamlit ---
 st.pyplot(fig)
