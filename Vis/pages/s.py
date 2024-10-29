@@ -248,7 +248,7 @@ for idx in [17, 18, 19]:
     table.rows[idx].set_facecolor(row_colors["relegation"])
 
 # Draw form indicators with circular backgrounds
-for index, form in enumerate(table.columns['Form']):
+for index, form in enumerate(league_df['Form']):
     colors = form_color(form)
     for i, char in enumerate(form):
         # Create a circle patch for each character
