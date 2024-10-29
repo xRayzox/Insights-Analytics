@@ -238,19 +238,18 @@ table = Table(
     column_border_kw={"linewidth": .5, "linestyle": "-"},
     ax=ax
 )
-# Draw the circular form indicators
-for index, form in enumerate(league_df['Form']):
+
+
+# Draw form indicators with circular backgrounds
+for index, form in enumerate(table.columns['Form']):
     colors = form_color(form)
     for i, char in enumerate(form):
         # Create a circle patch for each character
-        circle = mpatches.Circle((0.5, index + 0.5), 0.2, color=colors[i], ec="none")
+        circle = mpatches.Circle((i + 0.5, index + 0.5), 0.2, color=colors[i], ec="none")
         ax.add_patch(circle)
         # Draw the character in the center of the circle
-        ax.text(0.5, index + 0.5, char, ha='center', va='center', color='white', fontsize=14)
+        ax.text(i + 0.5, index + 0.5, char, ha='center', va='center', color='white', fontsize=14)
 
-# --- Adjust the table's appearance ---
-# Remove the original Form column if it still exists
-table.columns.pop('Form')
 # --- Display the Table in Streamlit ---
 st.pyplot(fig)
 
