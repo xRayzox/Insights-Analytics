@@ -67,6 +67,9 @@ league_df['logo_team'] = league_df['Team'].map(team_logo_mapping)
 
 league_df['Rank'] = league_df['Pts'].rank(ascending=False, method='min').astype(int)
 
+cmap = LinearSegmentedColormap.from_list(
+    name="bugw", colors=["#ffffff", "#f2fbd2", "#c9ecb4", "#93d3ab", "#35b0ab"], N=256
+)
 
 # --- Streamlit App ---
 st.title("Premier League Table")
@@ -191,18 +194,21 @@ col_defs = [
     ColumnDefinition(
         name=f"GW{ct_gw}",
         group="Fixtures",
+        cmap=cmap,
         textprops={'ha': "center"},
         width=1
     ),
     ColumnDefinition(
         name=f"GW{ct_gw+1}",
         group="Fixtures",
+        cmap=cmap,
         textprops={'ha': "center"},
         width=1
     ),
     ColumnDefinition(
         name=f"GW{ct_gw+2}",
         group="Fixtures",
+        cmap=cmap,
         textprops={'ha': "center"},
         width=1
     )
