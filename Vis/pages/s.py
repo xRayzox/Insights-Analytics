@@ -238,24 +238,15 @@ table = Table(
     column_border_kw={"linewidth": .5, "linestyle": "-"},
     ax=ax
 )
-for (row, col), cell in table.cells.items():
-    if table.columns[col] == "Form":  # Check if it's the "Form" column
-        form_str = cell.get_text().get_text()
-        colors = form_color(form_str)
-
-        # Calculate cell boundaries for circle positioning
-        bbox = cell.get_bbox_in_axes(ax).transformed(ax.transData.inverted())
-        cell_left, cell_bottom, cell_right, cell_top = bbox.bounds
-        cell_width = cell_right - cell_left
-        cell_height = cell_top - cell_bottom
-
-        for i, char in enumerate(form_str):
-            circle_center_x = cell_left + (i + 0.5) * (cell_width / len(form_str))
-            circle_center_y = cell_bottom + cell_height / 2
-            circle_radius = min(cell_width / len(form_str), cell_height) * 0.4  # Adjust scaling
-
-            circle = plt.Circle((circle_center_x, circle_center_y), circle_radius, color=colors[i], ec="none")
-            ax.add_patch(circle)
+# Draw form indicators with circular backgrounds
+for index, form in enumerate(league_df['Form']):
+    colors = form_color(form)
+    for i, char in enumerate(form):
+        # Create a circle patch for each character
+        circle = mpatches.Circle((i + 0.5, index + 0.5), 0.2, color=colors[i], ec="none")
+        ax.add_patch(circle)
+        # Draw the character in the center of the circle
+        ax.text(i + 0.5, index + 0.5, char, ha='center', va='center', color='white', fontsize=14)
 
 # --- Display the Table in Streamlit ---
 st.pyplot(fig)
