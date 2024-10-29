@@ -35,7 +35,10 @@ st.set_page_config(layout="wide")  # Use wide layout for better table visualizat
 def load_image_from_url(url):
     with urllib.request.urlopen(url) as response:
         image = Image.open(response).convert("RGBA")
-    return image
+    # Save the image to a temporary file
+    temp_filename = f"temp_{os.path.basename(url)}"
+    image.save(temp_filename)
+    return temp_filename
 
 # --- Data Loading and Processing ---
 league_df = get_league_table()
