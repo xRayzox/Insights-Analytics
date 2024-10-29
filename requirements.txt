@@ -12,3 +12,4 @@ cachetools
 aiohttp
 dask
 highlight_text
+plottable
