@@ -293,9 +293,17 @@ table = Table(
     ax=ax
 )
 # Color a specific cell (e.g., color the 'Pts' of Team A)
-cell_to_color = table.cells[1][2]  # Access row 1, column 2 (Team A's Pts)
-cell_to_color.set_facecolor('#ffcccb')  # Light red color
-st.write(table.col_label_row)
+try:
+    row_index = 0  # Change to the desired row index (0 for Team A)
+    col_index = 2  # Change to the desired column index (2 for Pts)
+    
+    # Access the specific cell and set its color
+    cell_to_color = table.cells[row_index][col_index]
+    cell_to_color.set_facecolor('#ffcccb')  # Light red color
+except IndexError as e:
+    st.error(f"IndexError: {str(e)}. Check the structure of table.cells.")
+except KeyError as e:
+    st.error(f"KeyError: {str(e)}. Ensure the indices used to access cells are valid.")
 for idx in range(len(league_df)):
     if league_df.iloc[idx]['Rank'] <= 4:
         table.rows[idx].set_facecolor(row_colors["top4"])
