@@ -349,6 +349,8 @@ max_o = rating_df["o_rating" + ("_" + model_type if model_type else "")].max()
 max_d = rating_df["d_rating" + ("_" + model_type if model_type else "")].max()
 
 
+# Load images from URLs and create a new column for temporary file paths
+teams_df['temp_logo'] = teams_df['logo_url'].apply(load_image_from_url)
 
 # Scatter plot setup
 x_domain = [teams_df["d_rating" + ("_" + model_type if model_type else "")].min() - 0.5, 
@@ -379,7 +381,7 @@ scatter_plot = (
             alt.Tooltip("d_rating" + ("_" + model_type if model_type else ""), title="Defensive Rating", format=".2f"),
         ],
         # Specify the image URL column
-        href="logo_url"
+        href="temp_logo"
     )
 )
 
