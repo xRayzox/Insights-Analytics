@@ -374,7 +374,7 @@ scatter_plot = (
             title="Offensive Rating",
             scale=alt.Scale(domain=y_range),
         ),
-        url='temp_logo',  # Use the temporary logo path
+        url='logo_url',  # Use the temporary logo path
         tooltip=[
             alt.Tooltip("name", title="Team"),
             alt.Tooltip("ovr_rating" + ("_" + model_type if model_type else ""), title="Overall Rating", format="d"),
