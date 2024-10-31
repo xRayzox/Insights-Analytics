@@ -1,20 +1,13 @@
 import streamlit as st
 from pathlib import Path
-import matplotlib
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import urllib.request
 from PIL import Image
-from matplotlib.colors import LinearSegmentedColormap
-import matplotlib.patches as mpatches
-from plottable import ColumnDefinition, Table
-from plottable.cmap import normed_cmap
-from plottable.formatters import decimal_to_percent
-from plottable.plots import circled_image
-from plottable.plots import image
 import sys
 import os
+from st_aggrid import AgGrid, GridOptionsBuilder
+
 pd.set_option('future.no_silent_downcasting', True)
 
 # Adjust the path to include the FPL directory (assuming it's one level up)
@@ -49,7 +42,6 @@ def form_color(form):
     # Create a list of colors for the form string
     return [color_mapping[char] for char in form if char in color_mapping]
 
-
 # --- Data Loading and Processing ---
 league_df = get_league_table()
 team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
@@ -73,36 +65,7 @@ league_df['logo_team'] = league_df['Team'].map(team_logo_mapping)
 # Calculate and assign rankings in the league DataFramae
 league_df['Rank'] = league_df['Pts'].rank(ascending=False, method='min').astype(int)
 
-def get_home_away_str_dict():
-    new_fdr_df.columns = new_fixt_cols
-    result_dict = {}
-    for col in new_fdr_df.columns:
-        values = list(new_fdr_df[col])
-        max_length = new_fixt_df[col].str.len().max()
-        if max_length > 7:
-            new_fixt_df.loc[new_fixt_df[col].str.len() <= 7, col] = new_fixt_df[col].str.pad(width=max_length + 9, side='both', fillchar=' ')
-        strings = list(new_fixt_df[col])
-        value_dict = {}
-        for value, string in zip(values, strings):
-            if value not in value_dict:
-                value_dict[value] = []
-            value_dict[value].append(string)
-        result_dict[col] = value_dict
-
-    merged_dict = {k: [] for k in [1.5, 2.5, 3.5, 4.5]}
-    for k, dict1 in result_dict.items():
-        for key, value in dict1.items():
-            if key in merged_dict:
-                merged_dict[key].extend(value)
-            else:
-                merged_dict[key] = value
-    for k, v in merged_dict.items():
-        merged_dict[k] = list(set(v))
-    for i in range(1, 6):
-        if i not in merged_dict:
-            merged_dict[i] = []
-    return merged_dict
-home_away_dict = get_home_away_str_dict()
+# Adding color for home and away games
 def color_fixtures(val):
     color_map = {
         1: "#147d1b",
@@ -115,190 +78,27 @@ def color_fixtures(val):
         4.5: "#C9054F",
         5: "#920947",
     }
-    for key in color_map:
-        if val in home_away_dict[key]:
-            return color_map[key]
-    return "#FF0000"  # Default color if no match
-
-
-# Assuming league_df is defined and populated.
-
-
-# Modify cmap for Fixture Column Definitions
-def fixture_cmap(val):
-    return color_fixtures(val)  # Directly return the color
+    return color_map.get(val, "#FF0000")  # Default color if no match
 
 
 # --- Streamlit App ---
 st.title("Premier League Table")
 
-# --- Table Styling ---
-bg_color = "#FFFFFF"
-text_color = "#000000"
+# Convert the 'league_df' into a DataFrame ready for AG Grid
+league_df['Form'] = league_df['Form'].apply(lambda x: ''.join(form_color(x)))  # Apply form colors as a string
 
-row_colors = {
-    "top4": "#E1FABC",
-    "top6": "#FFFC97",
-    "relegation": "#E79A9A",
-    "even": "#E2E2E1",
-    "odd": "#B3B0B0"
-}
+# --- Configuring AG Grid ---
+gb = GridOptionsBuilder.from_dataframe(league_df)
+gb.configure_pagination(paginationAutoPageSize=True)  # Enable pagination
+gb.configure_default_column(groupable=True, value=True, enableRowGroup=True, aggFunc='sum', editable=True)
+gb.configure_column("Rank", sort='asc')
+gridOptions = gb.build()
 
-matplotlib.rcParams["text.color"] = text_color
-matplotlib.rcParams["font.family"] = "monospace"
-
-# --- Column Definitions ---
-col_defs = [
-    ColumnDefinition(
-        name="Rank",
-        textprops={'ha': "center"},
-        width=1
-    ),
-    ColumnDefinition(
-        name="logo_team",
-        textprops={'ha': "center", 'va': "center", 'color': "white"},
-        plot_fn=image,
-        width=1,
-    ),
-    ColumnDefinition(
-        name="Team",
-        textprops={'ha': "center"},
-        width=1
-    ),
-    ColumnDefinition(
-        name="GP",
-        group="Matches Played",
-
-        textprops={'ha': "center"},
-        width=0.5
-    ),
-    ColumnDefinition(
-        name="W",
-        group="Matches Played",
-
-        textprops={'ha': "center"},
-        width=0.5
-    ),
-    ColumnDefinition(
-        name="D",
-        group="Matches Played",
-        textprops={'ha': "center"},
-        width=0.5
-    ),
-    ColumnDefinition(
-        name="L",
-        group="Matches Played",
-        textprops={'ha': "center"},
-        width=0.5
-    ),
-    ColumnDefinition(
-        name="GF",
-        group="Goals",
-        textprops={'ha': "center"},
-        width=0.5
-    ),
-    ColumnDefinition(
-        name="GA",
-        group="Goals",
-        textprops={'ha': "center"},
-        width=0.5
-    ),
-    ColumnDefinition(
-        name="GD",
-        group="Goals",
-        textprops={'ha': "center"},
-        width=0.5
-    ),
-    ColumnDefinition(
-        name="CS",
-        group="Goals",
-        textprops={'ha': "center"},
-        width=0.5
-    ),
-    ColumnDefinition(
-        name="Pts",
-        group="Points",
-        textprops={'ha': "center"},
-        width=1
-    ),
-    ColumnDefinition(
-        name="Pts/Game",
-        group="Points",
-        textprops={'ha': "center"},
-        width=1
-    ),
-    ColumnDefinition(
-        name="Form",
-        group="Points",
-        textprops={'ha': "center"},
-        width=1
-    ),
-    ColumnDefinition(
-        name="GF/Game",
-        group="ByGame",
-        textprops={'ha': "center"},
-        width=1
-    ),
-    ColumnDefinition(
-        name="GA/Game",
-        group="ByGame",
-        textprops={'ha': "center"},
-        width=1
-    ),
-    ColumnDefinition(
-        name="CS/Game",
-        group="ByGame",
-        textprops={'ha': "center"},
-        width=1
-    ),
-    
-]
-
-# Modify Fixture Column Definitions
-for gw in range(ct_gw, ct_gw + 3):
-    col_defs.append(
-        ColumnDefinition(
-            name=f"GW{gw}",
-            group="Fixtures",
-            textprops={'ha': "center"},
-            width=1,
-            cmap=lambda val: fixture_cmap(val)  # Use fixture_cmap directly
-         )
-    )
-
-
-# --- Plottable Table ---
-fig, ax = plt.subplots(figsize=(20, 20))  # Adjust figsize for Streamlit
-fig.set_facecolor(bg_color)
-ax.set_facecolor(bg_color)
-
-
-
-table = Table(
+# --- Display the Table in Streamlit with AG Grid ---
+AgGrid(
     league_df,
-    column_definitions=col_defs,
-    columns=['logo_team','Team', 'GP', 'W', 'D', 'L', 'GF', 'GA', 'GD', 'CS', 'Pts', 
-             'Pts/Game','Form', 'GF/Game', 'GA/Game', 'CS/Game', f'GW{ct_gw}', f'GW{ct_gw+1}', f'GW{ct_gw+2}'], 
-    index_col="Rank",
-    row_dividers=True,
-    row_divider_kw={"linewidth": 1, "linestyle": (0, (1, 5))},
-    footer_divider=True,
-    textprops={"fontsize": 14},  # Adjust fontsize for Streamlit
-    col_label_divider_kw={"linewidth": 1, "linestyle": "-"},
-    column_border_kw={"linewidth": .5, "linestyle": "-"},
-    ax=ax
+    gridOptions=gridOptions,
+    enable_enterprise_modules=True,
+    allow_unsafe_jscode=True,  # This is required to render the colored cells properly
+    theme='alpine'  # Select the theme
 )
-
-
-for idx in range(len(league_df)):
-    if league_df.iloc[idx]['Rank'] <= 4:
-        table.rows[idx].set_facecolor(row_colors["top4"])
-    elif league_df.iloc[idx]['Rank'] <= 6:
-        table.rows[idx].set_facecolor(row_colors["top6"])
-    elif league_df.iloc[idx]['Rank'] >= 18:  # Assuming relegation zone starts at 18
-        table.rows[idx].set_facecolor(row_colors["relegation"])
-
-
-
-# --- Display the Table in Streamlit ---
-st.pyplot(fig)
