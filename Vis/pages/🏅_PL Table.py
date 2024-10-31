@@ -375,7 +375,7 @@ def getImage(path):
 
 # Plot team logos
 for index, row in rating_df.iterrows():
-    ab = AnnotationBbox(getImage(row['temp_logo']), 
+    ab = AnnotationBbox(getImage(row['logo_url']), 
                         (row['d_rating' + ("_" + model_type if model_type else "")], 
                          row['o_rating' + ("_" + model_type if model_type else "")]), 
                         frameon=False)
