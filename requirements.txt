@@ -13,7 +13,4 @@ aiohttp
 dask
 highlight_text
 plottable
-reactable
-great_tables
-bokeh==2.4.3
 streamlit-aggrid
