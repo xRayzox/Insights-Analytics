@@ -73,22 +73,51 @@ league_df['logo_team'] = league_df['Team'].map(team_logo_mapping)
 # Calculate and assign rankings in the league DataFramae
 league_df['Rank'] = league_df['Pts'].rank(ascending=False, method='min').astype(int)
 
-def get_home_away_str_dict():
-    new_fdr_df.columns = new_fixt_cols
+def custom_plot_fn(ax: plt.Axes, val: Any):
+    """
+    Custom plot function to visualize data based on cell values.
+
+    Args:
+        ax (plt.Axes): The axes on which to plot.
+        val (Any): The value from the cells.
+    """
+    # You can add your plotting logic here
+    data = my_data_dict.get(val)  # Retrieve data based on val
+    if data:
+        ax.plot(data)  # Example plot; modify as needed
+
+def get_home_away_str_dict(new_fdr_df, new_fixt_df) -> Dict:
+    """
+    Create a dictionary that maps values from new_fdr_df to strings in new_fixt_df.
+
+    Args:
+        new_fdr_df: DataFrame containing fixture data.
+        new_fixt_df: DataFrame containing fixture strings.
+
+    Returns:
+        Dict: A dictionary mapping values to strings.
+    """
+    new_fdr_df.columns = new_fixt_cols  # Set the columns for new_fdr_df
     result_dict = {}
+    
+    # Populate result_dict with values and padded strings
     for col in new_fdr_df.columns:
         values = list(new_fdr_df[col])
         max_length = new_fixt_df[col].str.len().max()
         if max_length > 7:
             new_fixt_df.loc[new_fixt_df[col].str.len() <= 7, col] = new_fixt_df[col].str.pad(width=max_length + 9, side='both', fillchar=' ')
+        
         strings = list(new_fixt_df[col])
         value_dict = {}
+        
         for value, string in zip(values, strings):
             if value not in value_dict:
                 value_dict[value] = []
             value_dict[value].append(string)
+        
         result_dict[col] = value_dict
 
+    # Merge values based on certain keys
     merged_dict = {k: [] for k in [1.5, 2.5, 3.5, 4.5]}
     for k, dict1 in result_dict.items():
         for key, value in dict1.items():
@@ -96,18 +125,28 @@ def get_home_away_str_dict():
                 merged_dict[key].extend(value)
             else:
                 merged_dict[key] = value
+    
+    # Remove duplicates and ensure all keys are present
     for k, v in merged_dict.items():
         merged_dict[k] = list(set(v))
+    
     for i in range(1, 6):
         if i not in merged_dict:
             merged_dict[i] = []
+    
     return merged_dict
-home_away_dict = get_home_away_str_dict()
-def color_fixtures(val):
-    # You can define the logic to extract the numerical part if needed
-    # For example, if `val` is like "bou (h)", we might want to focus on just the numeric part
+
+def color_fixtures(val: str) -> str:
+    """
+    Color fixtures based on the given value.
+
+    Args:
+        val (str): The fixture value.
+
+    Returns:
+        str: The color code for the fixture.
+    """
     print(f"Coloring for fixture value: {val}")  # Debug print
-    # Check if the value matches any in home_away_dict
     for key in home_away_dict.keys():
         if val in home_away_dict[key]:
             return {
@@ -124,14 +163,9 @@ def color_fixtures(val):
     
     return "#FF0000"  # Default color if no match
 
-
-# Assuming league_df is defined and populated.
-
-
 # Modify cmap for Fixture Column Definitions
 def fixture_cmap(val):
     return color_fixtures(val)  # Directly return the color
-
 
 # --- Streamlit App ---
 st.title("Premier League Table")
@@ -266,7 +300,8 @@ for gw in range(ct_gw, ct_gw + 3):
             group="Fixtures",
             textprops={'ha': "center"},
             width=1,
-            cmap=lambda val: color_fixtures(val)   # Use fixture_cmap directly
+            cmap=lambda val: color_fixtures(val),   # Use fixture_cmap directly
+            plot_fn=custom_plot_fn
          )
     )
 
@@ -292,18 +327,8 @@ table = Table(
     column_border_kw={"linewidth": .5, "linestyle": "-"},
     ax=ax
 )
-# Color a specific cell (e.g., color the 'Pts' of Team A)
-try:
-    row_index = 5  # Change to the desired row index (0 for Team A)
-    col_index = 2  # Change to the desired column index (2 for Pts)
-    
-    # Access the specific cell and set its color
-    cell_to_color = table.cells[row_index][col_index]
-    cell_to_color.set_facecolor('#ffcccb')  # Light red color
-except IndexError as e:
-    st.error(f"IndexError: {str(e)}. Check the structure of table.cells.")
-except KeyError as e:
-    st.error(f"KeyError: {str(e)}. Ensure the indices used to access cells are valid.")
+
+
 for idx in range(len(league_df)):
     if league_df.iloc[idx]['Rank'] <= 4:
         table.rows[idx].set_facecolor(row_colors["top4"])
