@@ -324,13 +324,18 @@ model_type = "example"  # or None
 # Create columns
 col1, col2, col3 = st.columns(3)
 
-# Display ProgressBars
+# Display ProgressBars with labels
 with col1:
-    st.progress(50, label="Overall Rating")
+    st.write("Overall Rating")  # Display the label
+    st.progress(50)  # Show the progress bar
+
 with col2:
-    st.progress(70, label="Offensive Rating")
+    st.write("Offensive Rating")  # Display the label
+    st.progress(70)  # Show the progress bar
+
 with col3:
-    st.progress(90, label="Defensive Rating")
+    st.write("Defensive Rating")  # Display the label
+    st.progress(90)  # Show the progress bar
 
 """
 # Set the title and caption
