@@ -351,13 +351,14 @@ max_d = rating_df["d_rating" + ("_" + model_type if model_type else "")].max()
 
 
 # Scatter plot setup
-x_domain = [teams_df["d_rating" + ("_" + model_type if model_type else "")].min()-0.1, teams_df["d_rating" + ("_" + model_type if model_type else "")].max() + 0.1]
-y_range = [teams_df["o_rating" + ("_" + model_type if model_type else "")].min()-100, teams_df["o_rating" + ("_" + model_type if model_type else "")].max() + 100]
-
+x_domain = [teams_df["d_rating" + ("_" + model_type if model_type else "")].min() - 0.5, 
+             teams_df["d_rating" + ("_" + model_type if model_type else "")].max() + 0.5]  # Expanded domain
+y_range = [teams_df["o_rating" + ("_" + model_type if model_type else "")].min() - 200, 
+            teams_df["o_rating" + ("_" + model_type if model_type else "")].max() + 200]  # Expanded range
 # Create scatter plot with reduced size
 scatter_plot = (
     alt.Chart(teams_df, height=400, width=500)  # Adjust height and width here
-    .mark_point(filled=True, size=100)
+    .mark_image(size=150)
     .encode(
         x=alt.X(
             "d_rating" + ("_" + model_type if model_type else ""),
@@ -377,6 +378,8 @@ scatter_plot = (
             alt.Tooltip("o_rating" + ("_" + model_type if model_type else ""), title="Offensive Rating", format="d"),
             alt.Tooltip("d_rating" + ("_" + model_type if model_type else ""), title="Defensive Rating", format=".2f"),
         ],
+        # Specify the image URL column
+        href="logo_url"
     )
 )
 
