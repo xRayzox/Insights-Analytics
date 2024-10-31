@@ -385,7 +385,7 @@ y_range = [teams_df["o_rating" + ("_" + model_type if model_type else "")].min()
 # Create scatter plot
 scatter_plot = (
     alt.Chart(teams_df, height=400, width=500)
-    .mark_image()  # Adjust size as needed
+    .mark_image(width=50,height=50)  # Adjust size as needed
     .encode(
         x=alt.X(
             "d_rating" + ("_" + model_type if model_type else ""),
