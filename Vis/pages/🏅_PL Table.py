@@ -183,7 +183,6 @@ def custom_plot_fn(ax: plt.Axes, val):
 # --- Table Styling ---
 bg_color = "#FFFFFF"
 text_color = "#000000"
-
 row_colors = {
     "top4": "#E1FABC",
     "top6": "#FFFC97",
@@ -191,11 +190,8 @@ row_colors = {
     "even": "#E2E2E1",
     "odd": "#B3B0B0"
 }
-
-
 matplotlib.rcParams["text.color"] = text_color
 matplotlib.rcParams["font.family"] = "monospace"
-
 # --- Column Definitions ---
 col_defs = [
     ColumnDefinition("Rank", 1, textprops={'ha': "center"}),
@@ -216,26 +212,14 @@ col_defs = [
     ColumnDefinition("GA/Game", 1, textprops={'ha': "center"}, group="By Game"),
     ColumnDefinition("CS/Game", 1, textprops={'ha': "center"}, group="By Game"),
 ]
-
-# Modify Fixture Column Definitions
 for gw in range(ct_gw, ct_gw + 3):
     col_defs.append(
-        ColumnDefinition(
-            name=f"GW{gw}",
-            group="Fixtures",
-            textprops={'ha': "center"},
-            width=1,
-            plot_fn=custom_plot_fn  # Use the custom plotting function
-        )
+        ColumnDefinition(name=f"GW{gw}",group="Fixtures",textprops={'ha': "center"},width=1,plot_fn=custom_plot_fn)
     )
-
-
 # --- Plottable Table ---
 fig, ax = plt.subplots(figsize=(20, 20))  # Adjust figsize for Streamlit
 fig.set_facecolor(bg_color)
 ax.set_facecolor(bg_color)
-
-
 
 table = Table(
     league_df,
