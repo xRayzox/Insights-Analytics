@@ -237,7 +237,7 @@ def get_image_sui(player_name):
     p_id = [k for k, v in full_player_dict.items() if v == player_name]
     df = ele_df.copy()
     p_image = df.loc[df['id'] == p_id[0]]
-    image = p_image["code"]
+    image = p_image
     return image
 
 ##########################################################################
