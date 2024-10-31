@@ -198,110 +198,23 @@ matplotlib.rcParams["font.family"] = "monospace"
 
 # --- Column Definitions ---
 col_defs = [
-    ColumnDefinition(
-        name="Rank",
-        textprops={'ha': "center"},
-        width=1
-    ),
-    ColumnDefinition(
-        name="logo_team",
-        textprops={'ha': "center", 'va': "center", 'color': "white"},
-        plot_fn=image,
-        width=1,
-    ),
-    ColumnDefinition(
-        name="Team",
-        textprops={'ha': "center"},
-        width=1
-    ),
-    ColumnDefinition(
-        name="GP",
-        group="Matches Played",
-
-        textprops={'ha': "center"},
-        width=0.5
-    ),
-    ColumnDefinition(
-        name="W",
-        group="Matches Played",
-
-        textprops={'ha': "center"},
-        width=0.5
-    ),
-    ColumnDefinition(
-        name="D",
-        group="Matches Played",
-        textprops={'ha': "center"},
-        width=0.5
-    ),
-    ColumnDefinition(
-        name="L",
-        group="Matches Played",
-        textprops={'ha': "center"},
-        width=0.5
-    ),
-    ColumnDefinition(
-        name="GF",
-        group="Goals",
-        textprops={'ha': "center"},
-        width=0.5
-    ),
-    ColumnDefinition(
-        name="GA",
-        group="Goals",
-        textprops={'ha': "center"},
-        width=0.5
-    ),
-    ColumnDefinition(
-        name="GD",
-        group="Goals",
-        textprops={'ha': "center"},
-        width=0.5
-    ),
-    ColumnDefinition(
-        name="CS",
-        group="Goals",
-        textprops={'ha': "center"},
-        width=0.5
-    ),
-    ColumnDefinition(
-        name="Pts",
-        group="Points",
-        textprops={'ha': "center"},
-        width=1
-    ),
-    ColumnDefinition(
-        name="Pts/Game",
-        group="Points",
-        textprops={'ha': "center"},
-        width=1
-    ),
-    ColumnDefinition(
-        name="Form",
-        group="Points",
-        textprops={'ha': "center"},
-        plot_fn=custom_plot_fn_form,
-        width=2
-    ),
-    ColumnDefinition(
-        name="GF/Game",
-        group="ByGame",
-        textprops={'ha': "center"},
-        width=1
-    ),
-    ColumnDefinition(
-        name="GA/Game",
-        group="ByGame",
-        textprops={'ha': "center"},
-        width=1
-    ),
-    ColumnDefinition(
-        name="CS/Game",
-        group="ByGame",
-        textprops={'ha': "center"},
-        width=1
-    ),
-    
+    ColumnDefinition("Rank", 1, textprops={'ha': "center"}),
+    ColumnDefinition("logo_team", 1, textprops={'ha': "center", 'va': "center", 'color': "white"}, plot_fn=image),
+    ColumnDefinition("Team", 1, textprops={'ha': "center"}, group="Team Info"),
+    ColumnDefinition("GP", 0.5, textprops={'ha': "center"}, group="Matches Played"),
+    ColumnDefinition("W", 0.5, textprops={'ha': "center"}, group="Matches Played"),
+    ColumnDefinition("D", 0.5, textprops={'ha': "center"}, group="Matches Played"),
+    ColumnDefinition("L", 0.5, textprops={'ha': "center"}, group="Matches Played"),
+    ColumnDefinition("GF", 0.5, textprops={'ha': "center"}, group="Goals"),
+    ColumnDefinition("GA", 0.5, textprops={'ha': "center"}, group="Goals"),
+    ColumnDefinition("GD", 0.5, textprops={'ha': "center"}, group="Goals"),
+    ColumnDefinition("CS", 0.5, textprops={'ha': "center"}, group="Goals"),
+    ColumnDefinition("Pts", 1, textprops={'ha': "center"}, group="Points"),
+    ColumnDefinition("Pts/Game", 1, textprops={'ha': "center"}, group="Points"),
+    ColumnDefinition("Form", 2, textprops={'ha': "center"}, plot_fn=custom_plot_fn_form, group="Points"),
+    ColumnDefinition("GF/Game", 1, textprops={'ha': "center"}, group="By Game"),  
+    ColumnDefinition("GA/Game", 1, textprops={'ha': "center"}, group="By Game"),
+    ColumnDefinition("CS/Game", 1, textprops={'ha': "center"}, group="By Game"),
 ]
 
 # Modify Fixture Column Definitions
