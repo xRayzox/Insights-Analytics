@@ -1,37 +1,37 @@
 import pandas as pd
 import requests
+import asyncio
+import aiohttp
 
+# Cache to store fetched data
+cache = {}
+
+async def fetch(session, url):
+    if url in cache:
+        return cache[url]
+    async with session.get(url) as response:
+        if response.status != 200:
+            raise Exception(f'Response was status code {response.status}')
+        data = await response.json()
+        cache[url] = data
+        return data
+
+async def get_data(urls):
+    async with aiohttp.ClientSession() as session:
+        tasks = [fetch(session, url) for url in urls]
+        return await asyncio.gather(*tasks)
+    
 base_url = 'https://fantasy.premierleague.com/api/'
 
 # Function to get general data (bootstrap data) from the FPL API
 
-def get_bootstrap_data() -> dict:
-    """
-    Options
-    -------
-        ['element_stats']
-        ['element_types']
-        ['elements']
-        ['events']
-        ['game_settings']
-        ['phases']
-        ['teams']
-        ['total_players']
-    """
-    resp = requests.get(f'{base_url}bootstrap-static/')
-    if resp.status_code != 200:
-        raise Exception(f'Response was status code {resp.status_code}')
-    else:
-        return resp.json()
+async def get_bootstrap_data():
+    return await fetch(None, f'{base_url}bootstrap-static/')
 
 # Function to get fixture data (upcoming matches)
 
-def get_fixture_data() -> dict:
-    resp = requests.get(f'{base_url}fixtures/')
-    if resp.status_code != 200:
-        raise Exception(f'Response was status code {resp.status_code}')
-    else:
-        return resp.json()
+async def get_fixture_data():
+    return await fetch(None, f'{base_url}fixtures/')
     
 
 # Function to get player-specific data
@@ -333,31 +333,34 @@ def add_fixts_to_lg_table(new_fixt_df):
 ## Very slow to load, works but needs to be sped up.
 def get_home_away_str_dict():
     new_fixt_df, new_fdr_df = filter_fixture_dfs_by_gw()
-    result_dict = {}
-    for column in new_fdr_df.columns:
-        values = list(new_fdr_df[column])
-        strings = list(new_fixt_df[column])
-        value_dict = {}
-        for value, string in zip(values, strings):
-            if value not in value_dict:
-                value_dict[value] = []
-            value_dict[value].append(string)
-        result_dict[column] = value_dict
     
-    merged_dict = {}
-    for k, dict1 in result_dict.items():
-        for key, value in dict1.items():
-            if key in merged_dict:
-                merged_dict[key].extend(value)
-            else:
-                merged_dict[key] = value
-    for k, v in merged_dict.items():
-        decoupled_list = list(set(v))
-        merged_dict[k] = decoupled_list
-    for i in range(1,6):
-        if i not in merged_dict:
-            merged_dict[i] = []
-    return merged_dict
+    # Create a mapping of fixture difficulty rating to their corresponding strings
+    ha_dict = {1: [], 2: [], 3: [], 4: [], 5: []}
+
+    for column in new_fdr_df.columns:
+        values = new_fdr_df[column].to_numpy()
+        strings = new_fixt_df[column].to_numpy()
+
+        # Create a mapping for values to their corresponding strings
+        value_dict = {value: [] for value in set(values)}
+        for value, string in zip(values, strings):
+            value_dict[value].append(string)
+
+        # Merge the results into ha_dict
+        for value, string_list in value_dict.items():
+            if value in ha_dict:
+                ha_dict[value].extend(string_list)
+
+    # Deduplicate the strings in ha_dict
+    for key in ha_dict.keys():
+        ha_dict[key] = list(set(ha_dict[key]))
+
+    # Ensure all keys 1-5 are present in the final dictionary
+    for i in range(1, 6):
+        if i not in ha_dict:
+            ha_dict[i] = []
+    
+    return ha_dict
 
 
 def color_fixtures(val):
