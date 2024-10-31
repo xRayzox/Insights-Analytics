@@ -133,7 +133,7 @@ def custom_plot_fn(ax: plt.Axes, val):
     # For example, displaying the fixture as text
     ax.text(0.5, 0.5, str(val), fontsize=10, ha='center', va='center')
     st.error(color_fixtures(val))
-    ax.set_facecolor(color_fixtures(val))  # Set cell background color
+    ax.set_facecolor("#000000") # Set cell background color
 
 # --- Streamlit App ---
 st.title("Premier League Table")
