@@ -321,6 +321,7 @@ for idx in range(len(league_df)):
 st.pyplot(fig)
 
 ####################################################
+import tempfile
 
 # Function to download and save images to a temporary file
 def download_image_to_temp(url):
