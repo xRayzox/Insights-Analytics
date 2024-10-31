@@ -126,7 +126,8 @@ def color_fixtures(val):
 
 # Modify cmap for Fixture Column Definitions
 def fixture_cmap(val):
-    return color_fixtures(val)  # Directly return the color
+    color_value = color_fixtures(val)  # Get numeric color value
+    return cmap(color_value / 5) if color_value else "#ffffff"  # Scale color
 
 cmap = LinearSegmentedColormap.from_list(
     name="bugw", colors=["#ffffff", "#f2fbd2", "#c9ecb4", "#93d3ab", "#35b0ab"], N=256
@@ -264,7 +265,7 @@ for gw in range(ct_gw, ct_gw + 3):
             group="Fixtures",
             textprops={'ha': "center"},
             width=1,
-            cmap=normed_cmap(fixture_cmap(f"GW{gw}"), cmap=matplotlib.cm.PiYG_r, num_stds=2.5)
+            cmap=cmap
          )
     )
 
