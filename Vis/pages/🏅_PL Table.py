@@ -132,45 +132,32 @@ if 'logo_base64' not in teams_df.columns:
 def get_home_away_str_dict():
     new_fdr_df.columns = new_fixt_cols
     result_dict = {}
-
-    # Compute the maximum lengths once
-    max_lengths = new_fixt_df[new_fixt_cols].apply(lambda col: col.str.len().max(), axis=0)
-    
-    # Pad strings where needed
-    for col in new_fixt_cols:
-        if max_lengths[col] > 7:
-            new_fixt_df.loc[new_fixt_df[col].str.len() <= 7, col] = new_fixt_df[col].str.pad(width=max_lengths[col] + 9, side='both', fillchar=' ')
-    
-    # Build the result dictionary
-    for col in new_fixt_cols:
-        values = new_fdr_df[col].tolist()
-        strings = new_fixt_df[col].tolist()
-        
-        # Use a dictionary to collect unique strings for each value
+    for col in new_fdr_df.columns:
+        values = list(new_fdr_df[col])
+        max_length = new_fixt_df[col].str.len().max()
+        if max_length > 7:
+            new_fixt_df.loc[new_fixt_df[col].str.len() <= 7, col] = new_fixt_df[col].str.pad(width=max_length + 9, side='both', fillchar=' ')
+        strings = list(new_fixt_df[col])
         value_dict = {}
         for value, string in zip(values, strings):
             if value not in value_dict:
-                value_dict[value] = {string}  # Use a set for uniqueness
-            else:
-                value_dict[value].add(string)
-        
-        result_dict[col] = {k: list(v) for k, v in value_dict.items()}  # Convert sets to lists
-    
-    # Initialize merged_dict only with keys 1, 2, 3, 4, and 5
-    merged_dict = {1: set(), 2: set(), 3: set(), 4: set(), 5: set()}
-    
-    # Merge dictionaries based on keys 1, 2, 3, 4, and 5
+                value_dict[value] = []
+            value_dict[value].append(string)
+        result_dict[col] = value_dict
+
+    merged_dict = {k: [] for k in [1.5, 2.5, 3.5, 4.5]}
     for k, dict1 in result_dict.items():
         for key, value in dict1.items():
             if key in merged_dict:
-                merged_dict[key].update(value)  # Use update for sets
-    
-    # Convert sets back to lists
-    for k in merged_dict.keys():
-        merged_dict[k] = list(merged_dict[k])  # Convert back to list
-
+                merged_dict[key].extend(value)
+            else:
+                merged_dict[key] = value
+    for k, v in merged_dict.items():
+        merged_dict[k] = list(set(v))
+    for i in range(1, 6):
+        if i not in merged_dict:
+            merged_dict[i] = []
     return merged_dict
-
 home_away_dict = get_home_away_str_dict()
 def color_fixtures(val):
     color_map = {
