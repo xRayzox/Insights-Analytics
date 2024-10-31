@@ -392,7 +392,5 @@ def_mean_line = (
     .encode(x="Mean Defensive Rating")
 )
 
-# Combine all chart elements
-with chart_col:
-    st.altair_chart(scatter_plot + off_mean_line + def_mean_line, use_container_width=True)
+
 ##########################################################################
