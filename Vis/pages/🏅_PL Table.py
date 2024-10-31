@@ -351,20 +351,8 @@ max_d = rating_df["d_rating" + ("_" + model_type if model_type else "")].max()
 
 
 # Scatter plot setup
-import altair as alt
-import pandas as pd
-
-# Assuming you have a DataFrame `teams_df` with a column 'image_url' for team logos or images
-# Make sure to add a column with image URLs in your teams_df if not already present
-# teams_df['image_url'] = [list_of_image_urls]
-
-
-st.write(teams_df)
-# Set x_domain and y_range as per your existing code
-x_domain = [teams_df["d_rating" + ("_" + model_type if model_type else "")].min() - 0.1, 
-            teams_df["d_rating" + ("_" + model_type if model_type else "")].max() + 0.1]
-y_range = [teams_df["o_rating" + ("_" + model_type if model_type else "")].min() - 100, 
-            teams_df["o_rating" + ("_" + model_type if model_type else "")].max() + 100]
+x_domain = [teams_df["d_rating" + ("_" + model_type if model_type else "")].min()-0.1, teams_df["d_rating" + ("_" + model_type if model_type else "")].max() + 0.1]
+y_range = [teams_df["o_rating" + ("_" + model_type if model_type else "")].min()-100, teams_df["o_rating" + ("_" + model_type if model_type else "")].max() + 100]
 
 # Create scatter plot with reduced size
 scatter_plot = (
@@ -392,17 +380,6 @@ scatter_plot = (
     )
 )
 
-# Add images to the scatter plot
-image_plot = (
-    alt.Chart(teams_df)
-    .mark_image(size=30)  # Adjust size of the images
-    .encode(
-        x=alt.X("d_rating" + ("_" + model_type if model_type else ""), type="quantitative"),
-        y=alt.Y("o_rating" + ("_" + model_type if model_type else ""), type="quantitative"),
-        url='logo_url'  # Assuming 'image_url' is the column containing image URLs
-    )
-)
-
 # Mean lines
 off_mean_line = (
     alt.Chart(pd.DataFrame({"Mean Offensive Rating": [teams_df["o_rating" + ("_" + model_type if model_type else "")].mean()]}))
@@ -416,10 +393,6 @@ def_mean_line = (
     .encode(x="Mean Defensive Rating")
 )
 
-# Combine all elements into a single chart
-final_chart = scatter_plot + image_plot + off_mean_line + def_mean_line
 
-# Display the chart
-st.altair_chart(final_chart, use_container_width=True)
-
+st.altair_chart(scatter_plot + off_mean_line + def_mean_line, use_container_width=True)
 ##########################################################################
