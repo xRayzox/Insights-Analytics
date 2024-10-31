@@ -377,8 +377,8 @@ else:
                      'Price': '£{:.1f}', 'TSB%': '{:.1%}'}
             rows[1].dataframe(player2_total_df.style.format(total_fmt))
 
-            #rows[0].plotly_chart(get_stats_spider_plot(player1, player2))
-            #rows[1].plotly_chart(get_ICT_spider_plot(player1, player2))
+            rows[0].plotly_chart(get_stats_spider_plot(player1, player2))
+            rows[1].plotly_chart(get_ICT_spider_plot(player1, player2))
         
 
 #st.plotly_chart(get_spider_plot(player1, player2), use_container_width=True)correct this
