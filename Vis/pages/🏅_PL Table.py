@@ -156,25 +156,21 @@ def get_home_away_str_dict():
         
         result_dict[col] = {k: list(v) for k, v in value_dict.items()}  # Convert sets to lists
     
-    # Merge dictionaries based on keys 1.5, 2.5, 3.5, 4.5
-    merged_dict = {k: set() for k in [1.5, 2.5, 3.5, 4.5]}
+    # Initialize merged_dict only with keys 1, 2, 3, 4, and 5
+    merged_dict = {1: set(), 2: set(), 3: set(), 4: set(), 5: set()}
+    
+    # Merge dictionaries based on keys 1, 2, 3, 4, and 5
     for k, dict1 in result_dict.items():
         for key, value in dict1.items():
             if key in merged_dict:
                 merged_dict[key].update(value)  # Use update for sets
-            else:
-                merged_dict[key] = set(value)
     
-    # Convert sets back to lists and fill missing keys with empty lists
-    for k in [1.5, 2.5, 3.5, 4.5]:
-        merged_dict[k] = list(merged_dict.get(k, set()))  # Convert back to list
+    # Convert sets back to lists
+    for k in merged_dict.keys():
+        merged_dict[k] = list(merged_dict[k])  # Convert back to list
 
-    # Ensure all integers from 1 to 5 are included
-    for i in range(1, 6):
-        if i not in merged_dict:
-            merged_dict[i] = []
-    
     return merged_dict
+
 home_away_dict = get_home_away_str_dict()
 def color_fixtures(val):
     color_map = {
