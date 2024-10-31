@@ -18,6 +18,30 @@ from fpl_api_collection import (
 )
 from fpl_utils import define_sidebar
 
+def load_image_from_url(url):
+    """Load an image from a URL and save it to a temporary file."""
+    # Create a temporary filename
+    temp_filename = f"temp_{os.path.basename(url)}"
+    
+    try:
+        # Load image data directly into memory
+        with urllib.request.urlopen(url) as response:
+            image_data = response.read()  # Read image data into memory
+        
+        # Open the image from the BytesIO stream
+        image = Image.open(BytesIO(image_data)).convert("RGBA")
+        
+        # Save the image to a temporary file
+        image.save(temp_filename)
+        
+        return temp_filename
+    except Exception as e:
+        print(f"Error loading image from URL {url}: {e}")
+        return None
+
+
+
+
 st.set_page_config(page_title='Player Stats', page_icon=':shirt:', layout='wide')
 define_sidebar()
 st.title("Players")
@@ -29,6 +53,8 @@ ele_data = get_bootstrap_data()['elements']
 ele_df = pd.DataFrame(ele_data)
 ele_df['element_type'] = ele_df['element_type'].map(ele_types_df.set_index('id')['singular_name_short'])
 ele_df['logo_player'] = "https://resources.premierleague.com/premierleague/photos/players/250x250/p" + ele_df['code'].astype(str) + ".png"
+ele_df['logo_player_image'] = ele_df['logo_player'].apply(load_image_from_url)
+
 ele_copy = ele_df.copy()
 
 teams_data = get_bootstrap_data()['teams']
@@ -75,28 +101,8 @@ league_df.index += 1
 league_df['GD'] = league_df['GD'].map('{:+}'.format)
 
 teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
-def load_image_from_url(url):
-    """Load an image from a URL and save it to a temporary file."""
-    # Create a temporary filename
-    temp_filename = f"temp_{os.path.basename(url)}"
-    
-    try:
-        # Load image data directly into memory
-        with urllib.request.urlopen(url) as response:
-            image_data = response.read()  # Read image data into memory
-        
-        # Open the image from the BytesIO stream
-        image = Image.open(BytesIO(image_data)).convert("RGBA")
-        
-        # Save the image to a temporary file
-        image.save(temp_filename)
-        
-        return temp_filename
-    except Exception as e:
-        print(f"Error loading image from URL {url}: {e}")
-        return None
-    
 
+        
 ## Very slow to load, works but needs to be sped up.
 def get_home_away_str_dict():
     new_fdr_df.columns = new_fixt_cols
@@ -263,7 +269,7 @@ def get_image_sui(player_name):
     p_id = [k for k, v in full_player_dict.items() if v == player_name]
     df = ele_copy.copy()
     p_image = df.loc[df['id'] == p_id[0]]
-    image = p_image['logo_player']
+    image = p_image['logo_player_image']
     return image
 
 ##########################################################################
@@ -367,8 +373,8 @@ else:
         player1 = init_rows[0].selectbox("Choose Player", id_dict.values(), index=0)  # Updated label
         player1_next3 = get_player_next3(player1)
         loogo=get_image_sui(player1)
-        st.write(load_image_from_url(loogo))
-        st.image(load_image_from_url(loogo), use_column_width=True)
+
+        st.image(loogo, use_column_width=True)
         for col in new_fixt_cols:
             if player1_next3[col].dtype == 'O':
                 max_length = player1_next3[col].str.len().max()
