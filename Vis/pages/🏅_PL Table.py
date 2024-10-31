@@ -20,6 +20,9 @@ from plottable.cmap import normed_cmap
 from plottable.formatters import decimal_to_percent
 from plottable.plots import circled_image, image
 import urllib.request
+from PIL import Image
+import base64
+from io import BytesIO
 
 
 pd.set_option('future.no_silent_downcasting', True)
@@ -351,6 +354,23 @@ max_o = rating_df["o_rating" + ("_" + model_type if model_type else "")].max()
 max_d = rating_df["d_rating" + ("_" + model_type if model_type else "")].max()
 
 
+
+def convert_image_to_base64(image_path):
+    # Open the image using PIL
+    pil_image = Image.open(image_path)
+    
+    # Create a BytesIO object to save the image in memory
+    output = BytesIO()
+    pil_image.save(output, format='PNG')
+    
+    # Encode the image to base64 and return it
+    return "data:image/png;base64," + base64.b64encode(output.getvalue()).decode()
+
+
+
+teams_df['loogo'] = teams_df['logo_image'].apply(load_image_from_url)
+
+
 st.write(teams_df)
 # Assuming teams_df is already defined with valid logo URLs
 x_domain = [teams_df["d_rating" + ("_" + model_type if model_type else "")].min() - 0.5, 
@@ -381,7 +401,7 @@ scatter_plot = (
             alt.Tooltip("o_rating" + ("_" + model_type if model_type else ""), title="Offensive Rating", format="d"),
             alt.Tooltip("d_rating" + ("_" + model_type if model_type else ""), title="Defensive Rating", format=".2f"),
         ],
-        image='logo_image',
+        url='loogo',
     )
 )
 
