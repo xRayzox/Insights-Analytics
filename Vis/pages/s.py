@@ -105,20 +105,20 @@ def get_home_away_str_dict():
 home_away_dict = get_home_away_str_dict()
 def color_fixtures(val):
     color_map = {
-        1: 1,
-        1.5: 1,
-        2: 1,
-        2.5: 2.5,
-        3: 3,
-        3.5: 3.5,
-        4: 4,
-        4.5: 4.5,
-        5: 5,
+        1: "#147d1b",
+        1.5: "#0ABE4A",
+        2: "#00ff78",
+        2.5: "#caf4bd",
+        3: "#eceae6",
+        3.5: "#fa8072",
+        4: "#ff0057",
+        4.5: "#C9054F",
+        5: "#920947",
     }
     for key in color_map:
         if val in home_away_dict[key]:
             return color_map[key]
-    return  0 # Default color if no match
+    return "#FF0000"  # Default color if no match
 
 
 # Assuming league_df is defined and populated.
@@ -126,12 +126,9 @@ def color_fixtures(val):
 
 # Modify cmap for Fixture Column Definitions
 def fixture_cmap(val):
-    color_value = color_fixtures(val)  # Get numeric color value
-    return cmap(color_value / 5) if color_value else "#ffffff"  # Scale color
+    return color_fixtures(val)  # Directly return the color
 
-cmap = LinearSegmentedColormap.from_list(
-    name="bugw", colors=["#ffffff", "#f2fbd2", "#c9ecb4", "#93d3ab", "#35b0ab"], N=256
-)
+
 # --- Streamlit App ---
 st.title("Premier League Table")
 
@@ -252,8 +249,7 @@ col_defs = [
         name="CS/Game",
         group="ByGame",
         textprops={'ha': "center"},
-        width=1,
-        cmap=cmap
+        width=1
     ),
     
 ]
@@ -266,7 +262,7 @@ for gw in range(ct_gw, ct_gw + 3):
             group="Fixtures",
             textprops={'ha': "center"},
             width=1,
-            cmap=cmap
+            cmap=fixture_cmap   # Use fixture_cmap directly
          )
     )
 
