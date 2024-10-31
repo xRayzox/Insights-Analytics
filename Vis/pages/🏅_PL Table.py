@@ -375,7 +375,7 @@ def load_and_convert_image(url):
 teams_df['logo_base64'] = teams_df['logo_url'].apply(load_and_convert_image)
 
 
-st.write(teams_df)
+
 # Assuming teams_df is already defined with valid logo URLs
 x_domain = [teams_df["d_rating" + ("_" + model_type if model_type else "")].min() - 0.5, 
              teams_df["d_rating" + ("_" + model_type if model_type else "")].max() + 0.5]  
@@ -384,8 +384,8 @@ y_range = [teams_df["o_rating" + ("_" + model_type if model_type else "")].min()
 
 # Create scatter plot
 scatter_plot = (
-    alt.Chart(teams_df, height=400, width=500)
-    .mark_image(width=50,height=50)  # Adjust size as needed
+    alt.Chart(teams_df, height=600, width=500)
+    .mark_image(width=30,height=30)  # Adjust size as needed
     .encode(
         x=alt.X(
             "d_rating" + ("_" + model_type if model_type else ""),
