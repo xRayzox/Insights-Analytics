@@ -2,23 +2,14 @@ import streamlit as st
 import pandas as pd
 import sys
 import os
+import tempfile
 from io import BytesIO
-import requests
 import altair as alt
 import matplotlib
 from matplotlib import pyplot as plt
-from mplsoccer import Bumpy
-from highlight_text import fig_text
-from matplotlib.offsetbox import OffsetImage
-from pathlib import Path
-import numpy as np
 from PIL import Image
-from matplotlib.colors import LinearSegmentedColormap
-import matplotlib.patches as mpatches
 from plottable import ColumnDefinition, Table
-from plottable.cmap import normed_cmap
-from plottable.formatters import decimal_to_percent
-from plottable.plots import circled_image, image
+from plottable.plots import image
 import urllib.request
 from PIL import Image
 import base64
@@ -37,28 +28,50 @@ st.set_page_config(page_title='PL Table', page_icon=':sports-medal:', layout='wi
 define_sidebar()
 st.title('Premier League Table')
 
+import os
+import urllib.request
+import tempfile
+import base64
+from io import BytesIO
+from PIL import Image
+import matplotlib.pyplot as plt
+
 def load_image_from_url(url):
+    """Load an image from a URL and save it to a temporary file."""
     # Create a temporary filename
     temp_filename = f"temp_{os.path.basename(url)}"
-    # Load image data directly into memory
-    with urllib.request.urlopen(url) as response:
-        image_data = response.read()  # Read image data into memory
-    # Open the image from the BytesIO stream
-    image = Image.open(BytesIO(image_data)).convert("RGBA")
-    # Save the image to a temporary file
-    image.save(temp_filename)
-    return temp_filename
+    
+    try:
+        # Load image data directly into memory
+        with urllib.request.urlopen(url) as response:
+            image_data = response.read()  # Read image data into memory
+        
+        # Open the image from the BytesIO stream
+        image = Image.open(BytesIO(image_data)).convert("RGBA")
+        
+        # Save the image to a temporary file
+        image.save(temp_filename)
+        
+        return temp_filename
+    except Exception as e:
+        print(f"Error loading image from URL {url}: {e}")
+        return None
+
 
 def form_color(form):
+    """Map characters in a form string to colors."""
     color_mapping = {
         'W': '#28a745',  # Green for Win
         'D': '#ffc107',  # Orange for Draw
         'L': '#dc3545',  # Red for Loss
     }
+    
     # Create a list of colors for the form string
     return [color_mapping[char] for char in form if char in color_mapping]
 
+
 def custom_plot_fn_form(ax: plt.Axes, val):
+    """Plot the form string on a Matplotlib Axes object with color coding."""
     colors = form_color(val)  # Get the list of colors for the form
     num_chars = len(val)  # Number of characters in the form
     spacing = 0.2  # Adjust this value for more/less horizontal spacing
@@ -66,8 +79,30 @@ def custom_plot_fn_form(ax: plt.Axes, val):
     # Calculate the horizontal positions based on the number of characters
     for i, (char, color) in enumerate(zip(val, colors)):
         x_pos = 0.5 + (i - (num_chars - 1) / 2) * spacing  # Centering the characters
+        
+        # Draw the character with its corresponding color
         ax.text(x_pos, 0.5, char, fontsize=14, ha='center', va='center',
                 bbox=dict(facecolor=color, alpha=0.5))
+
+
+def download_image_to_temp(url):
+    """Download an image from a URL and convert it to a base64 string."""
+    if url:  # Ensure the URL is not None
+        try:
+            with urllib.request.urlopen(url) as response:
+                image = Image.open(response).convert("RGBA")
+                
+                # Use NamedTemporaryFile to save the image temporarily
+                with tempfile.NamedTemporaryFile(delete=True, suffix=".png") as tmp_file:
+                    image.save(tmp_file, format='PNG')  # Save image in PNG format
+                    tmp_file.seek(0)  # Move to the beginning of the file
+                    
+                    # Convert the image to base64 for displaying in the Altair chart
+                    return "data:image/png;base64," + base64.b64encode(tmp_file.read()).decode()
+        except Exception as e:
+            print(f"Error loading image from URL {url}: {e}")
+            return None
+    return None
 
 # --- Data Loading and Processing ---
 league_df = get_league_table()
@@ -91,36 +126,35 @@ team_logo_mapping = pd.Series(teams_df['logo_image'].values, index=teams_df['sho
 league_df['logo_team'] = league_df['Team'].map(team_logo_mapping)
 # Calculate and assign rankings in the league DataFramae
 league_df['Rank'] = league_df['Pts'].rank(ascending=False, method='min').astype(int)
+if 'logo_base64' not in teams_df.columns:
+    teams_df['logo_base64'] = teams_df['logo_url'].apply(download_image_to_temp)
 
 def get_home_away_str_dict():
+    # Update column names for new_fdr_df
     new_fdr_df.columns = new_fixt_cols
-    result_dict = {}
-    for col in new_fdr_df.columns:
-        values = list(new_fdr_df[col])
-        max_length = new_fixt_df[col].str.len().max()
-        if max_length > 7:
-            new_fixt_df.loc[new_fixt_df[col].str.len() <= 7, col] = new_fixt_df[col].str.pad(width=max_length + 9, side='both', fillchar=' ')
-        strings = list(new_fixt_df[col])
-        value_dict = {}
-        for value, string in zip(values, strings):
-            if value not in value_dict:
-                value_dict[value] = []
-            value_dict[value].append(string)
-        result_dict[col] = value_dict
+    
+    merged_dict = {}
 
-    merged_dict = {k: [] for k in [1.5, 2.5, 3.5, 4.5]}
-    for k, dict1 in result_dict.items():
-        for key, value in dict1.items():
-            if key in merged_dict:
-                merged_dict[key].extend(value)
-            else:
-                merged_dict[key] = value
-    for k, v in merged_dict.items():
-        merged_dict[k] = list(set(v))
-    for i in range(1, 6):
-        if i not in merged_dict:
-            merged_dict[i] = []
+    # Process each column to create a mapping of values to padded strings
+    for col in new_fdr_df.columns:
+        values = new_fdr_df[col].tolist()
+        strings = new_fixt_df[col]
+
+        # Pad strings if the maximum length exceeds 7
+        max_length = strings.str.len().max()
+        if max_length > 7:
+            strings = strings.str.pad(width=max_length + 9, side='both', fillchar=' ')
+
+        # Create a dictionary mapping values to corresponding strings
+        for value, string in zip(values, strings):
+            merged_dict.setdefault(value, []).append(string)
+
+    # Remove duplicates from merged_dict values
+    for key in merged_dict:
+        merged_dict[key] = list(set(merged_dict[key]))
+
     return merged_dict
+
 home_away_dict = get_home_away_str_dict()
 def color_fixtures(val):
     color_map = {
@@ -319,33 +353,8 @@ for idx in range(len(league_df)):
 
 # --- Display the Table in Streamlit ---
 st.pyplot(fig)
-
 ####################################################
-import tempfile
 
-# Function to download and save images to a temporary file
-def download_image_to_temp(url):
-    if url:  # Ensure the URL is not None
-        try:
-            # Download the image
-            with urllib.request.urlopen(url) as response:
-                image = Image.open(response).convert("RGBA")
-
-                # Create a temporary file
-                with tempfile.NamedTemporaryFile(delete=True, suffix=".png") as tmp_file:
-                    image.save(tmp_file, format='PNG')  # Save image in PNG format
-                    tmp_file.seek(0)  # Move to the beginning of the file
-                    
-                    # Convert the image to base64 for displaying in the Altair chart
-                    return "data:image/png;base64," + base64.b64encode(tmp_file.read()).decode()
-        except Exception as e:
-            st.error(f"Error loading image from URL {url}: {e}")
-            return None
-    return None
-
-# Load images from URLs into the DataFrame
-if 'logo_base64' not in teams_df.columns:
-    teams_df['logo_base64'] = teams_df['logo_url'].apply(download_image_to_temp)
 
 # Set the title and caption
 st.title("Team Offensive / Defensive Ratings")
