@@ -351,11 +351,11 @@ else:
         player1_total_df.drop(['team', 'element_type'], axis=1, inplace=True)
         total_fmt = {'xG': '{:.2f}', 'xA': '{:.2f}', 'xGI': '{:.2f}', 'xGC': '{:.2f}',
                      'Price': '£{:.1f}', 'TSB%': '{:.1%}'}
-        init_rows[0].dataframe(player1_total_df.style.format(total_fmt))
-        init_rows[0].dataframe(player1_df.style.format({'Price': '£{:.1f}'}))
-        init_rows[0].dataframe(player1_df.style.format({'Price': '£{:.1f}'}))
+        rows[0].dataframe(player1_total_df.style.format(total_fmt))
+        rows[0].dataframe(player1_df.style.format({'Price': '£{:.1f}'}))
+        
         # If there's a plot for Player 1, include it here
-        init_rows[0].plotly_chart(get_stats_spider_plot(player1))  # Adjust as needed
+        rows[0].plotly_chart(get_stats_spider_plot(player1))  # Adjust as needed
 
 
 #st.plotly_chart(get_spider_plot(player1, player2), use_container_width=True)correct this
