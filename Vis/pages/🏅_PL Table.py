@@ -15,7 +15,14 @@ import numpy as np
 from PIL import Image
 import base64
 import urllib.request
-
+pd.set_option('future.no_silent_downcasting', True)
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..', 'FPL')))
+from fpl_api_collection import (
+    get_league_table, get_current_gw, get_fixt_dfs, get_bootstrap_data
+)
+from fpl_utils import (
+    define_sidebar
+)
 # Set up Streamlit page
 st.set_page_config(page_title='PL Table', page_icon=':sports-medal:', layout='wide')
 
