@@ -332,7 +332,7 @@ with col2:
 with col3:
     st.progress(90, label="Defensive Rating")
 
-
+"""
 # Set the title and caption
 st.title("Team Offensive / Defensive Ratings")
 st.caption("Compare overall, offensive, and defensive strengths of teams.")
@@ -443,3 +443,5 @@ def_mean_line = (
 with chart_col:
     st.altair_chart(scatter_plot + off_mean_line + def_mean_line, use_container_width=True)
 ##########################################################################
+    
+    """
