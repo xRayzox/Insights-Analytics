@@ -351,7 +351,7 @@ max_o = rating_df["o_rating" + ("_" + model_type if model_type else "")].max()
 max_d = rating_df["d_rating" + ("_" + model_type if model_type else "")].max()
 
 
-
+st.write(teams_df)
 # Assuming teams_df is already defined with valid logo URLs
 x_domain = [teams_df["d_rating" + ("_" + model_type if model_type else "")].min() - 0.5, 
              teams_df["d_rating" + ("_" + model_type if model_type else "")].max() + 0.5]  
