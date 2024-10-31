@@ -49,6 +49,12 @@ def form_color(form):
     # Create a list of colors for the form string
     return [color_mapping[char] for char in form if char in color_mapping]
 
+def custom_plot_fn_form(ax: plt.Axes, val):
+    colors = form_color(val)  # Get the list of colors for the form
+    # Create a colored representation of the form
+    for i, char in enumerate(val):
+        ax.text(0.5, 0.5 + (i * 0.1), char, fontsize=14, ha='center', va='center',
+                bbox=dict(facecolor=colors[i], alpha=0.5))
 
 # --- Data Loading and Processing ---
 league_df = get_league_table()
@@ -128,7 +134,10 @@ def custom_plot_fn(ax: plt.Axes, val):
     ax.text(0.5, 0.5, str(val), fontsize=14, ha='center', va='center',
         bbox=dict(facecolor=color_fixtures(val), alpha=0.5))
 
-# --- Streamlit App ---
+
+
+
+# -- Streamlit App ---
 st.title("Premier League Table")
 
 # --- Table Styling ---
@@ -230,6 +239,7 @@ col_defs = [
         name="Form",
         group="Points",
         textprops={'ha': "center"},
+        plot_fn=custom_plot_fn_form,
         width=1
     ),
     ColumnDefinition(
