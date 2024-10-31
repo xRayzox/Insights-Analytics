@@ -28,13 +28,6 @@ st.set_page_config(page_title='PL Table', page_icon=':sports-medal:', layout='wi
 define_sidebar()
 st.title('Premier League Table')
 
-import os
-import urllib.request
-import tempfile
-import base64
-from io import BytesIO
-from PIL import Image
-import matplotlib.pyplot as plt
 
 def load_image_from_url(url):
     """Load an image from a URL and save it to a temporary file."""
@@ -117,7 +110,6 @@ league_df, team_fdr_df, team_fixt_df, team_ga_df, team_gf_df,ct_gw = fetch_data(
 new_fixt_df = team_fixt_df.loc[:, ct_gw:(ct_gw+2)]
 new_fixt_cols = ['GW' + str(col) for col in new_fixt_df.columns.tolist()]
 new_fixt_df.columns = new_fixt_cols
-new_fdr_df = team_fdr_df.loc[:, ct_gw:(ct_gw+2)]
 league_df = league_df.join(new_fixt_df)
 float_cols = league_df.select_dtypes(include='float64').columns.values
 league_df = league_df.reset_index()
@@ -135,6 +127,7 @@ league_df['Rank'] = league_df['Pts'].rank(ascending=False, method='min').astype(
 if 'logo_base64' not in teams_df.columns:
     teams_df['logo_base64'] = teams_df['logo_url'].apply(download_image_to_temp)
 
+new_fdr_df = team_fdr_df.loc[:, ct_gw:(ct_gw+2)]
 def get_home_away_str_dict():
     new_fdr_df.columns = new_fixt_cols
     result_dict = {}
