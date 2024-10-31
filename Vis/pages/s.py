@@ -104,20 +104,24 @@ def get_home_away_str_dict():
     return merged_dict
 home_away_dict = get_home_away_str_dict()
 def color_fixtures(val):
-    color_map = {
-        1: "#147d1b",
-        1.5: "#0ABE4A",
-        2: "#00ff78",
-        2.5: "#caf4bd",
-        3: "#eceae6",
-        3.5: "#fa8072",
-        4: "#ff0057",
-        4.5: "#C9054F",
-        5: "#920947",
-    }
-    for key in color_map:
+    # You can define the logic to extract the numerical part if needed
+    # For example, if `val` is like "bou (h)", we might want to focus on just the numeric part
+
+    # Check if the value matches any in home_away_dict
+    for key in home_away_dict.keys():
         if val in home_away_dict[key]:
-            return color_map[key]
+            return {
+                1: "#147d1b",
+                1.5: "#0ABE4A",
+                2: "#00ff78",
+                2.5: "#caf4bd",
+                3: "#eceae6",
+                3.5: "#fa8072",
+                4: "#ff0057",
+                4.5: "#C9054F",
+                5: "#920947",
+            }.get(key, "#FF0000")  # Default to red if no match
+    
     return "#FF0000"  # Default color if no match
 
 
