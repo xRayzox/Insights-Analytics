@@ -399,7 +399,7 @@ image_plot = (
     .encode(
         x=alt.X("d_rating" + ("_" + model_type if model_type else ""), type="quantitative"),
         y=alt.Y("o_rating" + ("_" + model_type if model_type else ""), type="quantitative"),
-        url='image_url'  # Assuming 'image_url' is the column containing image URLs
+        url='logo_url'  # Assuming 'image_url' is the column containing image URLs
     )
 )
 
