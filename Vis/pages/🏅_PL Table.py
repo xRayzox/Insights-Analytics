@@ -105,9 +105,13 @@ def download_image_to_temp(url):
     return None
 
 # --- Data Loading and Processing ---
-league_df = get_league_table()
-team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
-ct_gw = get_current_gw()
+@st.cache_data
+def fetch_data():
+    league_df = get_league_table()
+    team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
+    ct_gw = get_current_gw()
+    return league_df,team_fdr_df, team_fixt_df, team_ga_df, team_gf_df,ct_gw
+league_df, team_fdr_df, team_fixt_df, team_ga_df, team_gf_df,ct_gw = fetch_data()
 new_fixt_df = team_fixt_df.loc[:, ct_gw:(ct_gw+2)]
 new_fixt_cols = ['GW' + str(col) for col in new_fixt_df.columns.tolist()]
 new_fixt_df.columns = new_fixt_cols
