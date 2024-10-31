@@ -3,11 +3,22 @@ import pandas as pd
 import sys
 import os
 import altair as alt
+import matplotlib
 from matplotlib import pyplot as plt
 from mplsoccer import Bumpy
 from highlight_text import fig_text
 from matplotlib.offsetbox import OffsetImage
+from pathlib import Path
 import numpy as np
+from PIL import Image
+from matplotlib.colors import LinearSegmentedColormap
+import matplotlib.patches as mpatches
+from plottable import ColumnDefinition, Table
+from plottable.cmap import normed_cmap
+from plottable.formatters import decimal_to_percent
+from plottable.plots import circled_image, image
+import urllib.request
+
 
 pd.set_option('future.no_silent_downcasting', True)
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..', 'FPL')))
@@ -20,34 +31,59 @@ from fpl_utils import (
 st.set_page_config(page_title='PL Table', page_icon=':sports-medal:', layout='wide')
 define_sidebar()
 st.title('Premier League Table')
+# --- Streamlit Configuration ---
+# --- Functions ---
+def load_image_from_url(url):
+    with urllib.request.urlopen(url) as response:
+        image = Image.open(response).convert("RGBA")
+    # Save the image to a temporary file
+    temp_filename = f"temp_{os.path.basename(url)}"
+    image.save(temp_filename)
+    return temp_filename
 
+def form_color(form):
+    color_mapping = {
+        'W': '#28a745',  # Green for Win
+        'D': '#ffc107',  # Orange for Draw
+        'L': '#dc3545',  # Red for Loss
+    }
+    # Create a list of colors for the form string
+    return [color_mapping[char] for char in form if char in color_mapping]
+
+def custom_plot_fn_form(ax: plt.Axes, val):
+    colors = form_color(val)  # Get the list of colors for the form
+    num_chars = len(val)  # Number of characters in the form
+    spacing = 0.2  # Adjust this value for more/less horizontal spacing
+
+    # Calculate the horizontal positions based on the number of characters
+    for i, (char, color) in enumerate(zip(val, colors)):
+        x_pos = 0.5 + (i - (num_chars - 1) / 2) * spacing  # Centering the characters
+        ax.text(x_pos, 0.5, char, fontsize=14, ha='center', va='center',
+                bbox=dict(facecolor=color, alpha=0.5))
+
+# --- Data Loading and Processing ---
 league_df = get_league_table()
-
 team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
-
 ct_gw = get_current_gw()
-
 new_fixt_df = team_fixt_df.loc[:, ct_gw:(ct_gw+2)]
 new_fixt_cols = ['GW' + str(col) for col in new_fixt_df.columns.tolist()]
 new_fixt_df.columns = new_fixt_cols
-
 new_fdr_df = team_fdr_df.loc[:, ct_gw:(ct_gw+2)]
-
 league_df = league_df.join(new_fixt_df)
-
 float_cols = league_df.select_dtypes(include='float64').columns.values
-
 league_df = league_df.reset_index()
 league_df.rename(columns={'team': 'Team'}, inplace=True)
 league_df.index += 1
-
 league_df['GD'] = league_df['GD'].map('{:+}'.format)
-
 teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
-teams_df['logo_url'] = "https://resources.premierleague.com/premierleague/badges/70/t" + teams_df['code'].astype(str) + ".png"
-team_logo_mapping = pd.Series(teams_df.logo_url.values, index=teams_df.short_name).to_dict()
+teams_df['logo_url'] = "https://resources.premierleague.com/premierleague/badges/70/t" + teams_df['code'].astype(str) + "@x2.png"
+teams_df['logo_image'] = teams_df['logo_url'].apply(load_image_from_url)
+team_logo_mapping = pd.Series(teams_df['logo_image'].values, index=teams_df['short_name']).to_dict()
+# Map each team's logo image to the league DataFrame
+league_df['logo_team'] = league_df['Team'].map(team_logo_mapping)
+# Calculate and assign rankings in the league DataFramae
+league_df['Rank'] = league_df['Pts'].rank(ascending=False, method='min').astype(int)
 
-## Very slow to load, works but needs to be sped up.
 def get_home_away_str_dict():
     new_fdr_df.columns = new_fixt_cols
     result_dict = {}
@@ -55,7 +91,7 @@ def get_home_away_str_dict():
         values = list(new_fdr_df[col])
         max_length = new_fixt_df[col].str.len().max()
         if max_length > 7:
-            new_fixt_df.loc[new_fixt_df[col].str.len() <= 7, col] = new_fixt_df[col].str.pad(width=max_length+9, side='both', fillchar=' ')
+            new_fixt_df.loc[new_fixt_df[col].str.len() <= 7, col] = new_fixt_df[col].str.pad(width=max_length + 9, side='both', fillchar=' ')
         strings = list(new_fixt_df[col])
         value_dict = {}
         for value, string in zip(values, strings):
@@ -63,12 +99,8 @@ def get_home_away_str_dict():
                 value_dict[value] = []
             value_dict[value].append(string)
         result_dict[col] = value_dict
-    
-    merged_dict = {}
-    merged_dict[1.5] = []
-    merged_dict[2.5] = []
-    merged_dict[3.5] = []
-    merged_dict[4.5] = []
+
+    merged_dict = {k: [] for k in [1.5, 2.5, 3.5, 4.5]}
     for k, dict1 in result_dict.items():
         for key, value in dict1.items():
             if key in merged_dict:
@@ -76,55 +108,230 @@ def get_home_away_str_dict():
             else:
                 merged_dict[key] = value
     for k, v in merged_dict.items():
-        decoupled_list = list(set(v))
-        merged_dict[k] = decoupled_list
-    for i in range(1,6):
+        merged_dict[k] = list(set(v))
+    for i in range(1, 6):
         if i not in merged_dict:
             merged_dict[i] = []
     return merged_dict
-
-
 home_away_dict = get_home_away_str_dict()
-
 def color_fixtures(val):
-    bg_color = 'background-color: '
-    font_color = 'color: '
-    if val in home_away_dict[1]:
-        bg_color += '#147d1b'
-    if val in home_away_dict[1.5]:
-        bg_color += '#0ABE4A'
-    elif val in home_away_dict[2]:
-        bg_color += '#00ff78'
-    elif val in home_away_dict[2.5]:
-        bg_color += "#caf4bd"
-    elif val in home_away_dict[3]:
-        bg_color += '#eceae6'
-    elif val in home_away_dict[3.5]:
-        bg_color += "#fa8072"
-    elif val in home_away_dict[4]:
-        bg_color += '#ff0057'
-        font_color += 'white'
-    elif val in home_away_dict[4.5]:
-        bg_color += '#C9054F'
-        font_color += 'white'
-    elif val in home_away_dict[5]:
-        bg_color += '#920947'
-        font_color += 'white'
-    else:
-        bg_color += ''
-    style = bg_color + '; ' + font_color
-    return style
+    color_map = {
+        1: "#257d5a",
+        2: "#00ff86",
+        3: "#ebebe4",
+        4: "#ff005a",
+        5: "#861d46",
+    }
+    for key in color_map:
+        if val in home_away_dict[key]:
+            return color_map[key]
+    return "#000000"  # Default color if no match
 
-for col in new_fixt_cols:
-    if league_df[col].dtype == 'O':
-        max_length = league_df[col].str.len().max()
-        if max_length > 7:
-            league_df.loc[league_df[col].str.len() <= 7, col] = league_df[col].str.pad(width=max_length+9, side='both', fillchar=' ')
 
-st.dataframe(league_df.style.applymap(color_fixtures, subset=new_fixt_cols) \
-             .format(subset=float_cols, formatter='{:.2f}'), height=740, width=None)
+# Assuming league_df is defined and populated.
+
+
+# Modify cmap for Fixture Column Definitions
+def fixture_cmap(val):
+    return color_fixtures(val)  # Directly return the color
+
+def custom_plot_fn(ax: plt.Axes, val):
+    ax.text(0.5, 0.5, str(val), fontsize=14, ha='center', va='center',
+        bbox=dict(facecolor=color_fixtures(val), alpha=0.5))
+
+# --- Table Styling ---
+bg_color = "#FFFFFF"
+text_color = "#000000"
+
+row_colors = {
+    "top4": "#E1FABC",
+    "top6": "#FFFC97",
+    "relegation": "#E79A9A",
+    "even": "#E2E2E1",
+    "odd": "#B3B0B0"
+}
+
+
+matplotlib.rcParams["text.color"] = text_color
+matplotlib.rcParams["font.family"] = "monospace"
+
+# --- Column Definitions ---
+col_defs = [
+    ColumnDefinition(
+        name="Rank",
+        textprops={'ha': "center"},
+        width=1
+    ),
+    ColumnDefinition(
+        name="logo_team",
+        textprops={'ha': "center", 'va': "center", 'color': "white"},
+        plot_fn=image,
+        width=1,
+    ),
+    ColumnDefinition(
+        name="Team",
+        textprops={'ha': "center"},
+        width=1
+    ),
+    ColumnDefinition(
+        name="GP",
+        group="Matches Played",
+
+        textprops={'ha': "center"},
+        width=0.5
+    ),
+    ColumnDefinition(
+        name="W",
+        group="Matches Played",
+
+        textprops={'ha': "center"},
+        width=0.5
+    ),
+    ColumnDefinition(
+        name="D",
+        group="Matches Played",
+        textprops={'ha': "center"},
+        width=0.5
+    ),
+    ColumnDefinition(
+        name="L",
+        group="Matches Played",
+        textprops={'ha': "center"},
+        width=0.5
+    ),
+    ColumnDefinition(
+        name="GF",
+        group="Goals",
+        textprops={'ha': "center"},
+        width=0.5
+    ),
+    ColumnDefinition(
+        name="GA",
+        group="Goals",
+        textprops={'ha': "center"},
+        width=0.5
+    ),
+    ColumnDefinition(
+        name="GD",
+        group="Goals",
+        textprops={'ha': "center"},
+        width=0.5
+    ),
+    ColumnDefinition(
+        name="CS",
+        group="Goals",
+        textprops={'ha': "center"},
+        width=0.5
+    ),
+    ColumnDefinition(
+        name="Pts",
+        group="Points",
+        textprops={'ha': "center"},
+        width=1
+    ),
+    ColumnDefinition(
+        name="Pts/Game",
+        group="Points",
+        textprops={'ha': "center"},
+        width=1
+    ),
+    ColumnDefinition(
+        name="Form",
+        group="Points",
+        textprops={'ha': "center"},
+        plot_fn=custom_plot_fn_form,
+        width=2
+    ),
+    ColumnDefinition(
+        name="GF/Game",
+        group="ByGame",
+        textprops={'ha': "center"},
+        width=1
+    ),
+    ColumnDefinition(
+        name="GA/Game",
+        group="ByGame",
+        textprops={'ha': "center"},
+        width=1
+    ),
+    ColumnDefinition(
+        name="CS/Game",
+        group="ByGame",
+        textprops={'ha': "center"},
+        width=1
+    ),
+    
+]
+
+# Modify Fixture Column Definitions
+for gw in range(ct_gw, ct_gw + 3):
+    col_defs.append(
+        ColumnDefinition(
+            name=f"GW{gw}",
+            group="Fixtures",
+            textprops={'ha': "center"},
+            width=1,
+            plot_fn=custom_plot_fn  # Use the custom plotting function
+        )
+    )
+
+
+# --- Plottable Table ---
+fig, ax = plt.subplots(figsize=(20, 20))  # Adjust figsize for Streamlit
+fig.set_facecolor(bg_color)
+ax.set_facecolor(bg_color)
+
+
+
+table = Table(
+    league_df,
+    column_definitions=col_defs,
+    columns=['logo_team','Team', 'GP', 'W', 'D', 'L', 'GF', 'GA', 'GD', 'CS', 'Pts', 
+             'Pts/Game','Form', 'GF/Game', 'GA/Game', 'CS/Game', f'GW{ct_gw}', f'GW{ct_gw+1}', f'GW{ct_gw+2}'], 
+    index_col="Rank",
+    row_dividers=True,
+    row_divider_kw={"linewidth": 1, "linestyle": (0, (1, 5))},
+    footer_divider=True,
+    textprops={"fontsize": 14},  # Adjust fontsize for Streamlit
+    col_label_divider_kw={"linewidth": 1, "linestyle": "-"},
+    column_border_kw={"linewidth": .5, "linestyle": "-"},
+    ax=ax
+)
+
+
+for idx in range(len(league_df)):
+    if league_df.iloc[idx]['Rank'] <= 4:
+        table.rows[idx].set_facecolor(row_colors["top4"])
+    elif league_df.iloc[idx]['Rank'] <= 6:
+        table.rows[idx].set_facecolor(row_colors["top6"])
+    elif league_df.iloc[idx]['Rank'] >= 18:  # Assuming relegation zone starts at 18
+        table.rows[idx].set_facecolor(row_colors["relegation"])
+
+
+
+# --- Display the Table in Streamlit ---
+st.pyplot(fig)
 
 ####################################################
+import streamlit as st
+
+# Sample data
+max_ovr = 100
+max_o = 100
+max_d = 100
+model_type = "example"  # or None
+
+# Create columns
+col1, col2, col3 = st.columns(3)
+
+# Display ProgressBars
+with col1:
+    st.progress(50, label="Overall Rating")
+with col2:
+    st.progress(70, label="Offensive Rating")
+with col3:
+    st.progress(90, label="Defensive Rating")
+
 
 # Set the title and caption
 st.title("Team Offensive / Defensive Ratings")
