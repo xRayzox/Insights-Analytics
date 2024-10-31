@@ -381,7 +381,7 @@ scatter_plot = (
             alt.Tooltip("o_rating" + ("_" + model_type if model_type else ""), title="Offensive Rating", format="d"),
             alt.Tooltip("d_rating" + ("_" + model_type if model_type else ""), title="Defensive Rating", format=".2f"),
         ],
-        url='logo_image',
+        image='logo_image',
     )
 )
 
