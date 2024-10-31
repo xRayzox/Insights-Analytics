@@ -46,7 +46,7 @@ ele_cols = ['id', 'web_name', 'chance_of_playing_this_round', 'element_type',
             'ict_index_rank', 'ict_index_rank_type', 'dreamteam_count']
 
 ele_df = ele_df[ele_cols]
-
+st.write(ele_df)
 league_df = get_league_table()
 
 team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
