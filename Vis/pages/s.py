@@ -132,8 +132,6 @@ def custom_plot_fn(ax: plt.Axes, val):
     # Here, you can define what you want to display for each GW cell
     # For example, displaying the fixture as text
     ax.text(0.5, 0.5, str(val), fontsize=10, ha='center', va='center')
-    ax.set_xticks([])  # Hide x ticks
-    ax.set_yticks([])  # Hide y ticks
     st.error(color_fixtures(val))
     ax.set_facecolor(color_fixtures(val))  # Set cell background color
 
