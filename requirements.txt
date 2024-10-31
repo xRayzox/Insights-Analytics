@@ -6,10 +6,13 @@ scikit-learn
 requests
 numpy
 plotly
-altair==4.2.0
+altair
 mplsoccer 
 cachetools
 aiohttp
 dask
 highlight_text
 plottable
+reactable
+great_tables
+bokeh==2.4.3
