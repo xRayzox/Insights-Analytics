@@ -17,6 +17,8 @@ from fpl_utils import define_sidebar
 st.set_page_config(page_title='Player Stats', page_icon=':shirt:', layout='wide')
 define_sidebar()
 st.title("Players")
+
+###########################################################
 ele_types_data = get_bootstrap_data()['element_types']
 ele_types_df = pd.DataFrame(ele_types_data)
 ele_data = get_bootstrap_data()['elements']
@@ -125,28 +127,6 @@ def color_fixtures(val):
     style = bg_color + '; ' + font_color
     return style
 
-
-# df_cut = ele_df.loc[ele_df['minutes'] >= 90]
-# pivot=ele_df.pivot_table(index='element_type', values='total_points', aggfunc=np.mean).reset_index()
-# pp_position = pivot.sort_values('total_points',ascending=False)
-
-# comparison of players via spider web method?
-# - chances per 90
-# - assists per 90
-# - goals per 90
-# - xA per 90
-# - xG per 90
-# - crosses per 90
-# - shots per 90
-
-# # comparison of keepers - automatically switch to keeper stats
-# - saves per 90
-# - bps per 90
-# - etc
-
-# get player id from player name
-# player1_id = ...
-
 def convert_score_to_result(df):
     df.loc[df['was_home'] == True, 'result'] = df['team_h_score'] \
         .astype('Int64').astype(str) \
@@ -252,7 +232,7 @@ def collated_spider_df_from_name(player_name):
     sp_df['S/90'] = sp_df['S']/sp_df['90s']
     return sp_df
 
-
+##########################################################################
 def display_frame(df):
     '''display dataframe with all float columns rounded to 1 decimal place'''
     float_cols = df.select_dtypes(include='float64').columns.values
@@ -317,7 +297,7 @@ def get_player_next3(player):
     player_next3.set_index('Team', inplace=True)
     return player_next3
     
-
+#######################################################################
 price_min = (ele_copy['now_cost'].min())/10
 price_max = (ele_copy['now_cost'].max())/10
 price_min = float(price_min)
@@ -397,8 +377,8 @@ else:
                      'Price': '£{:.1f}', 'TSB%': '{:.1%}'}
             rows[1].dataframe(player2_total_df.style.format(total_fmt))
 
-            rows[0].plotly_chart(get_stats_spider_plot(player1, player2))
-            rows[1].plotly_chart(get_ICT_spider_plot(player1, player2))
+            #rows[0].plotly_chart(get_stats_spider_plot(player1, player2))
+            #rows[1].plotly_chart(get_ICT_spider_plot(player1, player2))
         
 
 #st.plotly_chart(get_spider_plot(player1, player2), use_container_width=True)correct this
