@@ -294,7 +294,7 @@ table = Table(
 )
 # Color a specific cell (e.g., color the 'Pts' of Team A)
 try:
-    row_index = 0  # Change to the desired row index (0 for Team A)
+    row_index = 5  # Change to the desired row index (0 for Team A)
     col_index = 2  # Change to the desired column index (2 for Pts)
     
     # Access the specific cell and set its color
