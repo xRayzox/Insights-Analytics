@@ -303,6 +303,6 @@ for idx in range(len(league_df)):
         table.rows[idx].set_facecolor(row_colors["relegation"])
 
 
-
+st.write(table.col_label_row)
 # --- Display the Table in Streamlit ---
 st.pyplot(fig)
