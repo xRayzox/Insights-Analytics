@@ -73,51 +73,22 @@ league_df['logo_team'] = league_df['Team'].map(team_logo_mapping)
 # Calculate and assign rankings in the league DataFramae
 league_df['Rank'] = league_df['Pts'].rank(ascending=False, method='min').astype(int)
 
-def custom_plot_fn(ax: plt.Axes, val: Any):
-    """
-    Custom plot function to visualize data based on cell values.
-
-    Args:
-        ax (plt.Axes): The axes on which to plot.
-        val (Any): The value from the cells.
-    """
-    # You can add your plotting logic here
-    data = my_data_dict.get(val)  # Retrieve data based on val
-    if data:
-        ax.plot(data)  # Example plot; modify as needed
-
-def get_home_away_str_dict(new_fdr_df, new_fixt_df) -> Dict:
-    """
-    Create a dictionary that maps values from new_fdr_df to strings in new_fixt_df.
-
-    Args:
-        new_fdr_df: DataFrame containing fixture data.
-        new_fixt_df: DataFrame containing fixture strings.
-
-    Returns:
-        Dict: A dictionary mapping values to strings.
-    """
-    new_fdr_df.columns = new_fixt_cols  # Set the columns for new_fdr_df
+def get_home_away_str_dict():
+    new_fdr_df.columns = new_fixt_cols
     result_dict = {}
-    
-    # Populate result_dict with values and padded strings
     for col in new_fdr_df.columns:
         values = list(new_fdr_df[col])
         max_length = new_fixt_df[col].str.len().max()
         if max_length > 7:
             new_fixt_df.loc[new_fixt_df[col].str.len() <= 7, col] = new_fixt_df[col].str.pad(width=max_length + 9, side='both', fillchar=' ')
-        
         strings = list(new_fixt_df[col])
         value_dict = {}
-        
         for value, string in zip(values, strings):
             if value not in value_dict:
                 value_dict[value] = []
             value_dict[value].append(string)
-        
         result_dict[col] = value_dict
 
-    # Merge values based on certain keys
     merged_dict = {k: [] for k in [1.5, 2.5, 3.5, 4.5]}
     for k, dict1 in result_dict.items():
         for key, value in dict1.items():
@@ -125,47 +96,45 @@ def get_home_away_str_dict(new_fdr_df, new_fixt_df) -> Dict:
                 merged_dict[key].extend(value)
             else:
                 merged_dict[key] = value
-    
-    # Remove duplicates and ensure all keys are present
     for k, v in merged_dict.items():
         merged_dict[k] = list(set(v))
-    
     for i in range(1, 6):
         if i not in merged_dict:
             merged_dict[i] = []
-    
     return merged_dict
-
-def color_fixtures(val: str) -> str:
-    """
-    Color fixtures based on the given value.
-
-    Args:
-        val (str): The fixture value.
-
-    Returns:
-        str: The color code for the fixture.
-    """
-    print(f"Coloring for fixture value: {val}")  # Debug print
-    for key in home_away_dict.keys():
+home_away_dict = get_home_away_str_dict()
+def color_fixtures(val):
+    color_map = {
+        1: "#147d1b",
+        1.5: "#0ABE4A",
+        2: "#00ff78",
+        2.5: "#caf4bd",
+        3: "#eceae6",
+        3.5: "#fa8072",
+        4: "#ff0057",
+        4.5: "#C9054F",
+        5: "#920947",
+    }
+    for key in color_map:
         if val in home_away_dict[key]:
-            return {
-                1: "#147d1b",
-                1.5: "#0ABE4A",
-                2: "#00ff78",
-                2.5: "#caf4bd",
-                3: "#eceae6",
-                3.5: "#fa8072",
-                4: "#ff0057",
-                4.5: "#C9054F",
-                5: "#920947",
-            }.get(key, "#FF0000")  # Default to red if no match
-    
+            return color_map[key]
     return "#FF0000"  # Default color if no match
+
+
+# Assuming league_df is defined and populated.
+
 
 # Modify cmap for Fixture Column Definitions
 def fixture_cmap(val):
     return color_fixtures(val)  # Directly return the color
+
+def custom_plot_fn(ax: plt.Axes, val: Any):
+    # Here, you can define what you want to display for each GW cell
+    # For example, displaying the fixture as text
+    ax.text(0.5, 0.5, str(val), fontsize=10, ha='center', va='center')
+    ax.set_xticks([])  # Hide x ticks
+    ax.set_yticks([])  # Hide y ticks
+    ax.set_facecolor(color_fixtures(val))  # Set cell background color
 
 # --- Streamlit App ---
 st.title("Premier League Table")
@@ -300,9 +269,8 @@ for gw in range(ct_gw, ct_gw + 3):
             group="Fixtures",
             textprops={'ha': "center"},
             width=1,
-            cmap=lambda val: color_fixtures(val),   # Use fixture_cmap directly
-            plot_fn=custom_plot_fn
-         )
+            plot_fn=custom_plot_fn  # Use the custom plotting function
+        )
     )
 
 
