@@ -377,10 +377,21 @@ teams_df['logo_base64'] = teams_df['logo_url'].apply(load_and_convert_image)
 
 
 # Assuming teams_df is already defined with valid logo URLs
-x_domain = [teams_df["d_rating" + ("_" + model_type if model_type else "")].min() - 0.5, 
-             teams_df["d_rating" + ("_" + model_type if model_type else "")].max() + 0.5]  
-y_range = [teams_df["o_rating" + ("_" + model_type if model_type else "")].min() - 200, 
-            teams_df["o_rating" + ("_" + model_type if model_type else "")].max() + 200]  
+suffix = ("_" + model_type) if model_type else ""
+
+# Get min and max for d_rating and o_rating
+d_rating_min = teams_df["d_rating" + suffix].min()
+d_rating_max = teams_df["d_rating" + suffix].max()
+o_rating_min = teams_df["o_rating" + suffix].min()
+o_rating_max = teams_df["o_rating" + suffix].max()
+
+# Calculate ranges with increased margins
+x_margin = (d_rating_max - d_rating_min) * 0.05  # 5% of the range
+y_margin = (o_rating_max - o_rating_min) * 0.1    # 10% of the range
+
+# Define the x_domain and y_range with calculated margins
+x_domain = [d_rating_min - x_margin, d_rating_max + x_margin]
+y_range = [o_rating_min - y_margin, o_rating_max + y_margin]
 
 # Create scatter plot
 scatter_plot = (
