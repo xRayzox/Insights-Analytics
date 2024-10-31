@@ -4,6 +4,10 @@ import sys
 import os
 import plotly.graph_objects as go
 import numpy as np
+import urllib.request
+from PIL import Image
+import base64
+from io import BytesIO
 pd.set_option('future.no_silent_downcasting', True)
 # Assuming fpl_api_collection and fpl_utils are in the FPL directory
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..', 'FPL')))
@@ -71,6 +75,27 @@ league_df.index += 1
 league_df['GD'] = league_df['GD'].map('{:+}'.format)
 
 teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
+def load_image_from_url(url):
+    """Load an image from a URL and save it to a temporary file."""
+    # Create a temporary filename
+    temp_filename = f"temp_{os.path.basename(url)}"
+    
+    try:
+        # Load image data directly into memory
+        with urllib.request.urlopen(url) as response:
+            image_data = response.read()  # Read image data into memory
+        
+        # Open the image from the BytesIO stream
+        image = Image.open(BytesIO(image_data)).convert("RGBA")
+        
+        # Save the image to a temporary file
+        image.save(temp_filename)
+        
+        return temp_filename
+    except Exception as e:
+        print(f"Error loading image from URL {url}: {e}")
+        return None
+    
 
 ## Very slow to load, works but needs to be sped up.
 def get_home_away_str_dict():
@@ -342,8 +367,8 @@ else:
         player1 = init_rows[0].selectbox("Choose Player", id_dict.values(), index=0)  # Updated label
         player1_next3 = get_player_next3(player1)
         loogo=get_image_sui(player1)
-        st.write(loogo)
-        st.image(loogo, caption='Your Image Caption', use_column_width=True)
+
+        st.image(load_image_from_url(loogo), use_column_width=True)
         for col in new_fixt_cols:
             if player1_next3[col].dtype == 'O':
                 max_length = player1_next3[col].str.len().max()
