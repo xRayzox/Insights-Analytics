@@ -130,31 +130,34 @@ if 'logo_base64' not in teams_df.columns:
     teams_df['logo_base64'] = teams_df['logo_url'].apply(download_image_to_temp)
 
 def get_home_away_str_dict():
-    # Update column names for new_fdr_df
     new_fdr_df.columns = new_fixt_cols
-    
-    merged_dict = {}
-
-    # Process each column to create a mapping of values to padded strings
+    result_dict = {}
     for col in new_fdr_df.columns:
-        values = new_fdr_df[col].tolist()
-        strings = new_fixt_df[col]
-
-        # Pad strings if the maximum length exceeds 7
-        max_length = strings.str.len().max()
+        values = list(new_fdr_df[col])
+        max_length = new_fixt_df[col].str.len().max()
         if max_length > 7:
-            strings = strings.str.pad(width=max_length + 9, side='both', fillchar=' ')
-
-        # Create a dictionary mapping values to corresponding strings
+            new_fixt_df.loc[new_fixt_df[col].str.len() <= 7, col] = new_fixt_df[col].str.pad(width=max_length + 9, side='both', fillchar=' ')
+        strings = list(new_fixt_df[col])
+        value_dict = {}
         for value, string in zip(values, strings):
-            merged_dict.setdefault(value, []).append(string)
+            if value not in value_dict:
+                value_dict[value] = []
+            value_dict[value].append(string)
+        result_dict[col] = value_dict
 
-    # Remove duplicates from merged_dict values
-    for key in merged_dict:
-        merged_dict[key] = list(set(merged_dict[key]))
-
+    merged_dict = {k: [] for k in [1.5, 2.5, 3.5, 4.5]}
+    for k, dict1 in result_dict.items():
+        for key, value in dict1.items():
+            if key in merged_dict:
+                merged_dict[key].extend(value)
+            else:
+                merged_dict[key] = value
+    for k, v in merged_dict.items():
+        merged_dict[k] = list(set(v))
+    for i in range(1, 6):
+        if i not in merged_dict:
+            merged_dict[i] = []
     return merged_dict
-
 home_away_dict = get_home_away_str_dict()
 def color_fixtures(val):
     color_map = {
