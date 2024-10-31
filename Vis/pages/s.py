@@ -105,15 +105,11 @@ def get_home_away_str_dict():
 home_away_dict = get_home_away_str_dict()
 def color_fixtures(val):
     color_map = {
-        1: "#147d1b",
-        1.5: "#0ABE4A",
-        2: "#00ff78",
-        2.5: "#caf4bd",
-        3: "#eceae6",
-        3.5: "#fa8072",
-        4: "#ff0057",
-        4.5: "#C9054F",
-        5: "#920947",
+        1: "#257d5a",
+        2: "#00ff86",
+        3: "#ebebe4",
+        4: "#ff005a",
+        5: "#861d46",
     }
     for key in color_map:
         if val in home_away_dict[key]:
