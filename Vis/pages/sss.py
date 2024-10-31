@@ -354,9 +354,8 @@ else:
         rows[0].dataframe(player1_total_df.style.format(total_fmt))
         rows[0].dataframe(player1_df.style.format({'Price': '£{:.1f}'}))
         
-        # If there's a plot for Player 1, include it here
-        rows[0].plotly_chart(get_stats_spider_plot(player1))  # Adjust as needed
 
 
-#st.plotly_chart(get_spider_plot(player1, player2), use_container_width=True)correct this
+
+
  
