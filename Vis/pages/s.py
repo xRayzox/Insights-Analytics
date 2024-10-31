@@ -106,7 +106,7 @@ home_away_dict = get_home_away_str_dict()
 def color_fixtures(val):
     # You can define the logic to extract the numerical part if needed
     # For example, if `val` is like "bou (h)", we might want to focus on just the numeric part
-    st.write(f"Coloring for fixture value: {val}")  # Debug print
+    print(f"Coloring for fixture value: {val}")  # Debug print
     # Check if the value matches any in home_away_dict
     for key in home_away_dict.keys():
         if val in home_away_dict[key]:
