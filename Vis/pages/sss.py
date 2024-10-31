@@ -298,90 +298,65 @@ def get_player_next3(player):
     return player_next3
     
 #######################################################################
-price_min = (ele_copy['now_cost'].min())/10
-price_max = (ele_copy['now_cost'].max())/10
+price_min = (ele_copy['now_cost'].min()) / 10
+price_max = (ele_copy['now_cost'].max()) / 10
 price_min = float(price_min)
 price_max = float(price_max)
+
 if len(get_player_data(list(full_player_dict.keys())[0])['history']) == 0:
     st.write(f"Please wait for the {crnt_season} season to begin for individual player statistics")
 else:
-    filter_rows = st.columns([2,3])
+    filter_rows = st.columns([2, 3])
     filter_pos = filter_rows[0].multiselect(
         'Filter Position',
         ['GKP', 'DEF', 'MID', 'FWD'],
         ['GKP', 'DEF', 'MID', 'FWD']
     )
     slider1, slider2 = filter_rows[1].slider('Filter Price: ', price_min, price_max, [price_min, price_max], 0.1, format='£%.1f')
-###
+    
     ele_copy['team_name'] = ele_copy['team'].map(teams_df.set_index('id')['short_name'])
-    ele_copy['price'] = ele_copy['now_cost']/10
+    ele_copy['price'] = ele_copy['now_cost'] / 10
     ele_copy = remove_moved_players(ele_copy)
     ele_cut = ele_copy.loc[(ele_copy['price'] <= slider2) &
                             (ele_copy['price'] > slider1) &
                             (ele_copy['element_type'].isin(filter_pos))]
-    
+
     ele_cut.sort_values('price', ascending=False, inplace=True)
     ele_cut['full_name'] = ele_cut['first_name'] + ' ' + \
         ele_cut['second_name'] + ' (' + ele_cut['team_name'] + ')'
     id_dict = dict(zip(ele_cut['id'], ele_cut['full_name']))
     ele_cut['logo_player'] = "https://resources.premierleague.com/premierleague/photos/players/250x250/p" + ele_cut['code'].astype(str) + ".png"
 
-
     if len(id_dict) == 0:
         st.write('No data to display in range.')
     elif len(id_dict) >= 1:
-        init_rows = st.columns(4)
-        player1 = init_rows[0].selectbox("Choose Player One", id_dict.values(), index=0)
+        init_rows = st.columns(1)  # Change to 1 column for player 1 only
+        player1 = init_rows[0].selectbox("Choose Player", id_dict.values(), index=0)  # Updated label
         player1_next3 = get_player_next3(player1)
+
         for col in new_fixt_cols:
             if player1_next3[col].dtype == 'O':
                 max_length = player1_next3[col].str.len().max()
                 if max_length > 7:
-                    # Correct use of .loc for both selection and assignment:
-                    player1_next3.loc[player1_next3[col].str.len() <= 7, col] = player1_next3.loc[player1_next3[col].str.len() <= 7, col].str.pad(width=max_length+9, side='both', fillchar=' ')
+                    player1_next3.loc[player1_next3[col].str.len() <= 7, col] = player1_next3.loc[player1_next3[col].str.len() <= 7, col].str.pad(width=max_length + 9, side='both', fillchar=' ')
 
         styled_player1_next3 = player1_next3.style.map(color_fixtures, subset=new_fixt_df.columns) \
-                .format(subset=player1_next3.select_dtypes(include='float64') \
-                        .columns.values, formatter='{:.2f}')
-        init_rows[1].dataframe(styled_player1_next3)
-            
-        if len(id_dict) > 1:
-            player2 = init_rows[2].selectbox("Choose Player Two", id_dict.values(), 1) #index=int(ind2))
-            player2_next3 = get_player_next3(player2)
-            for col in new_fixt_cols:
-                if player2_next3[col].dtype == 'O':
-                    max_length = player2_next3[col].str.len().max()
-                    if max_length > 7:
-                        # Correct use of .loc for selection and assignment:
-                        player2_next3.loc[player2_next3[col].str.len() <= 7, col] = player2_next3.loc[player2_next3[col].str.len() <= 7, col].str.pad(width=max_length+9, side='both', fillchar=' ')
-            
-            styled_player2_next3 = player2_next3.style.map(color_fixtures, subset=new_fixt_df.columns) \
-                    .format(subset=player2_next3.select_dtypes(include='float64') \
-                            .columns.values, formatter='{:.2f}')
-            init_rows[3].dataframe(styled_player2_next3)
-            
-        rows = st.columns(2)
+            .format(subset=player1_next3.select_dtypes(include='float64') \
+                    .columns.values, formatter='{:.2f}')
+        init_rows[0].dataframe(styled_player1_next3)
+
+        rows = st.columns(1)  # Change to 1 column for player 1 only
         player1_df = collate_hist_df_from_name(player1)
         player1_total_df = collate_total_df_from_name(player1)
         player1_total_df.drop(['team', 'element_type'], axis=1, inplace=True)
-        total_fmt = {'xG':'{:.2f}', 'xA':'{:.2f}', 'xGI':'{:.2f}', 'xGC':'{:.2f}',
+        total_fmt = {'xG': '{:.2f}', 'xA': '{:.2f}', 'xGI': '{:.2f}', 'xGC': '{:.2f}',
                      'Price': '£{:.1f}', 'TSB%': '{:.1%}'}
         rows[0].dataframe(player1_total_df.style.format(total_fmt))
         rows[0].dataframe(player1_df.style.format({'Price': '£{:.1f}'}))
-        
-        
-        if len(id_dict) > 1:
-            player2_df = collate_hist_df_from_name(player2)
-            player2_total_df = collate_total_df_from_name(player2)
-            player2_total_df.drop(['team', 'element_type'], axis=1, inplace=True)
-            rows[1].dataframe(player2_df.style.format({'Price': '£{:.1f}'}))
-            total_fmt = {'xG':'{:.2f}', 'xA':'{:.2f}', 'xGI':'{:.2f}', 'xGC':'{:.2f}',
-                     'Price': '£{:.1f}', 'TSB%': '{:.1%}'}
-            rows[1].dataframe(player2_total_df.style.format(total_fmt))
 
-            rows[0].plotly_chart(get_stats_spider_plot(player1, player2))
-            rows[1].plotly_chart(get_ICT_spider_plot(player1, player2))
-        
+        # If there's a plot for Player 1, include it here
+        rows[0].plotly_chart(get_stats_spider_plot(player1))  # Adjust as needed
+
 
 #st.plotly_chart(get_spider_plot(player1, player2), use_container_width=True)correct this
  
