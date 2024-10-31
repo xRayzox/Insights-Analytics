@@ -47,7 +47,7 @@ def load_image_from_url(url):
     image = Image.open(BytesIO(image_data)).convert("RGBA")
     # Save the image to a temporary file
     image.save(temp_filename)
-    return temp_filename
+    return image
 
 def form_color(form):
     color_mapping = {
