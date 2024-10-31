@@ -83,7 +83,6 @@ league_df['GD'] = league_df['GD'].map('{:+}'.format)
 teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
 teams_df['logo_url'] = "https://resources.premierleague.com/premierleague/badges/70/t" + teams_df['code'].astype(str) + "@x2.png"
 teams_df['logo_image'] = teams_df['logo_url'].apply(load_image_from_url)
-teams_df['loogo'] = teams_df['logo_image'].apply(load_image_from_url)
 team_logo_mapping = pd.Series(teams_df['logo_image'].values, index=teams_df['short_name']).to_dict()
 # Map each team's logo image to the league DataFrame
 league_df['logo_team'] = league_df['Team'].map(team_logo_mapping)
@@ -356,20 +355,24 @@ max_d = rating_df["d_rating" + ("_" + model_type if model_type else "")].max()
 
 
 
-def convert_image_to_base64(image_path):
-    # Open the image using PIL
-    pil_image = Image.open(image_path)
-    
-    # Create a BytesIO object to save the image in memory
-    output = BytesIO()
-    pil_image.save(output, format='PNG')
-    
-    # Encode the image to base64 and return it
-    return "data:image/png;base64," + base64.b64encode(output.getvalue()).decode()
+def load_and_convert_image(url):
+    try:
+        # Load the image from the URL
+        with urllib.request.urlopen(url) as response:
+            image = Image.open(response).convert("RGBA")
+        
+        # Create a BytesIO object to save the image in memory
+        output = BytesIO()
+        image.save(output, format='PNG')
+        
+        # Encode the image to base64 and return it
+        return "data:image/png;base64," + base64.b64encode(output.getvalue()).decode()
+    except Exception as e:
+        print(f"Error processing image from URL {url}: {e}")
+        return None
 
 
-
-
+teams_df['logo_base64'] = teams_df['logo_url'].apply(load_and_convert_image)
 
 
 st.write(teams_df)
@@ -402,7 +405,7 @@ scatter_plot = (
             alt.Tooltip("o_rating" + ("_" + model_type if model_type else ""), title="Offensive Rating", format="d"),
             alt.Tooltip("d_rating" + ("_" + model_type if model_type else ""), title="Defensive Rating", format=".2f"),
         ],
-        url='loogo',
+        url='logo_base64',
     )
 )
 
