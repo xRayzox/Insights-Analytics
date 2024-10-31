@@ -325,6 +325,7 @@ else:
     ele_cut['full_name'] = ele_cut['first_name'] + ' ' + \
         ele_cut['second_name'] + ' (' + ele_cut['team_name'] + ')'
     id_dict = dict(zip(ele_cut['id'], ele_cut['full_name']))
+    st.write(id_dict)
     ele_cut['logo_player'] = "https://resources.premierleague.com/premierleague/photos/players/250x250/p" + ele_cut['code'].astype(str) + ".png"
 
     if len(id_dict) == 0:
@@ -334,6 +335,7 @@ else:
         player1 = init_rows[0].selectbox("Choose Player", id_dict.values(), index=0)  # Updated label
         player1_next3 = get_player_next3(player1)
 
+       
         for col in new_fixt_cols:
             if player1_next3[col].dtype == 'O':
                 max_length = player1_next3[col].str.len().max()
