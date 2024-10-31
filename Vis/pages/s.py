@@ -52,9 +52,10 @@ def form_color(form):
 def custom_plot_fn_form(ax: plt.Axes, val):
     colors = form_color(val)  # Get the list of colors for the form
     # Create a colored representation of the form
-    for i, char in enumerate(val):
-        ax.text(0.5, 0.5 + (i * 0.1), char, fontsize=14, ha='center', va='center',
-                bbox=dict(facecolor=colors[i], alpha=0.5))
+    # The characters will be displayed centered
+    for i, (char, color) in enumerate(zip(val, colors)):
+        ax.text(0.5 + (i * 0.1), 0.5, char, fontsize=14, ha='center', va='center',
+                bbox=dict(facecolor=color, alpha=0.5))
 
 # --- Data Loading and Processing ---
 league_df = get_league_table()
