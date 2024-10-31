@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import sys
 import os
+import requests
+from io import BytesIO
 import altair as alt
 import matplotlib
 from matplotlib import pyplot as plt
@@ -369,9 +371,10 @@ ax.spines['bottom'].set_color('#ccc8c8')
 plt.tick_params(axis='x', labelsize=12, color='#ccc8c8')
 plt.tick_params(axis='y', labelsize=12, color='#ccc8c8')
 
-# Function to load team logos as images
-def getImage(path):
-    return OffsetImage(plt.imread(path), zoom=.05, alpha=1)
+def getImage(url):
+    response = requests.get(url)
+    img = plt.imread(BytesIO(response.content), format='png')
+    return OffsetImage(img, zoom=.05, alpha=1)
 
 # Plot team logos
 for index, row in rating_df.iterrows():
