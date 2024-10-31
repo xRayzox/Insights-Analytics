@@ -7,15 +7,15 @@ from concurrent.futures import ThreadPoolExecutor
 from functools import lru_cache
 
 # Cache API calls to minimize repeated fetches
-@lru_cache(maxsize=1)
+@lru_cache(maxsize=100)
 def cached_bootstrap_data():
     return get_bootstrap_data()
 
-@lru_cache(maxsize=1)
+@lru_cache(maxsize=100)
 def cached_player_id_dict():
     return get_player_id_dict(order_by_col='now_cost', web_name=False)
 
-@lru_cache(maxsize=1)
+@lru_cache(maxsize=100)
 def cached_total_fpl_players():
     return get_total_fpl_players()
 
