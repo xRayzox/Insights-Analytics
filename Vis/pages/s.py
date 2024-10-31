@@ -351,6 +351,11 @@ max_d = rating_df["d_rating" + ("_" + model_type if model_type else "")].max()
 # Set up columns for layout
 df_col, chart_col = st.columns([24, 24])  # Adjust the column sizes as needed
 
+
+# Scatter plot setup
+x_domain = [teams_df["d_rating" + ("_" + model_type if model_type else "")].min()-0.1, teams_df["d_rating" + ("_" + model_type if model_type else "")].max() + 0.1]
+y_range = [teams_df["o_rating" + ("_" + model_type if model_type else "")].min()-100, teams_df["o_rating" + ("_" + model_type if model_type else "")].max() + 100]
+
 # Create scatter plot with reduced size
 scatter_plot = (
     alt.Chart(teams_df, height=400, width=500)  # Adjust height and width here
