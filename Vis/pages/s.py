@@ -52,11 +52,11 @@ def form_color(form):
 def custom_plot_fn_form(ax: plt.Axes, val):
     colors = form_color(val)  # Get the list of colors for the form
     # Create a colored representation of the form
-    spacing = 0.15  # Adjust this value for more/less spacing
-    # The characters will be displayed centered in a column
+    # The characters will be displayed centered
     for i, (char, color) in enumerate(zip(val, colors)):
-        ax.text(0.5, 0.5 + (i * spacing), char, fontsize=14, ha='center', va='center',
+        ax.text(0.5 + (i * 1daz), 0.5, char, fontsize=14, ha='center', va='center',
                 bbox=dict(facecolor=color, alpha=0.5))
+
 # --- Data Loading and Processing ---
 league_df = get_league_table()
 team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
