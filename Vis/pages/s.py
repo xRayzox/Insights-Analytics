@@ -253,6 +253,7 @@ col_defs = [
         group="ByGame",
         textprops={'ha': "center"},
         width=1
+        cmap=cmap
     ),
     
 ]
