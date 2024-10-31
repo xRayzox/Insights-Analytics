@@ -114,73 +114,57 @@ def fetch_data():
 league_df, team_fdr_df, team_fixt_df, team_ga_df, team_gf_df,ct_gw = fetch_data()
 
 
-# Select new fixtures and create new column names
-new_fixt_df = team_fixt_df.loc[:, ct_gw:(ct_gw + 2)]
-new_fixt_df.columns = ['GW' + str(col) for col in new_fixt_df.columns]
-
-# Create new fixture data frame
-new_fdr_df = team_fdr_df.loc[:, ct_gw:(ct_gw + 2)]
+new_fixt_df = team_fixt_df.loc[:, ct_gw:(ct_gw+2)]
+new_fixt_cols = ['GW' + str(col) for col in new_fixt_df.columns.tolist()]
+new_fixt_df.columns = new_fixt_cols
+new_fdr_df = team_fdr_df.loc[:, ct_gw:(ct_gw+2)]
 league_df = league_df.join(new_fixt_df)
-
-# Reset index and rename columns
-league_df = league_df.reset_index().rename(columns={'team': 'Team'})
+float_cols = league_df.select_dtypes(include='float64').columns.values
+league_df = league_df.reset_index()
+league_df.rename(columns={'team': 'Team'}, inplace=True)
 league_df.index += 1
-
-# Format GD column
 league_df['GD'] = league_df['GD'].map('{:+}'.format)
-
-# Load team logos
 teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
 teams_df['logo_url'] = "https://resources.premierleague.com/premierleague/badges/70/t" + teams_df['code'].astype(str) + "@x2.png"
 teams_df['logo_image'] = teams_df['logo_url'].apply(load_image_from_url)
-
-# Create logo mapping and assign to league DataFrame
-team_logo_mapping = teams_df.set_index('short_name')['logo_image'].to_dict()
+team_logo_mapping = pd.Series(teams_df['logo_image'].values, index=teams_df['short_name']).to_dict()
+# Map each team's logo image to the league DataFrame
 league_df['logo_team'] = league_df['Team'].map(team_logo_mapping)
-
-# Calculate rankings in the league DataFrame
+# Calculate and assign rankings in the league DataFramae
 league_df['Rank'] = league_df['Pts'].rank(ascending=False, method='min').astype(int)
-
-# Download logos if not present
 if 'logo_base64' not in teams_df.columns:
     teams_df['logo_base64'] = teams_df['logo_url'].apply(download_image_to_temp)
 
-# Function to create home-away string dictionary
 def get_home_away_str_dict():
-    new_fdr_df.columns = new_fixt_df.columns
+    new_fdr_df.columns = new_fixt_cols
     result_dict = {}
-
-    # Pad strings directly
     for col in new_fdr_df.columns:
-        values = new_fdr_df[col].tolist()
-        strings = new_fixt_df[col].str.pad(width=new_fixt_df[col].str.len().max() + 9, side='both', fillchar=' ').tolist()
-        
-        # Group strings by their corresponding values
-        value_dict = {value: [] for value in set(values)}
+        values = list(new_fdr_df[col])
+        max_length = new_fixt_df[col].str.len().max()
+        if max_length > 7:
+            new_fixt_df.loc[new_fixt_df[col].str.len() <= 7, col] = new_fixt_df[col].str.pad(width=max_length + 9, side='both', fillchar=' ')
+        strings = list(new_fixt_df[col])
+        value_dict = {}
         for value, string in zip(values, strings):
+            if value not in value_dict:
+                value_dict[value] = []
             value_dict[value].append(string)
-
         result_dict[col] = value_dict
 
-    # Merge results into a single dictionary
     merged_dict = {k: [] for k in [1.5, 2.5, 3.5, 4.5]}
-    for dict1 in result_dict.values():
+    for k, dict1 in result_dict.items():
         for key, value in dict1.items():
             if key in merged_dict:
                 merged_dict[key].extend(value)
             else:
                 merged_dict[key] = value
-
-    # Remove duplicates and ensure keys are present
-    merged_dict = {k: list(set(v)) for k, v in merged_dict.items()}
+    for k, v in merged_dict.items():
+        merged_dict[k] = list(set(v))
     for i in range(1, 6):
-        merged_dict.setdefault(i, [])
-    
+        if i not in merged_dict:
+            merged_dict[i] = []
     return merged_dict
-
 home_away_dict = get_home_away_str_dict()
-
-# Function to color fixtures
 def color_fixtures(val):
     color_map = {
         1: "#257d5a",
@@ -189,16 +173,22 @@ def color_fixtures(val):
         4: "#ff005a",
         5: "#861d46",
     }
-    return next((color for key, color in color_map.items() if val in home_away_dict.get(key, [])), "#000000")
+    for key in color_map:
+        if val in home_away_dict[key]:
+            return color_map[key]
+    return "#000000"  # Default color if no match
+
+
+# Assuming league_df is defined and populated.
+
 
 # Modify cmap for Fixture Column Definitions
 def fixture_cmap(val):
-    return color_fixtures(val)
+    return color_fixtures(val)  # Directly return the color
 
-# Custom plotting function
 def custom_plot_fn(ax: plt.Axes, val):
     ax.text(0.5, 0.5, str(val), fontsize=14, ha='center', va='center',
-            bbox=dict(facecolor=color_fixtures(val), alpha=0.5))
+        bbox=dict(facecolor=color_fixtures(val), alpha=0.5))
 
 # --- Table Styling ---
 bg_color = "#FFFFFF"
