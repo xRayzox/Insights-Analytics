@@ -320,7 +320,8 @@ def get_player_next3(player):
 
 price_min = (ele_copy['now_cost'].min())/10
 price_max = (ele_copy['now_cost'].max())/10
-
+price_min = float(price_min)
+price_max = float(price_max)
 if len(get_player_data(list(full_player_dict.keys())[0])['history']) == 0:
     st.write(f"Please wait for the {crnt_season} season to begin for individual player statistics")
 else:
