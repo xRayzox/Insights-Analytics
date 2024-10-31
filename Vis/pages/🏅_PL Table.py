@@ -172,10 +172,6 @@ def color_fixtures(val):
             return color_map[key]
     return "#000000"  # Default color if no match
 
-
-# Assuming league_df is defined and populated.
-
-
 # Modify cmap for Fixture Column Definitions
 def fixture_cmap(val):
     return color_fixtures(val)  # Directly return the color
