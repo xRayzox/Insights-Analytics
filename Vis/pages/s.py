@@ -292,7 +292,9 @@ table = Table(
     column_border_kw={"linewidth": .5, "linestyle": "-"},
     ax=ax
 )
-
+# Color a specific cell (e.g., color the 'Pts' of Team A)
+cell_to_color = table.cells[1][2]  # Access row 1, column 2 (Team A's Pts)
+cell_to_color.set_facecolor('#ffcccb')  # Light red color
 st.write(table.col_label_row)
 for idx in range(len(league_df)):
     if league_df.iloc[idx]['Rank'] <= 4:
