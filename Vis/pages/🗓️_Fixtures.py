@@ -271,9 +271,9 @@ elif selected_display == '⚔️Premier League Fixtures':
     if events_df.loc[events_df['is_current'] == True].any().any():
        ct_gw -= 1
     
-    st.write(gw_minn)
-    st.write(gw_maxx)
-    st.write(ct_gw)
+    gw_minn = int(gw_minn)
+    gw_maxx = int(gw_maxx)
+    ct_gw = int(ct_gw)
     selected_gw = st.slider('Select Gameweek:', gw_minn, gw_maxx, ct_gw) 
         # --- Display Fixtures for Selected Gameweek ---
     st.markdown(
