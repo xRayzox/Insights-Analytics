@@ -268,8 +268,12 @@ elif selected_display == '⚔️Premier League Fixtures':
     fixtures_df['local_hour'] = fixtures_df['datetime'].dt.tz_convert(timezone).dt.strftime('%H:%M')
     gw_minn = min(fixtures_df['event'])
     gw_maxx = max(fixtures_df['event'])
-    #if events_df.loc[events_df['is_current'] == True].any().any():
-    #    ct_gw -= 1
+    if events_df.loc[events_df['is_current'] == True].any().any():
+       ct_gw -= 1
+    
+    st.write(gw_minn)
+    st.write(gw_maxx)
+    st.write(ct_gw)
     selected_gw = st.slider('Select Gameweek:', gw_minn, gw_maxx, ct_gw) 
         # --- Display Fixtures for Selected Gameweek ---
     st.markdown(
