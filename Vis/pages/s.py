@@ -131,7 +131,8 @@ def fixture_cmap(val):
 def custom_plot_fn(ax: plt.Axes, val):
     # Here, you can define what you want to display for each GW cell
     # For example, displaying the fixture as text
-    ax.text(0.5, 0.5, str(val), fontsize=10, ha='center', va='center')
+    ax.text(0.5, 0.5, str(val), fontsize=10, ha='center', va='center',
+        bbox=dict(facecolor='lightblue', alpha=0.5))
     st.error(color_fixtures(val))
     ax.set_facecolor("#000000") # Set cell background color
 
