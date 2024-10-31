@@ -365,7 +365,7 @@ with df_col:
     progress_df = pd.DataFrame(progress_data)
 
     # Display the DataFrame
-    st.dataframe(progress_df, hide_index=True, use_container_width=True)
+    st.dataframe(progress_df, use_container_width=True)
 
     # Display progress bars below the DataFrame
     for index, row in progress_df.iterrows():
