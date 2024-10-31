@@ -1,26 +1,27 @@
 import streamlit as st
-from pathlib import Path
-import matplotlib
-import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
-import urllib.request
+import sys
+import os
+import altair as alt
+import matplotlib
+from matplotlib import pyplot as plt
+from mplsoccer import Bumpy
+from highlight_text import fig_text
+from matplotlib.offsetbox import OffsetImage
+from pathlib import Path
+import numpy as np
 from PIL import Image
 from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.patches as mpatches
 from plottable import ColumnDefinition, Table
 from plottable.cmap import normed_cmap
 from plottable.formatters import decimal_to_percent
-from plottable.plots import circled_image
-from plottable.plots import image
-import sys
-import os
+from plottable.plots import circled_image, image
+import urllib.request
+
+
 pd.set_option('future.no_silent_downcasting', True)
-
-# Adjust the path to include the FPL directory (assuming it's one level up)
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'FPL')))
-
-# Now you can import your modules
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..', 'FPL')))
 from fpl_api_collection import (
     get_league_table, get_current_gw, get_fixt_dfs, get_bootstrap_data
 )
@@ -137,10 +138,6 @@ def fixture_cmap(val):
 def custom_plot_fn(ax: plt.Axes, val):
     ax.text(0.5, 0.5, str(val), fontsize=14, ha='center', va='center',
         bbox=dict(facecolor=color_fixtures(val), alpha=0.5))
-
-
-# -- Streamlit App ---
-st.title("Premier League Table")
 
 # --- Table Styling ---
 bg_color = "#FFFFFF"
@@ -314,3 +311,88 @@ for idx in range(len(league_df)):
 
 # --- Display the Table in Streamlit ---
 st.pyplot(fig)
+
+####################################################
+
+# Set the title and caption
+st.title("Team Offensive / Defensive Ratings")
+st.caption("Compare overall, offensive, and defensive strengths of teams.")
+
+# Calculate ratings using the specified strength columns
+teams_df["ovr_rating_home"] = teams_df["strength_overall_home"]
+teams_df["ovr_rating_away"] = teams_df["strength_overall_away"]
+teams_df["o_rating_home"] = teams_df["strength_attack_home"]
+teams_df["o_rating_away"] = teams_df["strength_attack_away"]
+teams_df["d_rating_home"] = teams_df["strength_defence_home"]
+teams_df["d_rating_away"] = teams_df["strength_defence_away"]
+
+# Overall ratings calculation
+teams_df["ovr_rating"] = (teams_df["ovr_rating_home"] + teams_df["ovr_rating_away"]) / 2
+teams_df["o_rating"] = (teams_df["o_rating_home"] + teams_df["o_rating_away"]) / 2
+teams_df["d_rating"] = (teams_df["d_rating_home"] + teams_df["d_rating_away"]) / 2
+
+# Options for ratings
+model_option = st.selectbox("Data Source", ("Overall", "Home", "Away"))
+model_type = "home" if model_option == "Home" else "away" if model_option == "Away" else ""
+
+# Display DataFrame
+rating_df = teams_df.sort_values("ovr_rating" + ("_" + model_type if model_type else ""), ascending=False)
+
+# Convert rating columns to float
+rating_df["ovr_rating" + ("_" + model_type if model_type else "")] = rating_df["ovr_rating" + ("_" + model_type if model_type else "")].astype(float)
+rating_df["o_rating" + ("_" + model_type if model_type else "")] = rating_df["o_rating" + ("_" + model_type if model_type else "")].astype(float)
+rating_df["d_rating" + ("_" + model_type if model_type else "")] = rating_df["d_rating" + ("_" + model_type if model_type else "")].astype(float)
+
+# Get the maximum values for each rating type
+max_ovr = rating_df["ovr_rating" + ("_" + model_type if model_type else "")].max()
+max_o = rating_df["o_rating" + ("_" + model_type if model_type else "")].max()
+max_d = rating_df["d_rating" + ("_" + model_type if model_type else "")].max()
+
+
+# Scatter plot setup
+x_domain = [teams_df["d_rating" + ("_" + model_type if model_type else "")].min()-0.1, teams_df["d_rating" + ("_" + model_type if model_type else "")].max() + 0.1]
+y_range = [teams_df["o_rating" + ("_" + model_type if model_type else "")].min()-100, teams_df["o_rating" + ("_" + model_type if model_type else "")].max() + 100]
+
+# Create scatter plot with reduced size
+scatter_plot = (
+    alt.Chart(teams_df, height=400, width=500)  # Adjust height and width here
+    .mark_point(filled=True, size=100)
+    .encode(
+        x=alt.X(
+            "d_rating" + ("_" + model_type if model_type else ""),
+            type="quantitative",
+            title="Defensive Rating",
+            scale=alt.Scale(domain=x_domain),
+        ),
+        y=alt.Y(
+            "o_rating" + ("_" + model_type if model_type else ""),
+            type="quantitative",
+            title="Offensive Rating",
+            scale=alt.Scale(domain=y_range),
+        ),
+        tooltip=[
+            alt.Tooltip("name", title="Team"),
+            alt.Tooltip("ovr_rating" + ("_" + model_type if model_type else ""), title="Overall Rating", format="d"),
+            alt.Tooltip("o_rating" + ("_" + model_type if model_type else ""), title="Offensive Rating", format="d"),
+            alt.Tooltip("d_rating" + ("_" + model_type if model_type else ""), title="Defensive Rating", format=".2f"),
+        ],
+    )
+)
+
+# Mean lines
+off_mean_line = (
+    alt.Chart(pd.DataFrame({"Mean Offensive Rating": [teams_df["o_rating" + ("_" + model_type if model_type else "")].mean()]}))
+    .mark_rule(color="#60b4ff", opacity=0.66)
+    .encode(y="Mean Offensive Rating")
+)
+
+def_mean_line = (
+    alt.Chart(pd.DataFrame({"Mean Defensive Rating": [teams_df["d_rating" + ("_" + model_type if model_type else "")].mean()]}))
+    .mark_rule(color="#60b4ff", opacity=0.66)
+    .encode(x="Mean Defensive Rating")
+)
+
+# Combine all chart elements
+with chart_col:
+    st.altair_chart(scatter_plot + off_mean_line + def_mean_line, use_container_width=True)
+##########################################################################
