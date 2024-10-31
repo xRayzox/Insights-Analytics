@@ -322,6 +322,25 @@ st.pyplot(fig)
 
 ####################################################
 
+# Function to load and convert images with caching
+@st.cache_data
+def load_and_convert_image(url):
+    if url:  # Ensure the URL is not None
+        try:
+            with urllib.request.urlopen(url) as response:
+                image = Image.open(response).convert("RGBA")
+            output = BytesIO()
+            image.save(output, format='PNG')
+            return "data:image/png;base64," + base64.b64encode(output.getvalue()).decode()
+        except Exception as e:
+            st.error(f"Error loading image from URL {url}: {e}")
+            return None
+    return None
+
+# Load images from URLs into the DataFrame
+if 'logo_base64' not in teams_df.columns:
+    teams_df['logo_base64'] = teams_df['logo_url'].apply(load_and_convert_image)
+
 # Set the title and caption
 st.title("Team Offensive / Defensive Ratings")
 st.caption("Compare overall, offensive, and defensive strengths of teams.")
@@ -356,33 +375,11 @@ max_ovr = rating_df["ovr_rating" + ("_" + model_type if model_type else "")].max
 max_o = rating_df["o_rating" + ("_" + model_type if model_type else "")].max()
 max_d = rating_df["d_rating" + ("_" + model_type if model_type else "")].max()
 
-
-
-@st.cache_data
-def load_and_convert_image(url):
-    try:
-        with urllib.request.urlopen(url) as response:
-            image = Image.open(response).convert("RGBA")
-        output = BytesIO()
-        image.save(output, format='PNG')
-        return "data:image/png;base64," + base64.b64encode(output.getvalue()).decode()
-    except Exception as e:
-        st.error(f"Error loading image from URL {url}: {e}")
-        return None
-
-
-teams_df['logo_base64'] = teams_df['logo_url'].apply(load_and_convert_image)
-
-
-
-# Assuming teams_df is already defined with valid logo URLs
-suffix = ("_" + model_type) if model_type else ""
-
 # Get min and max for d_rating and o_rating
-d_rating_min = teams_df["d_rating" + suffix].min()
-d_rating_max = teams_df["d_rating" + suffix].max()
-o_rating_min = teams_df["o_rating" + suffix].min()
-o_rating_max = teams_df["o_rating" + suffix].max()
+d_rating_min = teams_df["d_rating" + ("_" + model_type if model_type else "")].min()
+d_rating_max = teams_df["d_rating" + ("_" + model_type if model_type else "")].max()
+o_rating_min = teams_df["o_rating" + ("_" + model_type if model_type else "")].min()
+o_rating_max = teams_df["o_rating" + ("_" + model_type if model_type else "")].max()
 
 # Calculate ranges with increased margins
 x_margin = (d_rating_max - d_rating_min) * 0.05  # 5% of the range
@@ -395,7 +392,7 @@ y_range = [o_rating_min - y_margin, o_rating_max + y_margin]
 # Create scatter plot
 scatter_plot = (
     alt.Chart(teams_df, height=400, width=800)
-    .mark_image(width=30,height=30)  # Adjust size as needed
+    .mark_image(width=30, height=30)  # Adjust size as needed
     .encode(
         x=alt.X(
             "d_rating" + ("_" + model_type if model_type else ""),
@@ -434,4 +431,4 @@ def_mean_line = (
 
 # Display the chart
 st.altair_chart(scatter_plot + off_mean_line + def_mean_line, use_container_width=True)
-##########################################################################
+
