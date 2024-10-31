@@ -361,7 +361,7 @@ y_range = [teams_df["o_rating" + ("_" + model_type if model_type else "")].min()
 # Create scatter plot
 scatter_plot = (
     alt.Chart(teams_df, height=400, width=500)
-    .mark_circle(size=50)  # Adjust size as needed
+    .mark_circle(url="https://resources.premierleague.com/premierleague/badges/50/t8.png",size=50)  # Adjust size as needed
     .encode(
         x=alt.X(
             "d_rating" + ("_" + model_type if model_type else ""),
