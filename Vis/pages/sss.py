@@ -312,6 +312,7 @@ else:
         ['GKP', 'DEF', 'MID', 'FWD']
     )
     slider1, slider2 = filter_rows[1].slider('Filter Price: ', price_min, price_max, [price_min, price_max], 0.1, format='£%.1f')
+###
     ele_copy['team_name'] = ele_copy['team'].map(teams_df.set_index('id')['short_name'])
     ele_copy['price'] = ele_copy['now_cost']/10
     ele_copy = remove_moved_players(ele_copy)
@@ -323,9 +324,7 @@ else:
     ele_cut['full_name'] = ele_cut['first_name'] + ' ' + \
         ele_cut['second_name'] + ' (' + ele_cut['team_name'] + ')'
     id_dict = dict(zip(ele_cut['id'], ele_cut['full_name']))
-    
-    #ind1, ind2 = get_top_two_mid_ids()
-    
+
     if len(id_dict) == 0:
         st.write('No data to display in range.')
     elif len(id_dict) >= 1:
@@ -342,7 +341,7 @@ else:
         styled_player1_next3 = player1_next3.style.map(color_fixtures, subset=new_fixt_df.columns) \
                 .format(subset=player1_next3.select_dtypes(include='float64') \
                         .columns.values, formatter='{:.2f}')
-        init_rows[1].dataframe(styled_player1_next3)
+        #init_rows[1].dataframe(styled_player1_next3)
             
         if len(id_dict) > 1:
             player2 = init_rows[2].selectbox("Choose Player Two", id_dict.values(), 1) #index=int(ind2))
