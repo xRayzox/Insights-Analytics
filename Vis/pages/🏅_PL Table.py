@@ -172,6 +172,10 @@ def color_fixtures(val):
             return color_map[key]
     return "#000000"  # Default color if no match
 
+
+# Assuming league_df is defined and populated.
+
+
 # Modify cmap for Fixture Column Definitions
 def fixture_cmap(val):
     return color_fixtures(val)  # Directly return the color
@@ -183,6 +187,7 @@ def custom_plot_fn(ax: plt.Axes, val):
 # --- Table Styling ---
 bg_color = "#FFFFFF"
 text_color = "#000000"
+
 row_colors = {
     "top4": "#E1FABC",
     "top6": "#FFFC97",
@@ -190,36 +195,138 @@ row_colors = {
     "even": "#E2E2E1",
     "odd": "#B3B0B0"
 }
+
+
 matplotlib.rcParams["text.color"] = text_color
 matplotlib.rcParams["font.family"] = "monospace"
+
 # --- Column Definitions ---
 col_defs = [
-    ColumnDefinition("Rank", 1, textprops={'ha': "center"}),
-    ColumnDefinition("logo_team", 1, textprops={'ha': "center", 'va': "center", 'color': "white"}, plot_fn=image),
-    ColumnDefinition("Team", 1, textprops={'ha': "center"}, group="Team Info"),
-    ColumnDefinition("GP", 0.5, textprops={'ha': "center"}, group="Matches Played"),
-    ColumnDefinition("W", 0.5, textprops={'ha': "center"}, group="Matches Played"),
-    ColumnDefinition("D", 0.5, textprops={'ha': "center"}, group="Matches Played"),
-    ColumnDefinition("L", 0.5, textprops={'ha': "center"}, group="Matches Played"),
-    ColumnDefinition("GF", 0.5, textprops={'ha': "center"}, group="Goals"),
-    ColumnDefinition("GA", 0.5, textprops={'ha': "center"}, group="Goals"),
-    ColumnDefinition("GD", 0.5, textprops={'ha': "center"}, group="Goals"),
-    ColumnDefinition("CS", 0.5, textprops={'ha': "center"}, group="Goals"),
-    ColumnDefinition("Pts", 1, textprops={'ha': "center"}, group="Points"),
-    ColumnDefinition("Pts/Game", 1, textprops={'ha': "center"}, group="Points"),
-    ColumnDefinition("Form", 2, textprops={'ha': "center"}, plot_fn=custom_plot_fn_form, group="Points"),
-    ColumnDefinition("GF/Game", 1, textprops={'ha': "center"}, group="By Game"),  
-    ColumnDefinition("GA/Game", 1, textprops={'ha': "center"}, group="By Game"),
-    ColumnDefinition("CS/Game", 1, textprops={'ha': "center"}, group="By Game"),
+    ColumnDefinition(
+        name="Rank",
+        textprops={'ha': "center"},
+        width=1
+    ),
+    ColumnDefinition(
+        name="logo_team",
+        textprops={'ha': "center", 'va': "center", 'color': "white"},
+        plot_fn=image,
+        width=1,
+    ),
+    ColumnDefinition(
+        name="Team",
+        textprops={'ha': "center"},
+        width=1
+    ),
+    ColumnDefinition(
+        name="GP",
+        group="Matches Played",
+
+        textprops={'ha': "center"},
+        width=0.5
+    ),
+    ColumnDefinition(
+        name="W",
+        group="Matches Played",
+
+        textprops={'ha': "center"},
+        width=0.5
+    ),
+    ColumnDefinition(
+        name="D",
+        group="Matches Played",
+        textprops={'ha': "center"},
+        width=0.5
+    ),
+    ColumnDefinition(
+        name="L",
+        group="Matches Played",
+        textprops={'ha': "center"},
+        width=0.5
+    ),
+    ColumnDefinition(
+        name="GF",
+        group="Goals",
+        textprops={'ha': "center"},
+        width=0.5
+    ),
+    ColumnDefinition(
+        name="GA",
+        group="Goals",
+        textprops={'ha': "center"},
+        width=0.5
+    ),
+    ColumnDefinition(
+        name="GD",
+        group="Goals",
+        textprops={'ha': "center"},
+        width=0.5
+    ),
+    ColumnDefinition(
+        name="CS",
+        group="Goals",
+        textprops={'ha': "center"},
+        width=0.5
+    ),
+    ColumnDefinition(
+        name="Pts",
+        group="Points",
+        textprops={'ha': "center"},
+        width=1
+    ),
+    ColumnDefinition(
+        name="Pts/Game",
+        group="Points",
+        textprops={'ha': "center"},
+        width=1
+    ),
+    ColumnDefinition(
+        name="Form",
+        group="Points",
+        textprops={'ha': "center"},
+        plot_fn=custom_plot_fn_form,
+        width=2
+    ),
+    ColumnDefinition(
+        name="GF/Game",
+        group="ByGame",
+        textprops={'ha': "center"},
+        width=1
+    ),
+    ColumnDefinition(
+        name="GA/Game",
+        group="ByGame",
+        textprops={'ha': "center"},
+        width=1
+    ),
+    ColumnDefinition(
+        name="CS/Game",
+        group="ByGame",
+        textprops={'ha': "center"},
+        width=1
+    ),
+    
 ]
+
+# Modify Fixture Column Definitions
 for gw in range(ct_gw, ct_gw + 3):
     col_defs.append(
-        ColumnDefinition(name=f"GW{gw}",group="Fixtures",textprops={'ha': "center"},width=1,plot_fn=custom_plot_fn)
+        ColumnDefinition(
+            name=f"GW{gw}",
+            group="Fixtures",
+            textprops={'ha': "center"},
+            width=1,
+            plot_fn=custom_plot_fn  # Use the custom plotting function
+        )
     )
+
+
 # --- Plottable Table ---
 fig, ax = plt.subplots(figsize=(20, 20))  # Adjust figsize for Streamlit
 fig.set_facecolor(bg_color)
 ax.set_facecolor(bg_color)
+
+
 
 table = Table(
     league_df,
