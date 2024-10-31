@@ -313,35 +313,13 @@ for idx in range(len(league_df)):
 st.pyplot(fig)
 
 ####################################################
-import streamlit as st
 
-# Sample data
-max_ovr = 100
-max_o = 100
-max_d = 100
-model_type = "example"  # or None
-
-# Create columns
-col1, col2, col3 = st.columns(3)
-
-# Display ProgressBars with labels
-with col1:
-    st.write("Overall Rating")  # Display the label
-    st.progress(50)  # Show the progress bar
-
-with col2:
-    st.write("Offensive Rating")  # Display the label
-    st.progress(70)  # Show the progress bar
-
-with col3:
-    st.write("Defensive Rating")  # Display the label
-    st.progress(90)  # Show the progress bar
-
-"""
+# Set the title and caption
 # Set the title and caption
 st.title("Team Offensive / Defensive Ratings")
 st.caption("Compare overall, offensive, and defensive strengths of teams.")
 
+# Assume teams_df is already defined. If not, replace this with your DataFrame initialization.
 # Calculate ratings using the specified strength columns
 teams_df["ovr_rating_home"] = teams_df["strength_overall_home"]
 teams_df["ovr_rating_away"] = teams_df["strength_overall_away"]
@@ -375,35 +353,22 @@ max_d = rating_df["d_rating" + ("_" + model_type if model_type else "")].max()
 # Set up columns for layout
 df_col, chart_col = st.columns([24, 24])  # Adjust the column sizes as needed
 
-
-# Configure progress columns for ratings
-column_config = {
-    "ovr_rating" + ("_" + model_type if model_type else ""): st.column_config.ProgressColumn(
-        label="Overall Rating", max_value=max_ovr,format="%.0f"
-    ),
-    "o_rating" + ("_" + model_type if model_type else ""): st.column_config.ProgressColumn(
-        label="Offensive Rating", max_value=max_o,format="%.0f"
-    ),
-    "d_rating" + ("_" + model_type if model_type else ""): st.column_config.ProgressColumn(
-        label="Defensive Rating", max_value=max_d,format="%.0f"
-    ),
-}
-
 with df_col:
-    
-    # Display the DataFrame with full width using progress columns
-    st.dataframe(
-        rating_df[["name", 
-                    "ovr_rating" + ("_" + model_type if model_type else ""),
-                    "o_rating" + ("_" + model_type if model_type else ""),
-                    "d_rating" + ("_" + model_type if model_type else "")]],
-        hide_index=True,
-        use_container_width=True,  
-        column_config=column_config  
-    )
+    # Display the DataFrame with full width using progress bars
+    for index, row in rating_df.iterrows():
+        st.write(row["name"])  # Display team name
+        st.progress(row["ovr_rating" + ("_" + model_type if model_type else "")] / max_ovr)  # Overall Rating Progress Bar
+        st.write("Offensive Rating")
+        st.progress(row["o_rating" + ("_" + model_type if model_type else "")] / max_o)  # Offensive Rating Progress Bar
+        st.write("Defensive Rating")
+        st.progress(row["d_rating" + ("_" + model_type if model_type else "")] / max_d)  # Defensive Rating Progress Bar
+        st.write("---")  # Separator for each team
+
 # Scatter plot setup
-x_domain = [teams_df["d_rating" + ("_" + model_type if model_type else "")].min()-0.1, teams_df["d_rating" + ("_" + model_type if model_type else "")].max() + 0.1]
-y_range = [teams_df["o_rating" + ("_" + model_type if model_type else "")].min()-100, teams_df["o_rating" + ("_" + model_type if model_type else "")].max() + 100]
+x_domain = [teams_df["d_rating" + ("_" + model_type if model_type else "")].min() - 0.1, 
+            teams_df["d_rating" + ("_" + model_type if model_type else "")].max() + 0.1]
+y_range = [teams_df["o_rating" + ("_" + model_type if model_type else "")].min() - 100, 
+            teams_df["o_rating" + ("_" + model_type if model_type else "")].max() + 100]
 
 # Create scatter plot with reduced size
 scatter_plot = (
@@ -447,6 +412,3 @@ def_mean_line = (
 # Combine all chart elements
 with chart_col:
     st.altair_chart(scatter_plot + off_mean_line + def_mean_line, use_container_width=True)
-##########################################################################
-    
-    """
