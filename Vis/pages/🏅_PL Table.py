@@ -18,7 +18,7 @@ from plottable.cmap import normed_cmap
 from plottable.formatters import decimal_to_percent
 from plottable.plots import circled_image, image
 import urllib.request
-
+from matplotlib.offsetbox import AnnotationBbox, OffsetImage
 
 pd.set_option('future.no_silent_downcasting', True)
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..', 'FPL')))
