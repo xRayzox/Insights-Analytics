@@ -365,7 +365,7 @@ def getImage(url):
 
 scatter_plot = (
     alt.Chart(teams_df, height=400, width=500)  # Adjust height and width here
-    .mark_image(url=getImage(teams_df["logo_url"]),size=150)
+    .mark_image(size=150)  # Adjust the size of the images
     .encode(
         x=alt.X(
             "d_rating" + ("_" + model_type if model_type else ""),
@@ -385,9 +385,16 @@ scatter_plot = (
             alt.Tooltip("o_rating" + ("_" + model_type if model_type else ""), title="Offensive Rating", format="d"),
             alt.Tooltip("d_rating" + ("_" + model_type if model_type else ""), title="Defensive Rating", format=".2f"),
         ],
-        
+    )
+    .transform_calculate(
+        logo_url='datum.logo_url'  # Use the logo_url from your DataFrame
+    )
+    .mark_image(
+        url='logo_url',
+        tooltip=None  # Disable tooltip on image
     )
 )
+
 
 # Mean lines
 off_mean_line = (
