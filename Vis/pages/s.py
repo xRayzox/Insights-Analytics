@@ -114,7 +114,7 @@ def color_fixtures(val):
     for key in color_map:
         if val in home_away_dict[key]:
             return color_map[key]
-    return "#FF0000"  # Default color if no match
+    return "#000000"  # Default color if no match
 
 
 # Assuming league_df is defined and populated.
