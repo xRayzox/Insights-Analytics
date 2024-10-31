@@ -325,7 +325,7 @@ else:
         ele_cut['second_name'] + ' (' + ele_cut['team_name'] + ')'
     id_dict = dict(zip(ele_cut['id'], ele_cut['full_name']))
     ele_cut['logo_player'] = "https://resources.premierleague.com/premierleague/photos/players/250x250/p" + ele_cut['code'].astype(str) + ".png"
-    st.write(ele_cut)
+
 
     if len(id_dict) == 0:
         st.write('No data to display in range.')
