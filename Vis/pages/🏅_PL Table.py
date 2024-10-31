@@ -322,16 +322,30 @@ st.pyplot(fig)
 
 ####################################################
 
-# Function to load and convert images with caching
-@st.cache_data
-def load_and_convert_image(url):
+# Define the directory to save images
+IMAGE_DIR = "team_logos"
+
+# Function to download and save images locally
+def download_and_save_image(url):
     if url:  # Ensure the URL is not None
         try:
-            with urllib.request.urlopen(url) as response:
-                image = Image.open(response).convert("RGBA")
-            output = BytesIO()
-            image.save(output, format='PNG')
-            return "data:image/png;base64," + base64.b64encode(output.getvalue()).decode()
+            # Create the image directory if it doesn't exist
+            if not os.path.exists(IMAGE_DIR):
+                os.makedirs(IMAGE_DIR)
+
+            # Get the image file name from the URL
+            image_name = url.split("/")[-1]
+            local_path = os.path.join(IMAGE_DIR, image_name)
+
+            # Check if the image already exists locally
+            if not os.path.exists(local_path):
+                # Download and save the image
+                with urllib.request.urlopen(url) as response:
+                    image = Image.open(response).convert("RGBA")
+                    image.save(local_path)  # Save as PNG
+
+            # Return the local path to the image
+            return local_path
         except Exception as e:
             st.error(f"Error loading image from URL {url}: {e}")
             return None
@@ -339,7 +353,18 @@ def load_and_convert_image(url):
 
 # Load images from URLs into the DataFrame
 if 'logo_base64' not in teams_df.columns:
-    teams_df['logo_base64'] = teams_df['logo_url'].apply(load_and_convert_image)
+    teams_df['logo_path'] = teams_df['logo_url'].apply(download_and_save_image)
+
+    # Convert local image paths to base64 for display in Altair chart
+    def convert_image_to_base64(image_path):
+        try:
+            with open(image_path, "rb") as image_file:
+                return "data:image/png;base64," + base64.b64encode(image_file.read()).decode()
+        except Exception as e:
+            st.error(f"Error converting image to base64: {e}")
+            return None
+
+    teams_df['logo_base64'] = teams_df['logo_path'].apply(convert_image_to_base64)
 
 # Set the title and caption
 st.title("Team Offensive / Defensive Ratings")
