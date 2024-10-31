@@ -325,13 +325,14 @@ else:
         ele_cut['second_name'] + ' (' + ele_cut['team_name'] + ')'
     id_dict = dict(zip(ele_cut['id'], ele_cut['full_name']))
 
+    st.write(ele_cut)
+
     if len(id_dict) == 0:
         st.write('No data to display in range.')
     elif len(id_dict) >= 1:
         init_rows = st.columns(4)
         player1 = init_rows[0].selectbox("Choose Player One", id_dict.values(), index=0)
         player1_next3 = get_player_next3(player1)
-        st.write(player1_next3)
         for col in new_fixt_cols:
             if player1_next3[col].dtype == 'O':
                 max_length = player1_next3[col].str.len().max()
