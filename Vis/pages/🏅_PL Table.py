@@ -348,8 +348,7 @@ max_ovr = rating_df["ovr_rating" + ("_" + model_type if model_type else "")].max
 max_o = rating_df["o_rating" + ("_" + model_type if model_type else "")].max()
 max_d = rating_df["d_rating" + ("_" + model_type if model_type else "")].max()
 
-# Set up columns for layout
-df_col, chart_col = st.columns([24, 24])  # Adjust the column sizes as needed
+
 
 # Scatter plot setup
 x_domain = [teams_df["d_rating" + ("_" + model_type if model_type else "")].min()-0.1, teams_df["d_rating" + ("_" + model_type if model_type else "")].max() + 0.1]
@@ -394,7 +393,6 @@ def_mean_line = (
     .encode(x="Mean Defensive Rating")
 )
 
-# Combine all chart elements
-with chart_col:
-    st.altair_chart(scatter_plot + off_mean_line + def_mean_line, use_container_width=True)
+
+st.altair_chart(scatter_plot + off_mean_line + def_mean_line, use_container_width=True)
 ##########################################################################
