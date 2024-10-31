@@ -67,9 +67,19 @@ def custom_plot_fn_form(ax: plt.Axes, val):
                 bbox=dict(facecolor=color, alpha=0.5))
 
 # --- Data Loading and Processing ---
-league_df = get_league_table()
-team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
-ct_gw = get_current_gw()
+def load_data():
+    league_df = get_league_table()
+    # Load other necessary data
+    return league_df
+league_df = load_data()
+@st.cache_data
+def load_league_data():
+    league_df = get_league_table()
+    team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
+    ct_gw = get_current_gw()
+    return league_df, team_fdr_df, team_fixt_df, ct_gw
+league_df, team_fdr_df, team_fixt_df, ct_gw = load_league_data()
+
 new_fixt_df = team_fixt_df.loc[:, ct_gw:(ct_gw+2)]
 new_fixt_cols = ['GW' + str(col) for col in new_fixt_df.columns.tolist()]
 new_fixt_df.columns = new_fixt_cols
@@ -355,20 +365,16 @@ max_d = rating_df["d_rating" + ("_" + model_type if model_type else "")].max()
 
 
 
+@st.cache_data
 def load_and_convert_image(url):
     try:
-        # Load the image from the URL
         with urllib.request.urlopen(url) as response:
             image = Image.open(response).convert("RGBA")
-        
-        # Create a BytesIO object to save the image in memory
         output = BytesIO()
         image.save(output, format='PNG')
-        
-        # Encode the image to base64 and return it
         return "data:image/png;base64," + base64.b64encode(output.getvalue()).decode()
     except Exception as e:
-        print(f"Error processing image from URL {url}: {e}")
+        st.error(f"Error loading image from URL {url}: {e}")
         return None
 
 
