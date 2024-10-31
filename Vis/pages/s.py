@@ -139,8 +139,6 @@ def custom_plot_fn(ax: plt.Axes, val):
         bbox=dict(facecolor=color_fixtures(val), alpha=0.5))
 
 
-
-
 # -- Streamlit App ---
 st.title("Premier League Table")
 
@@ -156,6 +154,22 @@ row_colors = {
     "odd": "#B3B0B0"
 }
 
+def color_rank(val):
+    if val <= 4:
+        return row_colors["top4"]
+    elif 5 <= val <= 6:
+        return row_colors["top6"]
+    elif val >= 18:
+        return row_colors["relegation"]
+    elif val % 2 == 0:
+        return row_colors["even"]
+    else:
+        return row_colors["odd"]
+    
+def custom_plot_fn_rank(ax: plt.Axes, val):
+    ax.text(0.5, 0.5, str(val), fontsize=14, ha='center', va='center',
+                bbox=dict(facecolor=color_rank(val), alpha=0.5))
+
 matplotlib.rcParams["text.color"] = text_color
 matplotlib.rcParams["font.family"] = "monospace"
 
@@ -164,6 +178,7 @@ col_defs = [
     ColumnDefinition(
         name="Rank",
         textprops={'ha': "center"},
+        plot_fn=custom_plot_fn_rank,
         width=1
     ),
     ColumnDefinition(
