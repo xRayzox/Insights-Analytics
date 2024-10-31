@@ -24,6 +24,7 @@ ele_types_df = pd.DataFrame(ele_types_data)
 ele_data = get_bootstrap_data()['elements']
 ele_df = pd.DataFrame(ele_data)
 ele_df['element_type'] = ele_df['element_type'].map(ele_types_df.set_index('id')['singular_name_short'])
+ele_df['logo_player'] = "https://resources.premierleague.com/premierleague/photos/players/250x250/p" + ele_df['code'].astype(str) + ".png"
 ele_copy = ele_df.copy()
 
 teams_data = get_bootstrap_data()['teams']
@@ -46,7 +47,7 @@ ele_cols = ['id', 'web_name', 'chance_of_playing_this_round', 'element_type',
             'ict_index_rank', 'ict_index_rank_type', 'dreamteam_count']
 
 ele_df = ele_df[ele_cols]
-st.write(ele_df)
+
 league_df = get_league_table()
 
 team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
@@ -333,7 +334,6 @@ else:
     ele_cut['full_name'] = ele_cut['first_name'] + ' ' + \
         ele_cut['second_name'] + ' (' + ele_cut['team_name'] + ')'
     id_dict = dict(zip(ele_cut['id'], ele_cut['full_name']))
-    #ele_cut['logo_player'] = "https://resources.premierleague.com/premierleague/photos/players/250x250/p" + ele_cut['code'].astype(str) + ".png"
 
     if len(id_dict) == 0:
         st.write('No data to display in range.')
