@@ -51,10 +51,13 @@ def form_color(form):
 
 def custom_plot_fn_form(ax: plt.Axes, val):
     colors = form_color(val)  # Get the list of colors for the form
-    # Create a colored representation of the form
-    # The characters will be displayed centered
+    num_chars = len(val)  # Number of characters in the form
+    spacing = 0.2  # Adjust this value for more/less horizontal spacing
+
+    # Calculate the horizontal positions based on the number of characters
     for i, (char, color) in enumerate(zip(val, colors)):
-        ax.text(0.5 + (i * 0.3), 0.5, char, fontsize=14, ha='center', va='center',
+        x_pos = 0.5 + (i - (num_chars - 1) / 2) * spacing  # Centering the characters
+        ax.text(x_pos, 0.5, char, fontsize=14, ha='center', va='center',
                 bbox=dict(facecolor=color, alpha=0.5))
 
 # --- Data Loading and Processing ---
