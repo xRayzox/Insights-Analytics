@@ -70,19 +70,9 @@ def custom_plot_fn_form(ax: plt.Axes, val):
                 bbox=dict(facecolor=color, alpha=0.5))
 
 # --- Data Loading and Processing ---
-def load_data():
-    league_df = get_league_table()
-    # Load other necessary data
-    return league_df
-league_df = load_data()
-@st.cache_data
-def load_league_data():
-    league_df = get_league_table()
-    team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
-    ct_gw = get_current_gw()
-    return league_df, team_fdr_df, team_fixt_df, ct_gw
-league_df, team_fdr_df, team_fixt_df, ct_gw = load_league_data()
-
+league_df = get_league_table()
+team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
+ct_gw = get_current_gw()
 new_fixt_df = team_fixt_df.loc[:, ct_gw:(ct_gw+2)]
 new_fixt_cols = ['GW' + str(col) for col in new_fixt_df.columns.tolist()]
 new_fixt_df.columns = new_fixt_cols
