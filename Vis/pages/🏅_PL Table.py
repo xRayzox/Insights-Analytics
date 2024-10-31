@@ -36,13 +36,16 @@ from fpl_utils import (
 st.set_page_config(page_title='PL Table', page_icon=':sports-medal:', layout='wide')
 define_sidebar()
 st.title('Premier League Table')
-# --- Streamlit Configuration ---
-# --- Functions ---
+
 def load_image_from_url(url):
-    with urllib.request.urlopen(url) as response:
-        image = Image.open(response).convert("RGBA")
-    # Save the image to a temporary file
+    # Create a temporary filename
     temp_filename = f"temp_{os.path.basename(url)}"
+    # Load image data directly into memory
+    with urllib.request.urlopen(url) as response:
+        image_data = response.read()  # Read image data into memory
+    # Open the image from the BytesIO stream
+    image = Image.open(BytesIO(image_data)).convert("RGBA")
+    # Save the image to a temporary file
     image.save(temp_filename)
     return temp_filename
 
