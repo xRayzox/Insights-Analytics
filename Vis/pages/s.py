@@ -27,10 +27,10 @@ from fpl_api_collection import (
 from fpl_utils import (
     define_sidebar
 )
-
+st.set_page_config(page_title='PL Table', page_icon=':sports-medal:', layout='wide')
+define_sidebar()
+st.title('Premier League Table')
 # --- Streamlit Configuration ---
-st.set_page_config(layout="wide")  # Use wide layout for better table visualization
-
 # --- Functions ---
 def load_image_from_url(url):
     with urllib.request.urlopen(url) as response:
