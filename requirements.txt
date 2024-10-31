@@ -6,11 +6,10 @@ scikit-learn
 requests
 numpy
 plotly
-altair
+altair==4.2.0
 mplsoccer 
 cachetools
 aiohttp
 dask
 highlight_text
 plottable
-streamlit-aggrid
