@@ -342,6 +342,7 @@ else:
         player1 = init_rows[0].selectbox("Choose Player", id_dict.values(), index=0)  # Updated label
         player1_next3 = get_player_next3(player1)
         loogo=get_image_sui(player1)
+        st.write(loogo)
         st.image(loogo, caption='Your Image Caption', use_column_width=True)
         for col in new_fixt_cols:
             if player1_next3[col].dtype == 'O':
