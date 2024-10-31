@@ -359,8 +359,8 @@ y_range = [teams_df["o_rating" + ("_" + model_type if model_type else "")].min()
             teams_df["o_rating" + ("_" + model_type if model_type else "")].max() + 200]  # Expanded range
 # Create scatter plot with reduced size
 scatter_plot = (
-    alt.Chart(teams_df, height=400, width=500)
-    .mark_image(width=20, height=20) # Adjust width and height of the images here
+    alt.Chart(teams_df, height=400, width=500)  # Adjust height and width here
+    .mark_image(url="logo_url",size=150)
     .encode(
         x=alt.X(
             "d_rating" + ("_" + model_type if model_type else ""),
@@ -374,13 +374,13 @@ scatter_plot = (
             title="Offensive Rating",
             scale=alt.Scale(domain=y_range),
         ),
-        url="temp_logo", # Directly encode the image URL
         tooltip=[
             alt.Tooltip("name", title="Team"),
             alt.Tooltip("ovr_rating" + ("_" + model_type if model_type else ""), title="Overall Rating", format="d"),
             alt.Tooltip("o_rating" + ("_" + model_type if model_type else ""), title="Offensive Rating", format="d"),
             alt.Tooltip("d_rating" + ("_" + model_type if model_type else ""), title="Defensive Rating", format=".2f"),
         ],
+
     )
 )
 
