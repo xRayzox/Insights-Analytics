@@ -62,7 +62,6 @@ def form_color(form):
     # Create a list of colors for the form string
     return [color_mapping[char] for char in form if char in color_mapping]
 
-
 def custom_plot_fn_form(ax: plt.Axes, val):
     """Plot the form string on a Matplotlib Axes object with color coding."""
     colors = form_color(val)  # Get the list of colors for the form
@@ -77,19 +76,16 @@ def custom_plot_fn_form(ax: plt.Axes, val):
         ax.text(x_pos, 0.5, char, fontsize=14, ha='center', va='center',
                 bbox=dict(facecolor=color, alpha=0.5))
 
-
 def download_image_to_temp(url):
     """Download an image from a URL and convert it to a base64 string."""
     if url:  # Ensure the URL is not None
         try:
             with urllib.request.urlopen(url) as response:
                 image = Image.open(response).convert("RGBA")
-                
                 # Use NamedTemporaryFile to save the image temporarily
                 with tempfile.NamedTemporaryFile(delete=True, suffix=".png") as tmp_file:
                     image.save(tmp_file, format='PNG')  # Save image in PNG format
                     tmp_file.seek(0)  # Move to the beginning of the file
-                    
                     # Convert the image to base64 for displaying in the Altair chart
                     return "data:image/png;base64," + base64.b64encode(tmp_file.read()).decode()
         except Exception as e:
