@@ -341,8 +341,8 @@ else:
         init_rows = st.columns(1)  # Change to 1 column for player 1 only
         player1 = init_rows[0].selectbox("Choose Player", id_dict.values(), index=0)  # Updated label
         player1_next3 = get_player_next3(player1)
-        suii=get_image_sui(player1)
-        st.write(suii)
+        loogo=get_image_sui(player1)
+        st.image(loogo, caption='Your Image Caption', use_column_width=True)
         for col in new_fixt_cols:
             if player1_next3[col].dtype == 'O':
                 max_length = player1_next3[col].str.len().max()
