@@ -2,8 +2,8 @@ import streamlit as st
 import pandas as pd
 import sys
 import os
-import requests
 from io import BytesIO
+import requests
 import altair as alt
 import matplotlib
 from matplotlib import pyplot as plt
@@ -20,7 +20,7 @@ from plottable.cmap import normed_cmap
 from plottable.formatters import decimal_to_percent
 from plottable.plots import circled_image, image
 import urllib.request
-from matplotlib.offsetbox import AnnotationBbox, OffsetImage
+
 
 pd.set_option('future.no_silent_downcasting', True)
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..', 'FPL')))
@@ -345,62 +345,63 @@ rating_df["ovr_rating" + ("_" + model_type if model_type else "")] = rating_df["
 rating_df["o_rating" + ("_" + model_type if model_type else "")] = rating_df["o_rating" + ("_" + model_type if model_type else "")].astype(float)
 rating_df["d_rating" + ("_" + model_type if model_type else "")] = rating_df["d_rating" + ("_" + model_type if model_type else "")].astype(float)
 
-# Load images from URLs and create a new column for temporary file paths
-teams_df['temp_logo'] = teams_df['logo_url'].apply(load_image_from_url)
+# Get the maximum values for each rating type
+max_ovr = rating_df["ovr_rating" + ("_" + model_type if model_type else "")].max()
+max_o = rating_df["o_rating" + ("_" + model_type if model_type else "")].max()
+max_d = rating_df["d_rating" + ("_" + model_type if model_type else "")].max()
 
-# Set font and background colour
-plt.rcParams.update({'font.family': 'Avenir'})
-bgcol = '#fafafa'
 
-# Create initial plot
-fig, ax = plt.subplots(figsize=(6, 4), dpi=120)
-fig.set_facecolor(bgcol)
-ax.set_facecolor(bgcol)
 
-# Scatter plot for defensive and offensive ratings
-ax.scatter(rating_df['d_rating' + ("_" + model_type if model_type else "")], 
-           rating_df['o_rating' + ("_" + model_type if model_type else "")], c=bgcol)
-
-# Change plot spines
-ax.spines['right'].set_visible(False)
-ax.spines['top'].set_visible(False)
-ax.spines['left'].set_color('#ccc8c8')
-ax.spines['bottom'].set_color('#ccc8c8')
-
-# Change ticks
-plt.tick_params(axis='x', labelsize=12, color='#ccc8c8')
-plt.tick_params(axis='y', labelsize=12, color='#ccc8c8')
-
+# Scatter plot setup
+x_domain = [teams_df["d_rating" + ("_" + model_type if model_type else "")].min() - 0.5, 
+             teams_df["d_rating" + ("_" + model_type if model_type else "")].max() + 0.5]  # Expanded domain
+y_range = [teams_df["o_rating" + ("_" + model_type if model_type else "")].min() - 200, 
+            teams_df["o_rating" + ("_" + model_type if model_type else "")].max() + 200]  # Expanded range
+# Create scatter plot with reduced size
 def getImage(url):
     response = requests.get(url)
     img = plt.imread(BytesIO(response.content), format='png')
     return OffsetImage(img, zoom=.05, alpha=1)
 
-# Plot team logos
-for index, row in rating_df.iterrows():
-    ab = AnnotationBbox(getImage(row['logo_url']), 
-                        (row['d_rating' + ("_" + model_type if model_type else "")], 
-                         row['o_rating' + ("_" + model_type if model_type else "")]), 
-                        frameon=False)
-    ax.add_artist(ab)
+scatter_plot = (
+    alt.Chart(teams_df, height=400, width=500)  # Adjust height and width here
+    .mark_image(url="logo_url",size=150)
+    .encode(
+        x=alt.X(
+            "d_rating" + ("_" + model_type if model_type else ""),
+            type="quantitative",
+            title="Defensive Rating",
+            scale=alt.Scale(domain=x_domain),
+        ),
+        y=alt.Y(
+            "o_rating" + ("_" + model_type if model_type else ""),
+            type="quantitative",
+            title="Offensive Rating",
+            scale=alt.Scale(domain=y_range),
+        ),
+        tooltip=[
+            alt.Tooltip("name", title="Team"),
+            alt.Tooltip("ovr_rating" + ("_" + model_type if model_type else ""), title="Overall Rating", format="d"),
+            alt.Tooltip("o_rating" + ("_" + model_type if model_type else ""), title="Offensive Rating", format="d"),
+            alt.Tooltip("d_rating" + ("_" + model_type if model_type else ""), title="Defensive Rating", format=".2f"),
+        ],
+        href='logo_url',
+    )
+)
 
-# Add average lines
-plt.hlines(rating_df['o_rating' + ("_" + model_type if model_type else "")].mean(), 
-           rating_df['d_rating' + ("_" + model_type if model_type else "")].min(), 
-           rating_df['d_rating' + ("_" + model_type if model_type else "")].max(), color='#c2c1c0')
+# Mean lines
+off_mean_line = (
+    alt.Chart(pd.DataFrame({"Mean Offensive Rating": [teams_df["o_rating" + ("_" + model_type if model_type else "")].mean()]}))
+    .mark_rule(color="#60b4ff", opacity=0.66)
+    .encode(y="Mean Offensive Rating")
+)
 
-plt.vlines(rating_df['d_rating' + ("_" + model_type if model_type else "")].mean(), 
-           rating_df['o_rating' + ("_" + model_type if model_type else "")].min(), 
-           rating_df['o_rating' + ("_" + model_type if model_type else "")].max(), color='#c2c1c0')
+def_mean_line = (
+    alt.Chart(pd.DataFrame({"Mean Defensive Rating": [teams_df["d_rating" + ("_" + model_type if model_type else "")].mean()]}))
+    .mark_rule(color="#60b4ff", opacity=0.66)
+    .encode(x="Mean Defensive Rating")
+)
 
-# Text
-fig.text(.15, .98, 'Offensive/Defensive Ratings', size=20)
-fig.text(.15, .93, 'Analysis of team strengths', size=12)
 
-# Axes titles
-fig.text(.76, .535, 'Avg. Offensive Rating', size=6, color='#c2c1c0')
-fig.text(.325, .17, 'Avg. Defensive Rating', size=6, color='#c2c1c0', rotation=90)
-
-# Show the plot
-st.pyplot(fig)
+st.altair_chart(scatter_plot + off_mean_line + def_mean_line, use_container_width=True)
 ##########################################################################
