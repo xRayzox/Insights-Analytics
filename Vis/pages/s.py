@@ -252,7 +252,7 @@ col_defs = [
         name="CS/Game",
         group="ByGame",
         textprops={'ha': "center"},
-        width=1
+        width=1,
         cmap=cmap
     ),
     
