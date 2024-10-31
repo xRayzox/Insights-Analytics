@@ -1,83 +1,55 @@
 import pandas as pd
 import requests
+from concurrent.futures import ThreadPoolExecutor
+from functools import lru_cache
 
 base_url = 'https://fantasy.premierleague.com/api/'
 
 # Function to get general data (bootstrap data) from the FPL API
-
+@lru_cache(maxsize=None)  # Cache responses for get_bootstrap_data
 def get_bootstrap_data() -> dict:
-    """
-    Options
-    -------
-        ['element_stats']
-        ['element_types']
-        ['elements']
-        ['events']
-        ['game_settings']
-        ['phases']
-        ['teams']
-        ['total_players']
-    """
     resp = requests.get(f'{base_url}bootstrap-static/')
     if resp.status_code != 200:
         raise Exception(f'Response was status code {resp.status_code}')
-    else:
-        return resp.json()
+    return resp.json()
 
 # Function to get fixture data (upcoming matches)
 
+@lru_cache(maxsize=None)  # Cache responses for fixture data
 def get_fixture_data() -> dict:
     resp = requests.get(f'{base_url}fixtures/')
     if resp.status_code != 200:
         raise Exception(f'Response was status code {resp.status_code}')
-    else:
-        return resp.json()
+    return resp.json()
     
 
-# Function to get player-specific data
+@lru_cache(maxsize=None)  # Cache responses for player-specific data
 def get_player_data(player_id) -> dict:
-    """
-    Options
-    -------
-        ['fixtures']
-        ['history']
-        ['history_past']
-    """
     resp = requests.get(f'{base_url}element-summary/{player_id}/')
     if resp.status_code != 200:
         raise Exception(f'Response was status code {resp.status_code}')
-    else:
-        return resp.json()
+    return resp.json()
 
 # Function to get FPL manager details
 
+@lru_cache(maxsize=None)  # Cache responses for manager details
 def get_manager_details(manager_id) -> dict:
     resp = requests.get(f'{base_url}entry/{manager_id}/')
     if resp.status_code != 200:
         raise Exception(f'Response was status code {resp.status_code}')
-    else:
-        return resp.json()
+    return resp.json()
 
 # Function to get FPL manager's history (past seasons' performances)
-
+@lru_cache(maxsize=None)  # Cache responses for manager's history
 def get_manager_history_data(manager_id) -> dict:
     resp = requests.get(f'{base_url}entry/{manager_id}/history/')
     if resp.status_code != 200:
         raise Exception(f'Response was status code {resp.status_code}')
-    else:
-        return resp.json()
+    return resp.json()
 
 # Function to get a manager's selected team for a given gameweek (GW)
-
+@lru_cache(maxsize=None)  # Cache responses for manager's history
 def get_manager_team_data(manager_id, gw):
-    """
-    Options
-    -------
-        ['active_chip']
-        ['automatic_subs']
-        ['entry_history']
-        ['picks']
-    """
     resp = requests.get(f'{base_url}entry/{manager_id}/event/{gw}/picks/')
     if resp.status_code != 200:
         raise Exception(f'Response was status code {resp.status_code}')
@@ -117,13 +89,16 @@ def get_player_id_dict(order_by_col, web_name=True) -> dict:
 def collate_player_hist():
     res = []
     p_dict = get_player_id_dict()
-    for p_id, p_name in p_dict.items():
-        resp = requests.get('{}element-summary/{}/'.format(base_url, p_id))
-        if resp.status_code != 200:
-            print('Request to {} data failed'.format(p_name))
-            raise Exception(f'Response was status code {resp.status_code}')
-        else:
-            res.append(resp.json()['history'])
+    # Use ThreadPoolExecutor to fetch player data in parallel
+    with ThreadPoolExecutor() as executor:
+        futures = {executor.submit(get_player_data, p_id): p_name for p_id, p_name in p_dict.items()}
+        for future in futures:
+            p_name = futures[future]
+            try:
+                resp = future.result()
+                res.append(resp['history'])
+            except Exception as e:
+                print(f'Request to {p_name} data failed: {e}')
     return pd.DataFrame(res)
 
 
