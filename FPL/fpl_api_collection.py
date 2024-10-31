@@ -1,41 +1,53 @@
 import pandas as pd
 import requests
-from concurrent.futures import ThreadPoolExecutor, as_completed
 
-# Base URL for the Fantasy Premier League API
 base_url = 'https://fantasy.premierleague.com/api/'
 
-# Cache to store fetched data
-cache = {}
+# Function to get general data (bootstrap data) from the FPL API
 
-def fetch(url):
-    """Fetch data from the given URL and cache the response."""
-    if url in cache:
-        return cache[url]
-    
-    response = requests.get(url)
-    if response.status_code != 200:
-        raise Exception(f'Response was status code {response.status_code}')
-    
-    data = response.json()
-    cache[url] = data
-    return data
-
-def get_bootstrap_data():
-    """Get bootstrap static data from the API."""
-    return fetch(f'{base_url}bootstrap-static/')
+def get_bootstrap_data() -> dict:
+    """
+    Options
+    -------
+        ['element_stats']
+        ['element_types']
+        ['elements']
+        ['events']
+        ['game_settings']
+        ['phases']
+        ['teams']
+        ['total_players']
+    """
+    resp = requests.get(f'{base_url}bootstrap-static/')
+    if resp.status_code != 200:
+        raise Exception(f'Response was status code {resp.status_code}')
+    else:
+        return resp.json()
 
 # Function to get fixture data (upcoming matches)
 
-def get_fixture_data():
-    """Get fixture data from the API."""
-    return fetch(f'{base_url}fixtures/')
+def get_fixture_data() -> dict:
+    resp = requests.get(f'{base_url}fixtures/')
+    if resp.status_code != 200:
+        raise Exception(f'Response was status code {resp.status_code}')
+    else:
+        return resp.json()
     
 
 # Function to get player-specific data
-def get_player_data(player_id):
-    """Get historical data for a specific player by ID."""
-    return fetch(f'{base_url}element-summary/{player_id}/')
+def get_player_data(player_id) -> dict:
+    """
+    Options
+    -------
+        ['fixtures']
+        ['history']
+        ['history_past']
+    """
+    resp = requests.get(f'{base_url}element-summary/{player_id}/')
+    if resp.status_code != 200:
+        raise Exception(f'Response was status code {resp.status_code}')
+    else:
+        return resp.json()
 
 # Function to get FPL manager details
 
@@ -86,31 +98,32 @@ def remove_moved_players(df):
     return df_copy
 
 # Function to create a dictionary mapping player IDs to their names
-def get_player_id_dict(order_by_col='id', web_name=True):
-    """Get a dictionary mapping player IDs to player names."""
-    ele_data = get_bootstrap_data()
-    ele_df = pd.DataFrame(ele_data['elements'])
-    teams_df = pd.DataFrame(ele_data['teams'])
+def get_player_id_dict(order_by_col, web_name=True) -> dict:
+    ele_df = pd.DataFrame(get_bootstrap_data()['elements'])
+    ele_df = remove_moved_players(ele_df)
+    teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
     ele_df['team_name'] = ele_df['team'].map(teams_df.set_index('id')['short_name'])
     ele_df.sort_values(order_by_col, ascending=False, inplace=True)
-    
-    return dict(zip(ele_df['id'], ele_df['web_name'])) if web_name else \
-        dict(zip(ele_df['id'], ele_df['first_name'] + ' ' + ele_df['second_name'] + ' (' + ele_df['team_name'] + ')'))
+    if web_name == True:
+        id_dict = dict(zip(ele_df['id'], ele_df['web_name']))
+    else:
+        ele_df['full_name'] = ele_df['first_name'] + ' ' + \
+            ele_df['second_name'] + ' (' + ele_df['team_name'] + ')'
+        id_dict = dict(zip(ele_df['id'], ele_df['full_name']))
+    return id_dict
 
 # Function to gather historic gameweek data for all players
 
-def collate_player_hist(player_ids):
-    """Fetch and collate historical data for multiple players."""
+def collate_player_hist():
     res = []
-    with ThreadPoolExecutor(max_workers=10) as executor:
-        future_to_id = {executor.submit(get_player_data, p_id): p_id for p_id in player_ids}
-        for future in as_completed(future_to_id):
-            player_id = future_to_id[future]
-            try:
-                data = future.result()
-                res.extend(data['history'])
-            except Exception as e:
-                print(f'Error fetching data for player ID {player_id}: {e}')
+    p_dict = get_player_id_dict()
+    for p_id, p_name in p_dict.items():
+        resp = requests.get('{}element-summary/{}/'.format(base_url, p_id))
+        if resp.status_code != 200:
+            print('Request to {} data failed'.format(p_name))
+            raise Exception(f'Response was status code {resp.status_code}')
+        else:
+            res.append(resp.json()['history'])
     return pd.DataFrame(res)
 
 
