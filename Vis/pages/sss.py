@@ -331,6 +331,7 @@ else:
         init_rows = st.columns(4)
         player1 = init_rows[0].selectbox("Choose Player One", id_dict.values(), index=0)
         player1_next3 = get_player_next3(player1)
+        st.write(player1_next3)
         for col in new_fixt_cols:
             if player1_next3[col].dtype == 'O':
                 max_length = player1_next3[col].str.len().max()
@@ -341,7 +342,7 @@ else:
         styled_player1_next3 = player1_next3.style.map(color_fixtures, subset=new_fixt_df.columns) \
                 .format(subset=player1_next3.select_dtypes(include='float64') \
                         .columns.values, formatter='{:.2f}')
-        #init_rows[1].dataframe(styled_player1_next3)
+        init_rows[1].dataframe(styled_player1_next3)
             
         if len(id_dict) > 1:
             player2 = init_rows[2].selectbox("Choose Player Two", id_dict.values(), 1) #index=int(ind2))
