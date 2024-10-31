@@ -6,6 +6,8 @@ from plottable import ColumnDefinition, Table
 import urllib.request
 import sys
 import os
+
+import streamlit as st
 # Assuming you have already defined the functions to fetch data
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'FPL')))
 # from your FPL API collection
@@ -62,3 +64,5 @@ plt.show()
 
 # Save the figure
 fig.savefig("images/premier_league_fixtures.png", dpi=200)
+
+st.plotly_chart(fig)
