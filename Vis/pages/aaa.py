@@ -57,7 +57,7 @@ def display_standing(standings):
     df = pd.DataFrame(standing_list)
     df = df.sort_values(by=["points", "goals_for", "goals_against"], ascending=[False, False, True])
     df = df[["team", "played", "won", "drawn", "lost", "goals_for", "goals_against",  "points"]] # Reorder columns
-    st.table(df)
+    st.dataframe(df)
 
 
 st.title("Football League Standing")
