@@ -352,20 +352,16 @@ max_d = rating_df["d_rating" + ("_" + model_type if model_type else "")].max()
 
 
 
-# Scatter plot setup
+# Assuming teams_df is already defined with valid logo URLs
 x_domain = [teams_df["d_rating" + ("_" + model_type if model_type else "")].min() - 0.5, 
-             teams_df["d_rating" + ("_" + model_type if model_type else "")].max() + 0.5]  # Expanded domain
+             teams_df["d_rating" + ("_" + model_type if model_type else "")].max() + 0.5]  
 y_range = [teams_df["o_rating" + ("_" + model_type if model_type else "")].min() - 200, 
-            teams_df["o_rating" + ("_" + model_type if model_type else "")].max() + 200]  # Expanded range
-# Create scatter plot with reduced size
-def getImage(url):
-    response = requests.get(url)
-    img = plt.imread(BytesIO(response.content), format='png')
-    return OffsetImage(img, zoom=.05, alpha=1)
+            teams_df["o_rating" + ("_" + model_type if model_type else "")].max() + 200]  
 
+# Create scatter plot
 scatter_plot = (
-    alt.Chart(teams_df, height=400, width=500)  # Adjust height and width here
-    .mark_image(size=150)  # Adjust the size of the images
+    alt.Chart(teams_df, height=400, width=500)
+    .mark_image(size=50)  # Adjust size as needed
     .encode(
         x=alt.X(
             "d_rating" + ("_" + model_type if model_type else ""),
@@ -387,14 +383,13 @@ scatter_plot = (
         ],
     )
     .transform_calculate(
-        logo_url='datum.logo_url'  # Use the logo_url from your DataFrame
+        logo_url='datum.logo_url'  
     )
     .mark_image(
         url='logo_url',
-        tooltip=None  # Disable tooltip on image
+        tooltip=None
     )
 )
-
 
 # Mean lines
 off_mean_line = (
@@ -409,6 +404,6 @@ def_mean_line = (
     .encode(x="Mean Defensive Rating")
 )
 
-
+# Display the chart
 st.altair_chart(scatter_plot + off_mean_line + def_mean_line, use_container_width=True)
 ##########################################################################
