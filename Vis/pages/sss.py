@@ -271,40 +271,26 @@ def plot_position_radar(df_player, name):
     # Define the columns and fields based on the player's element type
     if element_type == 'GKP':
         cols = [
-            'Pen_Save', # Penalties saved
-            'CS',       # Clean sheets
-            'GC',       # Goals conceded
             'xGC',      # Expected goals conceded
-            'S',        # Saves
-            'YC',       # Yellow cards
-            'RC',       # Red cards
             'I',        # Influence score
             'C',        # Creativity score
             'T',        # Threat score
             'ICT',      # Influence, Creativity, Threat index
             'Form',     # Player form
             'TSB%',     # Percentage of teams selected by this player
-            '90s',      # Total 90-minute intervals played (derived)
             'CS/90',    # Clean sheets per 90 minutes (derived)
             'GC/90',    # Goals conceded per 90 minutes (derived)
             'S/90'      # Saves per 90 minutes (derived)
         ]
         df_player = df_player[cols]
         fields = [
-            'Clean Sheets',  
-            'Goals Conceded',  
             'Expected Goals Conceded',  
-            'Penalties Saved',  
-            'Saves',  
-            'Yellow Cards',  
-            'Red Cards',  
             'Influence Score',  
             'Creativity Score',  
             'Threat Score',  
             'ICT Index',  
             'Player Form',  
-            'TSB %',  
-            '90s Played',  
+            'TSB %',   
             'Clean Sheets per 90',  
             'Goals Conceded per 90',  
             'Saves per 90'  
@@ -312,23 +298,13 @@ def plot_position_radar(df_player, name):
 
     elif element_type == 'DEF':
         cols = [
-            'GS',       # Goals scored
-            'A',        # Assists
-            'CS',       # Clean sheets
-            'GC',       # Goals conceded
             'xGC',      # Expected goals conceded
-            'OG',       # Own goals
-            'YC',       # Yellow cards
-            'RC',       # Red cards
-            'B',        # Bonus points
-            'BPS',      # Bonus points system score
             'I',        # Influence score
             'C',        # Creativity score
             'T',        # Threat score
             'ICT',      # Influence, Creativity, Threat index
             'Form',     # Player form
             'TSB%',     # Percentage of teams selected by this player
-            '90s',      # Total 90-minute intervals played (derived)
             'G/90',     # Goals per 90 minutes (derived)
             'A/90',     # Assists per 90 minutes (derived)
             'CS/90',    # Clean sheets per 90 minutes (derived)
@@ -336,22 +312,13 @@ def plot_position_radar(df_player, name):
         ]
         df_player = df_player[cols]
         fields = [
-            'Clean Sheets',  
             'Goals Conceded',  
-            'Goals Scored',  
-            'Assists',  
-            'Own Goals',  
-            'Yellow Cards',  
-            'Red Cards',  
-            'Bonus Points',  
-            'BPS Score',  
             'Influence Score',  
             'Creativity Score',  
             'Threat Score',  
             'ICT Index',  
             'Player Form',  
             'TSB %',  
-            '90s Played',  
             'Goals per 90',  
             'Assists per 90',  
             'Clean Sheets per 90',  
@@ -360,22 +327,15 @@ def plot_position_radar(df_player, name):
 
     elif element_type == 'MID':
         cols = [
-            'GS',       # Goals scored
-            'A',        # Assists
             'xG',       # Expected goals
             'xA',       # Expected assists
             'CS',       # Clean sheets
-            'YC',       # Yellow cards
-            'RC',       # Red cards
-            'B',        # Bonus points
-            'BPS',      # Bonus points system score
             'I',        # Influence score
             'C',        # Creativity score
             'T',        # Threat score
             'ICT',      # Influence, Creativity, Threat index
             'Form',     # Player form
             'TSB%',     # Percentage of teams selected by this player
-            '90s',      # Total 90-minute intervals played (derived)
             'G/90',     # Goals per 90 minutes (derived)
             'A/90',     # Assists per 90 minutes (derived)
             'xG/90',    # Expected goals per 90 minutes (derived)
@@ -383,22 +343,14 @@ def plot_position_radar(df_player, name):
         ]
         df_player = df_player[cols]
         fields = [
-            'Clean Sheets',  
-            'Goals Scored',  
-            'Assists',  
             'Expected Goals',  
             'Expected Assists',  
-            'Yellow Cards',  
-            'Red Cards',  
-            'Bonus Points',  
-            'BPS Score',  
             'Influence Score',  
             'Creativity Score',  
             'Threat Score',  
             'ICT Index',  
             'Player Form',  
             'TSB %',  
-            '90s Played',  
             'Goals per 90',  
             'Assists per 90',  
             'Expected Goals per 90',  
@@ -411,18 +363,12 @@ def plot_position_radar(df_player, name):
             'A',        # Assists
             'xG',       # Expected goals
             'xA',       # Expected assists
-            'OG',       # Own goals
-            'YC',       # Yellow cards
-            'RC',       # Red cards
-            'B',        # Bonus points
-            'BPS',      # Bonus points system score
             'I',        # Influence score
             'C',        # Creativity score
             'T',        # Threat score
             'ICT',      # Influence, Creativity, Threat index
             'Form',     # Player form
             'TSB%',     # Percentage of teams selected by this player
-            '90s',      # Total 90-minute intervals played (derived)
             'G/90',     # Goals per 90 minutes (derived)
             'xG/90',    # Expected goals per 90 minutes (derived)
             'A/90',     # Assists per 90 minutes (derived)
@@ -430,22 +376,14 @@ def plot_position_radar(df_player, name):
         ]
         df_player = df_player[cols]
         fields = [
-            'Goals Scored',  
-            'Assists',  
             'Expected Goals',  
             'Expected Assists',  
-            'Own Goals',  
-            'Yellow Cards',  
-            'Red Cards',  
-            'Bonus Points',  
-            'BPS Score',  
             'Influence Score',  
             'Creativity Score',  
             'Threat Score',  
             'ICT Index',  
             'Player Form',  
             'TSB %',  
-            '90s Played',  
             'Goals per 90',  
             'Expected Goals per 90',  
             'Assists per 90',  
