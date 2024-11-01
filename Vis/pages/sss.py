@@ -375,7 +375,7 @@ else:
     # Picture displayed in the right column
     with right_col:
         loogo = get_image_sui(player1)
-        st.image(loogo, width=100)  # Adjust width as needed
+        st.image(loogo, width=300)  # Adjust width as needed
 
 
 
