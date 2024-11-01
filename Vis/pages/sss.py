@@ -243,10 +243,9 @@ def collated_spider_df_from_name(player_name):
 def get_image_sui(player_name):
     p_id = [k for k, v in full_player_dict.items() if v == player_name]
     df = ele_copy.copy()
-    p_image = df.loc[df['id'] == p_id[0]]
-    image = p_image['logo_player']
+    p_image = df.loc[df['id'] == p_id[0], 'logo_player']  # Only select the logo_player column
+    image = p_image.values[0] if not p_image.empty else None  # Extract the value from the Series
     return image
-
 ##########################################################################
 def display_frame(df):
     '''display dataframe with all float columns rounded to 1 decimal place'''
