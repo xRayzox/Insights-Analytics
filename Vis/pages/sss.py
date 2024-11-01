@@ -336,6 +336,19 @@ def plot_position_radar(df_player, name):
     radar_poly, rings_outer, vertices = radar_output
     range_labels = radar.draw_range_labels(ax=axs['radar'], fontsize=25, color='#fcfcfc')
     param_labels = radar.draw_param_labels(ax=axs['radar'], fontsize=25, color='#fcfcfc')
+    col_labels = radar.draw_param_labels(ax=axs['radar'],color="white", fontsize=18, fontname = 'Sans Serif')
+
+    rot = 360
+    for i in range(len(vertices)):
+        rot = round(360-((360/len(cols))*i),0)
+        if rot in range(90, 270):
+            rot = rot - 180 
+
+        x,y = vertices[i]
+        val = data[i]
+        axs['radar'].annotate(xy = (x,y), text = val, rotation=rot,
+                              bbox=dict(facecolor= '#d0667a', edgecolor='white', boxstyle='round', alpha=1), 
+                              color='white', fontname = 'Sans Serif', fontsize = 15)
 
     # adding the endnote and title text (these axes range from 0-1, i.e. 0, 0 is the bottom left)
     # Note we are slightly offsetting the text from the edges by 0.01 (1%, e.g. 0.99)
