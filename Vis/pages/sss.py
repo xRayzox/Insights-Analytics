@@ -257,6 +257,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from mplsoccer import Radar, grid
 
+import pandas as pd
+import matplotlib.pyplot as plt
+from mplsoccer import Radar, grid
+
 def plot_position_radar(df_player, name):
     # Ensure the DataFrame is reset to avoid index issues
     df_player = df_player.reset_index(drop=True)
@@ -283,7 +287,7 @@ def plot_position_radar(df_player, name):
     data = [round(val, 2) for val in data if pd.notnull(val)]  # Round values and exclude NaN
 
     # Prepare radar chart figure parameters
-    params = cols  # Use the defined fields for the radar parameters
+    params = fields  # Use the defined fields for the radar parameters
     low = [0] * len(params)  # Define lower limits
     high = [max(data) * 1.1 for _ in params]  # Set high limits based on the data
     
@@ -295,9 +299,10 @@ def plot_position_radar(df_player, name):
                   lower_is_better=lower_is_better,
                   round_int=[False] * len(params),
                   num_rings=4, 
-                  ring_width=1, center_circle_radius=1)
+                  ring_width=1, center_circle_radius=0.8)  # Reduced the center circle radius
 
-    fig, axs = grid(figheight=14, grid_height=0.915, title_height=0.06, endnote_height=0.025,
+    # Decrease the figure height
+    fig, axs = grid(figheight=10, grid_height=0.7, title_height=0.06, endnote_height=0.025,
                     title_space=0, endnote_space=0, grid_key='radar', axis=False)
 
     # Plot the radar
@@ -309,16 +314,17 @@ def plot_position_radar(df_player, name):
     radar_poly, rings_outer, vertices = radar_output
 
     # Draw range and parameter labels
-    radar.draw_range_labels(ax=axs['radar'], fontsize=25)
-    radar.draw_param_labels(ax=axs['radar'], fontsize=25)
+    radar.draw_range_labels(ax=axs['radar'], fontsize=20)  # Slightly smaller font size for range labels
+    radar.draw_param_labels(ax=axs['radar'], fontsize=20)  # Slightly smaller font size for parameter labels
 
     # Adding titles and endnote
-    axs['endnote'].text(0.99, 0.5, 'Inspired By: StatsBomb / Rami Moghadam', fontsize=15, ha='right', va='center')
-    axs['title'].text(0.01, 0.65, name, fontsize=25, ha='left', va='center')  # Use the player's name for the title
-    axs['title'].text(0.99, 0.65, 'Radar Chart', fontsize=25, ha='right', va='center')
-    axs['title'].text(0.99, 0.25, element_type, fontsize=20, ha='right', va='center', color='#B6282F')
+    axs['endnote'].text(0.99, 0.5, 'Inspired By: StatsBomb / Rami Moghadam', fontsize=12, ha='right', va='center')  # Smaller font size
+    axs['title'].text(0.01, 0.65, name, fontsize=20, ha='left', va='center')  # Smaller title font size
+    axs['title'].text(0.99, 0.65, 'Radar Chart', fontsize=20, ha='right', va='center')
+    axs['title'].text(0.99, 0.25, element_type, fontsize=16, ha='right', va='center', color='#B6282F')  # Smaller element type font size
 
     return fig
+
 
 
 ##########################################################################
