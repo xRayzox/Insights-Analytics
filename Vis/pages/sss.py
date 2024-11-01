@@ -255,6 +255,7 @@ def get_image_sui(player_name):
 def plot_position_radar(df_player, name):
     # Set fields and columns by position
     element_type = df_player['element_type']
+    st.error(element_type)
     if element_type == 'GKP':
         cols = ['CS', 'GC', 'xGC', 'Pen_Save', 'S', 'YC', 'RC', 'BPS']
         fields = ['Clean Sheets', 'Goals Conceded', 'Expected Goals Conceded', 'Penalties Saved', 'Saves', 'Yellow Cards', 'Red Cards', 'Bonus Points']
