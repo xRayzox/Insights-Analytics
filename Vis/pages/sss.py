@@ -348,11 +348,8 @@ else:
         player1 = init_rows[0].selectbox("Choose Player", id_dict.values(), index=0)  # Updated label
         player1_next3 = get_player_next3(player1)
         loogo=get_image_sui(player1)
-        st.write(loogo)
-        #st.image(loogo, use_column_width=True)
         st.image(
-            "https://resources.premierleague.com/premierleague/photos/players/250x250/p223094.png",
-            width=400, # Manually Adjust the width of the image as per requirement
+            loogo,width=400, # Manually Adjust the width of the image as per requirement
         )
         for col in new_fixt_cols:
             if player1_next3[col].dtype == 'O':
