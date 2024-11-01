@@ -358,8 +358,6 @@ def plot_position_radar(df_player, name):
 
     elif element_type == 'FWD':
         cols = [
-            'GS',       # Goals scored
-            'A',        # Assists
             'xG',       # Expected goals
             'xA',       # Expected assists
             'I',        # Influence score
