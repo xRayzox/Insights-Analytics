@@ -316,7 +316,7 @@ def plot_position_radar(df_player, name):
     st.write(data)   
      # Prepare radar chart figure parameters
     low = [0] * len(fields)
-    high = [1] * len(fields)
+    high = [100] * len(fields)
 
     # Create the radar chart
     radar = Radar(fields, low, high,
