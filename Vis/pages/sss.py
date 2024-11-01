@@ -261,163 +261,81 @@ def get_image_sui(player_name):
 
 def plot_position_radar(df_player, name):
     # Ensure the DataFrame is reset to avoid index issues
-    df_player.reset_index(drop=True)
-    #df_player.drop('web_name', axis=1, inplace=True)
-    element_type = df_player["element_type"].iloc[0] 
-    
+    df_player.reset_index(drop=True, inplace=True)
+    element_type = df_player["element_type"].iloc[0]
+
     # Define columns and fields based on player position
-    # Define the columns and fields based on the player's element type
     if element_type == 'GKP':
         cols = [
-            'xGC',      # Expected goals conceded
-            'I',        # Influence score
-            'C',        # Creativity score
-            'T',        # Threat score
-            'ICT',      # Influence, Creativity, Threat index
-            'Form',     # Player form
-            'TSB%',     # Percentage of teams selected by this player
-            'CS/90',    # Clean sheets per 90 minutes (derived)
-            'GC/90',    # Goals conceded per 90 minutes (derived)
-            'S/90'      # Saves per 90 minutes (derived)
+            'xGC', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'CS/90', 'GC/90', 'S/90'
         ]
-        df_player = df_player[cols]
         fields = [
-            'Expected Goals Conceded',  
-            'Influence Score',  
-            'Creativity Score',  
-            'Threat Score',  
-            'ICT Index',  
-            'Player Form',  
-            'TSB %',   
-            'Clean Sheets per 90',  
-            'Goals Conceded per 90',  
-            'Saves per 90'  
+            'Expected Goals Conceded', 'Influence Score', 'Creativity Score',
+            'Threat Score', 'ICT Index', 'Player Form', 'TSB %',
+            'Clean Sheets per 90', 'Goals Conceded per 90', 'Saves per 90'
         ]
 
     elif element_type == 'DEF':
         cols = [
-            'xGC',      # Expected goals conceded
-            'I',        # Influence score
-            'C',        # Creativity score
-            'T',        # Threat score
-            'ICT',      # Influence, Creativity, Threat index
-            'Form',     # Player form
-            'TSB%',     # Percentage of teams selected by this player
-            'G/90',     # Goals per 90 minutes (derived)
-            'A/90',     # Assists per 90 minutes (derived)
-            'CS/90',    # Clean sheets per 90 minutes (derived)
-            'GC/90'     # Goals conceded per 90 minutes (derived)
+            'xGC', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'A/90', 'CS/90', 'GC/90'
         ]
-        df_player = df_player[cols]
         fields = [
-            'Goals Conceded',  
-            'Influence Score',  
-            'Creativity Score',  
-            'Threat Score',  
-            'ICT Index',  
-            'Player Form',  
-            'TSB %',  
-            'Goals per 90',  
-            'Assists per 90',  
-            'Clean Sheets per 90',  
-            'Goals Conceded per 90'  
+            'Goals Conceded', 'Influence Score', 'Creativity Score', 'Threat Score',
+            'ICT Index', 'Player Form', 'TSB %', 'Goals per 90', 
+            'Assists per 90', 'Clean Sheets per 90', 'Goals Conceded per 90'
         ]
 
     elif element_type == 'MID':
         cols = [
-            'xG',       # Expected goals
-            'xA',       # Expected assists
-            'I',        # Influence score
-            'C',        # Creativity score
-            'T',        # Threat score
-            'ICT',      # Influence, Creativity, Threat index
-            'Form',     # Player form
-            'TSB%',     # Percentage of teams selected by this player
-            'G/90',     # Goals per 90 minutes (derived)
-            'A/90',     # Assists per 90 minutes (derived)
-            'xG/90',    # Expected goals per 90 minutes (derived)
-            'xA/90'     # Expected assists per 90 minutes (derived)
+            'xG', 'xA', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'A/90', 'xG/90', 'xA/90'
         ]
-        df_player = df_player[cols]
         fields = [
-            'Expected Goals',  
-            'Expected Assists',  
-            'Influence Score',  
-            'Creativity Score',  
-            'Threat Score',  
-            'ICT Index',  
-            'Player Form',  
-            'TSB %',  
-            'Goals per 90',  
-            'Assists per 90',  
-            'Expected Goals per 90',  
-            'Expected Assists per 90'  
+            'Expected Goals', 'Expected Assists', 'Influence Score', 'Creativity Score',
+            'Threat Score', 'ICT Index', 'Player Form', 'TSB %', 
+            'Goals per 90', 'Assists per 90', 'Expected Goals per 90', 'Expected Assists per 90'
         ]
 
     elif element_type == 'FWD':
         cols = [
-            'xG',       # Expected goals
-            'xA',       # Expected assists
-            'I',        # Influence score
-            'C',        # Creativity score
-            'T',        # Threat score
-            'ICT',      # Influence, Creativity, Threat index
-            'Form',     # Player form
-            'TSB%',     # Percentage of teams selected by this player
-            'G/90',     # Goals per 90 minutes (derived)
-            'xG/90',    # Expected goals per 90 minutes (derived)
-            'A/90',     # Assists per 90 minutes (derived)
-            'xA/90'     # Expected assists per 90 minutes (derived)
+            'xG', 'xA', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'xG/90', 'A/90', 'xA/90'
         ]
-        df_player = df_player[cols]
         fields = [
-            'Expected Goals',  
-            'Expected Assists',  
-            'Influence Score',  
-            'Creativity Score',  
-            'Threat Score',  
-            'ICT Index',  
-            'Player Form',  
-            'TSB %',  
-            'Goals per 90',  
-            'Expected Goals per 90',  
-            'Assists per 90',  
-            'Expected Assists per 90'  
+            'Expected Goals', 'Expected Assists', 'Influence Score', 'Creativity Score',
+            'Threat Score', 'ICT Index', 'Player Form', 'TSB %', 
+            'Goals per 90', 'Expected Goals per 90', 'Assists per 90', 'Expected Assists per 90'
         ]
 
-    st.write(df_player)
-    # Filter relevant data
-    df_player = df_player.astype(float)
-    data = df_player.iloc[0, :].values.flatten().tolist()
+    # Select relevant columns
+    df_player = df_player[cols]
+    
+    # Normalize the data using Min-Max scaling
+    normalized_df = (df_player - df_player.min()) / (df_player.max() - df_player.min())
+    
+    # Convert normalized data to a list
+    data = normalized_df.iloc[0, :].values.flatten().tolist()
+    data = [round(float(x), 2) for x in data]
 
-    data = [round(float(x), 2) if isinstance(x, (int, float)) else x for x in data]
     # Prepare radar chart figure parameters
-    params = fields  # Use the defined fields for the radar parameters
+    params = fields
     low = [0] * len(fields)
     high = [1] * len(fields)
-    
-    
+
     # Create the radar chart
     radar = Radar(params, low, high,
-              # whether to round any of the labels to integers instead of decimal places
-              round_int=[False]*len(params),
-              num_rings=4,  # the number of concentric circles (excluding center circle)
-              # if the ring_width is more than the center_circle_radius then
-              # the center circle radius will be wider than the width of the concentric circles
-              ring_width=1, center_circle_radius=1)
+                  round_int=[False]*len(params),
+                  num_rings=4,
+                  ring_width=1, center_circle_radius=1)
 
-    # Decrease the figure height
     fig, ax = radar.setup_axis()  # format axis as a radar
     rings_inner = radar.draw_circles(ax=ax, facecolor='#ffb2b2', edgecolor='#fc5f5f')  # draw circles
     radar_output = radar.draw_radar(data, ax=ax,
-                                    kwargs_radar={'facecolor': '#aa65b2'},
-                                    kwargs_rings={'facecolor': '#66d8ba'})  # draw the radar
+                                     kwargs_radar={'facecolor': '#aa65b2'},
+                                     kwargs_rings={'facecolor': '#66d8ba'})  # draw the radar
     radar_poly, rings_outer, vertices = radar_output
     range_labels = radar.draw_range_labels(ax=ax, fontsize=15)  # draw the range labels
     param_labels = radar.draw_param_labels(ax=ax, fontsize=15)  # draw the param labels
 
     return fig
-
 
 
 ##########################################################################
