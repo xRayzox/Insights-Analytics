@@ -288,18 +288,17 @@ def plot_position_radar(df_player, name):
 
     # Prepare radar chart figure parameters
     params = fields  # Use the defined fields for the radar parameters
-    low = [0] * len(params)  # Define lower limits
-    high = [max(data) * 1.1 for _ in params]  # Set high limits based on the data
+    low = [0] * len(fields)
+    high = [1] * len(fields)
     
     # Define which statistics are lower-is-better
     lower_is_better = []  # This list can be filled as needed
     
     # Create the radar chart
     radar = Radar(params, low, high,
-                  lower_is_better=lower_is_better,
-                  round_int=[False] * len(params),
                   num_rings=4, 
-                  ring_width=1, center_circle_radius=0.8)  # Reduced the center circle radius
+                  ring_width=1, 
+                  center_circle_radius=1)  # Reduced the center circle radius
 
     # Decrease the figure height
     fig, axs = grid(figheight=8, grid_height=0.7, title_height=0.06, endnote_height=0.025,
