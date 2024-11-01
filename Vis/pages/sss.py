@@ -375,6 +375,10 @@ else:
         loogo=get_image_sui(player1)
         st.write(loogo)
         st.image(loogo, use_column_width=True)
+        st.image(
+            "https://s3-us-west-2.amazonaws.com/uw-s3-cdn/wp-content/uploads/sites/6/2017/11/04133712/waterfall.jpg",
+            width=400, # Manually Adjust the width of the image as per requirement
+        )
         for col in new_fixt_cols:
             if player1_next3[col].dtype == 'O':
                 max_length = player1_next3[col].str.len().max()
