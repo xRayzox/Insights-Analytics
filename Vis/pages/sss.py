@@ -302,7 +302,7 @@ def plot_position_radar(df_player, name):
                   ring_width=1, center_circle_radius=0.8)  # Reduced the center circle radius
 
     # Decrease the figure height
-    fig, axs = grid(figheight=10, grid_height=0.7, title_height=0.06, endnote_height=0.025,
+    fig, axs = grid(figheight=8, grid_height=0.7, title_height=0.06, endnote_height=0.025,
                     title_space=0, endnote_space=0, grid_key='radar', axis=False)
 
     # Plot the radar
@@ -314,8 +314,8 @@ def plot_position_radar(df_player, name):
     radar_poly, rings_outer, vertices = radar_output
 
     # Draw range and parameter labels
-    radar.draw_range_labels(ax=axs['radar'], fontsize=20)  # Slightly smaller font size for range labels
-    radar.draw_param_labels(ax=axs['radar'], fontsize=20)  # Slightly smaller font size for parameter labels
+    radar.draw_range_labels(ax=axs['radar'], fontsize=10)  # Slightly smaller font size for range labels
+    radar.draw_param_labels(ax=axs['radar'], fontsize=10)  # Slightly smaller font size for parameter labels
 
     # Adding titles and endnote
     axs['endnote'].text(0.99, 0.5, 'Inspired By: StatsBomb / Rami Moghadam', fontsize=12, ha='right', va='center')  # Smaller font size
