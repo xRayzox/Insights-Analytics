@@ -342,13 +342,11 @@ def plot_position_radar(df_player, name):
     endnote_text = axs['endnote'].text(0.99, 0.5, 'Inspired By: StatsBomb / Rami Moghadam',
                                     color='#fcfcfc',
                                     fontsize=15, ha='right', va='center')
-    title1_text = axs['title'].text(0.01, 0.65, 'Bruno Fernandes', fontsize=25,
+    title1_text = axs['title'].text(0.01, 0.65, name, fontsize=25,
                                     ha='left', va='center', color='#e4dded')
-    title2_text = axs['title'].text(0.01, 0.25, 'Manchester United', fontsize=20,
-                                    ha='left', va='center', color='#cc2a3f')
     title3_text = axs['title'].text(0.99, 0.65, 'Radar Chart', fontsize=25,
                                     ha='right', va='center', color='#e4dded')
-    title4_text = axs['title'].text(0.99, 0.25, 'Midfielder', fontsize=20,
+    title4_text = axs['title'].text(0.99, 0.25, element_type, fontsize=20,
                                     ha='right', va='center', color='#cc2a3f')
 
     fig.set_facecolor('#121212')
