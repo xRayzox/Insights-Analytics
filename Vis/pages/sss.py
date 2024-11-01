@@ -258,64 +258,78 @@ def get_image_sui(player_name):
 
 
 
+from mplsoccer import PyPizza
 
 def plot_position_radar(df_player, name):
     # Ensure the DataFrame is reset to avoid index issues
     df_player.reset_index(drop=True, inplace=True)
     element_type = df_player["element_type"].iloc[0]
-    # Define column names, fields, low and high values for each player position
+
+    # Define column names and labels based on player position
     if element_type == 'GKP':
-        cols = [
-            'xGC', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'CS/90', 'GC/90', 'S/90'
-        ]
+        cols = ['xGC', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'CS/90', 'GC/90', 'S/90']
         fields = [
-            'Expected Goals Conceded', 'Influence', 'Creativity',
-            'Threat', 'ICT Index', 'Player Form', 'TSB %',
-            'Clean Sheets per 90', 'Goals Conceded per 90', 'Saves per 90'
+            'Expected Goals Conceded', 'Influence', 'Creativity', 'Threat', 
+            'ICT Index', 'Player Form', 'TSB %', 'Clean Sheets per 90', 
+            'Goals Conceded per 90', 'Saves per 90'
         ]
-    
-
     elif element_type == 'DEF':
-        cols = [
-            'xGC', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'A/90', 'CS/90', 'GC/90'
-        ]
+        cols = ['xGC', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'A/90', 'CS/90', 'GC/90']
         fields = [
-            'Goals Conceded', 'Influence', 'Creativity', 'Threat',
-            'ICT Index', 'Player Form', 'TSB %', 'Goals per 90', 
-            'Assists per 90', 'Clean Sheets per 90', 'Goals Conceded per 90'
+            'Goals Conceded', 'Influence', 'Creativity', 'Threat', 'ICT Index',
+            'Player Form', 'TSB %', 'Goals per 90', 'Assists per 90', 
+            'Clean Sheets per 90', 'Goals Conceded per 90'
         ]
-
-
     elif element_type == 'MID':
-        cols = [
-            'xG', 'xA', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'A/90', 'xG/90', 'xA/90'
-        ]
+        cols = ['xG', 'xA', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'A/90', 'xG/90', 'xA/90']
         fields = [
-            'Expected Goals', 'Expected Assists', 'Influence', 'Creativity',
-            'Threat', 'ICT Index', 'Player Form', 'TSB %', 
-            'Goals per 90', 'Assists per 90', 'Expected Goals per 90', 'Expected Assists per 90'
+            'Expected Goals', 'Expected Assists', 'Influence', 'Creativity', 
+            'Threat', 'ICT Index', 'Player Form', 'TSB %', 'Goals per 90', 
+            'Assists per 90', 'Expected Goals per 90', 'Expected Assists per 90'
         ]
-       
-
     elif element_type == 'FWD':
-        cols = [
-            'xG', 'xA', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'xG/90', 'A/90', 'xA/90'
-        ]
+        cols = ['xG', 'xA', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'xG/90', 'A/90', 'xA/90']
         fields = [
-            'Expected Goals', 'Expected Assists', 'Influence', 'Creativity',
-            'Threat', 'ICT Index', 'Player Form', 'TSB %', 
-            'Goals per 90', 'Expected Goals per 90', 'Assists per 90', 'Expected Assists per 90'
+            'Expected Goals', 'Expected Assists', 'Influence', 'Creativity', 
+            'Threat', 'ICT Index', 'Player Form', 'TSB %', 'Goals per 90', 
+            'Expected Goals per 90', 'Assists per 90', 'Expected Assists per 90'
         ]
-       
+
     # Select relevant columns
     df_player = df_player[cols]
 
     # Convert normalized data to a list
     data = df_player.iloc[0, :].values.flatten().tolist()
     data = [round(float(x), 2) for x in data]
-    st.write(data)   
-     # Prepare radar chart figure parameters
-     
+
+    # Set minimum and maximum values for each attribute
+    min_range = [0] * len(data)  # Adjust if you have specific minimum values for each field
+    max_range = [1 if col.startswith('x') or col.endswith('/90') else 100 for col in cols]  # Customize if needed
+
+    # Create PyPizza plot
+    baker = PyPizza(
+        params=fields,
+        min_range=min_range,
+        max_range=max_range,
+        background_color="#222222",
+        straight_line_color="#000000",
+        last_circle_color="#FF5733"
+    )
+
+    # Plot the pizza chart
+    fig, ax = baker.make_pizza(
+        values=data,
+        figsize=(10, 10),
+        color_blank_space="same",
+        slice_colors=["#FF5733"] * len(data),
+        value_colors=["#FFFFFF"] * len(data),
+    )
+
+    return fig
+
+
+
+"""
     low = [0] * len(fields)
     high = [1] * len(fields)
 
@@ -368,7 +382,7 @@ def plot_position_radar(df_player, name):
     fig.set_facecolor('#121212')
 
     return fig
-
+"""
 
 ##########################################################################
 def display_frame(df):
