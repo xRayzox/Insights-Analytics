@@ -259,158 +259,115 @@ def get_image_sui(player_name):
 
 
 
-import matplotlib.pyplot as plt
-import matplotlib.colors as mcolors
-from mplsoccer import PyPizza
-import matplotlib as mpl
-def colorFader(c1,c2,mix=0): 
-    c1=np.array(mcolors.to_rgb(c1))
-    c2=np.array(mcolors.to_rgb(c2))
-    
-    mix = max(0.35, mix)
-    
-    return mcolors.to_hex((mix)*c1 + (1-mix)*c2)
-def plotter(df_player, name):
+def plot_position_radar(df_player, name):
+    # Ensure the DataFrame is reset to avoid index issues
     df_player.reset_index(drop=True, inplace=True)
     element_type = df_player["element_type"].iloc[0]
-
-    # Define columns, fields, and ranges based on position
+    # Define column names, fields, low and high values for each player position
     if element_type == 'GKP':
         cols = [
-            'xGC', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'CS', 'GC', 'S'
+            'xGC', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'CS/90', 'GC/90', 'S/90'
         ]
         fields = [
             'Expected Goals Conceded', 'Influence', 'Creativity',
             'Threat', 'ICT Index', 'Player Form', 'TSB %',
-            'Clean Sheets', 'Goals Conceded', 'Saves'
+            'Clean Sheets per 90', 'Goals Conceded per 90', 'Saves per 90'
         ]
+        low_values = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        high_values = [80, 800, 100, 200, 300, 10, 100, 1, 2, 5]  # Adjusted for realistic ranges in FPL
 
     elif element_type == 'DEF':
         cols = [
-            'xGC', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'GS', 'A', 'CS', 'GC'
+            'xGC', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'A/90', 'CS/90', 'GC/90'
         ]
         fields = [
-            'Expected Goals Conceded', 'Influence', 'Creativity', 'Threat',
-            'ICT Index', 'Player Form', 'TSB %', 'Goals Scored', 
-            'Assists', 'Clean Sheets', 'Goals Conceded'
+            'Goals Conceded', 'Influence', 'Creativity', 'Threat',
+            'ICT Index', 'Player Form', 'TSB %', 'Goals per 90', 
+            'Assists per 90', 'Clean Sheets per 90', 'Goals Conceded per 90'
         ]
+
 
     elif element_type == 'MID':
         cols = [
-            'xG', 'xA', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'GS', 'A', 'xG', 'xA'
+            'xG', 'xA', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'A/90', 'xG/90', 'xA/90'
         ]
         fields = [
             'Expected Goals', 'Expected Assists', 'Influence', 'Creativity',
             'Threat', 'ICT Index', 'Player Form', 'TSB %', 
-            'Goals Scored', 'Assists', 'Expected Goals', 'Expected Assists'
+            'Goals per 90', 'Assists per 90', 'Expected Goals per 90', 'Expected Assists per 90'
         ]
-
+       
 
     elif element_type == 'FWD':
         cols = [
-            'xG', 'xA', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'GS', 'xG', 'A', 'xA'
+            'xG', 'xA', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'xG/90', 'A/90', 'xA/90'
         ]
         fields = [
             'Expected Goals', 'Expected Assists', 'Influence', 'Creativity',
             'Threat', 'ICT Index', 'Player Form', 'TSB %', 
-            'Goals Scored', 'Expected Goals', 'Assists', 'Expected Assists'
+            'Goals per 90', 'Expected Goals per 90', 'Assists per 90', 'Expected Assists per 90'
         ]
-
-    # Select relevant columns and normalize data
+       
+    # Select relevant columns
     df_player = df_player[cols]
-    # Ensure all values in df_player.iloc[0] are converted to floats before applying the formula
-    values = df_player.iloc[0, :].values.flatten().tolist()
-    st.write(values)
-    values = [round(val*100,2) for val in values]
 
-    # Define colors and fields display format
-    slice_colors = ["#1A78CF"] * 3 + ["#D70232"] * 3 + ["#228B22"] * 3 + ["#FF8000"] * (len(fields) - 9)
-    text_colors = ["#000000"] * len(fields)
+    # Convert normalized data to a list
+    data = df_player.iloc[0, :].values.flatten().tolist()
+    data = [round(float(x), 2) for x in data]
+    st.write(data)   
+     # Prepare radar chart figure parameters
+    low = low_values
+    high = high_values
 
-    slice_colors2 = []
-    alt_color = '#2B2B2B'
-    for i, color in enumerate(slice_colors):
-        pct = values[i]
+    # Create the radar chart
+    radar = Radar(fields, low, high,
+                  num_rings=4, 
+                  ring_width=1, 
+                  center_circle_radius=1)
 
-        slice_colors2.append(colorFader(color, '#2B2B2B', pct/100))
-        
-        
-    mpl.rcParams['figure.dpi'] = 600
+    fig, axs = grid(figheight=14, grid_height=0.875, title_height=0.1, endnote_height=0.025,
+                title_space=0, endnote_space=0, grid_key='radar', axis=False)
 
-    plot = PyPizza(
-        inner_circle_size = 20,
-        params=fields,                  # list of parameters
-        straight_line_color="#2B2B2B",  # color for straight lines
-        straight_line_lw=1,             # linewidth for straight lines
-        other_circle_lw=1,              # linewidth for other circles
-        other_circle_ls= '--'  ,        # linestyle for other circles
-        last_circle_lw=1,               # linewidth of last circle
-        last_circle_ls = '-',
-        background_color = '#2B2B2B',
-        straight_line_limit = 101
-    )
+    # plot the radar
+    radar.setup_axis(ax=axs['radar'], facecolor='#2B2B2B')
+    rings_inner = radar.draw_circles(ax=axs['radar'], facecolor='#2B2B2B', edgecolor='white', alpha=0.4, lw=1.5)
+    radar_output = radar.draw_radar(data, ax=axs['radar'],
+                                    kwargs_radar={'facecolor': '#d0667a'},
+                                    kwargs_rings={'facecolor': '#1d537f'})
+    radar_poly, rings_outer, vertices = radar_output
+    #range_labels = radar.draw_range_labels(ax=axs['radar'], fontsize=25, color='#fcfcfc')
+    #param_labels = radar.draw_param_labels(ax=axs['radar'], fontsize=25, color='#fcfcfc')
+    col_labels = radar.draw_param_labels(ax=axs['radar'],color="white", fontsize=18, fontname = 'Sans Serif')
 
-    fig, ax = plot.make_pizza(
-        values,                             # list of values
-        figsize=(7, 9),                     # adjust the figsize according to your need
-        slice_colors=slice_colors2,          # color for individual slices
-        value_colors=text_colors,           # color for the value-text
-        value_bck_colors=slice_colors2,      # color for the blank spaces
-        blank_alpha=1 ,                     # alpha for blank-space colors
+    rot = 360
+    for i in range(len(vertices)):
+        rot = round(360-((360/len(cols))*i),0)
+        if rot in range(90, 270):
+            rot = rot - 180 
 
-        kwargs_slices=dict(
-            edgecolor="#2B2B2B", zorder=3, linewidth=2
-        ),                                  # values to be used when plotting slices
+        x,y = vertices[i]
+        val = data[i]
+        axs['radar'].annotate(xy = (x,y), text = val, rotation=rot,
+                              bbox=dict(facecolor= '#d0667a', edgecolor='white', boxstyle='round', alpha=1), 
+                              color='white', fontname = 'Sans Serif', fontsize = 15)
 
-        kwargs_params=dict(
-            color="white", fontsize=9, fontname = 'Sans Serif',
-            va="center"
-        ),                                  # values to be used when adding parameter labels
+    # adding the endnote and title text (these axes range from 0-1, i.e. 0, 0 is the bottom left)
+    # Note we are slightly offsetting the text from the edges by 0.01 (1%, e.g. 0.99)
+    endnote_text = axs['endnote'].text(0.99, 0.5, 'Created By @wael_hcin',
+                                    color='#fcfcfc',
+                                    fontsize=15, ha='right', va='center')
+    title1_text = axs['title'].text(0.01, 0.65, name, fontsize=25,
+                                    ha='left', va='center', color='#e4dded')
+    title2_text = axs['title'].text(0.01, 0.25, 'Manchester United', fontsize=20,
+                                    ha='left', va='center', color='#cc2a3f')
+    title3_text = axs['title'].text(0.99, 0.65, 'Radar Chart', fontsize=25,
+                                    ha='right', va='center', color='#e4dded')
+    title4_text = axs['title'].text(0.99, 0.25, element_type, fontsize=20,
+                                    ha='right', va='center', color='#cc2a3f')
 
-        kwargs_values=dict(
-            color="white", fontsize=9, fontname = 'Sans Serif',
-            zorder=5,
-            bbox=dict(
-                edgecolor="#2B2B2B", facecolor="white",
-                boxstyle="round,pad=.2", lw=1
-            )
-        )                                    # values to be used when adding parameter-values labels    
-    )
-
-
-    fig.text(
-        0.1, 0.97, name.replace("-"," ").upper() , size=15,
-        ha="left",color="white",fontname = 'Sans Serif'
-    )
-    fig.patches.extend([
-        plt.Rectangle(
-            (0.1, 0.885), 0.023, 0.019, fill=True, color="#1A78CF",
-            transform=fig.transFigure, figure=fig
-        ),
-        plt.Rectangle(
-            (0.23, 0.885), 0.023, 0.019, fill=True, color="#D70232",
-            transform=fig.transFigure, figure=fig
-        ),
-        plt.Rectangle(
-            (0.37, 0.885), 0.023, 0.019, fill=True, color="#228B22",
-            transform=fig.transFigure, figure=fig
-        ),
-        plt.Rectangle(
-            (0.52, 0.885), 0.023, 0.019, fill=True, color="#FF8000",
-            transform=fig.transFigure, figure=fig
-        ),
-
-    ])
-
-
-
-    for i, text in enumerate(plot.get_value_texts()):
-        text.set_text(values[i])
-
+    fig.set_facecolor('#121212')
 
     return fig
-
-
 
 
 ##########################################################################
@@ -540,7 +497,7 @@ else:
 
         df_plot=collated_spider_df_from_name(player1)
 
-        figg=plotter(df_plot,player1)
+        figg=plot_position_radar(df_plot,player1)
 
         
 
