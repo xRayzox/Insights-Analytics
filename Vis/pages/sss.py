@@ -283,7 +283,7 @@ def plot_position_radar(df_player, name):
     data = [round(val, 2) for val in data if pd.notnull(val)]  # Round values and exclude NaN
 
     # Prepare radar chart figure parameters
-    params = fields  # Use the defined fields for the radar parameters
+    params = cols  # Use the defined fields for the radar parameters
     low = [0] * len(params)  # Define lower limits
     high = [max(data) * 1.1 for _ in params]  # Set high limits based on the data
     
