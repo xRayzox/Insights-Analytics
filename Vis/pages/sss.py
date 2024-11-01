@@ -314,25 +314,62 @@ def plot_position_radar(df_player, name):
     data = df_player.iloc[0, :].values.flatten().tolist()
     data = [round(float(x), 2) for x in data]
 
-    # Prepare radar chart figure parameters
-    params = fields
+    fig, axs = grid(figheight=14, grid_height=0.875, title_height=0.1, endnote_height=0.025,
+                title_space=0, endnote_space=0, grid_key='radar', axis=False)
+    
+    
     low = [0] * len(fields)
-    high = [1] * len(fields)
+    hi = [1] * len(fields)
+    
+    radar = Radar(fields, low, hi,
+                  num_rings=4, 
+                  ring_width=1, 
+                  center_circle_radius=1)
 
-    # Create the radar chart
-    radar = Radar(params, low, high,
-                  num_rings=4,
-                  ring_width=1, center_circle_radius=1)
 
-    fig, ax = radar.setup_axis()  # format axis as a radar
-    rings_inner = radar.draw_circles(ax=ax, facecolor='#ffb2b2', edgecolor='#fc5f5f')  # draw circles
-    radar_output = radar.draw_radar(data, ax=ax,
-                                     kwargs_radar={'facecolor': '#aa65b2'},
-                                     kwargs_rings={'facecolor': '#66d8ba'})  # draw the radar
-    radar_poly, rings_outer, vertices = radar_output
-    range_labels = radar.draw_range_labels(ax=ax, fontsize=15)  # draw the range labels
-    param_labels = radar.draw_param_labels(ax=ax, fontsize=15)  # draw the param labels
+    radar.setup_axis(ax=axs['radar'], facecolor='#2B2B2B')
 
+    rings_inner = radar.draw_circles(ax=axs['radar'], facecolor='#2B2B2B', edgecolor='white', alpha=0.4, lw=1.5)
+
+    radar_output = radar.draw_radar_compare(data, data,  ax=axs['radar'],
+                                            kwargs_radar={'facecolor': "red", 'alpha':0.55},
+                                            kwargs_compare={'facecolor': "yellow", 'alpha': 0.6})
+
+    radar_poly, radar_poly2, vertices1, vertices2 = radar_output
+
+    col_labels = radar.draw_param_labels(ax=axs['radar'],color="white", fontsize=18, fontname = 'Sans Serif')
+
+    rot = 360
+    for i in range(len(vertices1)):
+        rot = round(360-((360/len(cols))*i),0)
+        if rot in range(90, 270):
+            rot = rot - 180 
+
+        x,y = vertices1[i]
+        val = data[i]
+        axs['radar'].annotate(xy = (x,y), text = val, rotation=rot,
+                              bbox=dict(facecolor= "red", edgecolor='white', boxstyle='round', alpha=1), 
+                              color='white', fontname = 'Sans Serif', fontsize = 15)
+
+
+    rot = 360
+    for i in range(len(vertices2)):
+        rot = round(360-((360/len(cols))*i),0)
+        if rot in range(90, 270):
+            rot = rot - 180 
+
+        x,y = vertices2[i]
+        val = data[i]
+        axs['radar'].annotate(xy = (x,y), text = val, rotation=rot,
+                              bbox=dict(facecolor= "yellow", edgecolor='white', boxstyle='round', alpha=1), 
+                              color='white', fontname = 'Sans Serif', fontsize = 15)
+
+    endnote_text = axs['endnote'].text(0.8, 0.5, 'CREATED BY @JoeW_32', fontsize=15,
+                                       fontname = 'Sans Serif', ha='left', va='center', color='white')
+
+    fig.set_facecolor('#2B2B2B')
+
+    
     return fig
 
 
