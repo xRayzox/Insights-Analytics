@@ -269,20 +269,24 @@ def plot_position_radar(df_player, name):
     # Define columns and fields based on player position
     if element_type == 'GKP':
         cols = ['CS', 'GC', 'xGC', 'Pen_Save', 'S', 'YC', 'RC', 'BPS']
+        df_player = df_player[cols]
         fields = ['Clean Sheets', 'Goals Conceded', 'Expected Goals Conceded', 'Penalties Saved', 'Saves', 'Yellow Cards', 'Red Cards', 'Bonus Points']
     elif element_type == 'DEF':
         cols = ['CS', 'GC', 'xGC', 'A', 'xA', 'T', 'ICT', 'BPS']
+        df_player = df_player[cols]
         fields = ['Clean Sheets', 'Goals Conceded', 'Expected Goals Conceded', 'Assists', 'Expected Assists', 'Threat', 'ICT Index', 'Bonus Points']
     elif element_type == 'MID':
         cols = ['GS', 'xG', 'A', 'xA', 'ICT', 'S', 'BPS']
+        df_player = df_player[cols]
         fields = ['Goals Scored', 'Expected Goals', 'Assists', 'Expected Assists', 'ICT Index', 'Shots', 'Bonus Points']
     elif element_type == 'FWD':
         cols = ['GS', 'xG', 'xGI', 'A', 'xA', 'ICT', 'S', 'BPS']
+        df_player = df_player[cols]
         fields = ['Goals Scored', 'Expected Goals', 'Expected Goal Involvement', 'Assists', 'Expected Assists', 'ICT Index', 'Shots', 'Bonus Points']
     else:
         raise ValueError("Invalid element type. Must be one of ['GKP', 'DEF', 'MID', 'FWD']")
 
-    st.write(data.columns)
+    
     # Filter relevant data
     data = df_player.loc[0, :].values.flatten().tolist()
     data = [round(val, 2) for val in data if pd.notnull(val)]  # Round values and exclude NaN
