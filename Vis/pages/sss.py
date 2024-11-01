@@ -324,14 +324,30 @@ def plot_position_radar(df_player, name):
                   ring_width=1, 
                   center_circle_radius=1)
 
-    fig, ax = radar.setup_axis()  # format axis as a radar
-    rings_inner = radar.draw_circles(ax=ax, facecolor='#ffb2b2', edgecolor='#fc5f5f')  # draw circles
-    radar_output = radar.draw_radar(data, ax=ax,
+    fig, axs = radar.setup_axis()  # format axis as a radar
+    rings_inner = radar.draw_circles(ax=axs, facecolor='#ffb2b2', edgecolor='#fc5f5f')  # draw circles
+    radar_output = radar.draw_radar(data, ax=axs,
                                      kwargs_radar={'facecolor': '#aa65b2'},
                                      kwargs_rings={'facecolor': '#66d8ba'})  # draw the radar
     radar_poly, rings_outer, vertices = radar_output
-    range_labels = radar.draw_range_labels(ax=ax, fontsize=15)  # draw the range labels
-    param_labels = radar.draw_param_labels(ax=ax, fontsize=15)  # draw the param labels
+    range_labels = radar.draw_range_labels(ax=axs['radar'], fontsize=25, color='#fcfcfc')
+    param_labels = radar.draw_param_labels(ax=axs['radar'], fontsize=25, color='#fcfcfc')
+
+    # adding the endnote and title text (these axes range from 0-1, i.e. 0, 0 is the bottom left)
+    # Note we are slightly offsetting the text from the edges by 0.01 (1%, e.g. 0.99)
+    endnote_text = axs['endnote'].text(0.99, 0.5, 'Inspired By: StatsBomb / Rami Moghadam',
+                                    color='#fcfcfc',
+                                    fontsize=15, ha='right', va='center')
+    title1_text = axs['title'].text(0.01, 0.65, 'Bruno Fernandes', fontsize=25,
+                                    ha='left', va='center', color='#e4dded')
+    title2_text = axs['title'].text(0.01, 0.25, 'Manchester United', fontsize=20,
+                                    ha='left', va='center', color='#cc2a3f')
+    title3_text = axs['title'].text(0.99, 0.65, 'Radar Chart', fontsize=25,
+                                    ha='right', va='center', color='#e4dded')
+    title4_text = axs['title'].text(0.99, 0.25, 'Midfielder', fontsize=20,
+                                    ha='right', va='center', color='#cc2a3f')
+
+    fig.set_facecolor('#121212')
 
     return fig
 
