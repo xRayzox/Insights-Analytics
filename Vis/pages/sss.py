@@ -321,7 +321,6 @@ def plot_position_radar(df_player, name):
 
     # Create the radar chart
     radar = Radar(params, low, high,
-                  round_int=[False]*len(params),
                   num_rings=4,
                   ring_width=1, center_circle_radius=1)
 
