@@ -456,7 +456,7 @@ def plot_position_radar(df_player, name):
     # Filter relevant data
     data = df_player.iloc[0, :].values.flatten().tolist()
     st.write(data)
-    data = [round(val, 2) for val in data if pd.notnull(val)]  # Round values and exclude NaN
+    data = [round(val, 2) for val in data if pd.notnull(val) and isinstance(val, (int, float))]
 
     st.write(data)
     # Prepare radar chart figure parameters
