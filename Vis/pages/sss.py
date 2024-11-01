@@ -329,7 +329,6 @@ def plot_position_radar(df_player, name):
         cols = [
             'xG',       # Expected goals
             'xA',       # Expected assists
-            'CS',       # Clean sheets
             'I',        # Influence score
             'C',        # Creativity score
             'T',        # Threat score
