@@ -557,4 +557,57 @@ st.plotly_chart(figg)
 
 
 
- 
+ ###############################################
+
+ # parameter names of the statistics we want to show
+params = ["npxG", "Non-Penalty Goals", "xA", "Key Passes", "Through Balls",
+          "Progressive Passes", "Shot-Creating Actions", "Goal-Creating Actions",
+          "Dribbles Completed", "Pressure Regains", "Touches In Box", "Miscontrol"]
+
+# The lower and upper boundaries for the statistics
+low =  [0.08, 0.0, 0.1, 1, 0.6,  4, 3, 0.3, 0.3, 2.0, 2, 0]
+high = [0.37, 0.6, 0.6, 4, 1.2, 10, 8, 1.3, 1.5, 5.5, 5, 5]
+
+# Add anything to this list where having a lower number is better
+# this flips the statistic
+lower_is_better = ['Miscontrol']
+
+radar = Radar(params, low, high,
+              lower_is_better=lower_is_better,
+              # whether to round any of the labels to integers instead of decimal places
+              round_int=[False]*len(params),
+              num_rings=4,  # the number of concentric circles (excluding center circle)
+              # if the ring_width is more than the center_circle_radius then
+              # the center circle radius will be wider than the width of the concentric circles
+              ring_width=1, center_circle_radius=1)
+
+
+URL1 = ('https://raw.githubusercontent.com/googlefonts/SourceSerifProGFVersion/main/fonts/'
+        'SourceSerifPro-Regular.ttf')
+serif_regular = FontManager(URL1)
+URL2 = ('https://raw.githubusercontent.com/googlefonts/SourceSerifProGFVersion/main/fonts/'
+        'SourceSerifPro-ExtraLight.ttf')
+serif_extra_light = FontManager(URL2)
+URL3 = ('https://raw.githubusercontent.com/google/fonts/main/ofl/rubikmonoone/'
+        'RubikMonoOne-Regular.ttf')
+rubik_regular = FontManager(URL3)
+URL4 = 'https://raw.githubusercontent.com/googlefonts/roboto/main/src/hinted/Roboto-Thin.ttf'
+robotto_thin = FontManager(URL4)
+URL5 = ('https://raw.githubusercontent.com/google/fonts/main/apache/robotoslab/'
+        'RobotoSlab%5Bwght%5D.ttf')
+robotto_bold = FontManager(URL5)
+
+
+bruno_values =   [10.12,244.0,0.0,0.0,24.5,1.0,0.303,0.3333,1.1111,3.2222,4.00, 4.54]
+bruyne_values =  [0.25, 0.52, 0.37, 3.59, 0.41, 6.36, 5.68, 0.57, 1.23, 4.00, 4.54, 1.39]
+erikson_values = [0.13, 0.10, 0.35, 3.08, 0.29, 6.23, 5.08, 0.43, 0.67, 3.07, 1.34, 1.06]
+
+
+fig, ax = radar.setup_axis()  # format axis as a radar
+rings_inner = radar.draw_circles(ax=ax, facecolor='#ffb2b2', edgecolor='#fc5f5f')  # draw circles
+radar_output = radar.draw_radar(bruno_values, ax=ax,
+                                kwargs_radar={'facecolor': '#aa65b2'},
+                                kwargs_rings={'facecolor': '#66d8ba'})  # draw the radar
+radar_poly, rings_outer, vertices = radar_output
+range_labels = radar.draw_range_labels(ax=ax, fontsize=15)  # draw the range labels
+param_labels = radar.draw_param_labels(ax=ax, fontsize=15)  # draw the param labels
