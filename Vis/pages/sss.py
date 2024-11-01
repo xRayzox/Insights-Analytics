@@ -259,119 +259,100 @@ def get_image_sui(player_name):
 
 
 
-def plot_position_radar(df_player, name):
-    # Ensure the DataFrame is reset to avoid index issues
+import matplotlib.pyplot as plt
+from mplsoccer import PyPizza
+
+def plotter(df_player, name, mins, season):
     df_player.reset_index(drop=True, inplace=True)
     element_type = df_player["element_type"].iloc[0]
-    # Define column names, fields, low and high values for each player position
+
+    # Define columns, fields, and ranges based on position
     if element_type == 'GKP':
         cols = [
-            'xGC', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'CS/90', 'GC/90', 'S/90'
+            'xGC', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'CS', 'GC', 'S'
         ]
         fields = [
             'Expected Goals Conceded', 'Influence', 'Creativity',
             'Threat', 'ICT Index', 'Player Form', 'TSB %',
-            'Clean Sheets per 90', 'Goals Conceded per 90', 'Saves per 90'
+            'Clean Sheets', 'Goals Conceded', 'Saves'
         ]
-        low_values = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        high_values = [80, 800, 100, 200, 300, 10, 100, 1, 2, 5]  # Adjusted for realistic ranges in FPL
+        low_values, high_values = [0] * 10, [80, 800, 100, 200, 300, 10, 100, 1, 2, 5]
 
     elif element_type == 'DEF':
         cols = [
-            'xGC', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'A/90', 'CS/90', 'GC/90'
+            'xGC', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'GS', 'A', 'CS', 'GC'
         ]
         fields = [
-            'Goals Conceded', 'Influence', 'Creativity', 'Threat',
-            'ICT Index', 'Player Form', 'TSB %', 'Goals per 90', 
-            'Assists per 90', 'Clean Sheets per 90', 'Goals Conceded per 90'
+            'Expected Goals Conceded', 'Influence', 'Creativity', 'Threat',
+            'ICT Index', 'Player Form', 'TSB %', 'Goals Scored', 
+            'Assists', 'Clean Sheets', 'Goals Conceded'
         ]
-        low_values = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        high_values = [80, 700, 150, 300, 350, 10, 100, 0.5, 0.5, 1, 2]  # Adjusted for realistic ranges in FPL
+        low_values, high_values = [0] * 11, [80, 700, 150, 300, 350, 10, 100, 0.5, 0.5, 1, 2]
 
     elif element_type == 'MID':
         cols = [
-            'xG', 'xA', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'A/90', 'xG/90', 'xA/90'
+            'xG', 'xA', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'GS', 'A', 'xG', 'xA'
         ]
         fields = [
             'Expected Goals', 'Expected Assists', 'Influence', 'Creativity',
             'Threat', 'ICT Index', 'Player Form', 'TSB %', 
-            'Goals per 90', 'Assists per 90', 'Expected Goals per 90', 'Expected Assists per 90'
+            'Goals Scored', 'Assists', 'Expected Goals', 'Expected Assists'
         ]
-        low_values = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        high_values = [30, 20, 700, 400, 500, 400, 10, 100, 1, 1, 1, 1]  # Adjusted for realistic ranges in FPL
+        low_values, high_values = [0] * 12, [30, 20, 700, 400, 500, 400, 10, 100, 1, 1, 1, 1]
 
     elif element_type == 'FWD':
         cols = [
-            'xG', 'xA', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'xG/90', 'A/90', 'xA/90'
+            'xG', 'xA', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'GS', 'xG', 'A', 'xA'
         ]
         fields = [
             'Expected Goals', 'Expected Assists', 'Influence', 'Creativity',
             'Threat', 'ICT Index', 'Player Form', 'TSB %', 
-            'Goals per 90', 'Expected Goals per 90', 'Assists per 90', 'Expected Assists per 90'
+            'Goals Scored', 'Expected Goals', 'Assists', 'Expected Assists'
         ]
-        low_values = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        high_values = [40, 20, 700, 300, 500, 400, 10, 100, 1.5, 1, 1, 1]  # Adjusted for realistic ranges in FPL
+        low_values, high_values = [0] * 12, [40, 20, 700, 300, 500, 400, 10, 100, 1.5, 1, 1, 1]
 
-    # Select relevant columns
+    # Select relevant columns and normalize data
     df_player = df_player[cols]
+    values = [round((val - low) / (high - low) * 100, 2) for val, low, high in zip(df_player.iloc[0], low_values, high_values)]
 
-    # Convert normalized data to a list
-    data = df_player.iloc[0, :].values.flatten().tolist()
-    data = [round(float(x), 2) for x in data]
-    st.write(data)   
-     # Prepare radar chart figure parameters
-    low = low_values
-    high = high_values
+    # Define colors and fields display format
+    slice_colors = ["#1A78CF"] * 3 + ["#D70232"] * 3 + ["#228B22"] * 3 + ["#FF8000"] * (len(fields) - 9)
+    text_colors = ["#000000"] * len(fields)
 
-    # Create the radar chart
-    radar = Radar(fields, low, high,
-                  num_rings=4, 
-                  ring_width=1, 
-                  center_circle_radius=1)
+    # Create radar plot
+    plot = PyPizza(
+        params=[field.upper() for field in fields],
+        straight_line_color="#2B2B2B",
+        background_color='#2B2B2B'
+    )
 
-    fig, axs = grid(figheight=14, grid_height=0.875, title_height=0.1, endnote_height=0.025,
-                title_space=0, endnote_space=0, grid_key='radar', axis=False)
+    fig, ax = plot.make_pizza(
+        values,
+        figsize=(7, 9),
+        slice_colors=slice_colors,
+        value_colors=text_colors,
+        value_bck_colors=slice_colors,
+        kwargs_slices=dict(edgecolor="#2B2B2B", linewidth=2),
+        kwargs_params=dict(color="white", fontsize=9, fontname='Sans Serif', va="center"),
+        kwargs_values=dict(color="white", fontsize=9, fontname='Sans Serif', bbox=dict(edgecolor="#2B2B2B", facecolor="white", boxstyle="round,pad=.2", lw=1))
+    )
 
-    # plot the radar
-    radar.setup_axis(ax=axs['radar'], facecolor='#2B2B2B')
-    rings_inner = radar.draw_circles(ax=axs['radar'], facecolor='#2B2B2B', edgecolor='white', alpha=0.4, lw=1.5)
-    radar_output = radar.draw_radar(data, ax=axs['radar'],
-                                    kwargs_radar={'facecolor': '#d0667a'},
-                                    kwargs_rings={'facecolor': '#1d537f'})
-    radar_poly, rings_outer, vertices = radar_output
-    #range_labels = radar.draw_range_labels(ax=axs['radar'], fontsize=25, color='#fcfcfc')
-    #param_labels = radar.draw_param_labels(ax=axs['radar'], fontsize=25, color='#fcfcfc')
-    col_labels = radar.draw_param_labels(ax=axs['radar'],color="white", fontsize=18, fontname = 'Sans Serif')
+    # Add titles and subtitle
+    fig.text(0.1, 0.97, name.upper(), size=15, ha="left", color="white", fontname='Sans Serif')
+    fig.text(0.1, 0.9425, f"{mins} MINUTES | {element_type.upper()}", size=9, ha="left", color="white")
+    fig.text(0.1, 0.9175, f"Percentile Rank vs Other PL Players | {season} | Created by @JoeW__32", size=9, ha="left", color="white")
+    fig.text(0.13, 0.89, "Passing         Attacking        Defending       Receptions/Carrying".upper(), size=9, color="white")
 
-    rot = 360
-    for i in range(len(vertices)):
-        rot = round(360-((360/len(cols))*i),0)
-        if rot in range(90, 270):
-            rot = rot - 180 
-
-        x,y = vertices[i]
-        val = data[i]
-        axs['radar'].annotate(xy = (x,y), text = val, rotation=rot,
-                              bbox=dict(facecolor= '#d0667a', edgecolor='white', boxstyle='round', alpha=1), 
-                              color='white', fontname = 'Sans Serif', fontsize = 15)
-
-    # adding the endnote and title text (these axes range from 0-1, i.e. 0, 0 is the bottom left)
-    # Note we are slightly offsetting the text from the edges by 0.01 (1%, e.g. 0.99)
-    endnote_text = axs['endnote'].text(0.99, 0.5, 'Created By @wael_hcin',
-                                    color='#fcfcfc',
-                                    fontsize=15, ha='right', va='center')
-    title1_text = axs['title'].text(0.01, 0.65, name, fontsize=25,
-                                    ha='left', va='center', color='#e4dded')
-    title2_text = axs['title'].text(0.01, 0.25, 'Manchester United', fontsize=20,
-                                    ha='left', va='center', color='#cc2a3f')
-    title3_text = axs['title'].text(0.99, 0.65, 'Radar Chart', fontsize=25,
-                                    ha='right', va='center', color='#e4dded')
-    title4_text = axs['title'].text(0.99, 0.25, element_type, fontsize=20,
-                                    ha='right', va='center', color='#cc2a3f')
-
-    fig.set_facecolor('#121212')
+    # Add colored legends
+    fig.patches.extend([
+        plt.Rectangle((0.1, 0.885), 0.023, 0.019, fill=True, color="#1A78CF", transform=fig.transFigure),
+        plt.Rectangle((0.23, 0.885), 0.023, 0.019, fill=True, color="#D70232", transform=fig.transFigure),
+        plt.Rectangle((0.37, 0.885), 0.023, 0.019, fill=True, color="#228B22", transform=fig.transFigure),
+        plt.Rectangle((0.52, 0.885), 0.023, 0.019, fill=True, color="#FF8000", transform=fig.transFigure),
+    ])
 
     return fig
+
 
 
 ##########################################################################
