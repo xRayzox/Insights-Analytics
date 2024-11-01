@@ -262,7 +262,7 @@ def get_image_sui(player_name):
 import matplotlib.pyplot as plt
 from mplsoccer import PyPizza
 
-def plotter(df_player, name, mins, season):
+def plotter(df_player, name):
     df_player.reset_index(drop=True, inplace=True)
     element_type = df_player["element_type"].iloc[0]
 
@@ -335,13 +335,7 @@ def plotter(df_player, name, mins, season):
         kwargs_slices=dict(edgecolor="#2B2B2B", linewidth=2),
         kwargs_params=dict(color="white", fontsize=9, fontname='Sans Serif', va="center"),
         kwargs_values=dict(color="white", fontsize=9, fontname='Sans Serif', bbox=dict(edgecolor="#2B2B2B", facecolor="white", boxstyle="round,pad=.2", lw=1))
-    )
 
-    # Add titles and subtitle
-    fig.text(0.1, 0.97, name.upper(), size=15, ha="left", color="white", fontname='Sans Serif')
-    fig.text(0.1, 0.9425, f"{mins} MINUTES | {element_type.upper()}", size=9, ha="left", color="white")
-    fig.text(0.1, 0.9175, f"Percentile Rank vs Other PL Players | {season} | Created by @JoeW__32", size=9, ha="left", color="white")
-    fig.text(0.13, 0.89, "Passing         Attacking        Defending       Receptions/Carrying".upper(), size=9, color="white")
 
     # Add colored legends
     fig.patches.extend([
@@ -482,7 +476,7 @@ else:
 
         df_plot=collated_spider_df_from_name(player1)
 
-        figg=plot_position_radar(df_plot,player1)
+        figg=plotter(df_plot,player1)
 
         
 
