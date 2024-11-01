@@ -329,25 +329,22 @@ def plot_position_radar(df_player, name):
     radar_output = radar.draw_radar(data, ax=ax,
                                      kwargs_radar={'facecolor': '#aa65b2'},
                                      kwargs_rings={'facecolor': '#66d8ba'})  # draw the radar
-    radar_poly, radar_poly2, vertices1, vertices2 = radar_output
+    radar_poly, rings_outer, vertices = radar_output
     range_labels = radar.draw_range_labels(ax=ax, fontsize=15)  # draw the range labels
     param_labels = radar.draw_param_labels(ax=ax, fontsize=15)  # draw the param labels
-    col_labels = radar.draw_param_labels(ax=ax['radar'],color="white", fontsize=18, fontname = 'Sans Serif')
+    col_labels = radar.draw_param_labels(ax=axs['radar'],color="white", fontsize=18, fontname = 'Sans Serif')
 
     rot = 360
-    for i in range(len(vertices1)):
+    for i in range(len(vertices)):
         rot = round(360-((360/len(cols))*i),0)
         if rot in range(90, 270):
             rot = rot - 180 
 
-        x,y = vertices1[i]
+        x,y = vertices[i]
         val = data[i]
         ax['radar'].annotate(xy = (x,y), text = val, rotation=rot,
-                              bbox=dict(facecolor= "red", edgecolor='white', boxstyle='round', alpha=1), 
+                              bbox=dict(facecolor= 'red', edgecolor='white', boxstyle='round', alpha=1), 
                               color='white', fontname = 'Sans Serif', fontsize = 15)
-
-
-
 
     return fig
 
