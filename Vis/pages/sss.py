@@ -324,11 +324,15 @@ def plot_position_radar(df_player, name):
                   ring_width=1, 
                   center_circle_radius=1)
 
-    fig, axs = radar.setup_axis()  # format axis as a radar
-    rings_inner = radar.draw_circles(ax=axs, facecolor='#ffb2b2', edgecolor='#fc5f5f')  # draw circles
-    radar_output = radar.draw_radar(data, ax=axs,
-                                     kwargs_radar={'facecolor': '#aa65b2'},
-                                     kwargs_rings={'facecolor': '#66d8ba'})  # draw the radar
+    fig, axs = grid(figheight=14, grid_height=0.915, title_height=0.06, endnote_height=0.025,
+                title_space=0, endnote_space=0, grid_key='radar', axis=False)
+
+    # plot the radar
+    radar.setup_axis(ax=axs['radar'], facecolor='None')
+    rings_inner = radar.draw_circles(ax=axs['radar'], facecolor='#28252c', edgecolor='#39353f', lw=1.5)
+    radar_output = radar.draw_radar(data, ax=axs['radar'],
+                                    kwargs_radar={'facecolor': '#d0667a'},
+                                    kwargs_rings={'facecolor': '#1d537f'})
     radar_poly, rings_outer, vertices = radar_output
     range_labels = radar.draw_range_labels(ax=axs['radar'], fontsize=25, color='#fcfcfc')
     param_labels = radar.draw_param_labels(ax=axs['radar'], fontsize=25, color='#fcfcfc')
