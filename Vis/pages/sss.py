@@ -282,8 +282,8 @@ def plot_position_radar(df_player, name):
 
     st.write(data)
     # Prepare radar chart figure
-    fig, ax = plt.subplots(figsize=(10, 10))  # Create a single Axes
-
+    fig, axs = grid(figheight=14, grid_height=0.875, title_height=0.1, endnote_height=0.025,
+                title_space=0, endnote_space=0, grid_key='radar', axis=False)
     # Radar setup
     radar = Radar(fields, [0]*len(fields), [1]*len(fields), num_rings=4)
     radar.setup_axis(ax=ax, facecolor='#2B2B2B')
