@@ -295,13 +295,7 @@ def get_stats_spider_plot(player_name1, player_name2):
     return fig
 
 
-def get_top_two_mid_ids():
-    ele_data = get_bootstrap_data()['elements']
-    ele_df = pd.DataFrame(ele_data)
-    mid_df = ele_df.loc[ele_df['element_type'] == 3]
-    mid_df_sorted = mid_df.sort_values('total_points', ascending=False)
-    top2 = mid_df_sorted.head(2).reset_index()
-    return top2['id'][0], top2['id'][1]
+
 
 
 def get_player_next3(player):
@@ -377,8 +371,7 @@ else:
         loogo = get_image_sui(player1)
         st.image(loogo, width=300)  # Adjust width as needed
 
-        st.write(collated_spider_df_from_name(player1))
-        st.write(get_top_two_mid_ids)
+        st.write(collated_spider_df_from_name(player1).columns)
 
 
 
