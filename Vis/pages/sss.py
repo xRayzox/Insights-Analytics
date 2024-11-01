@@ -377,7 +377,7 @@ else:
         loogo = get_image_sui(player1)
         st.image(loogo, width=300)  # Adjust width as needed
 
-        st.write(collate_total_df_from_name(player1))
+        st.write(collate_total_df_from_name(player1).columns)
 
 
 
