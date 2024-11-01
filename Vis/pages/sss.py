@@ -11,6 +11,9 @@ from io import BytesIO
 import pandas as pd
 import matplotlib.pyplot as plt
 from mplsoccer import Radar, FontManager, grid
+import pandas as pd
+import matplotlib.pyplot as plt
+from mplsoccer import Radar, grid
 
 pd.set_option('future.no_silent_downcasting', True)
 # Assuming fpl_api_collection and fpl_utils are in the FPL directory
@@ -253,13 +256,7 @@ def get_image_sui(player_name):
 ######################################################
 
 
-import pandas as pd
-import matplotlib.pyplot as plt
-from mplsoccer import Radar, grid
 
-import pandas as pd
-import matplotlib.pyplot as plt
-from mplsoccer import Radar, grid
 
 def plot_position_radar(df_player, name):
     # Ensure the DataFrame is reset to avoid index issues
@@ -556,10 +553,9 @@ else:
 #st.plotly_chart(figg)
 
 
-
  ###############################################
 
- # parameter names of the statistics we want to show
+# parameter names of the statistics we want to show
 params = ["npxG", "Non-Penalty Goals", "xA", "Key Passes", "Through Balls",
           "Progressive Passes", "Shot-Creating Actions", "Goal-Creating Actions",
           "Dribbles Completed", "Pressure Regains", "Touches In Box", "Miscontrol"]
