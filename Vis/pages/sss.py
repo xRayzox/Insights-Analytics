@@ -334,8 +334,8 @@ def plot_position_radar(df_player, name):
                                     kwargs_radar={'facecolor': '#d0667a'},
                                     kwargs_rings={'facecolor': '#1d537f'})
     radar_poly, rings_outer, vertices = radar_output
-    range_labels = radar.draw_range_labels(ax=axs['radar'], fontsize=25, color='#fcfcfc')
-    param_labels = radar.draw_param_labels(ax=axs['radar'], fontsize=25, color='#fcfcfc')
+    #range_labels = radar.draw_range_labels(ax=axs['radar'], fontsize=25, color='#fcfcfc')
+    #param_labels = radar.draw_param_labels(ax=axs['radar'], fontsize=25, color='#fcfcfc')
     col_labels = radar.draw_param_labels(ax=axs['radar'],color="white", fontsize=18, fontname = 'Sans Serif')
 
     rot = 360
