@@ -282,6 +282,7 @@ def plot_position_radar(df_player, name):
     else:
         raise ValueError("Invalid element type. Must be one of ['GKP', 'DEF', 'MID', 'FWD']")
 
+    st.write(df_player.columns)
     # Filter relevant data
     data = df_player[cols].iloc[0].apply(pd.to_numeric, errors='coerce').values.flatten().tolist()
     data = [round(val, 2) for val in data if pd.notnull(val)]  # Round values and exclude NaN
