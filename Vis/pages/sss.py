@@ -285,7 +285,7 @@ def plot_position_radar(df_player, name):
     # Filter relevant data
     data = df_player[cols].iloc[0].apply(pd.to_numeric, errors='coerce').values.flatten().tolist()
     data = [round(val, 2) for val in data if pd.notnull(val)]  # Round values and exclude NaN
-
+    st.write(data)
     # Prepare radar chart figure parameters
     params = fields  # Use the defined fields for the radar parameters
     low = [0] * len(fields)
