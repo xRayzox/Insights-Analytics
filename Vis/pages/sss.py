@@ -284,21 +284,26 @@ def plot_position_radar(df_player, name):
     # Prepare radar chart figure
     fig, axs = grid(figheight=14, grid_height=0.875, title_height=0.1, endnote_height=0.025,
                 title_space=0, endnote_space=0, grid_key='radar', axis=False)
-    # Radar setup
-    radar = Radar(fields, [0]*len(fields), [1]*len(fields), num_rings=4)
-    radar.setup_axis(ax=axs, facecolor='#2B2B2B')
-    radar.draw_circles(ax=axs, facecolor='#2B2B2B', edgecolor='white', alpha=0.4, lw=1.5)
+    
+    low = [0] * len(fields)
+    hi = [1] * len(fields)
+    
+    radar = Radar(fields, low, hi,
+                  num_rings=4, 
+                  ring_width=1, 
+                  center_circle_radius=1)
+    
+    radar.setup_axis(ax=axs['radar'], facecolor='#2B2B2B')
+    rings_inner = radar.draw_circles(ax=axs['radar'], facecolor='#2B2B2B', edgecolor='white', alpha=0.4, lw=1.5)
+    color1 = st.color_picker('First Player Colour', '#1A78CF')
+    color2 = st.color_picker('Second Player Colour', '#D70232')
+    radar_output = radar.draw_radar_compare(data, data,  ax=axs['radar'],
+                                            kwargs_radar={'facecolor': color1, 'alpha':0.55},
+                                            kwargs_compare={'facecolor': color2, 'alpha': 0.6})
+    radar_poly, radar_poly2, vertices1, vertices2 = radar_output
 
-    # Draw player data
-    radar.draw_radar(data, ax=axs, kwargs_radar={'facecolor': '#2B2B2B', 'alpha': 0.6})
-    radar.draw_param_labels(ax=axs, color="white", fontsize=15)
-
-    # Title and notes
-    axs.text(0.02, 0.85, name.upper() + ' - ' + element_type, fontsize=20, ha='left', color='white')
-    axs.text(0.8, 0.5, 'CREATED BY @User', fontsize=12, color='white')
-
-    #fig.set_facecolor('#2B2B2B')
     return fig
+
 ##########################################################################
 def display_frame(df):
     '''display dataframe with all float columns rounded to 1 decimal place'''
