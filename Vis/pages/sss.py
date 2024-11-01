@@ -264,7 +264,7 @@ from mplsoccer import Radar, grid
 def plot_position_radar(df_player, name):
     # Ensure the DataFrame is reset to avoid index issues
     df_player.reset_index(inplace=True)
-    st.json(df_player)
+    st.table(df_player)
     df_player.to_csv('./data/player_exemple.csv', index=True)
     element_type = df_player["element_type"].iloc[0] 
     
