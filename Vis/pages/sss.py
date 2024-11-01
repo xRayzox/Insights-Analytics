@@ -378,6 +378,7 @@ else:
         st.image(loogo, width=300)  # Adjust width as needed
 
         st.write(collated_spider_df_from_name(player1))
+        st.write(get_top_two_mid_ids)
 
 
 
