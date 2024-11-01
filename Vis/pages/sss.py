@@ -263,47 +263,55 @@ def plot_position_radar(df_player, name):
     # Ensure the DataFrame is reset to avoid index issues
     df_player.reset_index(drop=True, inplace=True)
     element_type = df_player["element_type"].iloc[0]
-    # Define columns and fields based on player position
+    # Define column names, fields, low and high values for each player position
     if element_type == 'GKP':
         cols = [
             'xGC', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'CS/90', 'GC/90', 'S/90'
         ]
         fields = [
-            'Expected Goals Conceded', 'Influence Score', 'Creativity Score',
-            'Threat Score', 'ICT Index', 'Player Form', 'TSB %',
+            'Expected Goals Conceded', 'Influence', 'Creativity',
+            'Threat', 'ICT Index', 'Player Form', 'TSB %',
             'Clean Sheets per 90', 'Goals Conceded per 90', 'Saves per 90'
         ]
-        low_values = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] 
-        high_values = [100, 1000, 500, 2000, 100, 10, 100, 1, 1, 1]
+        low_values = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        high_values = [80, 800, 100, 200, 300, 10, 100, 1, 2, 5]  # Adjusted for realistic ranges in FPL
 
     elif element_type == 'DEF':
         cols = [
             'xGC', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'A/90', 'CS/90', 'GC/90'
         ]
         fields = [
-            'Goals Conceded', 'Influence Score', 'Creativity Score', 'Threat Score',
+            'Goals Conceded', 'Influence', 'Creativity', 'Threat',
             'ICT Index', 'Player Form', 'TSB %', 'Goals per 90', 
             'Assists per 90', 'Clean Sheets per 90', 'Goals Conceded per 90'
         ]
+        low_values = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        high_values = [80, 700, 150, 300, 350, 10, 100, 0.5, 0.5, 1, 2]  # Adjusted for realistic ranges in FPL
 
     elif element_type == 'MID':
         cols = [
             'xG', 'xA', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'A/90', 'xG/90', 'xA/90'
         ]
         fields = [
-            'Expected Goals', 'Expected Assists', 'Influence Score', 'Creativity Score',
-            'Threat Score', 'ICT Index', 'Player Form', 'TSB %', 
+            'Expected Goals', 'Expected Assists', 'Influence', 'Creativity',
+            'Threat', 'ICT Index', 'Player Form', 'TSB %', 
             'Goals per 90', 'Assists per 90', 'Expected Goals per 90', 'Expected Assists per 90'
         ]
+        low_values = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        high_values = [30, 20, 700, 400, 500, 400, 10, 100, 1, 1, 1, 1]  # Adjusted for realistic ranges in FPL
+
     elif element_type == 'FWD':
         cols = [
             'xG', 'xA', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'xG/90', 'A/90', 'xA/90'
         ]
         fields = [
-            'Expected Goals', 'Expected Assists', 'Influence Score', 'Creativity Score',
-            'Threat Score', 'ICT Index', 'Player Form', 'TSB %', 
+            'Expected Goals', 'Expected Assists', 'Influence', 'Creativity',
+            'Threat', 'ICT Index', 'Player Form', 'TSB %', 
             'Goals per 90', 'Expected Goals per 90', 'Assists per 90', 'Expected Assists per 90'
         ]
+        low_values = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        high_values = [40, 20, 700, 300, 500, 400, 10, 100, 1.5, 1, 1, 1]  # Adjusted for realistic ranges in FPL
+
     # Select relevant columns
     df_player = df_player[cols]
 
