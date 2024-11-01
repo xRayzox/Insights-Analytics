@@ -8,6 +8,9 @@ import urllib.request
 from PIL import Image
 import base64
 from io import BytesIO
+import pandas as pd
+import matplotlib.pyplot as plt
+from mplsoccer import Radar, grid
 pd.set_option('future.no_silent_downcasting', True)
 # Assuming fpl_api_collection and fpl_utils are in the FPL directory
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..', 'FPL')))
@@ -246,6 +249,53 @@ def get_image_sui(player_name):
     p_image = df.loc[df['id'] == p_id[0], 'logo_player']  # Only select the logo_player column
     image = p_image.values[0] if not p_image.empty else None  # Extract the value from the Series
     return image
+######################################################
+
+
+def plot_position_radar(df_player, name, pos, season, color):
+    # Set fields and columns by position
+    if pos == 'GKP':
+        cols = ['CS', 'GC', 'xGC', 'Pen_Save', 'S', 'YC', 'RC', 'BPS']
+        fields = ['Clean Sheets', 'Goals Conceded', 'Expected Goals Conceded', 'Penalties Saved', 'Saves', 'Yellow Cards', 'Red Cards', 'Bonus Points']
+
+    elif pos == 'DEF':
+        cols = ['CS', 'GC', 'xGC', 'A', 'xA', 'T', 'ICT', 'BPS']
+        fields = ['Clean Sheets', 'Goals Conceded', 'Expected Goals Conceded', 'Assists', 'Expected Assists', 'Threat', 'ICT Index', 'Bonus Points']
+
+    elif pos == 'MID':
+        cols = ['GS', 'xG', 'A', 'xA', 'ICT', 'S', 'BPS']
+        fields = ['Goals Scored', 'Expected Goals', 'Assists', 'Expected Assists', 'ICT Index', 'Shots', 'Bonus Points']
+
+    elif pos == 'FWD':
+        cols = ['GS', 'xG', 'xGI', 'A', 'xA', 'ICT', 'S', 'BPS']
+        fields = ['Goals Scored', 'Expected Goals', 'Expected Goal Involvement', 'Assists', 'Expected Assists', 'ICT Index', 'Shots', 'Bonus Points']
+
+    # Filter relevant data
+    data = df_player[cols].iloc[0].values.flatten().tolist()
+    data = [round(val, 2) for val in data]
+
+    # Prepare radar chart figure
+    fig, axs = grid(figheight=10, grid_key='radar', axis=False)
+    
+    # Radar setup
+    radar = Radar(fields, [0]*len(fields), [1]*len(fields), num_rings=4)
+    radar.setup_axis(ax=axs['radar'], facecolor='#2B2B2B')
+    radar.draw_circles(ax=axs['radar'], facecolor='#2B2B2B', edgecolor='white', alpha=0.4, lw=1.5)
+    
+    # Draw player data
+    radar.draw_radar(data, ax=axs['radar'], kwargs_radar={'facecolor': color, 'alpha': 0.6})
+    radar.draw_param_labels(ax=axs['radar'], color="white", fontsize=15)
+    
+    # Title and notes
+    axs['title'].text(0.02, 0.85, name.upper() + ' - ' + season[2:], fontsize=20, ha='left', color='white')
+    axs['endnote'].text(0.8, 0.5, 'CREATED BY @User', fontsize=12, color='white')
+
+    fig.set_facecolor('#2B2B2B')
+    return fig
+
+
+
+
 ##########################################################################
 def display_frame(df):
     '''display dataframe with all float columns rounded to 1 decimal place'''
@@ -371,7 +421,7 @@ else:
         loogo = get_image_sui(player1)
         st.image(loogo, width=300)  # Adjust width as needed
 
-        st.write(collated_spider_df_from_name(player1).columns)
+        st.write(collated_spider_df_from_name(player1))
 
 
 
