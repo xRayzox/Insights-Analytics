@@ -340,36 +340,42 @@ else:
         ele_cut['second_name'] + ' (' + ele_cut['team_name'] + ')'
     id_dict = dict(zip(ele_cut['id'], ele_cut['full_name']))
 
-    if len(id_dict) == 0:
-        st.write('No data to display in range.')
-    elif len(id_dict) >= 1:
-        init_rows = st.columns(1)  # Change to 1 column for player 1 only
-        player1 = init_rows[0].selectbox("Choose Player", id_dict.values(), index=0)  # Updated label
-        player1_next3 = get_player_next3(player1)
-        loogo=get_image_sui(player1)
-        st.image(
-            loogo,width=400, # Manually Adjust the width of the image as per requirement
-        )
-        for col in new_fixt_cols:
-            if player1_next3[col].dtype == 'O':
-                max_length = player1_next3[col].str.len().max()
-                if max_length > 7:
-                    player1_next3.loc[player1_next3[col].str.len() <= 7, col] = player1_next3.loc[player1_next3[col].str.len() <= 7, col].str.pad(width=max_length + 9, side='both', fillchar=' ')
+    # Creating a two-column layout
+    left_col, right_col = st.columns([3, 1])
 
-        styled_player1_next3 = player1_next3.style.map(color_fixtures, subset=new_fixt_df.columns) \
-            .format(subset=player1_next3.select_dtypes(include='float64') \
-                    .columns.values, formatter='{:.2f}')
-        init_rows[0].dataframe(styled_player1_next3)
+    # Data displayed in the left column
+    with left_col:
+        if len(id_dict) == 0:
+            st.write('No data to display in range.')
+        elif len(id_dict) >= 1:
+            # Select player
+            player1 = left_col.selectbox("Choose Player", id_dict.values(), index=0)
+            
+            # Display player dataframes
+            player1_next3 = get_player_next3(player1)
+            for col in new_fixt_cols:
+                if player1_next3[col].dtype == 'O':
+                    max_length = player1_next3[col].str.len().max()
+                    if max_length > 7:
+                        player1_next3.loc[player1_next3[col].str.len() <= 7, col] = player1_next3.loc[player1_next3[col].str.len() <= 7, col].str.pad(width=max_length + 9, side='both', fillchar=' ')
+            
+            styled_player1_next3 = player1_next3.style.map(color_fixtures, subset=new_fixt_df.columns) \
+                .format(subset=player1_next3.select_dtypes(include='float64').columns.values, formatter='{:.2f}')
+            left_col.dataframe(styled_player1_next3)
 
-        rows = st.columns(1)  # Change to 1 column for player 1 only
-        player1_df = collate_hist_df_from_name(player1)
-        player1_total_df = collate_total_df_from_name(player1)
-        player1_total_df.drop(['team', 'element_type'], axis=1, inplace=True)
-        total_fmt = {'xG': '{:.2f}', 'xA': '{:.2f}', 'xGI': '{:.2f}', 'xGC': '{:.2f}',
-                     'Price': '£{:.1f}', 'TSB%': '{:.1%}'}
-        rows[0].dataframe(player1_total_df.style.format(total_fmt))
-        rows[0].dataframe(player1_df.style.format({'Price': '£{:.1f}'}))
-        
+            # Display additional dataframes
+            player1_df = collate_hist_df_from_name(player1)
+            player1_total_df = collate_total_df_from_name(player1)
+            player1_total_df.drop(['team', 'element_type'], axis=1, inplace=True)
+            total_fmt = {'xG': '{:.2f}', 'xA': '{:.2f}', 'xGI': '{:.2f}', 'xGC': '{:.2f}',
+                        'Price': '£{:.1f}', 'TSB%': '{:.1%}'}
+            left_col.dataframe(player1_total_df.style.format(total_fmt))
+            left_col.dataframe(player1_df.style.format({'Price': '£{:.1f}'}))
+
+    # Picture displayed in the right column
+    with right_col:
+        loogo = get_image_sui(player1)
+        st.image(loogo, width=400)  # Adjust width as needed
 
 
 
