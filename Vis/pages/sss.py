@@ -262,88 +262,74 @@ def get_image_sui(player_name):
 import matplotlib.pyplot as plt
 from mplsoccer import PyPizza
 
+import matplotlib.pyplot as plt
+import numpy as np
+
 def plotter(df_player, name):
     df_player.reset_index(drop=True, inplace=True)
     element_type = df_player["element_type"].iloc[0]
 
     # Define columns, fields, and ranges based on position
     if element_type == 'GKP':
-        cols = [
-            'xGC', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'CS', 'GC', 'S'
-        ]
+        cols = ['xGC', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'CS', 'GC', 'S']
         fields = [
-            'Expected Goals Conceded', 'Influence', 'Creativity',
-            'Threat', 'ICT Index', 'Player Form', 'TSB %',
-            'Clean Sheets', 'Goals Conceded', 'Saves'
+            'Expected Goals Conceded', 'Influence', 'Creativity', 'Threat',
+            'ICT Index', 'Player Form', 'TSB %', 'Clean Sheets', 'Goals Conceded', 'Saves'
         ]
-
     elif element_type == 'DEF':
-        cols = [
-            'xGC', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'GS', 'A', 'CS', 'GC'
-        ]
+        cols = ['xGC', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'GS', 'A', 'CS', 'GC']
         fields = [
             'Expected Goals Conceded', 'Influence', 'Creativity', 'Threat',
             'ICT Index', 'Player Form', 'TSB %', 'Goals Scored', 
             'Assists', 'Clean Sheets', 'Goals Conceded'
         ]
-
     elif element_type == 'MID':
-        cols = [
-            'xG', 'xA', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'GS', 'A', 'xG', 'xA'
-        ]
+        cols = ['xG', 'xA', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'GS', 'A', 'xG', 'xA']
         fields = [
             'Expected Goals', 'Expected Assists', 'Influence', 'Creativity',
-            'Threat', 'ICT Index', 'Player Form', 'TSB %', 
-            'Goals Scored', 'Assists', 'Expected Goals', 'Expected Assists'
+            'Threat', 'ICT Index', 'Player Form', 'TSB %', 'Goals Scored',
+            'Assists', 'Expected Goals', 'Expected Assists'
         ]
-
-
     elif element_type == 'FWD':
-        cols = [
-            'xG', 'xA', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'GS', 'xG', 'A', 'xA'
-        ]
+        cols = ['xG', 'xA', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'GS', 'xG', 'A', 'xA']
         fields = [
             'Expected Goals', 'Expected Assists', 'Influence', 'Creativity',
-            'Threat', 'ICT Index', 'Player Form', 'TSB %', 
-            'Goals Scored', 'Expected Goals', 'Assists', 'Expected Assists'
+            'Threat', 'ICT Index', 'Player Form', 'TSB %', 'Goals Scored',
+            'Expected Goals', 'Assists', 'Expected Assists'
         ]
 
-    # Select relevant columns and normalize data
-    df_player = df_player[cols]
-    # Ensure all values in df_player.iloc[0] are converted to floats before applying the formula
-    values = [round(float(val), 2) for val in df_player.iloc[0]]
+    # Select relevant columns and normalize data (0-1 range for each metric)
+    values = np.array([float(df_player[col].iloc[0]) for col in cols])
+    values = (values - values.min()) / (values.max() - values.min())
 
-    # Define colors and fields display format
-    slice_colors = ["#1A78CF"] * 3 + ["#D70232"] * 3 + ["#228B22"] * 3 + ["#FF8000"] * (len(fields) - 9)
-    text_colors = ["#000000"] * len(fields)
+    # Set up radar chart
+    num_vars = len(fields)
+    angles = np.linspace(0, 2 * np.pi, num_vars, endpoint=False).tolist()
+    values = np.concatenate((values, [values[0]]))  # Repeat first value for circular plot
+    angles += angles[:1]
 
-    # Create radar plot
-    plot = PyPizza(
-        params=[field.upper() for field in fields],
-        straight_line_color="#2B2B2B",
-        background_color='#2B2B2B'
+    # Create radar chart
+    fig, ax = plt.subplots(figsize=(7, 9), subplot_kw=dict(polar=True))
+    ax.fill(angles, values, color="#1A78CF", alpha=0.25)
+    ax.plot(angles, values, color="#1A78CF", linewidth=2)
+
+    # Customize field labels
+    ax.set_yticklabels([])
+    ax.set_xticks(angles[:-1])
+    ax.set_xticklabels([field.upper() for field in fields], color="white", fontsize=9)
+
+    # Color sections for legend
+    slice_colors = ["#1A78CF", "#D70232", "#228B22", "#FF8000"]
+    ax.legend(
+        handles=[plt.Line2D([0], [0], color=color, marker='o', markersize=10) for color in slice_colors],
+        labels=["Influence", "Threat", "Creativity", "Other Metrics"],
+        loc="upper right", bbox_to_anchor=(1.1, 1.1), frameon=False
     )
 
-    fig, ax = plot.make_pizza(
-        values,
-        figsize=(7, 9),
-        slice_colors=slice_colors,
-        value_colors=text_colors,
-        value_bck_colors=slice_colors,
-        kwargs_slices=dict(edgecolor="#2B2B2B", linewidth=2),
-        kwargs_params=dict(color="white", fontsize=9, fontname='Sans Serif', va="center"),
-        kwargs_values=dict(color="white", fontsize=9, fontname='Sans Serif', bbox=dict(edgecolor="#2B2B2B", facecolor="white", boxstyle="round,pad=.2", lw=1))
-    )
-
-    
-
-    # Add colored legends
-    fig.patches.extend([
-        plt.Rectangle((0.1, 0.885), 0.023, 0.019, fill=True, color="#1A78CF", transform=fig.transFigure),
-        plt.Rectangle((0.23, 0.885), 0.023, 0.019, fill=True, color="#D70232", transform=fig.transFigure),
-        plt.Rectangle((0.37, 0.885), 0.023, 0.019, fill=True, color="#228B22", transform=fig.transFigure),
-        plt.Rectangle((0.52, 0.885), 0.023, 0.019, fill=True, color="#FF8000", transform=fig.transFigure),
-    ])
+    plt.title(f"{name} - {element_type}", color="white", size=14)
+    ax.set_facecolor("#2B2B2B")
+    fig.patch.set_facecolor("#2B2B2B")
+    plt.show()
 
     return fig
 
