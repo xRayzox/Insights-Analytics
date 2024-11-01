@@ -553,7 +553,7 @@ else:
 
         
 
-st.plotly_chart(figg)
+#st.plotly_chart(figg)
 
 
 
@@ -611,3 +611,5 @@ radar_output = radar.draw_radar(bruno_values, ax=ax,
 radar_poly, rings_outer, vertices = radar_output
 range_labels = radar.draw_range_labels(ax=ax, fontsize=15)  # draw the range labels
 param_labels = radar.draw_param_labels(ax=ax, fontsize=15)  # draw the param labels
+
+st.plotly_chart(fig)
