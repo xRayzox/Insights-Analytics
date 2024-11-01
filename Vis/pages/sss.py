@@ -282,6 +282,7 @@ def plot_position_radar(df_player, name):
     elif element_type == 'FWD':
         cols = ['GS', 'xG', 'xGI', 'A', 'xA', 'ICT', 'S', 'BPS']
         df_player = df_player[cols]
+        st.write(df_player)
         fields = ['Goals Scored', 'Expected Goals', 'Expected Goal Involvement', 'Assists', 'Expected Assists', 'ICT Index', 'Shots', 'Bonus Points']
     else:
         raise ValueError("Invalid element type. Must be one of ['GKP', 'DEF', 'MID', 'FWD']")
