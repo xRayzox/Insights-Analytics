@@ -391,18 +391,13 @@ def plot_position_radar(df_player, name):
     # Filter relevant data
     df_player = df_player.astype(float)
     data = df_player.iloc[0, :].values.flatten().tolist()
-    st.write(data)
+
     data = [round(float(x), 2) if isinstance(x, (int, float)) else x for x in data]
-
-
-    st.write(data)
     # Prepare radar chart figure parameters
     params = fields  # Use the defined fields for the radar parameters
     low = [0] * len(fields)
     high = [1] * len(fields)
     
-    # Define which statistics are lower-is-better
-    lower_is_better = []  # This list can be filled as needed
     
     # Create the radar chart
     radar = Radar(params, low, high,
@@ -411,26 +406,14 @@ def plot_position_radar(df_player, name):
                   center_circle_radius=1)  # Reduced the center circle radius
 
     # Decrease the figure height
-    fig, axs = grid(figheight=8, grid_height=0.7, title_height=0.06, endnote_height=0.025,
-                    title_space=0, endnote_space=0, grid_key='radar', axis=False)
-
-    # Plot the radar
-    radar.setup_axis(ax=axs['radar'])
-    radar.draw_circles(ax=axs['radar'], facecolor='#ffb2b2', edgecolor='#fc5f5f')
-    radar_output = radar.draw_radar(data, ax=axs['radar'],
+    fig, ax = radar.setup_axis()  # format axis as a radar
+    rings_inner = radar.draw_circles(ax=ax, facecolor='#ffb2b2', edgecolor='#fc5f5f')  # draw circles
+    radar_output = radar.draw_radar(data, ax=ax,
                                     kwargs_radar={'facecolor': '#aa65b2'},
-                                    kwargs_rings={'facecolor': '#66d8ba'})
+                                    kwargs_rings={'facecolor': '#66d8ba'})  # draw the radar
     radar_poly, rings_outer, vertices = radar_output
-
-    # Draw range and parameter labels
-    radar.draw_range_labels(ax=axs['radar'], fontsize=10)  # Slightly smaller font size for range labels
-    radar.draw_param_labels(ax=axs['radar'], fontsize=10)  # Slightly smaller font size for parameter labels
-
-    # Adding titles and endnote
-    axs['endnote'].text(0.99, 0.5, 'Inspired By: StatsBomb / Rami Moghadam', fontsize=12, ha='right', va='center')  # Smaller font size
-    axs['title'].text(0.01, 0.65, name, fontsize=20, ha='left', va='center')  # Smaller title font size
-    axs['title'].text(0.99, 0.65, 'Radar Chart', fontsize=20, ha='right', va='center')
-    axs['title'].text(0.99, 0.25, element_type, fontsize=16, ha='right', va='center', color='#B6282F')  # Smaller element type font size
+    range_labels = radar.draw_range_labels(ax=ax, fontsize=15)  # draw the range labels
+    param_labels = radar.draw_param_labels(ax=ax, fontsize=15)  # draw the param labels
 
     return fig
 
