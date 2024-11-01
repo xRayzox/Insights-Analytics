@@ -253,81 +253,73 @@ def get_image_sui(player_name):
 ######################################################
 
 
+import pandas as pd
+import matplotlib.pyplot as plt
+from mplsoccer import Radar, grid
+
 def plot_position_radar(df_player, name):
-    # Set fields and columns by position
-    #df_player = df_player.reset_index()
+    # Ensure the DataFrame is reset to avoid index issues
+    df_player = df_player.reset_index(drop=True)
     element_type = df_player["element_type"].iloc[0] 
+    
+    # Define columns and fields based on player position
     if element_type == 'GKP':
         cols = ['CS', 'GC', 'xGC', 'Pen_Save', 'S', 'YC', 'RC', 'BPS']
-        df_player=df_player[cols]
         fields = ['Clean Sheets', 'Goals Conceded', 'Expected Goals Conceded', 'Penalties Saved', 'Saves', 'Yellow Cards', 'Red Cards', 'Bonus Points']
-
     elif element_type == 'DEF':
         cols = ['CS', 'GC', 'xGC', 'A', 'xA', 'T', 'ICT', 'BPS']
-        df_player=df_player[cols]
         fields = ['Clean Sheets', 'Goals Conceded', 'Expected Goals Conceded', 'Assists', 'Expected Assists', 'Threat', 'ICT Index', 'Bonus Points']
-
     elif element_type == 'MID':
         cols = ['GS', 'xG', 'A', 'xA', 'ICT', 'S', 'BPS']
-        df_player=df_player[cols]
         fields = ['Goals Scored', 'Expected Goals', 'Assists', 'Expected Assists', 'ICT Index', 'Shots', 'Bonus Points']
-
     elif element_type == 'FWD':
         cols = ['GS', 'xG', 'xGI', 'A', 'xA', 'ICT', 'S', 'BPS']
-        df_player=df_player[cols]
         fields = ['Goals Scored', 'Expected Goals', 'Expected Goal Involvement', 'Assists', 'Expected Assists', 'ICT Index', 'Shots', 'Bonus Points']
+    else:
+        raise ValueError("Invalid element type. Must be one of ['GKP', 'DEF', 'MID', 'FWD']")
 
     # Filter relevant data
     data = df_player[cols].iloc[0].apply(pd.to_numeric, errors='coerce').values.flatten().tolist()
     data = [round(val, 2) for val in data if pd.notnull(val)]  # Round values and exclude NaN
 
-    st.write(data)
-    # Prepare radar chart figure
-    # creating the figure using the grid function from mplsoccer:
-    # parameter names of the statistics we want to show
-    params = ["npxG", "Non-Penalty Goals", "xA", "Key Passes", "Through Balls",
-            "Progressive Passes", "Shot-Creating Actions", "Goal-Creating Actions",
-            "Dribbles Completed", "Pressure Regains", "Touches In Box", "Miscontrol"]
-
-    # The lower and upper boundaries for the statistics
-    low =  [0.08, 0.0, 0.1, 1, 0.6,  4, 3, 0.3, 0.3, 2.0, 2, 0]
-    high = [0.37, 0.6, 0.6, 4, 1.2, 10, 8, 1.3, 1.5, 5.5, 5, 5]
-
-    # Add anything to this list where having a lower number is better
-    # this flips the statistic
-    lower_is_better = ['Miscontrol']
+    # Prepare radar chart figure parameters
+    params = fields  # Use the defined fields for the radar parameters
+    low = [0] * len(params)  # Define lower limits
+    high = [max(data) * 1.1 for _ in params]  # Set high limits based on the data
+    
+    # Define which statistics are lower-is-better
+    lower_is_better = []  # This list can be filled as needed
+    
+    # Create the radar chart
     radar = Radar(params, low, high,
-              lower_is_better=lower_is_better,
-              # whether to round any of the labels to integers instead of decimal places
-              round_int=[False]*len(params),
-              num_rings=4,  # the number of concentric circles (excluding center circle)
-              # if the ring_width is more than the center_circle_radius then
-              # the center circle radius will be wider than the width of the concentric circles
-              ring_width=1, center_circle_radius=1)
+                  lower_is_better=lower_is_better,
+                  round_int=[False] * len(params),
+                  num_rings=4, 
+                  ring_width=1, center_circle_radius=1)
+
     fig, axs = grid(figheight=14, grid_height=0.915, title_height=0.06, endnote_height=0.025,
                     title_space=0, endnote_space=0, grid_key='radar', axis=False)
 
-    # plot the radar
+    # Plot the radar
     radar.setup_axis(ax=axs['radar'])
-    rings_inner = radar.draw_circles(ax=axs['radar'], facecolor='#ffb2b2', edgecolor='#fc5f5f')
+    radar.draw_circles(ax=axs['radar'], facecolor='#ffb2b2', edgecolor='#fc5f5f')
     radar_output = radar.draw_radar(data, ax=axs['radar'],
                                     kwargs_radar={'facecolor': '#aa65b2'},
                                     kwargs_rings={'facecolor': '#66d8ba'})
     radar_poly, rings_outer, vertices = radar_output
-    range_labels = radar.draw_range_labels(ax=axs['radar'], fontsize=25)
-    param_labels = radar.draw_param_labels(ax=axs['radar'], fontsize=25)
 
-    # adding the endnote and title text (these axes range from 0-1, i.e. 0, 0 is the bottom left)
-    # Note we are slightly offsetting the text from the edges by 0.01 (1%, e.g. 0.99)
-    endnote_text = axs['endnote'].text(0.99, 0.5, 'Inspired By: StatsBomb / Rami Moghadam', fontsize=15, ha='right', va='center')
-    title1_text = axs['title'].text(0.01, 0.65, 'Bruno Fernandes', fontsize=25, ha='left', va='center')
-    title2_text = axs['title'].text(0.01, 0.25, 'Manchester United', fontsize=20,
-                                    ha='left', va='center', color='#B6282F')
-    title3_text = axs['title'].text(0.99, 0.65, 'Radar Chart', fontsize=25,
-                                     ha='right', va='center')
-    title4_text = axs['title'].text(0.99, 0.25, 'Midfielder', fontsize=20,
-                                    ha='right', va='center', color='#B6282F')
+    # Draw range and parameter labels
+    radar.draw_range_labels(ax=axs['radar'], fontsize=25)
+    radar.draw_param_labels(ax=axs['radar'], fontsize=25)
+
+    # Adding titles and endnote
+    axs['endnote'].text(0.99, 0.5, 'Inspired By: StatsBomb / Rami Moghadam', fontsize=15, ha='right', va='center')
+    axs['title'].text(0.01, 0.65, name, fontsize=25, ha='left', va='center')  # Use the player's name for the title
+    axs['title'].text(0.99, 0.65, 'Radar Chart', fontsize=25, ha='right', va='center')
+    axs['title'].text(0.99, 0.25, element_type, fontsize=20, ha='right', va='center', color='#B6282F')
+
     return fig
+
 
 ##########################################################################
 def display_frame(df):
