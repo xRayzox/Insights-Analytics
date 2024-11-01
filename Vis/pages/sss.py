@@ -339,7 +339,7 @@ def plot_position_radar(df_player, name):
 
     # adding the endnote and title text (these axes range from 0-1, i.e. 0, 0 is the bottom left)
     # Note we are slightly offsetting the text from the edges by 0.01 (1%, e.g. 0.99)
-    endnote_text = axs['endnote'].text(0.99, 0.5, 'Inspired By @wael_hcin',
+    endnote_text = axs['endnote'].text(0.99, 0.5, 'Created By @wael_hcin',
                                     color='#fcfcfc',
                                     fontsize=15, ha='right', va='center')
     title1_text = axs['title'].text(0.01, 0.65, name, fontsize=25,
