@@ -309,8 +309,7 @@ def plot_position_radar(df_player, name):
     # Create PyPizza plot
     baker = PyPizza(
         params=fields,
-        min_range=min_range,
-        max_range=max_range,
+        
         background_color="#222222",
         straight_line_color="#000000",
         last_circle_color="#FF5733"
