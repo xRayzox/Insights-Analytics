@@ -295,11 +295,10 @@ def plot_position_radar(df_player, name):
     
     radar.setup_axis(ax=axs['radar'], facecolor='#2B2B2B')
     rings_inner = radar.draw_circles(ax=axs['radar'], facecolor='#2B2B2B', edgecolor='white', alpha=0.4, lw=1.5)
-    color1 = st.color_picker('First Player Colour', '#1A78CF')
-    color2 = st.color_picker('Second Player Colour', '#D70232')
+
     radar_output = radar.draw_radar_compare(data, data,  ax=axs['radar'],
-                                            kwargs_radar={'facecolor': color1, 'alpha':0.55},
-                                            kwargs_compare={'facecolor': color2, 'alpha': 0.6})
+                                            kwargs_radar={'facecolor': "#1A78CF", 'alpha':0.55},
+                                            kwargs_compare={'facecolor': "#1A78CF", 'alpha': 0.6})
     radar_poly, radar_poly2, vertices1, vertices2 = radar_output
 
     return fig
