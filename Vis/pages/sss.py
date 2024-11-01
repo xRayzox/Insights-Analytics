@@ -256,7 +256,7 @@ def plot_position_radar(df_player, name):
     # Set fields and columns by position
     df_player = df_player.reset_index()
     element_type = df_player["element_type"]
-    st.error(element_type)
+    st.write(element_type)
     if element_type == 'GKP':
         cols = ['CS', 'GC', 'xGC', 'Pen_Save', 'S', 'YC', 'RC', 'BPS']
         fields = ['Clean Sheets', 'Goals Conceded', 'Expected Goals Conceded', 'Penalties Saved', 'Saves', 'Yellow Cards', 'Red Cards', 'Bonus Points']
