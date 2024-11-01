@@ -311,9 +311,8 @@ def plotter(df_player, name):
     # Select relevant columns and normalize data
     df_player = df_player[cols]
     # Ensure all values in df_player.iloc[0] are converted to floats before applying the formula
-    max_values = df_player.max()
-    values = [round((float(val) / max_val) * 100, 2) if max_val != 0 else 0 
-            for val, max_val in zip(df_player.iloc[0], max_values)]
+    values = [round(float(val), 2) for val in df_player.iloc[0]]
+
     # Define colors and fields display format
     slice_colors = ["#1A78CF"] * 3 + ["#D70232"] * 3 + ["#228B22"] * 3 + ["#FF8000"] * (len(fields) - 9)
     text_colors = ["#000000"] * len(fields)
