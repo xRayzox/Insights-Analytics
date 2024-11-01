@@ -254,7 +254,7 @@ def get_image_sui(player_name):
 
 def plot_position_radar(df_player, name):
     # Set fields and columns by position
-    df_player.resetindex()
+    df_player = df_player.reset_index()
     element_type = df_player["element_type"]
     st.error(element_type)
     if element_type == 'GKP':
