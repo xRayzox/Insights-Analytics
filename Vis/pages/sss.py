@@ -329,7 +329,7 @@ def plot_position_radar(df_player, name):
 
     # plot the radar
     radar.setup_axis(ax=axs['radar'], facecolor='#2B2B2B')
-    rings_inner = radar.draw_circles(ax=axs['radar'], facecolor='#28252c', edgecolor='#39353f', lw=1.5)
+    rings_inner = radar.draw_circles(ax=axs['radar'], facecolor='#2B2B2B', edgecolor='white', alpha=0.4, lw=1.5)
     radar_output = radar.draw_radar(data, ax=axs['radar'],
                                     kwargs_radar={'facecolor': '#d0667a'},
                                     kwargs_rings={'facecolor': '#1d537f'})
