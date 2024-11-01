@@ -450,9 +450,9 @@ else:
 
         figg=plot_position_radar(df_plot,player1)
 
-        st.plotly_chart(figg)
+        
 
-
+st.plotly_chart(figg)
 
 
 
