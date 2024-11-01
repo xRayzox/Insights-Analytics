@@ -335,7 +335,9 @@ def plotter(df_player, name):
         kwargs_slices=dict(edgecolor="#2B2B2B", linewidth=2),
         kwargs_params=dict(color="white", fontsize=9, fontname='Sans Serif', va="center"),
         kwargs_values=dict(color="white", fontsize=9, fontname='Sans Serif', bbox=dict(edgecolor="#2B2B2B", facecolor="white", boxstyle="round,pad=.2", lw=1))
+    )
 
+    
 
     # Add colored legends
     fig.patches.extend([
