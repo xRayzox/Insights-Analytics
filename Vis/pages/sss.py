@@ -18,30 +18,6 @@ from fpl_api_collection import (
 )
 from fpl_utils import define_sidebar
 
-def load_image_from_url(url):
-    """Load an image from a URL and save it to a temporary file."""
-    # Create a temporary filename
-    temp_filename = f"temp_{os.path.basename(url)}"
-    
-    try:
-        # Load image data directly into memory
-        with urllib.request.urlopen(url) as response:
-            image_data = response.read()  # Read image data into memory
-        
-        # Open the image from the BytesIO stream
-        image = Image.open(BytesIO(image_data)).convert("RGBA")
-        
-        # Save the image to a temporary file
-        image.save(temp_filename)
-        
-        return temp_filename
-    except Exception as e:
-        print(f"Error loading image from URL {url}: {e}")
-        return None
-
-
-
-
 st.set_page_config(page_title='Player Stats', page_icon=':shirt:', layout='wide')
 define_sidebar()
 st.title("Players")
@@ -53,7 +29,6 @@ ele_data = get_bootstrap_data()['elements']
 ele_df = pd.DataFrame(ele_data)
 ele_df['element_type'] = ele_df['element_type'].map(ele_types_df.set_index('id')['singular_name_short'])
 ele_df['logo_player'] = "https://resources.premierleague.com/premierleague/photos/players/250x250/p" + ele_df['code'].astype(str) + ".png"
-ele_df['logo_player_image'] = ele_df['logo_player'].apply(load_image_from_url)
 
 ele_copy = ele_df.copy()
 
