@@ -256,7 +256,10 @@ def get_image_sui(player_name):
     return image
 ######################################################
 
-
+import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
+from mplsoccer import PyPizza
+import matplotlib as mpl
 
 
 def plot_position_radar(df_player, name):
@@ -316,6 +319,52 @@ def plot_position_radar(df_player, name):
     data = [round(float(x), 2) for x in data]
     st.write(data)   
      # Prepare radar chart figure parameters
+
+
+        
+        
+    mpl.rcParams['figure.dpi'] = 600
+
+    plot = PyPizza(
+        inner_circle_size = 20,
+        params=fields,                  # list of parameters
+        straight_line_color="#2B2B2B",  # color for straight lines
+        straight_line_lw=1,             # linewidth for straight lines
+        other_circle_lw=1,              # linewidth for other circles
+        other_circle_ls= '--'  ,        # linestyle for other circles
+        last_circle_lw=1,               # linewidth of last circle
+        last_circle_ls = '-',
+        background_color = '#2B2B2B',
+        straight_line_limit = 101
+    )
+
+    fig, ax = plot.make_pizza(
+        data,                             # list of values
+        figsize=(7, 9),                     # adjust the figsize according to your need
+        blank_alpha=1 ,                     # alpha for blank-space colors
+
+        kwargs_slices=dict(
+            edgecolor="#2B2B2B", zorder=3, linewidth=2
+        ),                                  # values to be used when plotting slices
+
+        kwargs_params=dict(
+            color="white", fontsize=9, fontname = 'Sans Serif',
+            va="center"
+        ),                                  # values to be used when adding parameter labels
+
+        kwargs_values=dict(
+            color="white", fontsize=9, fontname = 'Sans Serif',
+            zorder=5,
+            bbox=dict(
+                edgecolor="#2B2B2B", facecolor="white",
+                boxstyle="round,pad=.2", lw=1
+            )
+        )                                    # values to be used when adding parameter-values labels    
+    )
+
+    return fig
+
+    """
     low = low_values
     high = high_values
 
@@ -418,7 +467,7 @@ def get_stats_spider_plot(player_name1, player_name2):
     fig.update_layout(legend=dict(x=0.33, y=1.25))
     return fig
 
-
+""" 
 
 
 
