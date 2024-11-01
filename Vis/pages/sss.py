@@ -273,6 +273,8 @@ def plot_position_radar(df_player, name):
             'ICT Index', 'Player Form', 'TSB %', 'Clean Sheets per 90', 
             'Goals Conceded per 90', 'Saves per 90'
         ]
+        min_range = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]       # Customize these as needed
+        max_range = [5, 100, 100, 100, 200, 10, 100, 1, 2, 5]  # Customize these as needed
     elif element_type == 'DEF':
         cols = ['xGC', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'A/90', 'CS/90', 'GC/90']
         fields = [
@@ -303,8 +305,8 @@ def plot_position_radar(df_player, name):
     data = [round(float(x), 2) for x in data]
 
     # Set minimum and maximum values for each attribute
-    min_range = [0] * len(data)  # Adjust if you have specific minimum values for each field
-    max_range = [1 if col.startswith('x') or col.endswith('/90') else 100 for col in cols]  # Customize if needed
+    #min_range = [0] * len(data)  # Adjust if you have specific minimum values for each field
+    #max_range = [1 if col.startswith('x') or col.endswith('/90') else 100 for col in cols]  # Customize if needed
 
     # Create PyPizza plot
     baker = PyPizza(
