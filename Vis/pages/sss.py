@@ -327,7 +327,7 @@ def plot_position_radar(df_player, name):
                   center_circle_radius=1)
 
     fig, axs = grid(figheight=14, grid_height=0.875, title_height=0.1, endnote_height=0.025,
-                title_space=0, endnote_space=0, grid_key='radar', axis=False,figsize=(20, 20))
+                title_space=0, endnote_space=0, grid_key='radar', axis=False)
 
     # plot the radar
     radar.setup_axis(ax=axs['radar'], facecolor='#2B2B2B')
