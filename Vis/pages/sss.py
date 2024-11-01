@@ -252,21 +252,22 @@ def get_image_sui(player_name):
 ######################################################
 
 
-def plot_position_radar(df_player, name, pos, season, color):
+def plot_position_radar(df_player, name):
     # Set fields and columns by position
-    if pos == 'GKP':
+    element_type = df_player['element_type']
+    if element_type == 'GKP':
         cols = ['CS', 'GC', 'xGC', 'Pen_Save', 'S', 'YC', 'RC', 'BPS']
         fields = ['Clean Sheets', 'Goals Conceded', 'Expected Goals Conceded', 'Penalties Saved', 'Saves', 'Yellow Cards', 'Red Cards', 'Bonus Points']
 
-    elif pos == 'DEF':
+    elif element_type == 'DEF':
         cols = ['CS', 'GC', 'xGC', 'A', 'xA', 'T', 'ICT', 'BPS']
         fields = ['Clean Sheets', 'Goals Conceded', 'Expected Goals Conceded', 'Assists', 'Expected Assists', 'Threat', 'ICT Index', 'Bonus Points']
 
-    elif pos == 'MID':
+    elif element_type == 'MID':
         cols = ['GS', 'xG', 'A', 'xA', 'ICT', 'S', 'BPS']
         fields = ['Goals Scored', 'Expected Goals', 'Assists', 'Expected Assists', 'ICT Index', 'Shots', 'Bonus Points']
 
-    elif pos == 'FWD':
+    elif element_type == 'FWD':
         cols = ['GS', 'xG', 'xGI', 'A', 'xA', 'ICT', 'S', 'BPS']
         fields = ['Goals Scored', 'Expected Goals', 'Expected Goal Involvement', 'Assists', 'Expected Assists', 'ICT Index', 'Shots', 'Bonus Points']
 
@@ -283,19 +284,15 @@ def plot_position_radar(df_player, name, pos, season, color):
     radar.draw_circles(ax=axs['radar'], facecolor='#2B2B2B', edgecolor='white', alpha=0.4, lw=1.5)
     
     # Draw player data
-    radar.draw_radar(data, ax=axs['radar'], kwargs_radar={'facecolor': color, 'alpha': 0.6})
+    radar.draw_radar(data, ax=axs['radar'], kwargs_radar={'facecolor': '#2B2B2B', 'alpha': 0.6})
     radar.draw_param_labels(ax=axs['radar'], color="white", fontsize=15)
     
     # Title and notes
-    axs['title'].text(0.02, 0.85, name.upper() + ' - ' + season[2:], fontsize=20, ha='left', color='white')
+    axs['title'].text(0.02, 0.85, name.upper() + ' - ' + element_type, fontsize=20, ha='left', color='white')
     axs['endnote'].text(0.8, 0.5, 'CREATED BY @User', fontsize=12, color='white')
 
     fig.set_facecolor('#2B2B2B')
     return fig
-
-
-
-
 ##########################################################################
 def display_frame(df):
     '''display dataframe with all float columns rounded to 1 decimal place'''
@@ -421,7 +418,11 @@ else:
         loogo = get_image_sui(player1)
         st.image(loogo, width=300)  # Adjust width as needed
 
-        st.write(collated_spider_df_from_name(player1))
+        df_plot=collated_spider_df_from_name(player1)
+
+        figg=plot_position_radar(df_plot,player1)
+
+        st.plotly_chart(figg)
 
 
 
