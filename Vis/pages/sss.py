@@ -401,9 +401,12 @@ def plot_position_radar(df_player, name):
     
     # Create the radar chart
     radar = Radar(params, low, high,
-                  num_rings=4, 
-                  ring_width=1, 
-                  center_circle_radius=1)  # Reduced the center circle radius
+              # whether to round any of the labels to integers instead of decimal places
+              round_int=[False]*len(params),
+              num_rings=4,  # the number of concentric circles (excluding center circle)
+              # if the ring_width is more than the center_circle_radius then
+              # the center circle radius will be wider than the width of the concentric circles
+              ring_width=1, center_circle_radius=1)
 
     # Decrease the figure height
     fig, ax = radar.setup_axis()  # format axis as a radar
