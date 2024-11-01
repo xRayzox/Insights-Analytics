@@ -286,16 +286,16 @@ def plot_position_radar(df_player, name):
                 title_space=0, endnote_space=0, grid_key='radar', axis=False)
     # Radar setup
     radar = Radar(fields, [0]*len(fields), [1]*len(fields), num_rings=4)
-    radar.setup_axis(ax=ax, facecolor='#2B2B2B')
-    radar.draw_circles(ax=ax, facecolor='#2B2B2B', edgecolor='white', alpha=0.4, lw=1.5)
+    radar.setup_axis(ax=axs, facecolor='#2B2B2B')
+    radar.draw_circles(ax=axs, facecolor='#2B2B2B', edgecolor='white', alpha=0.4, lw=1.5)
 
     # Draw player data
-    radar.draw_radar(data, ax=ax, kwargs_radar={'facecolor': '#2B2B2B', 'alpha': 0.6})
-    radar.draw_param_labels(ax=ax, color="white", fontsize=15)
+    radar.draw_radar(data, ax=axs, kwargs_radar={'facecolor': '#2B2B2B', 'alpha': 0.6})
+    radar.draw_param_labels(ax=axs, color="white", fontsize=15)
 
     # Title and notes
-    ax.text(0.02, 0.85, name.upper() + ' - ' + element_type, fontsize=20, ha='left', color='white')
-    ax.text(0.8, 0.5, 'CREATED BY @User', fontsize=12, color='white')
+    axs.text(0.02, 0.85, name.upper() + ' - ' + element_type, fontsize=20, ha='left', color='white')
+    axs.text(0.8, 0.5, 'CREATED BY @User', fontsize=12, color='white')
 
     fig.set_facecolor('#2B2B2B')
     return fig
