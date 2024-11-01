@@ -14,6 +14,7 @@ from mplsoccer import Radar, FontManager, grid
 import pandas as pd
 import matplotlib.pyplot as plt
 from mplsoccer import Radar, grid
+import io
 
 pd.set_option('future.no_silent_downcasting', True)
 # Assuming fpl_api_collection and fpl_utils are in the FPL directory
@@ -608,4 +609,18 @@ radar_poly, rings_outer, vertices = radar_output
 range_labels = radar.draw_range_labels(ax=ax, fontsize=15)  # draw the range labels
 param_labels = radar.draw_param_labels(ax=ax, fontsize=15)  # draw the param labels
 
-st.plotly_chart(fig)
+plot = st.button('Plot Comparison')
+
+
+    
+st.write(fig)
+
+b = io.BytesIO()
+fig.savefig(b, format='png', bbox_inches="tight")
+
+btn = st.download_button(
+        label="Download Plot",
+        data=b,
+        file_name= player1.replace(' ', '') + "Plot.png",
+        mime="image/png"
+)
