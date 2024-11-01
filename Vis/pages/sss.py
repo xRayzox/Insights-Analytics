@@ -374,7 +374,7 @@ else:
         player1_next3 = get_player_next3(player1)
         loogo=get_image_sui(player1)
         st.write(loogo)
-        st.image(loogo, use_column_width=True)
+        #st.image(loogo, use_column_width=True)
         st.image(
             "https://s3-us-west-2.amazonaws.com/uw-s3-cdn/wp-content/uploads/sites/6/2017/11/04133712/waterfall.jpg",
             width=400, # Manually Adjust the width of the image as per requirement
