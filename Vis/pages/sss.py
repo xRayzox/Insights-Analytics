@@ -273,8 +273,8 @@ def plot_position_radar(df_player, name):
         fields = ['Goals Scored', 'Expected Goals', 'Expected Goal Involvement', 'Assists', 'Expected Assists', 'ICT Index', 'Shots', 'Bonus Points']
 
     # Filter relevant data
-    data = df_player[cols].iloc[0].values.flatten().tolist()
-    data = [round(val, 2) for val in data]
+    data = df_player[cols].iloc[0].apply(pd.to_numeric, errors='coerce').values.flatten().tolist()
+    data = [round(val, 2) for val in data if pd.notnull(val)]  # Round values and exclude NaN
 
     # Prepare radar chart figure
     fig, axs = grid(figheight=10, grid_key='radar', axis=False)
