@@ -308,11 +308,10 @@ def plot_position_radar(df_player, name):
     # Select relevant columns
     df_player = df_player[cols]
     
-    # Normalize the data using Min-Max scaling
-    normalized_df = (df_player - df_player.min()) / (df_player.max() - df_player.min())
+    
     
     # Convert normalized data to a list
-    data = normalized_df.iloc[0, :].values.flatten().tolist()
+    data = df_player.iloc[0, :].values.flatten().tolist()
     data = [round(float(x), 2) for x in data]
 
     # Prepare radar chart figure parameters
