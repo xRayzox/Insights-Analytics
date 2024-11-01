@@ -389,6 +389,7 @@ def plot_position_radar(df_player, name):
 
     st.write(df_player)
     # Filter relevant data
+    df_player = df_player.astype(float)
     data = df_player.iloc[0, :].values.flatten().tolist()
     st.write(data)
     data = [round(float(x), 2) if isinstance(x, (int, float)) else x for x in data]
