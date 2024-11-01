@@ -264,7 +264,6 @@ from mplsoccer import Radar, grid
 def plot_position_radar(df_player, name):
     # Ensure the DataFrame is reset to avoid index issues
     df_player.reset_index()
-    st.table(df_player)
     element_type = df_player["element_type"].iloc[0] 
     
     # Define columns and fields based on player position
@@ -452,10 +451,10 @@ def plot_position_radar(df_player, name):
             'Expected Assists per 90'  
         ]
 
-    
+    st.write(df_player)
     # Filter relevant data
     data = df_player.loc[0, :].values.flatten().tolist()
-    data = [round(val, 2) for val in data if pd.notnull(val)]  # Round values and exclude NaN
+    #data = [round(val, 2) for val in data if pd.notnull(val)]  # Round values and exclude NaN
 
     st.write(data)
     # Prepare radar chart figure parameters
