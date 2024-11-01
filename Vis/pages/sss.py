@@ -329,8 +329,7 @@ def plot_position_radar(df_player, name):
 
     return fig
 
-df = ele_copy.copy()
-st.write(df)
+
 
 """
     low = [0] * len(fields)
@@ -517,7 +516,8 @@ else:
         figg=plot_position_radar(df_plot,player1)
 
         
-
+df = ele_copy.copy()
+st.write(df)
 st.write(figg)
 
 
