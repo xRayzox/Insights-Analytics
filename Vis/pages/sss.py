@@ -265,6 +265,7 @@ def plot_position_radar(df_player, name):
     # Ensure the DataFrame is reset to avoid index issues
     df_player = df_player.reset_index(drop=True)
     st.dataframe(df_player)
+    df_player.to_csv('./data/player_exemple.csv', index=True)
     element_type = df_player["element_type"].iloc[0] 
     
     # Define columns and fields based on player position
