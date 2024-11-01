@@ -313,8 +313,8 @@ def plot_position_radar(df_player, name):
     # Convert normalized data to a list
     data = df_player.iloc[0, :].values.flatten().tolist()
     data = [round(float(x), 2) for x in data]
-
-    # Prepare radar chart figure parameters
+    st.write(data)   
+     # Prepare radar chart figure parameters
     low = [0] * len(fields)
     high = [1] * len(fields)
 
