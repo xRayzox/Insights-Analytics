@@ -341,7 +341,7 @@ else:
     id_dict = dict(zip(ele_cut['id'], ele_cut['full_name']))
 
     # Creating a two-column layout
-    left_col, right_col = st.columns([3, 1])
+    left_col, right_col = st.columns([2, 3])
 
     # Data displayed in the left column
     with left_col:
