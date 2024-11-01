@@ -332,7 +332,7 @@ def plot_position_radar(df_player, name):
     radar_poly, radar_poly2, vertices1, vertices2 = radar_output
     range_labels = radar.draw_range_labels(ax=ax, fontsize=15)  # draw the range labels
     param_labels = radar.draw_param_labels(ax=ax, fontsize=15)  # draw the param labels
-    col_labels = radar.draw_param_labels(ax=axs['radar'],color="white", fontsize=18, fontname = 'Sans Serif')
+    col_labels = radar.draw_param_labels(ax=ax['radar'],color="white", fontsize=18, fontname = 'Sans Serif')
 
     rot = 360
     for i in range(len(vertices1)):
