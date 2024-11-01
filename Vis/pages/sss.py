@@ -297,7 +297,7 @@ def plot_position_radar(df_player, name):
     axs.text(0.02, 0.85, name.upper() + ' - ' + element_type, fontsize=20, ha='left', color='white')
     axs.text(0.8, 0.5, 'CREATED BY @User', fontsize=12, color='white')
 
-    fig.set_facecolor('#2B2B2B')
+    #fig.set_facecolor('#2B2B2B')
     return fig
 ##########################################################################
 def display_frame(df):
