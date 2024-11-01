@@ -260,8 +260,16 @@ def get_image_sui(player_name):
 
 
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 from mplsoccer import PyPizza
-
+import matplotlib as mpl
+def colorFader(c1,c2,mix=0): 
+    c1=np.array(mcolors.to_rgb(c1))
+    c2=np.array(mcolors.to_rgb(c2))
+    
+    mix = max(0.35, mix)
+    
+    return mcolors.to_hex((mix)*c1 + (1-mix)*c2)
 def plotter(df_player, name):
     df_player.reset_index(drop=True, inplace=True)
     element_type = df_player["element_type"].iloc[0]
@@ -312,6 +320,7 @@ def plotter(df_player, name):
     df_player = df_player[cols]
     # Ensure all values in df_player.iloc[0] are converted to floats before applying the formula
     values = df_player.iloc[0, :].values.flatten().tolist()
+    st.write(values)
     values = [round(val*100,2) for val in values]
 
     # Define colors and fields display format
