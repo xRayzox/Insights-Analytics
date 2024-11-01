@@ -313,7 +313,8 @@ def plotter(df_player, name):
 
     # Select relevant columns and normalize data
     df_player = df_player[cols]
-    values = [round((val - low) / (high - low) * 100, 2) for val, low, high in zip(df_player.iloc[0], low_values, high_values)]
+    # Ensure all values in df_player.iloc[0] are converted to floats before applying the formula
+    values = [round((float(val) - low) / (high - low) * 100, 2) for val, low, high in zip(df_player.iloc[0], low_values, high_values)]
 
     # Define colors and fields display format
     slice_colors = ["#1A78CF"] * 3 + ["#D70232"] * 3 + ["#228B22"] * 3 + ["#FF8000"] * (len(fields) - 9)
