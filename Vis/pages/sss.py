@@ -273,8 +273,7 @@ def plot_position_radar(df_player, name):
             'Threat', 'ICT Index', 'Player Form', 'TSB %',
             'Clean Sheets per 90', 'Goals Conceded per 90', 'Saves per 90'
         ]
-        low_values = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        high_values = [80, 800, 100, 200, 300, 10, 100, 1, 2, 5]  # Adjusted for realistic ranges in FPL
+    
 
     elif element_type == 'DEF':
         cols = [
@@ -317,8 +316,8 @@ def plot_position_radar(df_player, name):
     st.write(data)   
      # Prepare radar chart figure parameters
      
-    low = low_values
-    high = high_values
+    low = [0] * len(fields)
+    high = [1] * len(fields)
 
     # Create the radar chart
     radar = Radar(fields, low, high,
