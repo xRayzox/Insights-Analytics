@@ -276,7 +276,6 @@ def plotter(df_player, name):
             'Threat', 'ICT Index', 'Player Form', 'TSB %',
             'Clean Sheets', 'Goals Conceded', 'Saves'
         ]
-        low_values, high_values = [0] * 10, [80, 800, 100, 200, 300, 10, 100, 1, 2, 5]
 
     elif element_type == 'DEF':
         cols = [
@@ -287,7 +286,6 @@ def plotter(df_player, name):
             'ICT Index', 'Player Form', 'TSB %', 'Goals Scored', 
             'Assists', 'Clean Sheets', 'Goals Conceded'
         ]
-        low_values, high_values = [0] * 11, [80, 700, 150, 300, 350, 10, 100, 0.5, 0.5, 1, 2]
 
     elif element_type == 'MID':
         cols = [
@@ -298,7 +296,7 @@ def plotter(df_player, name):
             'Threat', 'ICT Index', 'Player Form', 'TSB %', 
             'Goals Scored', 'Assists', 'Expected Goals', 'Expected Assists'
         ]
-        low_values, high_values = [0] * 12, [30, 20, 700, 400, 500, 400, 10, 100, 1, 1, 1, 1]
+
 
     elif element_type == 'FWD':
         cols = [
@@ -309,13 +307,13 @@ def plotter(df_player, name):
             'Threat', 'ICT Index', 'Player Form', 'TSB %', 
             'Goals Scored', 'Expected Goals', 'Assists', 'Expected Assists'
         ]
-        low_values, high_values = [0] * 12, [40, 20, 700, 300, 500, 400, 10, 100, 1.5, 1, 1, 1]
 
     # Select relevant columns and normalize data
     df_player = df_player[cols]
     # Ensure all values in df_player.iloc[0] are converted to floats before applying the formula
-    values = [round((float(val) - low) / (high - low) * 100, 2) for val, low, high in zip(df_player.iloc[0], low_values, high_values)]
-
+    max_values = df_player.max()
+    values = [round((float(val) / max_val) * 100, 2) if max_val != 0 else 0 
+            for val, max_val in zip(df_player.iloc[0], max_values)]
     # Define colors and fields display format
     slice_colors = ["#1A78CF"] * 3 + ["#D70232"] * 3 + ["#228B22"] * 3 + ["#FF8000"] * (len(fields) - 9)
     text_colors = ["#000000"] * len(fields)
