@@ -264,7 +264,7 @@ from mplsoccer import Radar, grid
 def plot_position_radar(df_player, name):
     # Ensure the DataFrame is reset to avoid index issues
     df_player.reset_index(drop=True)
-    df_player.drop('web_name')
+    df_player.drop('web_name', axis=1, inplace=True)
     element_type = df_player["element_type"].iloc[0] 
     
     # Define columns and fields based on player position
