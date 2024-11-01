@@ -263,7 +263,6 @@ def plot_position_radar(df_player, name):
     # Ensure the DataFrame is reset to avoid index issues
     df_player.reset_index(drop=True, inplace=True)
     element_type = df_player["element_type"].iloc[0]
-
     # Define columns and fields based on player position
     if element_type == 'GKP':
         cols = [
@@ -274,6 +273,8 @@ def plot_position_radar(df_player, name):
             'Threat Score', 'ICT Index', 'Player Form', 'TSB %',
             'Clean Sheets per 90', 'Goals Conceded per 90', 'Saves per 90'
         ]
+        low_values = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] 
+        high_values = [100, 1000, 500, 2000, 100, 10, 100, 1, 1, 1]
 
     elif element_type == 'DEF':
         cols = [
@@ -294,7 +295,6 @@ def plot_position_radar(df_player, name):
             'Threat Score', 'ICT Index', 'Player Form', 'TSB %', 
             'Goals per 90', 'Assists per 90', 'Expected Goals per 90', 'Expected Assists per 90'
         ]
-
     elif element_type == 'FWD':
         cols = [
             'xG', 'xA', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'xG/90', 'A/90', 'xA/90'
@@ -304,19 +304,16 @@ def plot_position_radar(df_player, name):
             'Threat Score', 'ICT Index', 'Player Form', 'TSB %', 
             'Goals per 90', 'Expected Goals per 90', 'Assists per 90', 'Expected Assists per 90'
         ]
-
     # Select relevant columns
     df_player = df_player[cols]
-    
-    
-    
+
     # Convert normalized data to a list
     data = df_player.iloc[0, :].values.flatten().tolist()
     data = [round(float(x), 2) for x in data]
     st.write(data)   
      # Prepare radar chart figure parameters
-    low = [0] * len(fields)
-    high = [1] * len(fields)
+    low = low_values
+    high = high_values
 
     # Create the radar chart
     radar = Radar(fields, low, high,
