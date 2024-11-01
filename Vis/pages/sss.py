@@ -10,7 +10,8 @@ import base64
 from io import BytesIO
 import pandas as pd
 import matplotlib.pyplot as plt
-from mplsoccer import Radar, grid
+from mplsoccer import Radar, FontManager, grid
+
 pd.set_option('future.no_silent_downcasting', True)
 # Assuming fpl_api_collection and fpl_utils are in the FPL directory
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..', 'FPL')))
@@ -282,25 +283,50 @@ def plot_position_radar(df_player, name):
 
     st.write(data)
     # Prepare radar chart figure
-    fig, axs = grid(figheight=14, grid_height=0.875, title_height=0.1, endnote_height=0.025,
-                title_space=0, endnote_space=0, grid_key='radar', axis=False)
-    
-    low = [0] * len(fields)
-    hi = [1] * len(fields)
-    
-    radar = Radar(fields, low, hi,
-                  num_rings=4, 
-                  ring_width=1, 
-                  center_circle_radius=1)
-    
-    radar.setup_axis(ax=axs['radar'], facecolor='#2B2B2B')
-    rings_inner = radar.draw_circles(ax=axs['radar'], facecolor='#2B2B2B', edgecolor='white', alpha=0.4, lw=1.5)
+    # creating the figure using the grid function from mplsoccer:
+    # parameter names of the statistics we want to show
+    params = ["npxG", "Non-Penalty Goals", "xA", "Key Passes", "Through Balls",
+            "Progressive Passes", "Shot-Creating Actions", "Goal-Creating Actions",
+            "Dribbles Completed", "Pressure Regains", "Touches In Box", "Miscontrol"]
 
-    radar_output = radar.draw_radar_compare(data, data,  ax=axs['radar'],
-                                            kwargs_radar={'facecolor': "#1A78CF", 'alpha':0.55},
-                                            kwargs_compare={'facecolor': "#1A78CF", 'alpha': 0.6})
-    radar_poly, radar_poly2, vertices1, vertices2 = radar_output
+    # The lower and upper boundaries for the statistics
+    low =  [0.08, 0.0, 0.1, 1, 0.6,  4, 3, 0.3, 0.3, 2.0, 2, 0]
+    high = [0.37, 0.6, 0.6, 4, 1.2, 10, 8, 1.3, 1.5, 5.5, 5, 5]
 
+    # Add anything to this list where having a lower number is better
+    # this flips the statistic
+    lower_is_better = ['Miscontrol']
+    radar = Radar(params, low, high,
+              lower_is_better=lower_is_better,
+              # whether to round any of the labels to integers instead of decimal places
+              round_int=[False]*len(params),
+              num_rings=4,  # the number of concentric circles (excluding center circle)
+              # if the ring_width is more than the center_circle_radius then
+              # the center circle radius will be wider than the width of the concentric circles
+              ring_width=1, center_circle_radius=1)
+    fig, axs = grid(figheight=14, grid_height=0.915, title_height=0.06, endnote_height=0.025,
+                    title_space=0, endnote_space=0, grid_key='radar', axis=False)
+
+    # plot the radar
+    radar.setup_axis(ax=axs['radar'])
+    rings_inner = radar.draw_circles(ax=axs['radar'], facecolor='#ffb2b2', edgecolor='#fc5f5f')
+    radar_output = radar.draw_radar(data, ax=axs['radar'],
+                                    kwargs_radar={'facecolor': '#aa65b2'},
+                                    kwargs_rings={'facecolor': '#66d8ba'})
+    radar_poly, rings_outer, vertices = radar_output
+    range_labels = radar.draw_range_labels(ax=axs['radar'], fontsize=25)
+    param_labels = radar.draw_param_labels(ax=axs['radar'], fontsize=25)
+
+    # adding the endnote and title text (these axes range from 0-1, i.e. 0, 0 is the bottom left)
+    # Note we are slightly offsetting the text from the edges by 0.01 (1%, e.g. 0.99)
+    endnote_text = axs['endnote'].text(0.99, 0.5, 'Inspired By: StatsBomb / Rami Moghadam', fontsize=15, ha='right', va='center')
+    title1_text = axs['title'].text(0.01, 0.65, 'Bruno Fernandes', fontsize=25, ha='left', va='center')
+    title2_text = axs['title'].text(0.01, 0.25, 'Manchester United', fontsize=20,
+                                    ha='left', va='center', color='#B6282F')
+    title3_text = axs['title'].text(0.99, 0.65, 'Radar Chart', fontsize=25,
+                                     ha='right', va='center')
+    title4_text = axs['title'].text(0.99, 0.25, 'Midfielder', fontsize=20,
+                                    ha='right', va='center', color='#B6282F')
     return fig
 
 ##########################################################################
