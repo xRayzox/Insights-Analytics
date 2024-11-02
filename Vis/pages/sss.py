@@ -263,6 +263,7 @@ from mplsoccer import PyPizza
 def plot_position_radar(df_player, name):
     # Ensure the DataFrame is reset to avoid index issues
     df_player.reset_index(drop=True, inplace=True)
+    st.write(df_player)
     df_player['TSB%'] = df_player['TSB%'] * 100
     element_type = df_player["element_type"].iloc[0]
     df = ele_copy.copy()
@@ -391,7 +392,7 @@ def plot_position_radar(df_player, name):
         for column in columns_to_convert:
                 df_filtered[column] = df_filtered[column].astype(float)
 
-        st.write(df_filtered)
+        
         cols = ['xG', 'xA','xGI','I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'A/90','xG/90','xA/90','XGI/90']
         fields = [
             'Expected Goals', 'Expected Assists', 'Influence', 'Creativity', 
@@ -404,7 +405,7 @@ def plot_position_radar(df_player, name):
         df_filtered['xG/90'] = df_filtered['expected_goals'] / (df_filtered['minutes'] / 90)
         df_filtered['xA/90'] = df_filtered['expected_assists'] / (df_filtered['minutes'] / 90)
         df_filtered['xGI/90'] = df_filtered['expected_goal_involvements'] / (df_filtered['minutes'] / 90)
-
+        
         # Calculate maximum values for the statistics
         max_xG = float(df_filtered['expected_goals'].max())
         max_xA = float(df_filtered['expected_assists'].max())
