@@ -265,10 +265,10 @@ def plot_position_radar(df_player, name):
     df_player.reset_index(drop=True, inplace=True)
     element_type = df_player["element_type"].iloc[0]
     df = ele_copy.copy()
-    st.write(df)
     # Define column names and labels based on player position
     if element_type == 'GKP':
         df_filtered = df[df['element_type'] == element_type].copy()
+        st.write(df_filtered)
         cols = ['xGC', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'CS/90', 'GC/90', 'S/90']
         fields = [
             'Expected Goals Conceded', 'Influence', 'Creativity', 'Threat', 
