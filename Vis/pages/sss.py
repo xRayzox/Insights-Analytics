@@ -455,9 +455,10 @@ def plot_position_radar(df_player, name):
     fig, ax = baker.make_pizza(
         values=data,
         figsize=(10, 10),
-        slice_colors=["#1A78CF"],          # List of colors for individual slices
-        value_colors=["#000000"],          # List of colors for the value-text
-        value_bck_colors=["#1A78CF"]      # List of colors for the blank spaces
+        color_blank_space="same",
+        slice_colors=["#1A78CF"] * len(data),
+        value_colors=["#1A78CF"] * len(data),
+        value_bck_colors=["#1A78CF"] * len(data),
     )
 
     return fig
