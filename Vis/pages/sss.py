@@ -276,7 +276,7 @@ def plot_position_radar(df_player, name):
         ]
         for column in columns_to_convert:
             df_filtered[column] = df_filtered[column].astype(float)
-        st.write(df_filtered)
+        st.write(df_filtered.columns)
         cols = ['xGC', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'CS/90', 'GC/90', 'S/90']
         fields = [
             'Expected Goals Conceded', 'Influence', 'Creativity', 'Threat', 
@@ -293,16 +293,6 @@ def plot_position_radar(df_player, name):
         max_CS_90 = float(df_filtered['clean_sheets_per_90'].max())
         max_GC_90 = float(df_filtered['goals_conceded_per_90'].max())
         max_S_90 = float(df_filtered['saves_per_90'].max())
-        st.write("Maximum Expected Goals Conceded:", max_xGC)
-        st.write("Maximum Influence:", max_I)
-        st.write("Maximum Creativity:", max_C)
-        st.write("Maximum Threat:", max_T)
-        st.write("Maximum ICT Index:", max_ICT)
-        st.write("Maximum Form:", max_Form)
-        st.write("Maximum TSB %:", max_TSB_percent)
-        st.write("Maximum Clean Sheets per 90:", max_CS_90)
-        st.write("Maximum Goals Conceded per 90:", max_GC_90)
-        st.write("Maximum Saves per 90:", max_S_90)
 
         min_range = [0] * 10      
         max_range = [max_xGC, max_I, max_C, max_T, max_ICT, max_Form, max_TSB_percent, max_CS_90, max_GC_90, max_S_90]  # Customize these as needed
