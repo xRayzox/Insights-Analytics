@@ -457,9 +457,8 @@ def plot_position_radar(df_player, name):
         figsize=(10, 10),
         color_blank_space="same",
         slice_colors=["#1A78CF"] * len(data),
-        value_colors=["#1A78CF"] * len(data),
+        value_colors=["#000000"] * len(data),
         value_bck_colors=["#1A78CF"] * len(data),
-        blank_alpha=1
 
     )
 
