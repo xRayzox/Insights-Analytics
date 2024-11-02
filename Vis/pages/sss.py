@@ -298,10 +298,13 @@ def plot_position_radar(df_player, name):
 
         min_range = [0] * 10      
         max_range = [max_xGC, max_I, max_C, max_T, max_ICT, max_Form, max_TSB_percent, max_CS_90, max_GC_90, max_S_90]  # Customize these as needed
+    
+    
+    
     elif element_type == 'DEF':
         df_filtered = df[df['element_type'] == element_type].copy()
         columns_to_convert = [
-        'goals_conceded', 'influence', 'creativity', 
+        'expected_goals','expected_assists','goals_conceded', 'influence', 'creativity', 
         'threat', 'ict_index', 'form', 
         'selected_by_percent', 'goals_scored' ,'assists','clean_sheets_per_90', 
         'goals_conceded_per_90'
@@ -311,9 +314,9 @@ def plot_position_radar(df_player, name):
                 df_filtered[column] = df_filtered[column].astype(float)
         
         st.write(df_filtered)
-        cols = ['xGC', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'A/90', 'CS/90', 'GC/90']
+        cols = ['xG','xA','xGI', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'A/90', 'CS/90', 'GC/90']
         fields = [
-            'Goals Conceded', 'Influence', 'Creativity', 'Threat', 'ICT Index',
+            'Expected Goals','Expected Assists','Goals Conceded', 'Influence', 'Creativity', 'Threat', 'ICT Index',
             'Player Form', 'TSB %', 'Goals per 90', 'Assists per 90', 
             'Clean Sheets per 90', 'Goals Conceded per 90'
         ]
@@ -331,9 +334,11 @@ def plot_position_radar(df_player, name):
         max_GC_90 = float(df_filtered['goals_conceded_per_90'].max())
         max_G_90 = float(df_filtered['G/90'].max())
         max_A_90 = float(df_filtered['A/90'].max()) 
+        max_xG = float(df_filtered['expected_goals'].max())  # New max for expected goals
+        max_xA = float(df_filtered['expected_assists'].max())  # New max for expected assists
         
-        min_range = [0] * 11      
-        max_range = [max_xGC, max_I, max_C, max_T, max_ICT, max_Form, max_TSB_percent, max_G_90, max_A_90, max_CS_90, max_GC_90]
+        min_range = [0] * 13      
+        max_range = [max_xG,max_xA,max_xGC, max_I, max_C, max_T, max_ICT, max_Form, max_TSB_percent, max_G_90, max_A_90, max_CS_90, max_GC_90]
     elif element_type == 'MID':
             
 
