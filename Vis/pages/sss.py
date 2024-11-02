@@ -263,6 +263,7 @@ from mplsoccer import PyPizza
 def plot_position_radar(df_player, name):
     # Ensure the DataFrame is reset to avoid index issues
     df_player.reset_index(drop=True, inplace=True)
+    df_player['TSB%'] = df_player['TSB%'] * 100
     st.write(df_player)
     element_type = df_player["element_type"].iloc[0]
     df = ele_copy.copy()
@@ -352,7 +353,7 @@ def plot_position_radar(df_player, name):
 
     # Select relevant columns
     df_player = df_player[cols]
-    st.write(df_player['TSB%'])
+    st.write()
     # Convert normalized data to a list
     data = df_player.iloc[0, :].values.flatten().tolist()
     data = [round(float(x), 2) for x in data]
