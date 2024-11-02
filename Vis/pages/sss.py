@@ -377,7 +377,7 @@ def plot_position_radar(df_player, name):
         max_xGI_90 = float(df_filtered['xGI/90'].max())
         
         
-        min_range = [0] * 13      
+        min_range = [0] * 14      
         max_range = [max_xG,max_xA,max_xGI, max_I, max_C, max_T, max_ICT, max_Form, max_TSB_percent, max_G_90, max_A_90, max_xG_90, max_xA_90,max_xGI_90]
 
     elif element_type == 'FWD':
@@ -420,7 +420,7 @@ def plot_position_radar(df_player, name):
         max_xG_90 = float(df_filtered['xG/90'].max())
         max_xA_90= float(df_filtered['xA/90'].max())
         max_xGI_90 = float(df_filtered['xGI/90'].max())
-        min_range = [0] * 13      
+        min_range = [0] * 14     
         max_range = [max_xG,max_xA,max_xGI, max_I, max_C, max_T, max_ICT, max_Form, max_TSB_percent, max_G_90, max_A_90, max_xG_90, max_xA_90,max_xGI_90]
 
 
