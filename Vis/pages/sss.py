@@ -268,6 +268,14 @@ def plot_position_radar(df_player, name):
     # Define column names and labels based on player position
     if element_type == 'GKP':
         df_filtered = df[df['element_type'] == element_type].copy()
+        columns_to_convert = [
+            'expected_goals_conceded', 'influence', 'creativity', 
+            'threat', 'ict_index', 'form', 
+            'selected_by_percent', 'clean_sheets_per_90', 
+            'goals_conceded_per_90', 'saves_per_90'
+        ]
+        for column in columns_to_convert:
+            df_filtered[column] = df_filtered[column].astype(float)
         st.write(df_filtered)
         cols = ['xGC', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'CS/90', 'GC/90', 'S/90']
         fields = [
