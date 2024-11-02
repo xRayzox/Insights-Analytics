@@ -264,7 +264,6 @@ def plot_position_radar(df_player, name):
     # Ensure the DataFrame is reset to avoid index issues
     df_player.reset_index(drop=True, inplace=True)
     df_player['TSB%'] = df_player['TSB%'] * 100
-    st.write(df_player)
     element_type = df_player["element_type"].iloc[0]
     df = ele_copy.copy()
     # Define column names and labels based on player position
@@ -278,7 +277,6 @@ def plot_position_radar(df_player, name):
         ]
         for column in columns_to_convert:
             df_filtered[column] = df_filtered[column].astype(float)
-        st.write(df_filtered.columns)
         cols = ['xGC', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'CS/90', 'GC/90', 'S/90']
         fields = [
             'Expected Goals Conceded', 'Influence', 'Creativity', 'Threat', 
@@ -313,7 +311,6 @@ def plot_position_radar(df_player, name):
         for column in columns_to_convert:
                 df_filtered[column] = df_filtered[column].astype(float)
         
-        st.write(df_filtered)
         cols = ['xG','xA','xGI', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'A/90', 'CS/90', 'GC/90']
         fields = [
             'Expected Goals','Expected Assists','Goals Conceded', 'Influence', 'Creativity', 'Threat', 'ICT Index',
@@ -329,7 +326,6 @@ def plot_position_radar(df_player, name):
         max_ICT = float(df_filtered['ict_index'].max())
         max_Form = float(df_filtered['form'].max())
         max_TSB_percent = float(df_filtered['selected_by_percent'].max())
-        st.write(max_TSB_percent)
         max_CS_90 = float(df_filtered['clean_sheets_per_90'].max())
         max_GC_90 = float(df_filtered['goals_conceded_per_90'].max())
         max_G_90 = float(df_filtered['G/90'].max())
@@ -420,8 +416,6 @@ def plot_position_radar(df_player, name):
         max_xG_90 = float(df_filtered['xG/90'].max())
         max_xA_90= float(df_filtered['xA/90'].max())
         max_xGI_90 = float(df_filtered['xGI/90'].max())
-        
-        
         min_range = [0] * 13      
         max_range = [max_xG,max_xA,max_xGI, max_I, max_C, max_T, max_ICT, max_Form, max_TSB_percent, max_G_90, max_A_90, max_xG_90, max_xA_90,max_xGI_90]
 
