@@ -263,7 +263,6 @@ from mplsoccer import PyPizza
 def plot_position_radar(df_player, name):
     # Ensure the DataFrame is reset to avoid index issues
     df_player.reset_index(drop=True, inplace=True)
-    st.write(df_player)
     df_player['TSB%'] = df_player['TSB%'] * 100
     element_type = df_player["element_type"].iloc[0]
     df = ele_copy.copy()
@@ -348,7 +347,7 @@ def plot_position_radar(df_player, name):
     ]
         for column in columns_to_convert:
                 df_filtered[column] = df_filtered[column].astype(float)
-        cols = ['xG', 'xA','xGI','I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'A/90','xG/90','xA/90','XGI/90']
+        cols = ['xG','xA','xGI','I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'A/90','xG/90','xA/90','xGI/90']
         fields = [
             'Expected Goals', 'Expected Assists', 'Influence', 'Creativity', 
             'Threat', 'ICT Index', 'Player Form', 'TSB %', 'Goals per 90', 
@@ -393,7 +392,7 @@ def plot_position_radar(df_player, name):
                 df_filtered[column] = df_filtered[column].astype(float)
 
         
-        cols = ['xG', 'xA','xGI','I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'A/90','xG/90','xA/90','XGI/90']
+        cols = ['xG', 'xA','xGI','I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'A/90','xG/90','xA/90','xGI/90']
         fields = [
             'Expected Goals', 'Expected Assists', 'Influence', 'Creativity', 
             'Threat', 'ICT Index', 'Player Form', 'TSB %', 'Goals per 90', 
