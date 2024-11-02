@@ -312,8 +312,8 @@ def plot_position_radar(df_player, name):
             'Player Form', 'TSB %', 'Goals per 90', 'Assists per 90', 
             'Clean Sheets per 90', 'Goals Conceded per 90'
         ]
-        df_filtered['G/90'] = df_filtered['goals_scored'] / (df_filtered['Mins'] / 90)
-        df_filtered['A/90'] = df_filtered['assists'] / (df_filtered['Mins'] / 90)
+        df_filtered['G/90'] = df_filtered['goals_scored'] / (df_filtered['minutes'] / 90)
+        df_filtered['A/90'] = df_filtered['assists'] / (df_filtered['minutes'] / 90)
         max_xGC = float(df_filtered['expected_goals_conceded'].max())
         max_I = float(df_filtered['influence'].max())
         max_C = float(df_filtered['creativity'].max())
