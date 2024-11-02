@@ -382,7 +382,7 @@ def plot_position_radar(df_player, name):
 
     elif element_type == 'FWD':
         df_filtered = df[df['element_type'] == element_type].copy()
-        st.Write(df_filtered)
+        st.write(df_filtered)
         columns_to_convert = [
         'expected_goals','expected_assists','expected_goal_involvements', 'influence', 'creativity', 
         'threat', 'ict_index', 'form', 
