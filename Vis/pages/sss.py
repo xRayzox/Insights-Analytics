@@ -349,10 +349,11 @@ def plot_position_radar(df_player, name):
                 df_filtered[column] = df_filtered[column].astype(float)
         cols = ['xG','xA','xGI','I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'A/90','xG/90','xA/90','xGI/90']
         fields = [
-            'Expected Goals', 'Expected Assists', 'Influence', 'Creativity', 
-            'Threat', 'ICT Index', 'Player Form', 'TSB %', 'Goals per 90', 
-            'Assists per 90', 'Expected Goals per 90', 'Expected Assists per 90'
-        ]
+        'Expected Goals', 'Expected Assists', 'Expected Goal Involvements', 
+        'Influence', 'Creativity', 'Threat', 'ICT Index', 'Player Form', 
+        'TSB %', 'Goals per 90', 'Assists per 90', 
+        'Expected Goals per 90', 'Expected Assists per 90', 'Expected Goal Involvements per 90'
+    ]
 
         df_filtered['G/90'] = df_filtered['goals_scored'] / (df_filtered['minutes'] / 90)
         df_filtered['A/90'] = df_filtered['assists'] / (df_filtered['minutes'] / 90)
@@ -394,10 +395,11 @@ def plot_position_radar(df_player, name):
         
         cols = ['xG', 'xA','xGI','I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'A/90','xG/90','xA/90','xGI/90']
         fields = [
-            'Expected Goals', 'Expected Assists', 'Influence', 'Creativity', 
-            'Threat', 'ICT Index', 'Player Form', 'TSB %', 'Goals per 90', 
-            'Assists per 90', 'Expected Goals per 90', 'Expected Assists per 90'
-        ]
+        'Expected Goals', 'Expected Assists', 'Expected Goal Involvements', 
+        'Influence', 'Creativity', 'Threat', 'ICT Index', 'Player Form', 
+        'TSB %', 'Goals per 90', 'Assists per 90', 
+        'Expected Goals per 90', 'Expected Assists per 90', 'Expected Goal Involvements per 90'
+    ]
 
         df_filtered['G/90'] = df_filtered['goals_scored'] / (df_filtered['minutes'] / 90)
         df_filtered['A/90'] = df_filtered['assists'] / (df_filtered['minutes'] / 90)
@@ -430,9 +432,7 @@ def plot_position_radar(df_player, name):
     data = df_player.iloc[0, :].values.flatten().tolist()
     data = [round(float(x), 2) for x in data]
 
-    # Set minimum and maximum values for each attribute
-    #min_range = [0] * len(data)  # Adjust if you have specific minimum values for each field
-    #max_range = [1 if col.startswith('x') or col.endswith('/90') else 100 for col in cols]  # Customize if needed
+    
 
     # Create PyPizza plot
     baker = PyPizza(
