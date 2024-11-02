@@ -275,26 +275,17 @@ def plot_position_radar(df_player, name):
             'ICT Index', 'Player Form', 'TSB %', 'Clean Sheets per 90', 
             'Goals Conceded per 90', 'Saves per 90'
         ]
-        max_xGC = df_filtered['expected_goals_conceded'].max()
-        max_I = df_filtered['influence'].max()
-        max_C = df_filtered['creativity'].max()
-        max_T = df_filtered['threat'].max()
-        max_ICT = df_filtered['ict_index'].max()
-        max_Form = df_filtered['form'].max()
-        max_TSB_percent = df_filtered['selected_by_percent'].max()
-        max_CS_90 = df_filtered['clean_sheets_per_90'].max()
-        max_GC_90 = df_filtered['goals_conceded_per_90'].max()
-        max_S_90 = df_filtered['saves_per_90'].max()
-        st.write("Maximum Expected Goals Conceded:", max_xGC)
-        st.write("Maximum Influence:", max_I)
-        st.write("Maximum Creativity:", max_C)
-        st.write("Maximum Threat:", max_T)
-        st.write("Maximum ICT Index:", max_ICT)
-        st.write("Maximum Form:", max_Form)
-        st.write("Maximum TSB %:", max_TSB_percent)
-        st.write("Maximum Clean Sheets per 90:", max_CS_90)
-        st.write("Maximum Goals Conceded per 90:", max_GC_90)
-        st.write("Maximum Saves per 90:", max_S_90)
+        max_xGC = float(df_filtered['expected_goals_conceded'].max())
+        max_I = float(df_filtered['influence'].max())
+        max_C = float(df_filtered['creativity'].max())
+        max_T = float(df_filtered['threat'].max())
+        max_ICT = float(df_filtered['ict_index'].max())
+        max_Form = float(df_filtered['form'].max())
+        max_TSB_percent = float(df_filtered['selected_by_percent'].max())
+        max_CS_90 = float(df_filtered['clean_sheets_per_90'].max())
+        max_GC_90 = float(df_filtered['goals_conceded_per_90'].max())
+        max_S_90 = float(df_filtered['saves_per_90'].max())
+
 
 
         min_range = [0] * 10      
