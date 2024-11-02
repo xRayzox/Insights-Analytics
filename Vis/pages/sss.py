@@ -478,6 +478,10 @@ def plot_position_radar(df_player, name):
             )
         )                                    # values to be used when adding parameter-values labels    
     )
+    fig.text(
+        0.1, 0.97, name.replace("-"," ").upper() , size=15,
+        ha="left",color="white",fontname = 'Sans Serif'
+    )
 
     return fig
 
