@@ -282,7 +282,7 @@ def plot_position_radar(df_player, name):
         max_ICT = df_filtered['ict_index'].max()
         max_Form = df_filtered['form'].max()
         max_TSB_percent = df_filtered['selected_by_percent'].max()
-        max_CS_90 = df_filtered['clean_sheets_90'].max()
+        max_CS_90 = df_filtered['clean_sheets_per_90'].max()
         max_GC_90 = df_filtered['goals_conceded_per_90'].max()
         max_S_90 = df_filtered['save_per_90'].max()
 
