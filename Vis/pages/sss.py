@@ -334,27 +334,95 @@ def plot_position_radar(df_player, name):
         max_GC_90 = float(df_filtered['goals_conceded_per_90'].max())
         max_G_90 = float(df_filtered['G/90'].max())
         max_A_90 = float(df_filtered['A/90'].max()) 
-        max_xG = float(df_filtered['expected_goals'].max())  # New max for expected goals
-        max_xA = float(df_filtered['expected_assists'].max())  # New max for expected assists
+        max_xG = float(df_filtered['expected_goals'].max())  
+        max_xA = float(df_filtered['expected_assists'].max())  
         
         min_range = [0] * 13      
         max_range = [max_xG,max_xA,max_xGC, max_I, max_C, max_T, max_ICT, max_Form, max_TSB_percent, max_G_90, max_A_90, max_CS_90, max_GC_90]
+    
+    
     elif element_type == 'MID':
-            
-
-        cols = ['xG', 'xA', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'A/90', 'xG/90', 'xA/90']
+        columns_to_convert = [
+        'expected_goals','expected_assists','expected_goal_involvements', 'influence', 'creativity', 
+        'threat', 'ict_index', 'form', 
+        'selected_by_percent', 'goals_scored' ,'assists'
+    ]
+        for column in columns_to_convert:
+                df_filtered[column] = df_filtered[column].astype(float)
+        cols = ['xG', 'xA','xGI','I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'A/90','xG/90','xA/90','XGI/90']
         fields = [
             'Expected Goals', 'Expected Assists', 'Influence', 'Creativity', 
             'Threat', 'ICT Index', 'Player Form', 'TSB %', 'Goals per 90', 
             'Assists per 90', 'Expected Goals per 90', 'Expected Assists per 90'
         ]
+
+        df_filtered['G/90'] = df_filtered['goals_scored'] / (df_filtered['minutes'] / 90)
+        df_filtered['A/90'] = df_filtered['assists'] / (df_filtered['minutes'] / 90)
+        df_filtered['xG/90'] = df_filtered['expected_goals'] / (df_filtered['minutes'] / 90)
+        df_filtered['xA/90'] = df_filtered['expected_assists'] / (df_filtered['minutes'] / 90)
+        df_filtered['xGI/90'] = df_filtered['expected_goal_involvements'] / (df_filtered['minutes'] / 90)
+
+        # Calculate maximum values for the statistics
+        max_xG = float(df_filtered['expected_goals'].max())
+        max_xA = float(df_filtered['expected_assists'].max())
+        max_xGI = float(df_filtered['expected_goal_involvements'].max())
+        max_I = float(df_filtered['influence'].max())
+        max_C = float(df_filtered['creativity'].max())
+        max_T = float(df_filtered['threat'].max())
+        max_ICT = float(df_filtered['ict_index'].max())
+        max_Form = float(df_filtered['form'].max())
+        max_TSB_percent = float(df_filtered['selected_by_percent'].max())
+        max_G_90 = float(df_filtered['G/90'].max())
+        max_A_90= float(df_filtered['A/90'].max())
+        max_xG_90 = float(df_filtered['xG/90'].max())
+        max_xA_90= float(df_filtered['xA/90'].max())
+        max_xGI_90 = float(df_filtered['xGI/90'].max())
+        
+        
+        min_range = [0] * 13      
+        max_range = [max_xG,max_xA,max_xGI, max_I, max_C, max_T, max_ICT, max_Form, max_TSB_percent, max_G_90, max_A_90, max_xG_90, max_xA_90,max_xGI_90]
+
     elif element_type == 'FWD':
-        cols = ['xG', 'xA', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'xG/90', 'A/90', 'xA/90']
+        columns_to_convert = [
+        'expected_goals','expected_assists','expected_goal_involvements', 'influence', 'creativity', 
+        'threat', 'ict_index', 'form', 
+        'selected_by_percent', 'goals_scored' ,'assists'
+    ]
+        for column in columns_to_convert:
+                df_filtered[column] = df_filtered[column].astype(float)
+        cols = ['xG', 'xA','xGI','I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'A/90','xG/90','xA/90','XGI/90']
         fields = [
             'Expected Goals', 'Expected Assists', 'Influence', 'Creativity', 
             'Threat', 'ICT Index', 'Player Form', 'TSB %', 'Goals per 90', 
-            'Expected Goals per 90', 'Assists per 90', 'Expected Assists per 90'
+            'Assists per 90', 'Expected Goals per 90', 'Expected Assists per 90'
         ]
+
+        df_filtered['G/90'] = df_filtered['goals_scored'] / (df_filtered['minutes'] / 90)
+        df_filtered['A/90'] = df_filtered['assists'] / (df_filtered['minutes'] / 90)
+        df_filtered['xG/90'] = df_filtered['expected_goals'] / (df_filtered['minutes'] / 90)
+        df_filtered['xA/90'] = df_filtered['expected_assists'] / (df_filtered['minutes'] / 90)
+        df_filtered['xGI/90'] = df_filtered['expected_goal_involvements'] / (df_filtered['minutes'] / 90)
+
+        # Calculate maximum values for the statistics
+        max_xG = float(df_filtered['expected_goals'].max())
+        max_xA = float(df_filtered['expected_assists'].max())
+        max_xGI = float(df_filtered['expected_goal_involvements'].max())
+        max_I = float(df_filtered['influence'].max())
+        max_C = float(df_filtered['creativity'].max())
+        max_T = float(df_filtered['threat'].max())
+        max_ICT = float(df_filtered['ict_index'].max())
+        max_Form = float(df_filtered['form'].max())
+        max_TSB_percent = float(df_filtered['selected_by_percent'].max())
+        max_G_90 = float(df_filtered['G/90'].max())
+        max_A_90= float(df_filtered['A/90'].max())
+        max_xG_90 = float(df_filtered['xG/90'].max())
+        max_xA_90= float(df_filtered['xA/90'].max())
+        max_xGI_90 = float(df_filtered['xGI/90'].max())
+        
+        
+        min_range = [0] * 13      
+        max_range = [max_xG,max_xA,max_xGI, max_I, max_C, max_T, max_ICT, max_Form, max_TSB_percent, max_G_90, max_A_90, max_xG_90, max_xA_90,max_xGI_90]
+
 
     # Select relevant columns
     df_player = df_player[cols]
