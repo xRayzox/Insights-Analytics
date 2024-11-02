@@ -457,8 +457,7 @@ def plot_position_radar(df_player, name):
         figsize=(10, 10),
         slice_colors=["#1A78CF"],          # List of colors for individual slices
         value_colors=["#000000"],          # List of colors for the value-text
-        value_bck_colors=["#1A78CF"],      # List of colors for the blank spaces
-        blank_alpha=1                      # Alpha for blank-space colors
+        value_bck_colors=["#1A78CF"]      # List of colors for the blank spaces
     )
 
     return fig
