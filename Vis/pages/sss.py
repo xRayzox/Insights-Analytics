@@ -439,17 +439,16 @@ def plot_position_radar(df_player, name):
         params=fields,
         min_range=min_range,
         max_range=max_range,
-        straight_line_color="#000000",
-        last_circle_color="#FF5733",
-        inner_circle_size = 20,
         straight_line_color="#2B2B2B",  # color for straight lines
+        last_circle_color="#FF5733",
+        inner_circle_size=20,
         straight_line_lw=1,             # linewidth for straight lines
         other_circle_lw=1,              # linewidth for other circles
-        other_circle_ls= '--'  ,        # linestyle for other circles
+        other_circle_ls='--',           # linestyle for other circles
         last_circle_lw=1,               # linewidth of last circle
-        last_circle_ls = '-',
-        background_color = '#2B2B2B',
-        straight_line_limit = 101
+        last_circle_ls='-',              # linestyle for last circle
+        background_color='#2B2B2B',
+        straight_line_limit=101
     )
 
     # Plot the pizza chart
