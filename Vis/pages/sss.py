@@ -440,7 +440,7 @@ def plot_position_radar(df_player, name):
         min_range=min_range,
         max_range=max_range,
         straight_line_color="#000000",
-        last_circle_color="#FF5733"
+        last_circle_color="#FF5733",
         inner_circle_size = 20,
         straight_line_color="#2B2B2B",  # color for straight lines
         straight_line_lw=1,             # linewidth for straight lines
