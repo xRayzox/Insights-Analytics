@@ -268,14 +268,26 @@ def plot_position_radar(df_player, name):
     st.write(df)
     # Define column names and labels based on player position
     if element_type == 'GKP':
+        df_filtered = df[df['element_type'] == element_type]
         cols = ['xGC', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'CS/90', 'GC/90', 'S/90']
         fields = [
             'Expected Goals Conceded', 'Influence', 'Creativity', 'Threat', 
             'ICT Index', 'Player Form', 'TSB %', 'Clean Sheets per 90', 
             'Goals Conceded per 90', 'Saves per 90'
         ]
+        max_xGC = df_filtered['expected_goals_conceded'].max()
+        max_I = df_filtered['influence'].max()
+        max_C = df_filtered['creativity'].max()
+        max_T = df_filtered['threat'].max()
+        max_ICT = df_filtered['ict_index'].max()
+        max_Form = df_filtered['form'].max()
+        max_TSB_percent = df_filtered['selected_by_percent'].max()
+        max_CS_90 = df_filtered['clean_sheets_90'].max()
+        max_GC_90 = df_filtered['goals_conceded_per_90'].max()
+        max_S_90 = df_filtered['save_per_90'].max()
+
         min_range = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]       # Customize these as needed
-        max_range = [5, 100, 100, 100, 200, 10, 100, 1, 2, 5]  # Customize these as needed
+        max_range = [max_xGC, max_I, max_C, max_T, max_ICT, max_Form, max_TSB_percent, max_CS_90, max_GC_90, max_S_90]  # Customize these as needed
     elif element_type == 'DEF':
         cols = ['xGC', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'A/90', 'CS/90', 'GC/90']
         fields = [
