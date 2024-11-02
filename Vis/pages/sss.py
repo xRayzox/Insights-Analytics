@@ -323,10 +323,9 @@ def plot_position_radar(df_player, name):
         max_TSB_percent = float(df_filtered['selected_by_percent'].max())
         max_CS_90 = float(df_filtered['clean_sheets_per_90'].max())
         max_GC_90 = float(df_filtered['goals_conceded_per_90'].max())
-        max_S_90 = float(df_filtered['saves_per_90'].max())
         max_G_90 = float(df_filtered['G/90'].max())  # Goals per 90
         max_A_90 = float(df_filtered['A/90'].max())  # Assists per 90
-        min_range = [0] * 10      
+        min_range = [0] * 11      
         max_range = [max_xGC, max_I, max_C, max_T, max_ICT, max_Form, max_TSB_percent, max_G_90, max_A_90, max_CS_90, max_GC_90]
     elif element_type == 'MID':
             
