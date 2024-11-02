@@ -342,6 +342,7 @@ def plot_position_radar(df_player, name):
     
     
     elif element_type == 'MID':
+        df_filtered = df[df['element_type'] == element_type].copy()
         columns_to_convert = [
         'expected_goals','expected_assists','expected_goal_involvements', 'influence', 'creativity', 
         'threat', 'ict_index', 'form', 
@@ -383,6 +384,7 @@ def plot_position_radar(df_player, name):
         max_range = [max_xG,max_xA,max_xGI, max_I, max_C, max_T, max_ICT, max_Form, max_TSB_percent, max_G_90, max_A_90, max_xG_90, max_xA_90,max_xGI_90]
 
     elif element_type == 'FWD':
+        df_filtered = df[df['element_type'] == element_type].copy()
         columns_to_convert = [
         'expected_goals','expected_assists','expected_goal_involvements', 'influence', 'creativity', 
         'threat', 'ict_index', 'form', 
