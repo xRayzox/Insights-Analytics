@@ -297,13 +297,40 @@ def plot_position_radar(df_player, name):
         min_range = [0] * 10      
         max_range = [max_xGC, max_I, max_C, max_T, max_ICT, max_Form, max_TSB_percent, max_CS_90, max_GC_90, max_S_90]  # Customize these as needed
     elif element_type == 'DEF':
+        df_filtered = df[df['element_type'] == element_type].copy()
+        columns_to_convert = [
+        'goals_conceded', 'influence', 'creativity', 
+        'threat', 'ict_index', 'form', 
+        'selected_by_percent', 'goals_scored' ,'assists','clean_sheets_per_90', 
+        'goals_conceded_per_90'
+    ]
+        for column in columns_to_convert:
+                df_filtered[column] = df_filtered[column].astype(float)
         cols = ['xGC', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'A/90', 'CS/90', 'GC/90']
         fields = [
             'Goals Conceded', 'Influence', 'Creativity', 'Threat', 'ICT Index',
             'Player Form', 'TSB %', 'Goals per 90', 'Assists per 90', 
             'Clean Sheets per 90', 'Goals Conceded per 90'
         ]
+        df_filtered['G/90'] = df_filtered['goals_scored'] / (df_filtered['Mins'] / 90)
+        df_filtered['A/90'] = df_filtered['assists'] / (df_filtered['Mins'] / 90)
+        max_xGC = float(df_filtered['expected_goals_conceded'].max())
+        max_I = float(df_filtered['influence'].max())
+        max_C = float(df_filtered['creativity'].max())
+        max_T = float(df_filtered['threat'].max())
+        max_ICT = float(df_filtered['ict_index'].max())
+        max_Form = float(df_filtered['form'].max())
+        max_TSB_percent = float(df_filtered['selected_by_percent'].max())
+        max_CS_90 = float(df_filtered['clean_sheets_per_90'].max())
+        max_GC_90 = float(df_filtered['goals_conceded_per_90'].max())
+        max_S_90 = float(df_filtered['saves_per_90'].max())
+        max_G_90 = float(df_filtered['G/90'].max())  # Goals per 90
+        max_A_90 = float(df_filtered['A/90'].max())  # Assists per 90
+        min_range = [0] * 10      
+        min_range = [max_xGC, max_I, max_C, max_T, max_ICT, max_Form, max_TSB_percent, max_G_90, max_A_90, max_CS_90, max_GC_90]
     elif element_type == 'MID':
+            
+
         cols = ['xG', 'xA', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'A/90', 'xG/90', 'xA/90']
         fields = [
             'Expected Goals', 'Expected Assists', 'Influence', 'Creativity', 
