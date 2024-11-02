@@ -351,7 +351,7 @@ def plot_position_radar(df_player, name):
 
     # Select relevant columns
     df_player = df_player[cols]
-
+    st.write(df_player['TSB%'])
     # Convert normalized data to a list
     data = df_player.iloc[0, :].values.flatten().tolist()
     data = [round(float(x), 2) for x in data]
