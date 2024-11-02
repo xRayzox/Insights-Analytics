@@ -304,9 +304,11 @@ def plot_position_radar(df_player, name):
         'selected_by_percent', 'goals_scored' ,'assists','clean_sheets_per_90', 
         'goals_conceded_per_90'
     ]
-        st.write(df_filtered)
+        
         for column in columns_to_convert:
                 df_filtered[column] = df_filtered[column].astype(float)
+        
+        st.write(df_filtered)
         cols = ['xGC', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'A/90', 'CS/90', 'GC/90']
         fields = [
             'Goals Conceded', 'Influence', 'Creativity', 'Threat', 'ICT Index',
