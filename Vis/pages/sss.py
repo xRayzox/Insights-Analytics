@@ -434,6 +434,59 @@ def plot_position_radar(df_player, name):
 
     
 
+    low = min_range
+    high = max_range
+
+    # Create the radar chart
+    radar = Radar(fields, low, high,
+                  num_rings=4, 
+                  ring_width=1, 
+                  center_circle_radius=1)
+
+    fig, axs = grid(figheight=14, grid_height=0.875, title_height=0.1, endnote_height=0.025,
+                title_space=0, endnote_space=0, grid_key='radar', axis=False)
+
+    # plot the radar
+    radar.setup_axis(ax=axs['radar'], facecolor='#2B2B2B')
+    rings_inner = radar.draw_circles(ax=axs['radar'], facecolor='#2B2B2B', edgecolor='white', alpha=0.4, lw=1.5)
+    radar_output = radar.draw_radar(data, ax=axs['radar'],
+                                    kwargs_radar={'facecolor': '#d0667a'},
+                                    kwargs_rings={'facecolor': '#1d537f'})
+    radar_poly, rings_outer, vertices = radar_output
+    #range_labels = radar.draw_range_labels(ax=axs['radar'], fontsize=25, color='#fcfcfc')
+    #param_labels = radar.draw_param_labels(ax=axs['radar'], fontsize=25, color='#fcfcfc')
+    col_labels = radar.draw_param_labels(ax=axs['radar'],color="white", fontsize=18, fontname = 'Sans Serif')
+
+    rot = 360
+    for i in range(len(vertices)):
+        rot = round(360-((360/len(cols))*i),0)
+        if rot in range(90, 270):
+            rot = rot - 180 
+
+        x,y = vertices[i]
+        val = data[i]
+        axs['radar'].annotate(xy = (x,y), text = val, rotation=rot,
+                              bbox=dict(facecolor= '#d0667a', edgecolor='white', boxstyle='round', alpha=1), 
+                              color='white', fontname = 'Sans Serif', fontsize = 15)
+
+    # adding the endnote and title text (these axes range from 0-1, i.e. 0, 0 is the bottom left)
+    # Note we are slightly offsetting the text from the edges by 0.01 (1%, e.g. 0.99)
+    endnote_text = axs['endnote'].text(0.99, 0.5, 'Created By @wael_hcin',
+                                    color='#fcfcfc',
+                                    fontsize=15, ha='right', va='center')
+    title1_text = axs['title'].text(0.01, 0.65, name, fontsize=25,
+                                    ha='left', va='center', color='#e4dded')
+    title2_text = axs['title'].text(0.01, 0.25, 'Manchester United', fontsize=20,
+                                    ha='left', va='center', color='#cc2a3f')
+    title3_text = axs['title'].text(0.99, 0.65, 'Radar Chart', fontsize=25,
+                                    ha='right', va='center', color='#e4dded')
+    title4_text = axs['title'].text(0.99, 0.25, element_type, fontsize=20,
+                                    ha='right', va='center', color='#cc2a3f')
+
+    fig.set_facecolor('#121212')
+
+
+    """
     # Create PyPizza plot
     baker = PyPizza(
         params=fields,
@@ -488,59 +541,8 @@ def plot_position_radar(df_player, name):
 
 
 """
-    low = [0] * len(fields)
-    high = [1] * len(fields)
-
-    # Create the radar chart
-    radar = Radar(fields, low, high,
-                  num_rings=4, 
-                  ring_width=1, 
-                  center_circle_radius=1)
-
-    fig, axs = grid(figheight=14, grid_height=0.875, title_height=0.1, endnote_height=0.025,
-                title_space=0, endnote_space=0, grid_key='radar', axis=False)
-
-    # plot the radar
-    radar.setup_axis(ax=axs['radar'], facecolor='#2B2B2B')
-    rings_inner = radar.draw_circles(ax=axs['radar'], facecolor='#2B2B2B', edgecolor='white', alpha=0.4, lw=1.5)
-    radar_output = radar.draw_radar(data, ax=axs['radar'],
-                                    kwargs_radar={'facecolor': '#d0667a'},
-                                    kwargs_rings={'facecolor': '#1d537f'})
-    radar_poly, rings_outer, vertices = radar_output
-    #range_labels = radar.draw_range_labels(ax=axs['radar'], fontsize=25, color='#fcfcfc')
-    #param_labels = radar.draw_param_labels(ax=axs['radar'], fontsize=25, color='#fcfcfc')
-    col_labels = radar.draw_param_labels(ax=axs['radar'],color="white", fontsize=18, fontname = 'Sans Serif')
-
-    rot = 360
-    for i in range(len(vertices)):
-        rot = round(360-((360/len(cols))*i),0)
-        if rot in range(90, 270):
-            rot = rot - 180 
-
-        x,y = vertices[i]
-        val = data[i]
-        axs['radar'].annotate(xy = (x,y), text = val, rotation=rot,
-                              bbox=dict(facecolor= '#d0667a', edgecolor='white', boxstyle='round', alpha=1), 
-                              color='white', fontname = 'Sans Serif', fontsize = 15)
-
-    # adding the endnote and title text (these axes range from 0-1, i.e. 0, 0 is the bottom left)
-    # Note we are slightly offsetting the text from the edges by 0.01 (1%, e.g. 0.99)
-    endnote_text = axs['endnote'].text(0.99, 0.5, 'Created By @wael_hcin',
-                                    color='#fcfcfc',
-                                    fontsize=15, ha='right', va='center')
-    title1_text = axs['title'].text(0.01, 0.65, name, fontsize=25,
-                                    ha='left', va='center', color='#e4dded')
-    title2_text = axs['title'].text(0.01, 0.25, 'Manchester United', fontsize=20,
-                                    ha='left', va='center', color='#cc2a3f')
-    title3_text = axs['title'].text(0.99, 0.65, 'Radar Chart', fontsize=25,
-                                    ha='right', va='center', color='#e4dded')
-    title4_text = axs['title'].text(0.99, 0.25, element_type, fontsize=20,
-                                    ha='right', va='center', color='#cc2a3f')
-
-    fig.set_facecolor('#121212')
-
     return fig
-"""
+
 
 ##########################################################################
 def display_frame(df):
