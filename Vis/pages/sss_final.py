@@ -536,17 +536,50 @@ def plot_position_radar(df_player,name,df_player1,name1):
     )
 
     # add title
-    fig_text(
-        0.515, 0.99, f"<{name}> vs <{name1}>", size=17, fig=fig,
-        highlight_textprops=[{"color": '#1A78CF'}, {"color": '#EE8900'}],
+    fig.text(
+        0.515, 0.99, f"<", size=17,
+        ha="center", fontproperties=font_bold.prop, color="#000000"
+    )
+    fig.text(
+        0.515 + 0.05, 0.99, f"{name}", size=17,
+        ha="center", fontproperties=font_bold.prop, color='#1A78CF'
+    )
+    fig.text(
+        0.515 + 0.05 + 0.02, 0.99, f"> vs <", size=17,
+        ha="center", fontproperties=font_bold.prop, color="#000000"
+    )
+    fig.text(
+        0.515 + 0.05 + 0.02 + 0.05, 0.99, f"{name1}", size=17,
+        ha="center", fontproperties=font_bold.prop, color='#EE8900'
+    )
+    fig.text(
+        0.515 + 0.05 + 0.02 + 0.05 + 0.02, 0.99, f">", size=17,
         ha="center", fontproperties=font_bold.prop, color="#000000"
     )
 
-    # add subtitle
+    # Add subtitle with highlighted text
     fig.text(
-        0.515, 0.942,
-        f"<Minutes:{minutes1}|Points:{points1}>|{element_type}|<{points2}: Points|{minutes2}:Minutes>",
-        size=15,
+        0.515, 0.942, "<", size=15,
+        ha="center", fontproperties=font_bold.prop, color="#000000"
+    )
+    fig.text(
+        0.515 + 0.05, 0.942, f"Minutes: {minutes1}", size=15,
+        ha="center", fontproperties=font_bold.prop, color='#1A78CF'  # Highlighted text
+    )
+    fig.text(
+        0.515 + 0.05 + 0.12, 0.942, f"| Points: {points1}", size=15,
+        ha="center", fontproperties=font_bold.prop, color="#000000"
+    )
+    fig.text(
+        0.515 + 0.05 + 0.12 + 0.05, 0.942, f"| {element_type} | <", size=15,
+        ha="center", fontproperties=font_bold.prop, color="#000000"
+    )
+    fig.text(
+        0.515 + 0.05 + 0.12 + 0.05 + 0.05, 0.942, f"{points2}: Points", size=15,
+        ha="center", fontproperties=font_bold.prop, color='#EE8900'  # Highlighted text
+    )
+    fig.text(
+        0.515 + 0.05 + 0.12 + 0.05 + 0.05 + 0.05, 0.942, f"| {minutes2}: Minutes>", size=15,
         ha="center", fontproperties=font_bold.prop, color="#000000"
     )
 
