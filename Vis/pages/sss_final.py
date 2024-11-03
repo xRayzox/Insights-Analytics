@@ -18,28 +18,13 @@ import matplotlib.pyplot as plt
 from mplsoccer import Radar, grid
 import io
 from highlight_text import fig_text
-team_color = [
-    {"team_short": "ARS", "team_colour": "#ff0000"},
-    {"team_short": "AVL", "team_colour": "#490024"},
-    {"team_short": "BOU", "team_colour": "#d71921"},
-    {"team_short": "BRE", "team_colour": "#fd0000"},
-    {"team_short": "BRI", "team_colour": "#0000fd"},
-    {"team_short": "BUR", "team_colour": "#70193d"},
-    {"team_short": "CHE", "team_colour": "#001489"},
-    {"team_short": "CRY", "team_colour": "#0055a5"},
-    {"team_short": "EVE", "team_colour": "#003399"},
-    {"team_short": "FUL", "team_colour": "#ffffff"},
-    {"team_short": "LIV", "team_colour": "#d3171e"},
-    {"team_short": "LUT", "team_colour": "#fc5001"},
-    {"team_short": "MCI", "team_colour": "#98c5e9"},
-    {"team_short": "MUN", "team_colour": "#d20222"},
-    {"team_short": "NEW", "team_colour": "#ffffff"},
-    {"team_short": "NFO", "team_colour": "#dc0202"},
-    {"team_short": "SHU", "team_colour": "#f12228"},
-    {"team_short": "TOT", "team_colour": "#ffffff"},
-    {"team_short": "WHU", "team_colour": "#540d1a"},
-    {"team_short": "WOL", "team_colour": "#fc891c"}
-]
+
+font_normal = FontManager('https://raw.githubusercontent.com/googlefonts/roboto/main/'
+                          'src/hinted/Roboto-Regular.ttf')
+font_italic = FontManager('https://raw.githubusercontent.com/googlefonts/roboto/main/'
+                          'src/hinted/Roboto-Italic.ttf')
+font_bold = FontManager('https://raw.githubusercontent.com/google/fonts/main/apache/robotoslab/'
+                        'RobotoSlab[wght].ttf')
 pd.set_option('future.no_silent_downcasting', True)
 # Assuming fpl_api_collection and fpl_utils are in the FPL directory
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..', 'FPL')))
@@ -293,12 +278,7 @@ def get_image_Player(player_name):
 
 
 
-font_normal = FontManager('https://raw.githubusercontent.com/googlefonts/roboto/main/'
-                          'src/hinted/Roboto-Regular.ttf')
-font_italic = FontManager('https://raw.githubusercontent.com/googlefonts/roboto/main/'
-                          'src/hinted/Roboto-Italic.ttf')
-font_bold = FontManager('https://raw.githubusercontent.com/google/fonts/main/apache/robotoslab/'
-                        'RobotoSlab[wght].ttf')
+
 def plot_position_radar(df_player,name,df_player1,name1):
     # Ensure the DataFrame is reset to avoid index issues
     df_player.reset_index(drop=True, inplace=True)
@@ -329,7 +309,7 @@ def plot_position_radar(df_player,name,df_player1,name1):
         cols = ['xGC', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'CS/90', 'GC/90', 'S/90']
         fields = [
             'Expected Goals Conceded', 'Influence', 'Creativity', 'Threat', 
-            'ICT Index', 'Player Form', 'TSB %', 'Clean Sheets \nper 90', 
+            'ICT Index', 'Player Form', 'Selected %', 'Clean Sheets \nper 90', 
             'Goals Conceded \nper 90', 'Saves \nper 90'
         ]
         max_xGC = float(df_filtered['expected_goals_conceded'].max())
@@ -364,7 +344,7 @@ def plot_position_radar(df_player,name,df_player1,name1):
         fields = [
             'Expected \nGoals','Expected \nAssists','Goals \nConceded', 
             'Influence', 'Creativity', 'Threat', 'ICT Index',
-            'Player Form', 'TSB %', 'Goals \nper 90', 'Assists \nper 90', 
+            'Player Form', 'Selected %', 'Goals \nper 90', 'Assists \nper 90', 
             'Clean Sheets \nper 90', 'Goals Conceded \nper 90'
         ]
         df_filtered['G/90'] = df_filtered['goals_scored'] / (df_filtered['minutes'] / 90)
@@ -400,7 +380,7 @@ def plot_position_radar(df_player,name,df_player1,name1):
         fields = [
         'Expected \nGoals', 'Expected \nAssists', 'Expected \nGoal Involvements', 
         'Influence', 'Creativity', 'Threat', 'ICT Index', 'Player Form', 
-        'TSB %', 'Goals per 90', 'Assists \nper 90', 
+        'Selected %', 'Goals per 90', 'Assists \nper 90', 
         'Expected Goals \nper 90', 'Expected Assists \nper 90', 'Expected \nGoal Involvements \nper 90'
     ]
 
@@ -446,7 +426,7 @@ def plot_position_radar(df_player,name,df_player1,name1):
         fields = [
         'Expected \nGoals', 'Expected \nAssists', 'Expected \nGoal Involvements', 
         'Influence', 'Creativity', 'Threat', 'ICT Index', 'Player Form', 
-        'TSB %', 'Goals \nper 90', 'Assists \nper 90', 
+        'Selected %', 'Goals \nper 90', 'Assists \nper 90', 
         'Expected Goals \nper 90', 'Expected Assists \nper 90', 'Expected \nGoal Involvements \nper 90'
     ]
 
@@ -537,7 +517,7 @@ def plot_position_radar(df_player,name,df_player1,name1):
 
     # add title
     fig_text(
-        0.515, 0.99, f"<{name}> vs <{name1}>", size=17, fig=fig,
+        0.515, 0.99, f"<{name}>  vs <{name1}>", size=17, fig=fig,
         highlight_textprops=[{"color": '#1A78CF'}, {"color": '#EE8900'}],
         ha="center", fontproperties=font_bold.prop, color="#000000"
     )
