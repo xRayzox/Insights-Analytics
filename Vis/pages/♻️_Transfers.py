@@ -183,11 +183,6 @@ try:
             height=400)
     st.altair_chart(c, use_container_width=True)
 
-
-except KeyError:
-    st.write('Please wait for the Season to begin before viewing transfer data on individual players.')
-
-    
     last_gw = player_hist_df.index.max()  
 
     # Get the previous game week
@@ -204,4 +199,9 @@ except KeyError:
         # Display the result
         st.error(f"Price difference: {price_difference}")
     else:
-        st.error("Game week data is missing.")    
+        st.error("Game week data is missing.")
+
+except KeyError as e:
+    st.write(f"An error occurred: {e}. Please wait for the Season to begin before viewing transfer data on individual players.")
+    
+    
