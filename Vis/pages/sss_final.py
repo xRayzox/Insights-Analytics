@@ -543,6 +543,7 @@ else:
         with init_rows1[1]:
            st.write("")
            st.write("")
+           st.write("")
            st.dataframe(styled_player1_next3)
         
 
