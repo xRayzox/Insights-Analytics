@@ -536,10 +536,10 @@ else:
         id_dict1 = dict(zip(ele_cut_copy['id'], ele_cut_copy['full_name']))  
         if len(id_dict1) > 1:
             
-        with init_rows[1]:
-            player2 = init_rows[3].selectbox("Choose Player Two", id_dict1.values(), 1) #index=int(ind2))
-            loogo2 = get_image_Player(player2)
-            st.image(loogo2, width=150)
+            with init_rows[1]:
+                player2 = init_rows[3].selectbox("Choose Player Two", id_dict1.values(), 1) #index=int(ind2))
+                loogo2 = get_image_Player(player2)
+                st.image(loogo2, width=150)
             
       
         rows = st.columns(2)
