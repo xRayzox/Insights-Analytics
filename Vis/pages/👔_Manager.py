@@ -19,6 +19,8 @@ from PIL import Image
 from urllib.request import urlopen
 import io
 import requests
+from functools import lru_cache
+
 
 pd.set_option('future.no_silent_downcasting', True)
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'FPL')))
@@ -142,6 +144,7 @@ with col1:
 ###############################################################################################################
 session = requests.Session()
 
+@lru_cache(maxsize=100)  # Cache up to 100 images
 def load_image(image_url):
     # Fetch the image
     response = session.get(image_url, stream=True)
