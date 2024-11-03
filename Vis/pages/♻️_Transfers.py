@@ -91,7 +91,7 @@ with col1:
 with col2:
     st.write('Table ordered by biggest price increase this PL Season.')
     prices_df = write_data()
-    st.table(prices_df)
+    st.table(prices_df.reset_index())
     prices_df.set_index('Player', inplace=True)
     st.dataframe(prices_df.style.format({'Start': '£{:.1f}',
                                          'Now': '£{:.1f}',
