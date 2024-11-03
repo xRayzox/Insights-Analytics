@@ -267,6 +267,9 @@ with col5:
 
             # Create a vertical pitch with specified size
             pitch = VerticalPitch(
+                pitch_color='grass',
+                line_color='white',
+                stripe=True,
                 corner_arcs=True,
                 half=True,
                 pad_bottom=20
