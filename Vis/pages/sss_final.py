@@ -527,7 +527,7 @@ else:
         player1 = init_rows[1].selectbox("Choose Player One", id_dict.values(), index=0)
         loogo1 = get_image_Player(player1)
         with init_rows[0]:
-            st.image(loogo1,width=150)
+            st.image(loogo1,width=100)
 
         element_type_for_player1 = ele_cut.loc[ele_cut['full_name'] == player1, 'element_type'].iloc[0]
         ele_cut_copy= ele_cut[ele_cut['element_type'] == element_type_for_player1].copy()
@@ -536,7 +536,7 @@ else:
             player2 = init_rows[3].selectbox("Choose Player Two", id_dict1.values(), 1) #index=int(ind2))
             loogo2 = get_image_Player(player2)
         with init_rows[2]:
-            st.image(loogo2, width=150)
+            st.image(loogo2, width=100)
             
       
         rows = st.columns(2)
