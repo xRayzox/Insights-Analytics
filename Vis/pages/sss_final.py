@@ -523,7 +523,7 @@ else:
     if len(id_dict) == 0:
         st.write('No data to display in range.')
     elif len(id_dict) >= 1:
-        init_rows1 = st.columns(4)
+        init_rows1 = st.columns([3,2,3,2])
         init_rows2 = st.columns(2)
         player1 = init_rows2[0].selectbox("Choose Player One", id_dict.values(), index=0)
         loogo1 = get_image_Player(player1)
@@ -564,7 +564,7 @@ else:
             styled_player2_next3 = player2_next3.style.map(color_fixtures, subset=new_fixt_df.columns) \
                     .format(subset=player2_next3.select_dtypes(include='float64') \
                             .columns.values, formatter='{:.2f}')
-            init_rows1[3].dataframe(styled_player2_next3,width=30000)
+            init_rows1[3].dataframe(styled_player2_next3)
             
       
         rows = st.columns(2)
