@@ -1,4 +1,4 @@
-streamlit==1.31.0
+streamlit==1.39.0
 matplotlib
 pandas
 seaborn
@@ -16,5 +16,4 @@ highlight_text
 plottable
 reactable
 great_tables
-bokeh==2.4.3
 streamlit-aggrid
