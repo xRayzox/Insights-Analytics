@@ -274,7 +274,8 @@ def plot_position_radar(df_player):
     df_player['TSB%'] = df_player['TSB%'] * 100
     element_type = df_player["element_type"].iloc[0]
     df = ele_copy.copy()
-    df['name'] = df['first_name'] + ' ' + df['second_name']
+    df['full_name'] = df['first_name'] + ' ' + df['second_name']
+    name=df['full_name'].iloc[0]
     # Define column names and labels based on player position
     if element_type == 'GKP':
         df_filtered = df[df['element_type'] == element_type].copy()
