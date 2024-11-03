@@ -639,6 +639,6 @@ df_player1=collated_spider_df_from_name(player1)
 df_player2=collated_spider_df_from_name(player2)
 
 figg=plot_position_radar(df_player1,player1,df_player2,player2)
-clo=st.columns([3,5,3])
+clo=st.columns([1,8,1])
 with clo[1]:
     st.write(figg)
