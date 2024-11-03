@@ -455,7 +455,6 @@ def plot_position_radar(df_player, name):
     # Plot the pizza chart
     fig, ax = baker.make_pizza(
         values=data,
-        compare_values=data,
         figsize=(10, 10),
         color_blank_space="same",
         slice_colors=["#1A78CF"] * len(data),
