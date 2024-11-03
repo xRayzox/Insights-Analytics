@@ -319,7 +319,7 @@ with col5:
             def draw_players(df, positions):
                 for index, row in df.iterrows():
                     IMAGE_URL = row['code']
-                    image = st.image(url=IMAGE_URL)
+                    #image = Image.open(urlopen(IMAGE_URL))
 
 
                     pos = row['Pos']
@@ -328,7 +328,7 @@ with col5:
                     x_image = (pitch_width / (num_players + 1)) * (index % num_players + 1) if num_players > 1 else pitch_width / 2
 
                     # Draw the player image on the pitch
-                    pitch.inset_image(y_image, x_image, image, height=9, ax=ax)
+                    pitch.inset_image(y_image, x_image, IMAGE_URL, height=9, ax=ax)
 
                     # Draw player's name and GWP points
                     draw_player_details(ax, row, x_image, y_image)
