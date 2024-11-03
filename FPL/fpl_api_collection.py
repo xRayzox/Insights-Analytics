@@ -1,13 +1,12 @@
 import pandas as pd
 import requests
 from concurrent.futures import ThreadPoolExecutor
-from functools import lru_cache
 import streamlit as st
 base_url = 'https://fantasy.premierleague.com/api/'
 
 # Function to get general data (bootstrap data) from the FPL API
 
-
+@st.cache_data(persist="disk")
 def get_bootstrap_data() -> dict:
     resp = requests.get(f'{base_url}bootstrap-static/')
     if resp.status_code != 200:
@@ -16,8 +15,7 @@ def get_bootstrap_data() -> dict:
 
 # Function to get fixture data (upcoming matches)
 
-
-
+@st.cache_data(persist="disk")
 def get_fixture_data() -> dict:
     resp = requests.get(f'{base_url}fixtures/')
     if resp.status_code != 200:
@@ -26,7 +24,7 @@ def get_fixture_data() -> dict:
     
 
 
-
+@st.cache_data(persist="disk")
 def get_player_data(player_id) -> dict:
     resp = requests.get(f'{base_url}element-summary/{player_id}/')
     if resp.status_code != 200:
@@ -36,7 +34,7 @@ def get_player_data(player_id) -> dict:
 # Function to get FPL manager details
 
 
-
+@st.cache_data(persist="disk")
 def get_manager_details(manager_id) -> dict:
     resp = requests.get(f'{base_url}entry/{manager_id}/')
     if resp.status_code != 200:
@@ -45,7 +43,7 @@ def get_manager_details(manager_id) -> dict:
 
 # Function to get FPL manager's history (past seasons' performances)
 
-
+@st.cache_data(persist="disk")
 def get_manager_history_data(manager_id) -> dict:
     resp = requests.get(f'{base_url}entry/{manager_id}/history/')
     if resp.status_code != 200:
@@ -54,7 +52,7 @@ def get_manager_history_data(manager_id) -> dict:
 
 # Function to get a manager's selected team for a given gameweek (GW)
 
-
+@st.cache_data(persist="disk")
 def get_manager_team_data(manager_id, gw):
     resp = requests.get(f'{base_url}entry/{manager_id}/event/{gw}/picks/')
     if resp.status_code != 200:
