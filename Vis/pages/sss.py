@@ -281,8 +281,8 @@ def plot_position_radar(df_player, name):
         cols = ['xGC', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'CS/90', 'GC/90', 'S/90']
         fields = [
             'Expected Goals Conceded', 'Influence', 'Creativity', 'Threat', 
-            'ICT Index', 'Player Form', 'TSB %', 'Clean Sheets per 90', 
-            'Goals Conceded per 90', 'Saves per 90'
+            'ICT Index', 'Player Form', 'TSB %', 'Clean Sheets \nper 90', 
+            'Goals Conceded \nper 90', 'Saves \nper 90'
         ]
         max_xGC = float(df_filtered['expected_goals_conceded'].max())
         max_I = float(df_filtered['influence'].max())
@@ -314,9 +314,10 @@ def plot_position_radar(df_player, name):
         
         cols = ['xG','xA','xGI', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'A/90', 'CS/90', 'GC/90']
         fields = [
-            'Expected Goals','Expected Assists','Goals Conceded', 'Influence', 'Creativity', 'Threat', 'ICT Index',
-            'Player Form', 'TSB %', 'Goals per 90', 'Assists per 90', 
-            'Clean Sheets per 90', 'Goals Conceded per 90'
+            'Expected \nGoals','Expected \nAssists','Goals \nConceded', 
+            'Influence', 'Creativity', 'Threat', 'ICT Index',
+            'Player Form', 'TSB %', 'Goals \nper 90', 'Assists \nper 90', 
+            'Clean Sheets \nper 90', 'Goals Conceded \nper 90'
         ]
         df_filtered['G/90'] = df_filtered['goals_scored'] / (df_filtered['minutes'] / 90)
         df_filtered['A/90'] = df_filtered['assists'] / (df_filtered['minutes'] / 90)
@@ -349,10 +350,10 @@ def plot_position_radar(df_player, name):
                 df_filtered[column] = df_filtered[column].astype(float)
         cols = ['xG','xA','xGI','I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'A/90','xG/90','xA/90','xGI/90']
         fields = [
-        'Expected Goals', 'Expected Assists', 'Expected Goal Involvements', 
+        'Expected \nGoals', 'Expected \nAssists', 'Expected \nGoal Involvements', 
         'Influence', 'Creativity', 'Threat', 'ICT Index', 'Player Form', 
-        'TSB %', 'Goals per 90', 'Assists per 90', 
-        'Expected Goals per 90', 'Expected Assists per 90', 'Expected Goal Involvements per 90'
+        'TSB %', 'Goals per 90', 'Assists \nper 90', 
+        'Expected Goals \nper 90', 'Expected Assists \nper 90', 'Expected \nGoal Involvements \nper 90'
     ]
 
         df_filtered['G/90'] = df_filtered['goals_scored'] / (df_filtered['minutes'] / 90)
@@ -395,10 +396,10 @@ def plot_position_radar(df_player, name):
         
         cols = ['xG', 'xA','xGI','I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'A/90','xG/90','xA/90','xGI/90']
         fields = [
-        'Expected Goals', 'Expected Assists', 'Expected Goal Involvements', 
+        'Expected \nGoals', 'Expected \nAssists', 'Expected \nGoal Involvements', 
         'Influence', 'Creativity', 'Threat', 'ICT Index', 'Player Form', 
-        'TSB %', 'Goals per 90', 'Assists per 90', 
-        'Expected Goals per 90', 'Expected Assists per 90', 'Expected Goal Involvements per 90'
+        'TSB %', 'Goals \nper 90', 'Assists \nper 90', 
+        'Expected Goals \nper 90', 'Expected Assists vper 90', 'Expected \nGoal Involvements \nper 90'
     ]
 
         df_filtered['G/90'] = df_filtered['goals_scored'] / (df_filtered['minutes'] / 90)
@@ -463,7 +464,11 @@ def plot_position_radar(df_player, name):
     kwargs_slices=dict(
             edgecolor="#2B2B2B", zorder=3, linewidth=2
         ),                                  # values to be used when plotting slices
-        
+        kwargs_params=dict(
+            color="white", fontsize=9, fontname = 'Sans Serif',
+            va="center"
+        ),                                  # values to be used when adding parameter labels
+
         kwargs_values=dict(
             color="white", fontsize=9, fontname = 'Sans Serif',
             zorder=5,
