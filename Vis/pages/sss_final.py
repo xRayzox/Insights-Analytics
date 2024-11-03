@@ -544,7 +544,7 @@ else:
         player1_df = collate_hist_df_from_name(player1)
         player1_total_df = collate_total_df_from_name(player1)
         player1_total_df.drop(['team', 'element_type'], axis=1, inplace=True)
-        rows[0].dataframe(player1_df.style.format({'Price': '£{:.1f}'}))
+        rows[0].dataframe(player1_df.style.format({'Price': '£{:.1f}'}), height=300)
 
         
         if len(id_dict) > 1:
