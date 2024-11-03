@@ -523,7 +523,7 @@ else:
     if len(id_dict) == 0:
         st.write('No data to display in range.')
     elif len(id_dict) >= 1:
-        init_rows1 = st.columns([3,2,3,2])
+        init_rows1 = st.columns([3,5,3,5])
         init_rows2 = st.columns(2)
         player1 = init_rows2[0].selectbox("Choose Player One", id_dict.values(), index=0)
         loogo1 = get_image_Player(player1)
