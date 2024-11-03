@@ -188,6 +188,7 @@ with col5:
             
             # Pull GW data for each player
             gw_players_list = manager_team_df['element'].tolist()
+            st.write(gw_players_list)
             pts_list = []
             for player_id in gw_players_list:
                 test = pd.DataFrame(get_player_data(player_id)['history'])
