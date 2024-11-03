@@ -147,7 +147,7 @@ session = requests.Session()
 # Cache for loaded images
 image_cache = {}
 
-st.write(image_cache)
+
 @lru_cache(maxsize=100)  # Cache up to 100 images
 def load_image(url):
     """Load an image from a URL and cache it."""
@@ -525,3 +525,4 @@ else:
         st.write(f'Error retrieving data: {e}. Please try again.')
     except Exception as e:
         st.write(f'An unexpected error occurred: {e}. Please try again.')
+st.write(image_cache)
