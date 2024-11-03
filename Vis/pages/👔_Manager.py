@@ -319,7 +319,7 @@ with col5:
             def draw_players(df, positions):
                 for index, row in df.iterrows():
                     IMAGE_URL = row['code']
-                    image = Image.open(urlopen(IMAGE_URL))
+                    image = st.image(url=IMAGE_URL)
 
 
                     pos = row['Pos']
