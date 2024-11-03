@@ -306,10 +306,12 @@ def plot_position_radar(df_player,name,df_player1,name1):
 
     st.write(df_player)
     element_type = df_player["element_type"].iloc[0]
-
+    minutes1=df_player["Mins"].iloc[0]
+    points1=df_player["Pts"].iloc[0]
     df_player1.reset_index(drop=True, inplace=True)
     df_player1['TSB%'] = df_player1['TSB%'] * 100
-    
+    minutes2=df_player1["Mins"].iloc[0]
+    points2=df_player1["Pts"].iloc[0]
     df = ele_copy.copy()
  
     # Define column names and labels based on player position
@@ -543,8 +545,9 @@ def plot_position_radar(df_player,name,df_player1,name1):
     # add subtitle
     fig.text(
         0.515, 0.942,
-        "Percentile Rank vs Top-Five League Forwards | Season 2020-21",
+        f"<Minutes:{minutes1}|Points:{points1}>|{element_type}|<{points2}: Points|{minutes2}:Minutes>",
         size=15,
+        highlight_textprops=[{"color": '#1A78CF'}, {"color": '#EE8900'}],
         ha="center", fontproperties=font_bold.prop, color="#000000"
     )
 
