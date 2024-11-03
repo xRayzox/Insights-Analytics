@@ -517,7 +517,6 @@ else:
     ele_cut.sort_values('price', ascending=False, inplace=True)
     ele_cut['full_name'] = ele_cut['first_name'] + ' ' + \
         ele_cut['second_name'] + ' (' + ele_cut['team_name'] + ')'
-    st.write(ele_cut)
     id_dict = dict(zip(ele_cut['id'], ele_cut['full_name']))
     
     
@@ -538,8 +537,12 @@ else:
                 .format(subset=player1_next3.select_dtypes(include='float64') \
                         .columns.values, formatter='{:.2f}')
         init_rows[1].dataframe(styled_player1_next3)  
-        if len(id_dict) > 1:
 
+        element_type_for_player1 = ele_cut.loc[ele_cut['full_name'] == player1, 'element_type'].values
+        st.write(element_type_for_player1)
+        #id_dict = dict(zip(ele_cut['id'], ele_cut['full_name']))
+        if len(id_dict) > 1:
+               
             player2 = init_rows[2].selectbox("Choose Player Two", id_dict.values(), 1) #index=int(ind2))
             player2_next3 = get_player_next3(player2)
             for col in new_fixt_cols:
