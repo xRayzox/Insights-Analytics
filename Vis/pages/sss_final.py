@@ -308,8 +308,16 @@ def plot_position_radar(df_player,name,df_player1,name1):
     df_player1['TSB%'] = df_player1['TSB%'] * 100
     
     df = ele_copy.copy()
-    st.write(df)
-    
+    df['full_name'] = df['first_name'] + ' ' + \
+        df['second_name'] + ' (' + df['team_name'] + ')' 
+    team_color_dict = {team['team_short']: team['team_colour'] for team in team_color}
+
+    df['team_colour'] = df['team_name'].map(team_color_dict)
+
+
+    team_color1 = df.loc[df['full_name'] == name, 'team_colour'].values[0] if not df.loc[df['full_name'] == name, 'team_colour'].empty else None
+    team_color2 = df.loc[df['full_name'] == name1, 'team_colour'].values[0] if not df.loc[df['full_name'] == name1, 'team_colour'].empty else None
+    st.write(team_color1)
     # Define column names and labels based on player position
     if element_type == 'GKP':
         df_filtered = df[df['element_type'] == element_type].copy()
