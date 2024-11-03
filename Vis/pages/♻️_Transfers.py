@@ -188,18 +188,7 @@ try:
     # Get the previous game week
     previous_gw = last_gw - 1  
 
-    # Check if both game weeks exist in the DataFrame
-    if last_gw in player_hist_df.index and previous_gw in player_hist_df.index:
-        price_last_gw = player_hist_df.loc[last_gw, 'price']
-        price_previous_gw = player_hist_df.loc[previous_gw, 'price']
-
-        # Calculate the difference in price between the two game weeks
-        price_difference = price_last_gw - price_previous_gw
-
-        # Display the result
-        st.error(f"Price difference: {price_difference}")
-    else:
-        st.error("Game week data is missing.")
+    st.write(previous_gw)
 
 except KeyError as e:
     st.write(f"An error occurred: {e}. Please wait for the Season to begin before viewing transfer data on individual players.")
