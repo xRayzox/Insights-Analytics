@@ -200,9 +200,10 @@ with col5:
                     test_new = pd.DataFrame([[player_id, 'BLANK', 0, fpl_gw]], columns=pl_cols)
 
                 pts_list.append(test_new)
-
-            st.table(pts_list)
+                
+            
             pts_df = pd.concat(pts_list)
+            st.write(pts_df)
             manager_team_df = manager_team_df.merge(pts_df, how='left', on='element')
 
             # Calculate total points based on multiplier and captaincy
