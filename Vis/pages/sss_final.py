@@ -503,16 +503,16 @@ def plot_position_radar(df_player,name,df_player1,name1):
                 edgecolor="#000000", facecolor="cornflowerblue",
                 boxstyle="round,pad=0.2", lw=1
             )
-        ),                          # values to be used when adding parameter-values labels
+        ),                       
         kwargs_compare_values=dict(
             color="#000000", fontsize=12, fontproperties=font_normal.prop, zorder=3,
             bbox=dict(edgecolor="#000000", facecolor="#FF9300", boxstyle="round,pad=0.2", lw=1)
-        ),                          # values to be used when adding parameter-values labels
+        ),                    
     )
 
     # add title
     fig_text(
-        0.515, 0.99, "<Robert Lewandowski> vs <Mohamed Salah>", size=17, fig=fig,
+        0.515, 0.99, f"{player1} vs {player2}", size=17, fig=fig,
         highlight_textprops=[{"color": '#1A78CF'}, {"color": '#EE8900'}],
         ha="center", fontproperties=font_bold.prop, color="#000000"
     )
