@@ -55,8 +55,8 @@ ele_df = pd.DataFrame(ele_data)
 
 # Map element types and teams
 ele_df['element_type'] = ele_df['element_type'].map(ele_types_df.set_index('id')['singular_name_short'])
-ele_df['code'] = ele_df.apply(lambda row: f"resources.premierleague.com/premierleague/photos/players/250x250/p{row['code']}.png" 
-                              if row['element_type'] == 'GKP' else f"resources.premierleague.com/premierleague/photos/players/250x250/p{row['code']}.png", axis=1)
+ele_df['code'] = ele_df.apply(lambda row: f"https://resources.premierleague.com/premierleague/photos/players/250x250/p{row['code']}.png" 
+                              if row['element_type'] == 'GKP' else f"https://resources.premierleague.com/premierleague/photos/players/250x250/p{row['code']}.png", axis=1)
 ele_df['team'] = ele_df['team'].map(teams_df.set_index('id')['short_name'])
 
 col1, col2 = st.columns([10, 3])
