@@ -133,10 +133,10 @@ def collate_hist_df_from_name(ele_df, player_name):
     p_df = p_df.iloc[:, [p_df.columns.get_loc(col) for col in col_order]]
     p_df['Price'] = p_df['Price']/10
     new_df = pd.DataFrame(data = {'GW': [(p_df['GW'].max() + 1)],
-                           'Price': [player_df['Price'][0]],
-                           'Tran_In': [player_df['T_In'][0]],
-                           'Tran_Out': [player_df['T_Out'][0]],
-                           'SB': [p_df['SB'].iloc[-1] + player_df['T_In'][0] - player_df['T_Out'][0]]})
+                           'Price': [player_df['Price'].iloc[0]],
+                           'Tran_In': [player_df['T_In'].iloc[0]],
+                           'Tran_Out': [player_df['T_Out'].iloc[0]],
+                           'SB': [p_df['SB'].iloc[-1] + player_df['T_In'].iloc[0] - player_df['T_Out'].iloc[0]]})
     p_df = pd.concat([p_df, new_df])
     # map opponent teams
     p_df['vs'] = p_df['vs'].map(teams_df.set_index('id')['short_name'])
