@@ -345,7 +345,7 @@ with col5:
 
                     # Draw player's name and GWP points
                     draw_player_details(ax, row, x_image, y_image)
-            @st.cache_data()
+            
             # Function to draw player details
             def draw_player_details(ax, row, x_image, y_image):
                 player_name = row.Player  # Access using attribute-style access
@@ -412,7 +412,7 @@ with col5:
             # Set the total number of bench slots
             bench_slots = 4
             slot_width = bench_width / bench_slots
-            @st.cache_data()
+            
             # Function to draw bench players
             def draw_bench_players(df_bench,ax,pitch):
                 for i, row in enumerate(df_bench.itertuples()):
