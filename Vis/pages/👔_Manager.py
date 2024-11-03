@@ -15,6 +15,10 @@ import random
 from matplotlib.patches import FancyBboxPatch
 from matplotlib.textpath import TextPath
 from PIL import Image, ImageDraw, ImageOps
+from PIL import Image
+from urllib.request import urlopen
+import io
+import requests
 
 pd.set_option('future.no_silent_downcasting', True)
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'FPL')))
@@ -136,7 +140,15 @@ with col1:
         except ValueError:
             st.write('Please enter a valid FPL ID.')
 ###############################################################################################################
+session = requests.Session()
 
+def load_image(image_url):
+    # Fetch the image
+    response = session.get(image_url, stream=True)
+    response.raise_for_status()  # Raise an error for bad responses
+    image_data = io.BytesIO(response.content)  # Use BytesIO to handle the image data
+    image = Image.open(image_data)  # Open the image with Pillow
+    return image
 
 
 ###############################################################################################################
@@ -319,7 +331,8 @@ with col5:
             def draw_players(df, positions):
                 for index, row in df.iterrows():
                     IMAGE_URL = row['code']
-                    image = urlopen(IMAGE_URL)
+                    image = load_image(IMAGE_URL)
+
 
 
                     pos = row['Pos']
