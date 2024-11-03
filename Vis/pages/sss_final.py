@@ -551,7 +551,7 @@ else:
             player2_df = collate_hist_df_from_name(player2)
             player2_total_df = collate_total_df_from_name(player2)
             player2_total_df.drop(['team', 'element_type'], axis=1, inplace=True)
-            rows[1].dataframe(player2_df.style.format({'Price': '£{:.1f}'}))
+            rows[1].dataframe(player2_df.style.format({'Price': '£{:.1f}'}),height=150)
 
 
         
