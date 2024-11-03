@@ -188,7 +188,7 @@ with col5:
             
             # Pull GW data for each player
             gw_players_list = manager_team_df['element'].tolist()
-            st.write(gw_players_list)
+            
             pts_list = []
             for player_id in gw_players_list:
                 test = pd.DataFrame(get_player_data(player_id)['history'])
@@ -200,7 +200,7 @@ with col5:
                     test_new = pd.DataFrame([[player_id, 'BLANK', 0, fpl_gw]], columns=pl_cols)
 
                 pts_list.append(test_new)
-
+            st.write(pts_list)
             pts_df = pd.concat(pts_list)
             manager_team_df = manager_team_df.merge(pts_df, how='left', on='element')
 
