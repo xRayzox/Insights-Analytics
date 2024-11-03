@@ -308,16 +308,7 @@ def plot_position_radar(df_player,name,df_player1,name1):
     df_player1['TSB%'] = df_player1['TSB%'] * 100
     
     df = ele_copy.copy()
-    df['full_name'] = df['first_name'] + ' ' + \
-        df['second_name'] + ' (' + df['team_name'] + ')' 
-    team_color_dict = {team['team_short']: team['team_colour'] for team in team_color}
-
-    df['team_colour'] = df['team_name'].map(team_color_dict)
-
-
-    team_color1 = df.loc[df['full_name'] == name, 'team_colour'].values[0] if not df.loc[df['full_name'] == name, 'team_colour'].empty else None
-    team_color2 = df.loc[df['full_name'] == name1, 'team_colour'].values[0] if not df.loc[df['full_name'] == name1, 'team_colour'].empty else None
-    
+ 
     # Define column names and labels based on player position
     if element_type == 'GKP':
         df_filtered = df[df['element_type'] == element_type].copy()
@@ -514,11 +505,11 @@ def plot_position_radar(df_player,name,df_player1,name1):
         compare_values=data1,    # comparison values
         figsize=(8, 8),             # adjust figsize according to your need
         kwargs_slices=dict(
-            facecolor=team_color1, edgecolor="#222222",
+            facecolor="#1A78CF", edgecolor="#222222",
             zorder=2, linewidth=1
         ),                          # values to be used when plotting slices
         kwargs_compare=dict(
-            facecolor=team_color2, edgecolor="#222222",
+            facecolor="#FF9300", edgecolor="#222222",
             zorder=2, linewidth=1,
         ),
         kwargs_params=dict(
@@ -529,20 +520,20 @@ def plot_position_radar(df_player,name,df_player1,name1):
             color="#000000", fontsize=12,
             fontproperties=font_normal.prop, zorder=3,
             bbox=dict(
-                edgecolor="#000000", facecolor=team_color1,
+                edgecolor="#000000", facecolor="cornflowerblue",
                 boxstyle="round,pad=0.2", lw=1
             )
         ),                       
         kwargs_compare_values=dict(
             color="#000000", fontsize=12, fontproperties=font_normal.prop, zorder=3,
-            bbox=dict(edgecolor="#000000", facecolor=team_color2, boxstyle="round,pad=0.2", lw=1)
+            bbox=dict(edgecolor="#000000", facecolor="#FF9300", boxstyle="round,pad=0.2", lw=1)
         ),                    
     )
 
     # add title
     fig_text(
         0.515, 0.99, f"<{name}> vs <{name1}>", size=17, fig=fig,
-        highlight_textprops=[{"color": team_color1}, {"color": team_color2}],
+        highlight_textprops=[{"color": '#1A78CF'}, {"color": '#EE8900'}],
         ha="center", fontproperties=font_bold.prop, color="#000000"
     )
 
