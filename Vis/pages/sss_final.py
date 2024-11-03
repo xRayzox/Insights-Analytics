@@ -523,29 +523,22 @@ else:
     if len(id_dict) == 0:
         st.write('No data to display in range.')
     elif len(id_dict) >= 1:
-        init_rows = st.columns(4)
-        
-        # Player One selection and image display
-        player1 = init_rows[1].selectbox("Choose Player One", id_dict.values(), index=0)
+        init_rows1 = st.columns(2)
+        init_rows2 = st.columns(2)
+        player1 = init_rows2[0].selectbox("Choose Player One", id_dict.values(), index=0)
         loogo1 = get_image_Player(player1)
-        with init_rows[0]:
-            st.image(loogo1, width=150)
+        with init_rows1[0]:
+            st.image(loogo1,width=150)
 
-        # Get element type for Player One
         element_type_for_player1 = ele_cut.loc[ele_cut['full_name'] == player1, 'element_type'].iloc[0]
         ele_cut_copy = ele_cut[(ele_cut['element_type'] == element_type_for_player1) & 
-                            (ele_cut['full_name'] != player1)].copy()
+                               (ele_cut['full_name'] != player1)].copy()
         id_dict1 = dict(zip(ele_cut_copy['id'], ele_cut_copy['full_name']))  
-        
         if len(id_dict1) > 1:
-            # Create a new row for Player Two's image and select box
-            player2_column = st.columns(2)  # Two columns for player two
-            with player2_column[0]:
-                player2 = st.selectbox("Choose Player Two", id_dict1.values(), 1)  # Selection box
-                loogo2 = get_image_Player(player2)  # Get Player Two image
-                
-            with player2_column[1]:
-                st.image(loogo2, width=150)  # Display Player Two image
+            player2 = init_rows2[1].selectbox("Choose Player Two", id_dict1.values(), 1) #index=int(ind2))
+            loogo2 = get_image_Player(player2)
+        with init_rows1[1]:
+            st.image(loogo2, width=150)
             
       
         rows = st.columns(2)
