@@ -268,13 +268,14 @@ def get_image_Player(player_name):
     return image
     
 
-def plot_position_radar(df_player, name):
+def plot_position_radar(df_player):
     # Ensure the DataFrame is reset to avoid index issues
     df_player.reset_index(drop=True, inplace=True)
     df_player['TSB%'] = df_player['TSB%'] * 100
     element_type = df_player["element_type"].iloc[0]
     df = ele_copy.copy()
-    
+    st.write(df_player.columns)
+    st.write(df.columns)
     # Define column names and labels based on player position
     if element_type == 'GKP':
         df_filtered = df[df['element_type'] == element_type].copy()
@@ -594,5 +595,5 @@ else:
 df_player1=collated_spider_df_from_name(player1)
 df_player2=collated_spider_df_from_name(player2)
 
-figg=plot_position_radar(df_player1,player1)
+figg=plot_position_radar(df_player1)
 st.write(figg)
