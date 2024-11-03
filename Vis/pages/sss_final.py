@@ -17,6 +17,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from mplsoccer import Radar, grid
 import io
+from highlight_text import fig_text
+
 pd.set_option('future.no_silent_downcasting', True)
 # Assuming fpl_api_collection and fpl_utils are in the FPL directory
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..', 'FPL')))
@@ -268,16 +270,29 @@ def get_image_Player(player_name):
     return image
     
 
-def plot_position_radar(df_player,name):
+
+
+font_normal = FontManager('https://raw.githubusercontent.com/googlefonts/roboto/main/'
+                          'src/hinted/Roboto-Regular.ttf')
+font_italic = FontManager('https://raw.githubusercontent.com/googlefonts/roboto/main/'
+                          'src/hinted/Roboto-Italic.ttf')
+font_bold = FontManager('https://raw.githubusercontent.com/google/fonts/main/apache/robotoslab/'
+                        'RobotoSlab[wght].ttf')
+def plot_position_radar(df_player,name,df_player1,name1):
     # Ensure the DataFrame is reset to avoid index issues
     df_player.reset_index(drop=True, inplace=True)
     df_player['TSB%'] = df_player['TSB%'] * 100
     element_type = df_player["element_type"].iloc[0]
+    df_player1.reset_index(drop=True, inplace=True)
+    df_player1['TSB%'] = df_player1['TSB%'] * 100
+
+    
     df = ele_copy.copy()
     
     # Define column names and labels based on player position
     if element_type == 'GKP':
         df_filtered = df[df['element_type'] == element_type].copy()
+        
         columns_to_convert = [
             'expected_goals_conceded', 'influence', 'creativity', 
             'threat', 'ict_index', 'form', 
@@ -440,6 +455,10 @@ def plot_position_radar(df_player,name):
     # Convert normalized data to a list
     data = df_player.iloc[0, :].values.flatten().tolist()
     data = [round(float(x), 2) for x in data]
+    ###########################
+    df_player1 = df_player1[cols]
+    data1 = df_player1.iloc[0, :].values.flatten().tolist()
+    data1 = [round(float(x), 2) for x in data1]
 
     
 
@@ -448,7 +467,7 @@ def plot_position_radar(df_player,name):
         params=fields,
         min_range=min_range,
         max_range=max_range,
-        straight_line_color="#2B2B2B",  # color for straight lines
+        straight_line_color="#222222",  # color for straight lines
         last_circle_color="#FF5733",
         inner_circle_size=20,
         straight_line_lw=1,             # linewidth for straight lines
@@ -456,39 +475,64 @@ def plot_position_radar(df_player,name):
         other_circle_ls='--',           # linestyle for other circles
         last_circle_lw=1,               # linewidth of last circle
         last_circle_ls='-',              # linestyle for last circle
-        background_color='#2B2B2B',
+        background_color="#EBEBE9",
         straight_line_limit=101
     )
 
     # Plot the pizza chart
     fig, ax = baker.make_pizza(
-        values=data,
-        figsize=(10, 10),
-        color_blank_space="same",
-        slice_colors=["#1A78CF"] * len(data),
-        value_colors=["#000000"] * len(data),
-        value_bck_colors=["#1A78CF"] * len(data),
-
-    kwargs_slices=dict(
-            edgecolor="#2B2B2B", zorder=3, linewidth=2
-        ),                                  # values to be used when plotting slices
+        data,                     # list of values
+        compare_values=data1,    # comparison values
+        figsize=(8, 8),             # adjust figsize according to your need
+        kwargs_slices=dict(
+            facecolor="#1A78CF", edgecolor="#222222",
+            zorder=2, linewidth=1
+        ),                          # values to be used when plotting slices
+        kwargs_compare=dict(
+            facecolor="#FF9300", edgecolor="#222222",
+            zorder=2, linewidth=1,
+        ),
         kwargs_params=dict(
-            color="white", fontsize=9, fontname = 'Sans Serif',
-            va="center"
-        ),                                  # values to be used when adding parameter labels
-
+            color="#000000", fontsize=12,
+            fontproperties=font_normal.prop, va="center"
+        ),                          # values to be used when adding parameter
         kwargs_values=dict(
-            color="white", fontsize=9, fontname = 'Sans Serif',
-            zorder=5,
+            color="#000000", fontsize=12,
+            fontproperties=font_normal.prop, zorder=3,
             bbox=dict(
-                edgecolor="#2B2B2B", facecolor="white",
-                boxstyle="round,pad=.2", lw=1
+                edgecolor="#000000", facecolor="cornflowerblue",
+                boxstyle="round,pad=0.2", lw=1
             )
-        )                                      
+        ),                          # values to be used when adding parameter-values labels
+        kwargs_compare_values=dict(
+            color="#000000", fontsize=12, fontproperties=font_normal.prop, zorder=3,
+            bbox=dict(edgecolor="#000000", facecolor="#FF9300", boxstyle="round,pad=0.2", lw=1)
+        ),                          # values to be used when adding parameter-values labels
     )
+
+    # add title
+    fig_text(
+        0.515, 0.99, "<Robert Lewandowski> vs <Mohamed Salah>", size=17, fig=fig,
+        highlight_textprops=[{"color": '#1A78CF'}, {"color": '#EE8900'}],
+        ha="center", fontproperties=font_bold.prop, color="#000000"
+    )
+
+    # add subtitle
     fig.text(
-        0.1, 0.97, name.replace("-"," ").upper() , size=15,
-        ha="left",color="white",fontname = 'Sans Serif'
+        0.515, 0.942,
+        "Percentile Rank vs Top-Five League Forwards | Season 2020-21",
+        size=15,
+        ha="center", fontproperties=font_bold.prop, color="#000000"
+    )
+
+    # add credits
+    CREDIT_1 = "data: statsbomb viz fbref"
+    CREDIT_2 = "inspired by: @Worville, @FootballSlices, @somazerofc & @Soumyaj15209314"
+
+    fig.text(
+        0.99, 0.005, f"{CREDIT_1}\n{CREDIT_2}", size=9,
+        fontproperties=font_italic.prop, color="#000000",
+        ha="right"
     )
 
     return fig
@@ -594,5 +638,5 @@ else:
 df_player1=collated_spider_df_from_name(player1)
 df_player2=collated_spider_df_from_name(player2)
 
-figg=plot_position_radar(df_player1,player1)
+figg=plot_position_radar(df_player1,player1,df_player2,player2)
 st.write(figg)
