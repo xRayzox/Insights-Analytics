@@ -498,6 +498,7 @@ price_min = (ele_copy['now_cost'].min())/10
 price_max = (ele_copy['now_cost'].max())/10
 price_min = float(price_min)
 price_max = float(price_max)
+
 if len(get_player_data(list(full_player_dict.keys())[0])['history']) == 0:
     st.write(f"Please wait for the {crnt_season} season to begin for individual player statistics")
 else:
@@ -590,5 +591,8 @@ else:
             player2_total_df.drop(['team', 'element_type'], axis=1, inplace=True)
             rows[1].dataframe(player2_df.style.format({'Price': '£{:.1f}'}),height=150)
 
+df_player1=collated_spider_df_from_name(player1)
+df_player2=collated_spider_df_from_name(player2)
 
-        
+figg=plot_position_radar(df_player1,player1)
+st.write(figg)
