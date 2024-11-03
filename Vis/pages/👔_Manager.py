@@ -336,7 +336,7 @@ with col5:
             )
 
             # Function to draw player images and details
-            def draw_players(df, positions):
+            def draw_players(df, positions,ax, pitch):
                 for index, row in df.iterrows():
                     IMAGE_URL = row['code']
                     image = load_image(IMAGE_URL)
