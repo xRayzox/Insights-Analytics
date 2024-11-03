@@ -537,9 +537,12 @@ else:
                 .format(subset=player1_next3.select_dtypes(include='float64') \
                         .columns.values, formatter='{:.2f}')
         init_rows[1].dataframe(styled_player1_next3)
-            
-        if len(id_dict) > 1:
-            player2 = init_rows[2].selectbox("Choose Player Two", id_dict.values(), 1) #index=int(ind2))
+
+        element_type_for_player1 = ele_cut.loc[ele_cut['full_name'] == player1, 'element_type'].iloc[0]
+        ele_cut_copy= ele_cut[ele_cut['element_type'] == element_type_for_player1].copy()
+        id_dict1 = dict(zip(ele_cut_copy['id'], ele_cut_copy['full_name']))  
+        if len(id_dict1) > 1:
+            player2 = init_rows[2].selectbox("Choose Player Two", id_dict1.values(), 1) #index=int(ind2))
             player2_next3 = get_player_next3(player2)
             for col in new_fixt_cols:
                 if player2_next3[col].dtype == 'O':
@@ -558,15 +561,13 @@ else:
         player1_total_df = collate_total_df_from_name(player1)
         player1_total_df.drop(['team', 'element_type'], axis=1, inplace=True)
         rows[0].dataframe(player1_df.style.format({'Price': '£{:.1f}'}))
-        total_fmt = {'xG':'{:.2f}', 'xA':'{:.2f}', 'xGI':'{:.2f}', 'xGC':'{:.2f}',
-                     'Price': '£{:.1f}', 'TSB%': '{:.1%}'}
+
         
         if len(id_dict) > 1:
             player2_df = collate_hist_df_from_name(player2)
             player2_total_df = collate_total_df_from_name(player2)
             player2_total_df.drop(['team', 'element_type'], axis=1, inplace=True)
             rows[1].dataframe(player2_df.style.format({'Price': '£{:.1f}'}))
-            total_fmt = {'xG':'{:.2f}', 'xA':'{:.2f}', 'xGI':'{:.2f}', 'xGC':'{:.2f}',
-                     'Price': '£{:.1f}', 'TSB%': '{:.1%}'}
+
 
         
