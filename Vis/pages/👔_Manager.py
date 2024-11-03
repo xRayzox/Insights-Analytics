@@ -152,7 +152,7 @@ def load_image(url):
     if url not in image_cache:
         try:
             # Fetch the image from the URL
-            response = requests.get(url)
+            response = requests.get(url,stream=True)
             response.raise_for_status()  # Raise an error for bad responses
             img = Image.open(BytesIO(response.content))  # Open the image
             image_cache[url] = img  # Cache the loaded image
