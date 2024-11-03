@@ -540,7 +540,11 @@ else:
         styled_player1_next3 = player1_next3.style.map(color_fixtures, subset=new_fixt_df.columns) \
                 .format(subset=player1_next3.select_dtypes(include='float64') \
                         .columns.values, formatter='{:.2f}')
-        init_rows1[1].dataframe(styled_player1_next3)
+        with init_rows1[1]:
+           st.write("")
+           st.write("")
+           st.dataframe(styled_player1_next3)
+        
 
 
         element_type_for_player1 = ele_cut.loc[ele_cut['full_name'] == player1, 'element_type'].iloc[0]
