@@ -522,74 +522,58 @@ else:
     
     if len(id_dict) == 0:
         st.write('No data to display in range.')
-
-    elif len(id_dict) == 1:
-        player1 = list(id_dict.values())[0]
-        loogo1 = get_image_Player(player1)
-        st.image(loogo1, width=150)
-        
-        player1_next3 = get_player_next3(player1)
-        for col in new_fixt_cols:
-            if player1_next3[col].dtype == 'O':
-                max_length = player1_next3[col].str.len().max()
-                if max_length > 7:
-                    player1_next3.loc[player1_next3[col].str.len() <= 7, col] = player1_next3.loc[player1_next3[col].str.len() <= 7, col].str.pad(width=max_length + 9, side='both', fillchar=' ')
-
-        styled_player1_next3 = player1_next3.style.map(color_fixtures, subset=new_fixt_df.columns) \
-            .format(subset=player1_next3.select_dtypes(include='float64').columns.values, formatter='{:.2f}')
-        
-        st.write("")
-        st.write("")
-        st.write("")
-        st.dataframe(styled_player1_next3)
-
-    else:
-        init_rows1 = st.columns([3, 5, 3, 5])
+    elif len(id_dict) >= 1:
+        init_rows1 = st.columns([3,5,3,5])
         init_rows2 = st.columns(2)
-        
         player1 = init_rows2[0].selectbox("Choose Player One", id_dict.values(), index=0)
         loogo1 = get_image_Player(player1)
-        
         with init_rows1[0]:
-            st.image(loogo1, width=150)
-        
+            st.image(loogo1,width=150)
         player1_next3 = get_player_next3(player1)
         for col in new_fixt_cols:
             if player1_next3[col].dtype == 'O':
                 max_length = player1_next3[col].str.len().max()
                 if max_length > 7:
-                    player1_next3.loc[player1_next3[col].str.len() <= 7, col] = player1_next3.loc[player1_next3[col].str.len() <= 7, col].str.pad(width=max_length + 9, side='both', fillchar=' ')
+                    # Correct use of .loc for both selection and assignment:
+                    player1_next3.loc[player1_next3[col].str.len() <= 7, col] = player1_next3.loc[player1_next3[col].str.len() <= 7, col].str.pad(width=max_length+9, side='both', fillchar=' ')
 
         styled_player1_next3 = player1_next3.style.map(color_fixtures, subset=new_fixt_df.columns) \
-            .format(subset=player1_next3.select_dtypes(include='float64').columns.values, formatter='{:.2f}')
+                .format(subset=player1_next3.select_dtypes(include='float64') \
+                        .columns.values, formatter='{:.2f}')
+        with init_rows1[1]:
+           st.write("")
+           st.write("")
+           st.write("")
+           st.dataframe(styled_player1_next3)
+        
 
-        st.write("")
-        st.write("")
-        st.write("")
-        st.dataframe(styled_player1_next3)
-        
-        # Adding a second player selection for comparison
-        player2 = init_rows2[1].selectbox("Choose Player Two", id_dict.values(), index=1)
-        loogo2 = get_image_Player(player2)
-        
-        with init_rows1[2]:
-            st.image(loogo2, width=150)
-        
-        player2_next3 = get_player_next3(player2)
-        for col in new_fixt_cols:
-            if player2_next3[col].dtype == 'O':
-                max_length = player2_next3[col].str.len().max()
-                if max_length > 7:
-                    player2_next3.loc[player2_next3[col].str.len() <= 7, col] = player2_next3.loc[player2_next3[col].str.len() <= 7, col].str.pad(width=max_length + 9, side='both', fillchar=' ')
 
-        styled_player2_next3 = player2_next3.style.map(color_fixtures, subset=new_fixt_df.columns) \
-            .format(subset=player2_next3.select_dtypes(include='float64').columns.values, formatter='{:.2f}')
+        element_type_for_player1 = ele_cut.loc[ele_cut['full_name'] == player1, 'element_type'].iloc[0]
+        ele_cut_copy = ele_cut[(ele_cut['element_type'] == element_type_for_player1) & 
+                               (ele_cut['full_name'] != player1)].copy()
+        id_dict1 = dict(zip(ele_cut_copy['id'], ele_cut_copy['full_name']))  
+        if len(id_dict1) > 1:
+            player2 = init_rows2[1].selectbox("Choose Player Two", id_dict1.values(), 1) #index=int(ind2))
+            loogo2 = get_image_Player(player2)
+            with init_rows1[2]:
+                st.image(loogo2, width=150)
         
-        st.write("")
-        st.write("")
-        st.write("")
-        st.dataframe(styled_player2_next3)
-
+            player2_next3 = get_player_next3(player2)
+            for col in new_fixt_cols:
+                if player2_next3[col].dtype == 'O':
+                    max_length = player2_next3[col].str.len().max()
+                    if max_length > 7:
+                        # Correct use of .loc for selection and assignment:
+                        player2_next3.loc[player2_next3[col].str.len() <= 7, col] = player2_next3.loc[player2_next3[col].str.len() <= 7, col].str.pad(width=max_length+9, side='both', fillchar=' ')
+            
+            styled_player2_next3 = player2_next3.style.map(color_fixtures, subset=new_fixt_df.columns) \
+                    .format(subset=player2_next3.select_dtypes(include='float64') \
+                            .columns.values, formatter='{:.2f}')
+            with init_rows1[3]:
+                st.write("")
+                st.write("")
+                st.write("")
+                st.dataframe(styled_player2_next3)
             
       
         rows = st.columns(2)
