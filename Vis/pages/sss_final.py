@@ -527,7 +527,6 @@ else:
         player1 = init_rows[1].selectbox("Choose Player One", id_dict.values(), index=0)
         loogo1 = get_image_Player(player1)
         with init_rows[0]:
-            player1 =st.selectbox("Choose Player One", id_dict.values(), index=0)
             st.image(loogo1,width=150)
 
         element_type_for_player1 = ele_cut.loc[ele_cut['full_name'] == player1, 'element_type'].iloc[0]
