@@ -46,6 +46,7 @@ st.set_page_config(page_title='Manager', page_icon=':necktie:', layout='wide')
 define_sidebar()
 st.title('Manager')
 
+@st.cache_data()
 def get_total_fpl_players():
     base_resp = requests.get(BASE_URL + 'bootstrap-static/')
     return base_resp.json()['total_players']
@@ -143,7 +144,7 @@ with col1:
         except ValueError:
             st.write('Please enter a valid FPL ID.')
 ###############################################################################################################
-@st.cache_data
+@st.cache_data()
 def load_image(url):
     """Load an image from a URL and cache it."""
     try:
@@ -328,7 +329,7 @@ with col5:
                 ha='center',
                 va='center'
             )
-
+            @st.cache_data()
             # Function to draw player images and details
             def draw_players(df, positions,ax, pitch):
                 for index, row in df.iterrows():
@@ -344,7 +345,7 @@ with col5:
 
                     # Draw player's name and GWP points
                     draw_player_details(ax, row, x_image, y_image)
-
+            @st.cache_data()
             # Function to draw player details
             def draw_player_details(ax, row, x_image, y_image):
                 player_name = row.Player  # Access using attribute-style access
@@ -411,7 +412,7 @@ with col5:
             # Set the total number of bench slots
             bench_slots = 4
             slot_width = bench_width / bench_slots
-
+            @st.cache_data()
             # Function to draw bench players
             def draw_bench_players(df_bench,ax,pitch):
                 for i, row in enumerate(df_bench.itertuples()):
