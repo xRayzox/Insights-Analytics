@@ -538,7 +538,7 @@ else:
                         .columns.values, formatter='{:.2f}')
         init_rows[1].dataframe(styled_player1_next3)  
 
-        element_type_for_player1 = ele_cut.loc[ele_cut['full_name'] == player1, 'element_type'].values
+        element_type_for_player1 = ele_cut.loc[ele_cut['full_name'] == player1, 'element_type'].iloc[0]
         st.write(element_type_for_player1)
         #id_dict = dict(zip(ele_cut['id'], ele_cut['full_name']))
         if len(id_dict) > 1:
