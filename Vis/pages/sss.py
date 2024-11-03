@@ -482,25 +482,6 @@ def plot_position_radar(df_player, name):
         0.1, 0.97, name.replace("-"," ").upper() , size=15,
         ha="left",color="white",fontname = 'Sans Serif'
     )
-    fig.patches.extend([
-        plt.Rectangle(
-            (0.1, 0.885), 0.023, 0.019, fill=True, color="#1A78CF",
-            transform=fig.transFigure, figure=fig
-        ),
-        plt.Rectangle(
-            (0.23, 0.885), 0.023, 0.019, fill=True, color="#D70232",
-            transform=fig.transFigure, figure=fig
-        ),
-        plt.Rectangle(
-            (0.37, 0.885), 0.023, 0.019, fill=True, color="#228B22",
-            transform=fig.transFigure, figure=fig
-        ),
-        plt.Rectangle(
-            (0.52, 0.885), 0.023, 0.019, fill=True, color="#FF8000",
-            transform=fig.transFigure, figure=fig
-        ),
-
-    ])
 
     return fig
 
