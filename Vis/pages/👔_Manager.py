@@ -51,22 +51,21 @@ def get_total_fpl_players():
     base_resp = requests.get(BASE_URL + 'bootstrap-static/')
     return base_resp.json()['total_players']
 
-# Load bootstrap data
-ele_types_data = get_bootstrap_data()['element_types']
-ele_types_df = pd.DataFrame(ele_types_data)
+@st.cache_data(persist="disk")
+def load_and_preprocess_fpl_data():
+    """Loads and preprocesses FPL bootstrap data."""
+    bootstrap_data = get_bootstrap_data()
+    ele_types_df = pd.DataFrame(bootstrap_data['element_types'])
+    teams_df = pd.DataFrame(bootstrap_data['teams'])
+    ele_df = pd.DataFrame(bootstrap_data['elements'])
 
-teams_data = get_bootstrap_data()['teams']
-teams_df = pd.DataFrame(teams_data)
+    ele_df['element_type'] = ele_df['element_type'].map(ele_types_df.set_index('id')['singular_name_short'])
+    ele_df['code'] = ele_df.apply(lambda row: f"https://resources.premierleague.com/premierleague/photos/players/250x250/p{row['code']}.png", axis=1)
+    ele_df['team'] = ele_df['team'].map(teams_df.set_index('id')['short_name'])
+    return ele_types_df, teams_df, ele_df
 
-ele_data = get_bootstrap_data()['elements']
-ele_df = pd.DataFrame(ele_data)
-
-# Map element types and teams
-ele_df['element_type'] = ele_df['element_type'].map(ele_types_df.set_index('id')['singular_name_short'])
-ele_df['code'] = ele_df.apply(lambda row: f"https://resources.premierleague.com/premierleague/photos/players/250x250/p{row['code']}.png" 
-                              if row['element_type'] == 'GKP' else f"https://resources.premierleague.com/premierleague/photos/players/250x250/p{row['code']}.png", axis=1)
-ele_df['team'] = ele_df['team'].map(teams_df.set_index('id')['short_name'])
-
+# Call the function to get the preprocessed DataFrames
+ele_types_df, teams_df, ele_df = load_and_preprocess_fpl_data()
 col1, col2 = st.columns([10, 3])
 
 with col1:
@@ -144,7 +143,7 @@ with col1:
         except ValueError:
             st.write('Please enter a valid FPL ID.')
 ###############################################################################################################
-@st.cache_data()
+@st.cache_data(persist="disk")
 def load_image(url):
     """Load an image from a URL and cache it."""
     try:
