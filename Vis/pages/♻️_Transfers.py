@@ -188,7 +188,7 @@ try:
     # Get the previous game week
     previous_gw = last_gw - 1  
 
-    st.write(previous_gw)
+    st.write(player_hist_df[previous_gw])
 
 except KeyError as e:
     st.write(f"An error occurred: {e}. Please wait for the Season to begin before viewing transfer data on individual players.")
