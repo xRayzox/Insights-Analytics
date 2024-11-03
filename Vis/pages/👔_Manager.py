@@ -203,7 +203,7 @@ with col5:
                 
             
             pts_df = pd.concat(pts_list)
-            st.write(pts_df)
+
             manager_team_df = manager_team_df.merge(pts_df, how='left', on='element')
 
             # Calculate total points based on multiplier and captaincy
