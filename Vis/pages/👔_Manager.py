@@ -143,18 +143,18 @@ with col1:
             st.write('Please enter a valid FPL ID.')
 ###############################################################################################################
 session = requests.Session()
-
+image_cache = {}
 @lru_cache(maxsize=100)  # Cache up to 100 images
 def load_image(image_url):
     """Load an image from a URL and cache it."""
-    if url not in image_cache:
+    if image_url not in image_cache:
         # Load the image and cache it
         try:
-            image_cache[url] = plt.imread(url)  # Use plt.imread for image reading
+            image_cache[image_url] = plt.imread(image_url)  # Use plt.imread for image reading
         except Exception as e:
-            print(f"Error loading image from {url}: {e}")
-            image_cache[url] = None  # Store None if loading fails
-    return image_cache[url]
+            print(f"Error loading image from {image_url}: {e}")
+            image_cache[image_url] = None  # Store None if loading fails
+    return image_cache[image_url]
 
 
 ###############################################################################################################
