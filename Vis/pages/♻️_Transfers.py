@@ -182,6 +182,7 @@ try:
         ).properties(
             height=400)
     st.altair_chart(c, use_container_width=True)
+    st.write(player_hist_df)
 except KeyError:
     st.write('Please wait for the Season to begin before viewing transfer data on individual players.')
 
