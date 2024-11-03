@@ -317,7 +317,7 @@ def plot_position_radar(df_player,name,df_player1,name1):
 
     team_color1 = df.loc[df['full_name'] == name, 'team_colour'].values[0] if not df.loc[df['full_name'] == name, 'team_colour'].empty else None
     team_color2 = df.loc[df['full_name'] == name1, 'team_colour'].values[0] if not df.loc[df['full_name'] == name1, 'team_colour'].empty else None
-    st.write(team_color1)
+    
     # Define column names and labels based on player position
     if element_type == 'GKP':
         df_filtered = df[df['element_type'] == element_type].copy()
@@ -514,11 +514,11 @@ def plot_position_radar(df_player,name,df_player1,name1):
         compare_values=data1,    # comparison values
         figsize=(8, 8),             # adjust figsize according to your need
         kwargs_slices=dict(
-            facecolor="#1A78CF", edgecolor="#222222",
+            facecolor=team_color1, edgecolor="#222222",
             zorder=2, linewidth=1
         ),                          # values to be used when plotting slices
         kwargs_compare=dict(
-            facecolor="#FF9300", edgecolor="#222222",
+            facecolor=team_color2, edgecolor="#222222",
             zorder=2, linewidth=1,
         ),
         kwargs_params=dict(
@@ -529,20 +529,20 @@ def plot_position_radar(df_player,name,df_player1,name1):
             color="#000000", fontsize=12,
             fontproperties=font_normal.prop, zorder=3,
             bbox=dict(
-                edgecolor="#000000", facecolor="cornflowerblue",
+                edgecolor="#000000", facecolor=team_color1,
                 boxstyle="round,pad=0.2", lw=1
             )
         ),                       
         kwargs_compare_values=dict(
             color="#000000", fontsize=12, fontproperties=font_normal.prop, zorder=3,
-            bbox=dict(edgecolor="#000000", facecolor="#FF9300", boxstyle="round,pad=0.2", lw=1)
+            bbox=dict(edgecolor="#000000", facecolor=team_color2, boxstyle="round,pad=0.2", lw=1)
         ),                    
     )
 
     # add title
     fig_text(
         0.515, 0.99, f"<{name}> vs <{name1}>", size=17, fig=fig,
-        highlight_textprops=[{"color": '#1A78CF'}, {"color": '#EE8900'}],
+        highlight_textprops=[{"color": team_color1}, {"color": team_color2}],
         ha="center", fontproperties=font_bold.prop, color="#000000"
     )
 
