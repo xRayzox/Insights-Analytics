@@ -419,7 +419,7 @@ with col5:
             slot_width = bench_width / bench_slots
 
             # Function to draw bench players
-            def draw_bench_players(df_bench):
+            def draw_bench_players(df_bench,ax,pitch):
                 for i, row in enumerate(df_bench.itertuples()):
                     IMAGE_URL = row.code  # Access using attribute-style access
                     image = load_image(IMAGE_URL)
@@ -435,7 +435,7 @@ with col5:
                     draw_player_details(ax, row, x_bench, y_bench)
 
             # Draw bench players
-            draw_bench_players(df_bench)
+            draw_bench_players(df_bench,ax,pitch)
 
 
             st.write(fig)
