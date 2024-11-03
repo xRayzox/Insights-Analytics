@@ -18,7 +18,28 @@ import matplotlib.pyplot as plt
 from mplsoccer import Radar, grid
 import io
 from highlight_text import fig_text
-
+team_color = [
+    {"team_short": "ARS", "team_colour": "#ff0000"},
+    {"team_short": "AVL", "team_colour": "#490024"},
+    {"team_short": "BOU", "team_colour": "#d71921"},
+    {"team_short": "BRE", "team_colour": "#fd0000"},
+    {"team_short": "BRI", "team_colour": "#0000fd"},
+    {"team_short": "BUR", "team_colour": "#70193d"},
+    {"team_short": "CHE", "team_colour": "#001489"},
+    {"team_short": "CRY", "team_colour": "#0055a5"},
+    {"team_short": "EVE", "team_colour": "#003399"},
+    {"team_short": "FUL", "team_colour": "#ffffff"},
+    {"team_short": "LIV", "team_colour": "#d3171e"},
+    {"team_short": "LUT", "team_colour": "#fc5001"},
+    {"team_short": "MCI", "team_colour": "#98c5e9"},
+    {"team_short": "MUN", "team_colour": "#d20222"},
+    {"team_short": "NEW", "team_colour": "#ffffff"},
+    {"team_short": "NFO", "team_colour": "#dc0202"},
+    {"team_short": "SHU", "team_colour": "#f12228"},
+    {"team_short": "TOT", "team_colour": "#ffffff"},
+    {"team_short": "WHU", "team_colour": "#540d1a"},
+    {"team_short": "WOL", "team_colour": "#fc891c"}
+]
 pd.set_option('future.no_silent_downcasting', True)
 # Assuming fpl_api_collection and fpl_utils are in the FPL directory
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..', 'FPL')))
@@ -285,8 +306,7 @@ def plot_position_radar(df_player,name,df_player1,name1):
     element_type = df_player["element_type"].iloc[0]
     df_player1.reset_index(drop=True, inplace=True)
     df_player1['TSB%'] = df_player1['TSB%'] * 100
-
-    
+    st.write(df_player1)
     df = ele_copy.copy()
     
     # Define column names and labels based on player position
@@ -512,7 +532,7 @@ def plot_position_radar(df_player,name,df_player1,name1):
 
     # add title
     fig_text(
-        0.515, 0.99, f"<{player1}> vs <{player2}>", size=17, fig=fig,
+        0.515, 0.99, f"<{name}> vs <{name1}>", size=17, fig=fig,
         highlight_textprops=[{"color": '#1A78CF'}, {"color": '#EE8900'}],
         ha="center", fontproperties=font_bold.prop, color="#000000"
     )
