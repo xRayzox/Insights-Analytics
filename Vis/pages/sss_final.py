@@ -543,7 +543,7 @@ def plot_position_radar(df_player,name,df_player1,name1):
     )
 
     fig_text(
-        0.515, 0.942, f"<Minutes:{minutes1}|Points:{points1}>|{element_type}|<{points2}: Points|{minutes2}:Minutes>", size=17, fig=fig,
+        0.515, 0.942, f"<Minutes:{minutes1} | Points:{points1}> | {element_type}| <{points2}: Points | {minutes2}:Minutes>", size=17, fig=fig,
         highlight_textprops=[{"color": '#1A78CF'}, {"color": '#EE8900'}],
         ha="center", fontproperties=font_bold.prop, color="#000000"
     )
