@@ -151,5 +151,6 @@ def write_data():
         prices_df['Start'] = prices_df['Start'].map('{:,.1f}'.format)
         prices_df['Now'] = prices_df['Now'].map('{:,.1f}'.format)
         prices_df['+/-'] = prices_df['+/-'].map('{:,.1f}'.format)
+        prices_df.set_index('Player', inplace=True)
         # prices_df.to_csv('./data/player_prices.csv', index=True)
     return prices_df
