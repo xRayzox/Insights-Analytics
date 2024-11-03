@@ -146,12 +146,15 @@ session = requests.Session()
 
 @lru_cache(maxsize=100)  # Cache up to 100 images
 def load_image(image_url):
-    # Fetch the image
-    response = session.get(image_url, stream=True)
-    response.raise_for_status()  # Raise an error for bad responses
-    image_data = io.BytesIO(response.content)  # Use BytesIO to handle the image data
-    image = Image.open(image_data)  # Open the image with Pillow
-    return image
+    """Load an image from a URL and cache it."""
+    if url not in image_cache:
+        # Load the image and cache it
+        try:
+            image_cache[url] = plt.imread(url)  # Use plt.imread for image reading
+        except Exception as e:
+            print(f"Error loading image from {url}: {e}")
+            image_cache[url] = None  # Store None if loading fails
+    return image_cache[url]
 
 
 ###############################################################################################################
