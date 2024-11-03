@@ -7,7 +7,7 @@ base_url = 'https://fantasy.premierleague.com/api/'
 
 # Function to get general data (bootstrap data) from the FPL API
 
-@st.cache_data()
+
 def get_bootstrap_data() -> dict:
     resp = requests.get(f'{base_url}bootstrap-static/')
     if resp.status_code != 200:
