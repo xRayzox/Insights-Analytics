@@ -390,7 +390,7 @@ with col5:
                 ax.text(x_image, y_image - rect_height - 5 + rect_height / 2, player_name, fontsize=7, ha='center', color='black', va='center')
 
             # Draw players who played
-            draw_players(df, positions)
+            draw_players(df, positions,ax,pitch)
 
             ############################### Bench Players ##################
             df_bench = test[test['Played'] == False]  # Bench players
