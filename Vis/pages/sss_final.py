@@ -524,11 +524,11 @@ else:
         st.write('No data to display in range.')
     elif len(id_dict) >= 1:
         init_rows = st.columns(6)
-        player1 = init_rows[0].selectbox("Choose Player One", id_dict.values(), index=0)
+        player1 = init_rows[1].selectbox("Choose Player One", id_dict.values(), index=0)
         player1_next3 = get_player_next3(player1)
         loogo1 = get_image_Player(player1)
-        with init_rows[1]:
-            st.image(loogo1,width=20)
+        with init_rows[0]:
+            st.image(loogo1,width=50)
         for col in new_fixt_cols:
             if player1_next3[col].dtype == 'O':
                 max_length = player1_next3[col].str.len().max()
@@ -545,11 +545,11 @@ else:
         ele_cut_copy= ele_cut[ele_cut['element_type'] == element_type_for_player1].copy()
         id_dict1 = dict(zip(ele_cut_copy['id'], ele_cut_copy['full_name']))  
         if len(id_dict1) > 1:
-            player2 = init_rows[3].selectbox("Choose Player Two", id_dict1.values(), 1) #index=int(ind2))
+            player2 = init_rows[4].selectbox("Choose Player Two", id_dict1.values(), 1) #index=int(ind2))
             player2_next3 = get_player_next3(player2)
             loogo2 = get_image_Player(player2)
-        with init_rows[4]:
-            st.image(loogo2, width=20)
+        with init_rows[3]:
+            st.image(loogo2, width=50)
             for col in new_fixt_cols:
                 if player2_next3[col].dtype == 'O':
                     max_length = player2_next3[col].str.len().max()
