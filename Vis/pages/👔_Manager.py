@@ -265,10 +265,10 @@ with col5:
 
             # Create a vertical pitch with specified size
             pitch = VerticalPitch(
-                pitch_color='grass', 
-                line_color='white', 
-                stripe=True, 
-                corner_arcs=True, 
+                pitch_color='grass',
+                line_color='white',
+                stripe=True,
+                corner_arcs=True,
                 half=True,
                 pad_bottom=20
             )
@@ -281,7 +281,6 @@ with col5:
 
             # Define placements for each position zone
             zone_height = pitch_length / 6  
-            
 
             # Position calculations
             positions = {
@@ -295,39 +294,37 @@ with col5:
             df = test[test['Played'] == True]
             total_gwp = df['GWP'].sum()
 
+            # Create and position rectangle for Game Week
             rect = plt.Rectangle(
-                (0, pitch_length + 1.8 * zone_height),  # Bottom left corner of the rectangle
-                pitch_width / 5,                         # Width of the rectangle
-                pitch_width / 5,                         # Height of the rectangle
-                color=(55/255, 0/255, 60/255),           # Rectangle color (rgb(55, 0, 60))
-
+                (0, pitch_length + 1.8 * zone_height),
+                pitch_width / 5,
+                pitch_width / 5,
+                color=(55/255, 0/255, 60/255)
             )
-
-            # Add rectangle to the plot
             ax.add_patch(rect)
 
-            # Add text to the rectangle
+            # Add text to the rectangle for Game Week
             ax.text(
-                0.5 * (pitch_width / 5),                
-                (pitch_length + 1.8 * zone_height + (pitch_width / 5) / 2)+3,  
-                f'GW{fpl_gw}',          
-                fontsize=20,                            
-                color='white',                          
-                ha='center',                            
-                va='center'                             
+                0.5 * (pitch_width / 5),
+                (pitch_length + 1.8 * zone_height + (pitch_width / 5) / 2) + 3,
+                f'GW{fpl_gw}',
+                fontsize=20,
+                color='white',
+                ha='center',
+                va='center'
             )
 
-            # If total_gwp is an RGB color, you can set it like this
-            total_gwp_color = (5/255, 250/255, 135/255)  # rgb(5, 250, 135)
-            # Assuming total_gwp is just a number or a string, add it separately
+            # Color for total GWP
+            total_gwp_color = (5/255, 250/255, 135/255)
+            # Add total GWP text
             ax.text(
-                0.5 * (pitch_width / 5),               
-                (pitch_length + 1.8 * zone_height + (pitch_width / 5) / 2) - 2,  
-                str(total_gwp),                        
-                fontsize=20,                         
-                color=total_gwp_color,              
-                ha='center',                           
-                va='center'                           
+                0.5 * (pitch_width / 5),
+                (pitch_length + 1.8 * zone_height + (pitch_width / 5) / 2) - 2,
+                str(total_gwp),
+                fontsize=20,
+                color=total_gwp_color,
+                ha='center',
+                va='center'
             )
 
             # Function to draw player images and details
@@ -351,12 +348,11 @@ with col5:
                 player_name = row.Player  # Access using attribute-style access
                 gwp_points = row.GWP  
 
-                # Calculate text dimensions
+                # Draw player's name rectangle
                 tp = TextPath((0, 0), player_name, size=2)
-                rect_width = tp.get_extents().width  # Add padding
+                rect_width = tp.get_extents().width  # Width of text bounding box
                 rect_height = 1
 
-                # Draw player's name rectangle
                 rounded_rect = FancyBboxPatch(
                     (x_image - rect_width / 2, y_image - rect_height - 5),
                     rect_width,
@@ -381,7 +377,7 @@ with col5:
                 )
                 ax.add_patch(gwp_rect)
 
-                # Add text
+                # Add text for GWP points and player name
                 ax.text(x_image, gwp_rect_y + rect_height / 2, f"{gwp_points}", fontsize=7, ha='center', color='white', va='center') 
                 ax.text(x_image, y_image - rect_height - 5 + rect_height / 2, player_name, fontsize=7, ha='center', color='black', va='center')
 
@@ -420,7 +416,6 @@ with col5:
                     IMAGE_URL = row.code  # Access using attribute-style access
                     image = load_image(IMAGE_URL)
 
-
                     # Calculate x position for bench players
                     x_bench = bench_x + (slot_width * (i + 0.5))
                     y_bench = bench_y + (bench_height / 2) + 2
@@ -433,6 +428,7 @@ with col5:
 
             # Draw bench players
             draw_bench_players(df_bench)
+
             # Show the plot
             plt.show()
             st.pyplot(fig)
