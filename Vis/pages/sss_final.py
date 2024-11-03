@@ -528,7 +528,7 @@ else:
         player1_next3 = get_player_next3(player1)
         loogo1 = get_image_Player(player1)
         with init_rows[1]:
-            st.image(loogo1, width=300)
+            st.image(loogo1,width=20)
         for col in new_fixt_cols:
             if player1_next3[col].dtype == 'O':
                 max_length = player1_next3[col].str.len().max()
@@ -548,8 +548,8 @@ else:
             player2 = init_rows[3].selectbox("Choose Player Two", id_dict1.values(), 1) #index=int(ind2))
             player2_next3 = get_player_next3(player2)
             loogo2 = get_image_Player(player2)
-        with init_rows[1]:
-            st.image(loogo2, width=300)
+        with init_rows[4]:
+            st.image(loogo2, width=20)
             for col in new_fixt_cols:
                 if player2_next3[col].dtype == 'O':
                     max_length = player2_next3[col].str.len().max()
@@ -560,7 +560,7 @@ else:
             styled_player2_next3 = player2_next3.style.map(color_fixtures, subset=new_fixt_df.columns) \
                     .format(subset=player2_next3.select_dtypes(include='float64') \
                             .columns.values, formatter='{:.2f}')
-            init_rows[4].dataframe(styled_player2_next3)
+            init_rows[5].dataframe(styled_player2_next3)
             
         rows = st.columns(2)
         player1_df = collate_hist_df_from_name(player1)
