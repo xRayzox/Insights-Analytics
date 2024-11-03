@@ -20,6 +20,7 @@ from urllib.request import urlopen
 import io
 import requests
 from functools import lru_cache
+from io import BytesIO
 
 
 pd.set_option('future.no_silent_downcasting', True)
@@ -143,18 +144,22 @@ with col1:
             st.write('Please enter a valid FPL ID.')
 ###############################################################################################################
 session = requests.Session()
+# Cache for loaded images
 image_cache = {}
 @lru_cache(maxsize=100)  # Cache up to 100 images
-def load_image(image_url):
+def load_image(url):
     """Load an image from a URL and cache it."""
-    if image_url not in image_cache:
-        # Load the image and cache it
+    if url not in image_cache:
         try:
-            image_cache[image_url] = plt.imread(image_url)  # Use plt.imread for image reading
+            # Fetch the image from the URL
+            response = requests.get(url)
+            response.raise_for_status()  # Raise an error for bad responses
+            img = Image.open(BytesIO(response.content))  # Open the image
+            image_cache[url] = img  # Cache the loaded image
         except Exception as e:
-            print(f"Error loading image from {image_url}: {e}")
-            image_cache[image_url] = None  # Store None if loading fails
-    return image_cache[image_url]
+            print(f"Error loading image from {url}: {e}")
+            image_cache[url] = None  # Store None if loading fails
+    return image_cache[url]
 
 
 ###############################################################################################################
