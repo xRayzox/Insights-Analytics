@@ -437,8 +437,7 @@ with col5:
             # Draw bench players
             draw_bench_players(df_bench)
 
-            # Show the plot
-            plt.show()
+
             st.write(fig)
 
 ###############################################################################
