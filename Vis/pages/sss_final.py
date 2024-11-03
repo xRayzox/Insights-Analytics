@@ -500,7 +500,7 @@ price_max = float(price_max)
 if len(get_player_data(list(full_player_dict.keys())[0])['history']) == 0:
     st.write(f"Please wait for the {crnt_season} season to begin for individual player statistics")
 else:
-    filter_rows = st.columns([2,5])
+    filter_rows = st.columns([2,3])
     filter_pos = filter_rows[0].multiselect(
         'Filter Position',
         ['GKP', 'DEF', 'MID', 'FWD'],
