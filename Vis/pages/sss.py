@@ -399,7 +399,7 @@ def plot_position_radar(df_player, name):
         'Expected \nGoals', 'Expected \nAssists', 'Expected \nGoal Involvements', 
         'Influence', 'Creativity', 'Threat', 'ICT Index', 'Player Form', 
         'TSB %', 'Goals \nper 90', 'Assists \nper 90', 
-        'Expected Goals \nper 90', 'Expected Assists vper 90', 'Expected \nGoal Involvements \nper 90'
+        'Expected Goals \nper 90', 'Expected Assists \nper 90', 'Expected \nGoal Involvements \nper 90'
     ]
 
         df_filtered['G/90'] = df_filtered['goals_scored'] / (df_filtered['minutes'] / 90)
