@@ -183,9 +183,15 @@ try:
             height=400)
     st.altair_chart(c, use_container_width=True)
 
-    last_gw = player_hist_df.index.max()  # Get the latest game week from the index
-    previous_gw = last_gw - 1             # Get the previous game week
-    st.error(last_gw)
+    last_gw = player_hist_df.index.max()
+    previous_gw = last_gw - 1
+
+    # Extract prices for each game week (assuming `price` column exists)
+    prices_by_gw = player_hist_df.loc[:last_gw, 'price']
+
+    # Display the prices by game week
+    st.write(prices_by_gw)
+
 except KeyError:
     st.write('Please wait for the Season to begin before viewing transfer data on individual players.')
 
