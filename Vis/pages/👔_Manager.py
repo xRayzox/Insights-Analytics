@@ -329,7 +329,7 @@ with col5:
                 ha='center',
                 va='center'
             )
-            @st.cache_data()
+            @st.cache_resource()
             # Function to draw player images and details
             def draw_players(df, positions,ax, pitch):
                 for index, row in df.iterrows():
