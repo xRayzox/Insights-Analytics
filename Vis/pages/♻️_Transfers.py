@@ -183,18 +183,25 @@ try:
             height=400)
     st.altair_chart(c, use_container_width=True)
 
-    last_gw = player_hist_df.index.max()  # Get the latest game week from the index
-    previous_gw = last_gw - 1             # Get the previous game week
-    price_last_gw = player_hist_df.loc[last_gw, 'price']
-    price_previous_gw = player_hist_df.loc[previous_gw, 'price']
 
-    # Calculate the difference in price between the two game weeks
-    price_difference = price_last_gw - price_previous_gw
-
-    # Display the result
-    st.error(price_difference)
 except KeyError:
     st.write('Please wait for the Season to begin before viewing transfer data on individual players.')
 
     
-    
+    last_gw = player_hist_df.index.max()  
+
+    # Get the previous game week
+    previous_gw = last_gw - 1  
+
+    # Check if both game weeks exist in the DataFrame
+    if last_gw in player_hist_df.index and previous_gw in player_hist_df.index:
+        price_last_gw = player_hist_df.loc[last_gw, 'price']
+        price_previous_gw = player_hist_df.loc[previous_gw, 'price']
+
+        # Calculate the difference in price between the two game weeks
+        price_difference = price_last_gw - price_previous_gw
+
+        # Display the result
+        st.error(f"Price difference: {price_difference}")
+    else:
+        st.error("Game week data is missing.")    
