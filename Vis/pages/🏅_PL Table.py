@@ -28,7 +28,7 @@ st.set_page_config(page_title='PL Table', page_icon=':sports-medal:', layout='wi
 define_sidebar()
 st.title('Premier League Table')
 
-
+@st.cache_data(persist="disk")
 def load_image_from_url(url):
     """Load an image from a URL and save it to a temporary file."""
     # Create a temporary filename
@@ -75,7 +75,8 @@ def custom_plot_fn_form(ax: plt.Axes, val):
         # Draw the character with its corresponding color
         ax.text(x_pos, 0.5, char, fontsize=14, ha='center', va='center',
                 bbox=dict(facecolor=color, alpha=0.5))
-
+        
+@st.cache_data(persist="disk")
 def download_image_to_temp(url):
     """Download an image from a URL and convert it to a base64 string."""
     if url:  # Ensure the URL is not None
