@@ -303,7 +303,10 @@ def plot_position_radar(df_player,name,df_player1,name1):
     # Ensure the DataFrame is reset to avoid index issues
     df_player.reset_index(drop=True, inplace=True)
     df_player['TSB%'] = df_player['TSB%'] * 100
+
+    st.write(df_player)
     element_type = df_player["element_type"].iloc[0]
+
     df_player1.reset_index(drop=True, inplace=True)
     df_player1['TSB%'] = df_player1['TSB%'] * 100
     
