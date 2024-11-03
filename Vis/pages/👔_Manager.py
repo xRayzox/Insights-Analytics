@@ -418,7 +418,7 @@ with col5:
             def draw_bench_players(df_bench):
                 for i, row in enumerate(df_bench.itertuples()):
                     IMAGE_URL = row.code  # Access using attribute-style access
-                    image = Image.open(urlopen(IMAGE_URL))
+                    image = load_image(IMAGE_URL)
 
 
                     # Calculate x position for bench players
