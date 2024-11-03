@@ -537,7 +537,7 @@ else:
                 .format(subset=player1_next3.select_dtypes(include='float64') \
                         .columns.values, formatter='{:.2f}')
         init_rows[1].dataframe(styled_player1_next3)
-            
+        st.write(id_dict)    
         if len(id_dict) > 1:
             player2 = init_rows[2].selectbox("Choose Player Two", id_dict.values(), 1) #index=int(ind2))
             player2_next3 = get_player_next3(player2)
