@@ -146,6 +146,8 @@ with col1:
 session = requests.Session()
 # Cache for loaded images
 image_cache = {}
+
+st.write(image_cache)
 @lru_cache(maxsize=100)  # Cache up to 100 images
 def load_image(url):
     """Load an image from a URL and cache it."""
