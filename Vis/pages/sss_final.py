@@ -523,9 +523,12 @@ else:
     if len(id_dict) == 0:
         st.write('No data to display in range.')
     elif len(id_dict) >= 1:
-        init_rows = st.columns(4)
+        init_rows = st.columns(6)
         player1 = init_rows[0].selectbox("Choose Player One", id_dict.values(), index=0)
         player1_next3 = get_player_next3(player1)
+        loogo1 = get_image_Player(player1)
+        with init_rows[1]:
+            st.image(loogo1, width=300)
         for col in new_fixt_cols:
             if player1_next3[col].dtype == 'O':
                 max_length = player1_next3[col].str.len().max()
@@ -536,14 +539,17 @@ else:
         styled_player1_next3 = player1_next3.style.map(color_fixtures, subset=new_fixt_df.columns) \
                 .format(subset=player1_next3.select_dtypes(include='float64') \
                         .columns.values, formatter='{:.2f}')
-        init_rows[1].dataframe(styled_player1_next3)
+        init_rows[2].dataframe(styled_player1_next3)
 
         element_type_for_player1 = ele_cut.loc[ele_cut['full_name'] == player1, 'element_type'].iloc[0]
         ele_cut_copy= ele_cut[ele_cut['element_type'] == element_type_for_player1].copy()
         id_dict1 = dict(zip(ele_cut_copy['id'], ele_cut_copy['full_name']))  
         if len(id_dict1) > 1:
-            player2 = init_rows[2].selectbox("Choose Player Two", id_dict1.values(), 1) #index=int(ind2))
+            player2 = init_rows[3].selectbox("Choose Player Two", id_dict1.values(), 1) #index=int(ind2))
             player2_next3 = get_player_next3(player2)
+            loogo2 = get_image_Player(player2)
+        with init_rows[1]:
+            st.image(loogo2, width=300)
             for col in new_fixt_cols:
                 if player2_next3[col].dtype == 'O':
                     max_length = player2_next3[col].str.len().max()
@@ -554,7 +560,7 @@ else:
             styled_player2_next3 = player2_next3.style.map(color_fixtures, subset=new_fixt_df.columns) \
                     .format(subset=player2_next3.select_dtypes(include='float64') \
                             .columns.values, formatter='{:.2f}')
-            init_rows[3].dataframe(styled_player2_next3)
+            init_rows[4].dataframe(styled_player2_next3)
             
         rows = st.columns(2)
         player1_df = collate_hist_df_from_name(player1)
