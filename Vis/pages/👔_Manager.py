@@ -143,23 +143,18 @@ with col1:
         except ValueError:
             st.write('Please enter a valid FPL ID.')
 ###############################################################################################################
-session = requests.Session()
-# Cache for loaded images
-image_cache = {}
+@st.cache_data
 def load_image(url):
     """Load an image from a URL and cache it."""
-    if url not in image_cache:
-        try:
-            # Fetch the image from the URL
-            response = requests.get(url, stream=True)
-            response.raise_for_status()  # Raise an error for bad responses
-            img = Image.open(BytesIO(response.content))  # Open the image
-            image_cache[url] = img  # Cache the loaded image
-        except Exception as e:
-            print(f"Error loading image from {url}: {e}")
-            image_cache[url] = None  # Store None if loading fails
-    return image_cache[url]
-
+    try:
+        # Fetch the image from the URL
+        response = requests.get(url, stream=True)
+        response.raise_for_status()  # Raise an error for bad responses
+        img = Image.open(BytesIO(response.content))  # Open the image
+        return img
+    except Exception as e:
+        st.error(f"Error loading image from {url}: {e}")
+        return None
 
 ###############################################################################################################
 with col2:
@@ -522,4 +517,3 @@ else:
         st.write(f'Error retrieving data: {e}. Please try again.')
     except Exception as e:
         st.write(f'An unexpected error occurred: {e}. Please try again.')
-st.write(image_cache)
