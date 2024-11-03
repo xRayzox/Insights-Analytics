@@ -549,7 +549,7 @@ else:
             player2_next3 = get_player_next3(player2)
             loogo2 = get_image_Player(player2)
         with init_rows[3]:
-            st.image(loogo2, width=50)
+            st.image(loogo2, width=150)
             for col in new_fixt_cols:
                 if player2_next3[col].dtype == 'O':
                     max_length = player2_next3[col].str.len().max()
