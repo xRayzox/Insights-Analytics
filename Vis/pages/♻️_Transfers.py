@@ -173,7 +173,9 @@ try:
     
     player_hist_df['T_+/-'] = player_hist_df['Tran_In'] - player_hist_df['Tran_Out']
     min_tran, max_tran = player_hist_df['T_+/-'].min(), player_hist_df['T_+/-'].max()
-    
+    last_gw = player_hist_df['GW'].max()  # Get the latest game week
+    previous_gw = last_gw - 1               # Get the previous game week
+    st.error(last_gw)
     tran_range = max_tran - min_tran
     
     c = alt.Chart(player_hist_df.reset_index()).mark_line().encode(
