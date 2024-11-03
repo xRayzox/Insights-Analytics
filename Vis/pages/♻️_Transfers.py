@@ -182,7 +182,13 @@ try:
         ).properties(
             height=400)
     st.altair_chart(c, use_container_width=True)
-    st.write(player_hist_df)
+    last_gw = player_hist_df['GW'].max()  # Get the latest game week
+    previous_gw = last_gw - 1               # Get the previous game week
+
+    # Filter the DataFrame for the last two game weeks
+    last_gw_df = player_hist_df[player_hist_df['GW'] == last_gw]
+    previous_gw_df = player_hist_df[player_hist_df['GW'] == previous_gw]
+    st.write(last_gw_df)
 except KeyError:
     st.write('Please wait for the Season to begin before viewing transfer data on individual players.')
 
