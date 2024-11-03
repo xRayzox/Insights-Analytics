@@ -530,7 +530,8 @@ else:
             st.image(loogo1,width=150)
 
         element_type_for_player1 = ele_cut.loc[ele_cut['full_name'] == player1, 'element_type'].iloc[0]
-        ele_cut_copy= ele_cut[ele_cut['element_type'] == element_type_for_player1].copy()
+        ele_cut_copy = ele_cut[(ele_cut['element_type'] == element_type_for_player1) & 
+                               (ele_cut['full_name'] != player1)].copy()
         id_dict1 = dict(zip(ele_cut_copy['id'], ele_cut_copy['full_name']))  
         if len(id_dict1) > 1:
             player2 = init_rows[3].selectbox("Choose Player Two", id_dict1.values(), 1) #index=int(ind2))
