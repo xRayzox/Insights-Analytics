@@ -14,9 +14,6 @@ from fpl_api_collection import (
 from fpl_utils import (
     define_sidebar
 )
-from transfer_collection import (
-    write_data
-)
 st.set_page_config(page_title='Transfers', page_icon=':recycle:', layout='wide')
 define_sidebar()
 st.title('Transfers')
@@ -90,9 +87,8 @@ with col1:
 
 with col2:
     st.write('Table ordered by biggest price increase this PL Season.')
-    prices_df = write_data()
-    st.table(prices_df)
-    #prices_df.set_index('Player', inplace=True)
+    prices_df = pd.read_csv('./data/player_prices.csv')
+    prices_df.set_index('Player', inplace=True)
     st.dataframe(prices_df.style.format({'Start': '£{:.1f}',
                                          'Now': '£{:.1f}',
                                          '+/-': '£{:.1f}'}))
