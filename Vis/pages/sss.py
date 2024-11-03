@@ -454,12 +454,13 @@ def plot_position_radar(df_player, name):
 
     # Plot the pizza chart
     fig, ax = baker.make_pizza(
-        values=[data, data],
+        values=data,
+        compare_values=data,
         figsize=(10, 10),
         color_blank_space="same",
-        slice_colors=[["#1A78CF"] * len(data), ["#FF5733"] * len(data)],  # Colors for each player
-        value_colors=[["#000000"] * len(data), ["#000000"] * len(data)],
-        value_bck_colors=[["#1A78CF"] * len(data), ["#FF5733"] * len(data)],
+        slice_colors=["#1A78CF"] * len(data),
+        value_colors=["#000000"] * len(data),
+        value_bck_colors=["#1A78CF"] * len(data),
 
     kwargs_slices=dict(
             edgecolor="#2B2B2B", zorder=3, linewidth=2
