@@ -463,12 +463,7 @@ def plot_position_radar(df_player, name):
     kwargs_slices=dict(
             edgecolor="#2B2B2B", zorder=3, linewidth=2
         ),                                  # values to be used when plotting slices
-
-        kwargs_params=dict(
-            color="white", fontsize=9, fontname = 'Sans Serif',
-            va="center"
-        ),                                  # values to be used when adding parameter labels
-
+        
         kwargs_values=dict(
             color="white", fontsize=9, fontname = 'Sans Serif',
             zorder=5,
@@ -476,7 +471,7 @@ def plot_position_radar(df_player, name):
                 edgecolor="#2B2B2B", facecolor="white",
                 boxstyle="round,pad=.2", lw=1
             )
-        )                                    # values to be used when adding parameter-values labels    
+        )                                      
     )
     fig.text(
         0.1, 0.97, name.replace("-"," ").upper() , size=15,
