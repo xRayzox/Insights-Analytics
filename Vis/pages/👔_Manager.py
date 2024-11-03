@@ -275,7 +275,7 @@ with col5:
                 pad_bottom=20
             )
 
-            fig, ax = pitch.draw(figsize=fig_size, tight_layout=False)  # Draw the pitch
+            fig, ax = pitch.draw(figsize=fig_size, tight_layout=True)  # Draw the pitch
 
             # Extract pitch dimensions from the figure
             pitch_length = fig.get_figheight() * 10  # Scaling factor
