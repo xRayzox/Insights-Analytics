@@ -4,6 +4,27 @@ import sys
 import os
 import plotly.graph_objects as go
 import numpy as np
+
+from mplsoccer import PyPizza
+import urllib.request
+from PIL import Image
+import base64
+from io import BytesIO
+import pandas as pd
+import matplotlib.pyplot as plt
+from mplsoccer import Radar, FontManager, grid
+import pandas as pd
+import matplotlib.pyplot as plt
+from mplsoccer import Radar, grid
+import io
+from highlight_text import fig_text
+
+font_normal = FontManager('https://raw.githubusercontent.com/googlefonts/roboto/main/'
+                          'src/hinted/Roboto-Regular.ttf')
+font_italic = FontManager('https://raw.githubusercontent.com/googlefonts/roboto/main/'
+                          'src/hinted/Roboto-Italic.ttf')
+font_bold = FontManager('https://raw.githubusercontent.com/google/fonts/main/apache/robotoslab/'
+                        'RobotoSlab[wght].ttf')
 pd.set_option('future.no_silent_downcasting', True)
 # Assuming fpl_api_collection and fpl_utils are in the FPL directory
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..', 'FPL')))
@@ -17,11 +38,13 @@ from fpl_utils import define_sidebar
 st.set_page_config(page_title='Player Stats', page_icon=':shirt:', layout='wide')
 define_sidebar()
 st.title("Players")
+st.markdown("**Pick players who share the same positions to compare**")
 ele_types_data = get_bootstrap_data()['element_types']
 ele_types_df = pd.DataFrame(ele_types_data)
 ele_data = get_bootstrap_data()['elements']
 ele_df = pd.DataFrame(ele_data)
 ele_df['element_type'] = ele_df['element_type'].map(ele_types_df.set_index('id')['singular_name_short'])
+ele_df['logo_player'] = "https://resources.premierleague.com/premierleague/photos/players/250x250/p" + ele_df['code'].astype(str) + ".png"
 ele_copy = ele_df.copy()
 
 teams_data = get_bootstrap_data()['teams']
@@ -124,28 +147,6 @@ def color_fixtures(val):
         bg_color += ''
     style = bg_color + '; ' + font_color
     return style
-
-
-# df_cut = ele_df.loc[ele_df['minutes'] >= 90]
-# pivot=ele_df.pivot_table(index='element_type', values='total_points', aggfunc=np.mean).reset_index()
-# pp_position = pivot.sort_values('total_points',ascending=False)
-
-# comparison of players via spider web method?
-# - chances per 90
-# - assists per 90
-# - goals per 90
-# - xA per 90
-# - xG per 90
-# - crosses per 90
-# - shots per 90
-
-# # comparison of keepers - automatically switch to keeper stats
-# - saves per 90
-# - bps per 90
-# - etc
-
-# get player id from player name
-# player1_id = ...
 
 def convert_score_to_result(df):
     df.loc[df['was_home'] == True, 'result'] = df['team_h_score'] \
@@ -259,56 +260,6 @@ def display_frame(df):
     st.dataframe(df.style.format(subset=float_cols, formatter='{:.1f}'))
 
 
-def get_ICT_spider_plot(player_name1, player_name2):
-    cats = ['BPS/90', 'Ave_Mins', 'Influence/90', 'Creativity/90', 'Threat/90',
-            'ICT/90']
-    sp1_df = collated_spider_df_from_name(player_name1)
-    sp1_df['player_name'] = player_name1
-    sp1_df.set_index('player_name', inplace=True)
-    sp1_df = sp1_df[cats].transpose().reset_index()
-    
-    sp2_df = collated_spider_df_from_name(player_name2)
-    sp2_df['player_name'] = player_name2
-    sp2_df.set_index('player_name', inplace=True)
-    sp2_df = sp2_df[cats].transpose().reset_index()
-    
-    fig = go.Figure()
-    
-    fig.add_trace(go.Scatterpolar(name=player_name1, r=list(sp1_df[player_name1]), theta=list(sp1_df['index'])))
-    fig.add_trace(go.Scatterpolar(name=player_name2, r=list(sp2_df[player_name2]), theta=list(sp2_df['index'])))
-    fig.update_layout(legend=dict(x=0.33, y=1.25))
-    return fig
-
-
-def get_stats_spider_plot(player_name1, player_name2):
-    cats = ['G/90', 'xG/90', 'A/90', 'xA/90', 'xGI/90', 'CS/90', 'GC/90',
-            'xGC/90', 'YC/90', 'B/90', 'S/90']
-    sp1_df = collated_spider_df_from_name(player_name1)
-    sp1_df['player_name'] = player_name1
-    sp1_df.set_index('player_name', inplace=True)
-    sp1_df = sp1_df[cats].transpose().reset_index()
-    
-    sp2_df = collated_spider_df_from_name(player_name2)
-    sp2_df['player_name'] = player_name2
-    sp2_df.set_index('player_name', inplace=True)
-    sp2_df = sp2_df[cats].transpose().reset_index()
-    
-    fig = go.Figure()
-    
-    fig.add_trace(go.Scatterpolar(name=player_name1, r=list(sp1_df[player_name1]), theta=list(sp1_df['index'])))
-    fig.add_trace(go.Scatterpolar(name=player_name2, r=list(sp2_df[player_name2]), theta=list(sp2_df['index'])))
-    fig.update_layout(legend=dict(x=0.33, y=1.25))
-    return fig
-
-
-def get_top_two_mid_ids():
-    ele_data = get_bootstrap_data()['elements']
-    ele_df = pd.DataFrame(ele_data)
-    mid_df = ele_df.loc[ele_df['element_type'] == 3]
-    mid_df_sorted = mid_df.sort_values('total_points', ascending=False)
-    top2 = mid_df_sorted.head(2).reset_index()
-    return top2['id'][0], top2['id'][1]
-
 
 def get_player_next3(player):
     player_team = player[len(player) - 4:].replace(')', '')
@@ -316,16 +267,290 @@ def get_player_next3(player):
     player_next3['Team'] = player_team + ' next 3:'
     player_next3.set_index('Team', inplace=True)
     return player_next3
+
+def get_image_Player(player_name):
+    p_id = [k for k, v in full_player_dict.items() if v == player_name]
+    df = ele_copy.copy()
+    p_image = df.loc[df['id'] == p_id[0], 'logo_player']  # Only select the logo_player column
+    image = p_image.values[0] if not p_image.empty else None  # Extract the value from the Series
+    return image
     
 
+
+
+
+def plot_position_radar(df_player,name,df_player1,name1):
+    # Ensure the DataFrame is reset to avoid index issues
+    df_player.reset_index(drop=True, inplace=True)
+    df_player['TSB%'] = df_player['TSB%'] * 100
+    element_type = df_player["element_type"].iloc[0]
+    minutes1=df_player["Mins"].iloc[0]
+    points1=df_player["Pts"].iloc[0]
+    df_player1.reset_index(drop=True, inplace=True)
+    df_player1['TSB%'] = df_player1['TSB%'] * 100
+    minutes2=df_player1["Mins"].iloc[0]
+    points2=df_player1["Pts"].iloc[0]
+    df = ele_copy.copy()
+ 
+    # Define column names and labels based on player position
+    if element_type == 'GKP':
+        df_filtered = df[df['element_type'] == element_type].copy()
+        
+        columns_to_convert = [
+            'expected_goals_conceded', 'influence', 'creativity', 
+            'threat', 'ict_index', 'form', 
+            'selected_by_percent', 'clean_sheets_per_90', 
+            'goals_conceded_per_90', 'saves_per_90'
+        ]
+        for column in columns_to_convert:
+            df_filtered[column] = df_filtered[column].astype(float)
+        cols = ['xGC', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'CS/90', 'GC/90', 'S/90']
+        fields = [
+            'Expected Goals Conceded', 'Influence', 'Creativity', 'Threat', 
+            'ICT Index', 'Player Form', 'Selected %', 'Clean Sheets \nper 90', 
+            'Goals Conceded \nper 90', 'Saves \nper 90'
+        ]
+        max_xGC = float(df_filtered['expected_goals_conceded'].max())
+        max_I = float(df_filtered['influence'].max())
+        max_C = float(df_filtered['creativity'].max())
+        max_T = float(df_filtered['threat'].max())
+        max_ICT = float(df_filtered['ict_index'].max())
+        max_Form = float(df_filtered['form'].max())
+        max_TSB_percent = float(df_filtered['selected_by_percent'].max())
+        max_CS_90 = float(df_filtered['clean_sheets_per_90'].max())
+        max_GC_90 = float(df_filtered['goals_conceded_per_90'].max())
+        max_S_90 = float(df_filtered['saves_per_90'].max())
+
+        min_range = [0] * 10      
+        max_range = [max_xGC, max_I, max_C, max_T, max_ICT, max_Form, max_TSB_percent, max_CS_90, max_GC_90, max_S_90]  # Customize these as needed
+    
+    
+    
+    elif element_type == 'DEF':
+        df_filtered = df[df['element_type'] == element_type].copy()
+        columns_to_convert = [
+        'expected_goals','expected_assists','goals_conceded', 'influence', 'creativity', 
+        'threat', 'ict_index', 'form', 
+        'selected_by_percent', 'goals_scored' ,'assists','clean_sheets_per_90', 
+        'goals_conceded_per_90'
+    ]
+        
+        for column in columns_to_convert:
+                df_filtered[column] = df_filtered[column].astype(float)
+        
+        cols = ['xG','xA','xGI', 'I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'A/90', 'CS/90', 'GC/90']
+        fields = [
+            'Expected \nGoals','Expected \nAssists','Goals \nConceded', 
+            'Influence', 'Creativity', 'Threat', 'ICT Index',
+            'Player Form', 'Selected %', 'Goals \nper 90', 'Assists \nper 90', 
+            'Clean Sheets \nper 90', 'Goals Conceded \nper 90'
+        ]
+        df_filtered['G/90'] = df_filtered['goals_scored'] / (df_filtered['minutes'] / 90)
+        df_filtered['A/90'] = df_filtered['assists'] / (df_filtered['minutes'] / 90)
+        max_xGC = float(df_filtered['expected_goals_conceded'].max())
+        max_I = float(df_filtered['influence'].max())
+        max_C = float(df_filtered['creativity'].max())
+        max_T = float(df_filtered['threat'].max())
+        max_ICT = float(df_filtered['ict_index'].max())
+        max_Form = float(df_filtered['form'].max())
+        max_TSB_percent = float(df_filtered['selected_by_percent'].max())
+        max_CS_90 = float(df_filtered['clean_sheets_per_90'].max())
+        max_GC_90 = float(df_filtered['goals_conceded_per_90'].max())
+        max_G_90 = float(df_filtered['G/90'].max())
+        max_A_90 = float(df_filtered['A/90'].max()) 
+        max_xG = float(df_filtered['expected_goals'].max())  
+        max_xA = float(df_filtered['expected_assists'].max())  
+        
+        min_range = [0] * 13      
+        max_range = [max_xG,max_xA,max_xGC, max_I, max_C, max_T, max_ICT, max_Form, max_TSB_percent, max_G_90, max_A_90, max_CS_90, max_GC_90]
+    
+    
+    elif element_type == 'MID':
+        df_filtered = df[df['element_type'] == element_type].copy()
+        columns_to_convert = [
+        'expected_goals','expected_assists','expected_goal_involvements', 'influence', 'creativity', 
+        'threat', 'ict_index', 'form', 
+        'selected_by_percent', 'goals_scored' ,'assists'
+    ]
+        for column in columns_to_convert:
+                df_filtered[column] = df_filtered[column].astype(float)
+        cols = ['xG','xA','xGI','I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'A/90','xG/90','xA/90','xGI/90']
+        fields = [
+        'Expected \nGoals', 'Expected \nAssists', 'Expected \nGoal Involvements', 
+        'Influence', 'Creativity', 'Threat', 'ICT Index', 'Player Form', 
+        'Selected %', 'Goals per 90', 'Assists \nper 90', 
+        'Expected Goals \nper 90', 'Expected Assists \nper 90', 'Expected \nGoal Involvements \nper 90'
+    ]
+
+        df_filtered['G/90'] = df_filtered['goals_scored'] / (df_filtered['minutes'] / 90)
+        df_filtered['A/90'] = df_filtered['assists'] / (df_filtered['minutes'] / 90)
+        df_filtered['xG/90'] = df_filtered['expected_goals'] / (df_filtered['minutes'] / 90)
+        df_filtered['xA/90'] = df_filtered['expected_assists'] / (df_filtered['minutes'] / 90)
+        df_filtered['xGI/90'] = df_filtered['expected_goal_involvements'] / (df_filtered['minutes'] / 90)
+
+        # Calculate maximum values for the statistics
+        max_xG = float(df_filtered['expected_goals'].max())
+        max_xA = float(df_filtered['expected_assists'].max())
+        max_xGI = float(df_filtered['expected_goal_involvements'].max())
+        max_I = float(df_filtered['influence'].max())
+        max_C = float(df_filtered['creativity'].max())
+        max_T = float(df_filtered['threat'].max())
+        max_ICT = float(df_filtered['ict_index'].max())
+        max_Form = float(df_filtered['form'].max())
+        max_TSB_percent = float(df_filtered['selected_by_percent'].max())
+        max_G_90 = float(df_filtered['G/90'].max())
+        max_A_90= float(df_filtered['A/90'].max())
+        max_xG_90 = float(df_filtered['xG/90'].max())
+        max_xA_90= float(df_filtered['xA/90'].max())
+        max_xGI_90 = float(df_filtered['xGI/90'].max())
+        
+        
+        min_range = [0] * 14      
+        max_range = [max_xG,max_xA,max_xGI, max_I, max_C, max_T, max_ICT, max_Form, max_TSB_percent, max_G_90, max_A_90, max_xG_90, max_xA_90,max_xGI_90]
+
+    elif element_type == 'FWD':
+        df_filtered = df[df['element_type'] == element_type].copy()
+        
+        columns_to_convert = [
+        'expected_goals','expected_assists','expected_goal_involvements', 'influence', 'creativity', 
+        'threat', 'ict_index', 'form', 
+        'selected_by_percent', 'goals_scored' ,'assists'
+    ]
+        for column in columns_to_convert:
+                df_filtered[column] = df_filtered[column].astype(float)
+
+        
+        cols = ['xG', 'xA','xGI','I', 'C', 'T', 'ICT', 'Form', 'TSB%', 'G/90', 'A/90','xG/90','xA/90','xGI/90']
+        fields = [
+        'Expected \nGoals', 'Expected \nAssists', 'Expected \nGoal Involvements', 
+        'Influence', 'Creativity', 'Threat', 'ICT Index', 'Player Form', 
+        'Selected %', 'Goals \nper 90', 'Assists \nper 90', 
+        'Expected Goals \nper 90', 'Expected Assists \nper 90', 'Expected \nGoal Involvements \nper 90'
+    ]
+
+        df_filtered['G/90'] = df_filtered['goals_scored'] / (df_filtered['minutes'] / 90)
+        df_filtered['A/90'] = df_filtered['assists'] / (df_filtered['minutes'] / 90)
+        df_filtered['xG/90'] = df_filtered['expected_goals'] / (df_filtered['minutes'] / 90)
+        df_filtered['xA/90'] = df_filtered['expected_assists'] / (df_filtered['minutes'] / 90)
+        df_filtered['xGI/90'] = df_filtered['expected_goal_involvements'] / (df_filtered['minutes'] / 90)
+        
+        # Calculate maximum values for the statistics
+        max_xG = float(df_filtered['expected_goals'].max())
+        max_xA = float(df_filtered['expected_assists'].max())
+        max_xGI = float(df_filtered['expected_goal_involvements'].max())
+        max_I = float(df_filtered['influence'].max())
+        max_C = float(df_filtered['creativity'].max())
+        max_T = float(df_filtered['threat'].max())
+        max_ICT = float(df_filtered['ict_index'].max())
+        max_Form = float(df_filtered['form'].max())
+        max_TSB_percent = float(df_filtered['selected_by_percent'].max())
+        max_G_90 = float(df_filtered['G/90'].max())
+        max_A_90= float(df_filtered['A/90'].max())
+        max_xG_90 = float(df_filtered['xG/90'].max())
+        max_xA_90= float(df_filtered['xA/90'].max())
+        max_xGI_90 = float(df_filtered['xGI/90'].max())
+        min_range = [0] * 14     
+        max_range = [max_xG,max_xA,max_xGI, max_I, max_C, max_T, max_ICT, max_Form, max_TSB_percent, max_G_90, max_A_90, max_xG_90, max_xA_90,max_xGI_90]
+
+
+    # Select relevant columns
+    df_player = df_player[cols]
+    # Convert normalized data to a list
+    data = df_player.iloc[0, :].values.flatten().tolist()
+    data = [round(float(x), 2) for x in data]
+    ###########################
+    df_player1 = df_player1[cols]
+    data1 = df_player1.iloc[0, :].values.flatten().tolist()
+    data1 = [round(float(x), 2) for x in data1]
+
+    
+
+    # Create PyPizza plot
+    baker = PyPizza(
+        params=fields,
+        min_range=min_range,
+        max_range=max_range,
+        straight_line_color="#222222",  # color for straight lines
+        last_circle_color="#FF5733",
+        inner_circle_size=20,
+        straight_line_lw=1,             # linewidth for straight lines
+        other_circle_lw=1,              # linewidth for other circles
+        other_circle_ls='--',           # linestyle for other circles
+        last_circle_lw=1,               # linewidth of last circle
+        last_circle_ls='-',              # linestyle for last circle
+        background_color="#EBEBE9",
+        straight_line_limit=101
+    )
+
+    # Plot the pizza chart
+    fig, ax = baker.make_pizza(
+        data,                     # list of values
+        compare_values=data1,    # comparison values
+        figsize=(8, 8),             # adjust figsize according to your need
+        kwargs_slices=dict(
+            facecolor="#1A78CF", edgecolor="#222222",
+            zorder=2, linewidth=1
+        ),                          # values to be used when plotting slices
+        kwargs_compare=dict(
+            facecolor="#FF9300", edgecolor="#222222",
+            zorder=2, linewidth=1,
+        ),
+        kwargs_params=dict(
+            color="#000000", fontsize=12,
+            fontproperties=font_normal.prop, va="center"
+        ),                          # values to be used when adding parameter
+        kwargs_values=dict(
+            color="#000000", fontsize=12,
+            fontproperties=font_normal.prop, zorder=3,
+            bbox=dict(
+                edgecolor="#000000", facecolor="cornflowerblue",
+                boxstyle="round,pad=0.2", lw=1
+            )
+        ),                       
+        kwargs_compare_values=dict(
+            color="#000000", fontsize=12, fontproperties=font_normal.prop, zorder=3,
+            bbox=dict(edgecolor="#000000", facecolor="#FF9300", boxstyle="round,pad=0.2", lw=1)
+        ),                    
+    )
+
+    # add title
+    fig_text(
+        0.515, 0.99, f"<{name}>  vs <{name1}>", size=17, fig=fig,
+        highlight_textprops=[{"color": '#1A78CF'}, {"color": '#EE8900'}],
+        ha="center", fontproperties=font_bold.prop, color="#000000"
+    )
+
+    fig_text(
+        0.515, 0.942, f"<Minutes : {minutes1} | Points : {points1}> | {element_type} | <{points2} : Points | {minutes2} : Minutes>"
+        , size=15, fig=fig,
+        highlight_textprops=[{"color": '#1A78CF'}, {"color": '#EE8900'}],
+        ha="center", fontproperties=font_bold.prop, color="#000000"
+    )
+
+
+
+    # add credits
+    CREDIT_1 = "Fantasy Premier League"
+    CREDIT_2 = "Created by: @wael_hcin"
+
+    fig.text(
+        0.99, 0.005, f"{CREDIT_1}\n{CREDIT_2}", size=9,
+        fontproperties=font_italic.prop, color="#000000",
+        ha="right"
+    )
+
+    return fig
+
+##############################################################################
 price_min = (ele_copy['now_cost'].min())/10
 price_max = (ele_copy['now_cost'].max())/10
 price_min = float(price_min)
 price_max = float(price_max)
+
 if len(get_player_data(list(full_player_dict.keys())[0])['history']) == 0:
     st.write(f"Please wait for the {crnt_season} season to begin for individual player statistics")
 else:
-    filter_rows = st.columns([2,5])
+    filter_rows = st.columns([2,3])
     filter_pos = filter_rows[0].multiselect(
         'Filter Position',
         ['GKP', 'DEF', 'MID', 'FWD'],
@@ -344,13 +569,16 @@ else:
         ele_cut['second_name'] + ' (' + ele_cut['team_name'] + ')'
     id_dict = dict(zip(ele_cut['id'], ele_cut['full_name']))
     
-    #ind1, ind2 = get_top_two_mid_ids()
     
     if len(id_dict) == 0:
         st.write('No data to display in range.')
     elif len(id_dict) >= 1:
-        init_rows = st.columns(4)
-        player1 = init_rows[0].selectbox("Choose Player One", id_dict.values(), index=0)
+        init_rows1 = st.columns([3,5,3,5])
+        init_rows2 = st.columns(2)
+        player1 = init_rows2[0].selectbox("Choose Player One", id_dict.values(), index=0)
+        loogo1 = get_image_Player(player1)
+        with init_rows1[0]:
+            st.image(loogo1,width=150)
         player1_next3 = get_player_next3(player1)
         for col in new_fixt_cols:
             if player1_next3[col].dtype == 'O':
@@ -362,10 +590,24 @@ else:
         styled_player1_next3 = player1_next3.style.map(color_fixtures, subset=new_fixt_df.columns) \
                 .format(subset=player1_next3.select_dtypes(include='float64') \
                         .columns.values, formatter='{:.2f}')
-        init_rows[1].dataframe(styled_player1_next3)
-            
-        if len(id_dict) > 1:
-            player2 = init_rows[2].selectbox("Choose Player Two", id_dict.values(), 1) #index=int(ind2))
+        with init_rows1[1]:
+           st.write("")
+           st.write("")
+           st.write("")
+           st.dataframe(styled_player1_next3)
+        
+
+
+        element_type_for_player1 = ele_cut.loc[ele_cut['full_name'] == player1, 'element_type'].iloc[0]
+        ele_cut_copy = ele_cut[(ele_cut['element_type'] == element_type_for_player1) & 
+                               (ele_cut['full_name'] != player1)].copy()
+        id_dict1 = dict(zip(ele_cut_copy['id'], ele_cut_copy['full_name']))  
+        if len(id_dict1) > 1:
+            player2 = init_rows2[1].selectbox("Choose Player Two", id_dict1.values(), 1) #index=int(ind2))
+            loogo2 = get_image_Player(player2)
+            with init_rows1[2]:
+                st.image(loogo2, width=150)
+        
             player2_next3 = get_player_next3(player2)
             for col in new_fixt_cols:
                 if player2_next3[col].dtype == 'O':
@@ -377,29 +619,30 @@ else:
             styled_player2_next3 = player2_next3.style.map(color_fixtures, subset=new_fixt_df.columns) \
                     .format(subset=player2_next3.select_dtypes(include='float64') \
                             .columns.values, formatter='{:.2f}')
-            init_rows[3].dataframe(styled_player2_next3)
+            with init_rows1[3]:
+                st.write("")
+                st.write("")
+                st.write("")
+                st.dataframe(styled_player2_next3)
             
+      
         rows = st.columns(2)
         player1_df = collate_hist_df_from_name(player1)
         player1_total_df = collate_total_df_from_name(player1)
         player1_total_df.drop(['team', 'element_type'], axis=1, inplace=True)
-        rows[0].dataframe(player1_df.style.format({'Price': '£{:.1f}'}))
-        total_fmt = {'xG':'{:.2f}', 'xA':'{:.2f}', 'xGI':'{:.2f}', 'xGC':'{:.2f}',
-                     'Price': '£{:.1f}', 'TSB%': '{:.1%}'}
-        rows[0].dataframe(player1_total_df.style.format(total_fmt))
+        rows[0].dataframe(player1_df.style.format({'Price': '£{:.1f}'}), height=150)
+
         
         if len(id_dict) > 1:
             player2_df = collate_hist_df_from_name(player2)
             player2_total_df = collate_total_df_from_name(player2)
             player2_total_df.drop(['team', 'element_type'], axis=1, inplace=True)
-            rows[1].dataframe(player2_df.style.format({'Price': '£{:.1f}'}))
-            total_fmt = {'xG':'{:.2f}', 'xA':'{:.2f}', 'xGI':'{:.2f}', 'xGC':'{:.2f}',
-                     'Price': '£{:.1f}', 'TSB%': '{:.1%}'}
-            rows[1].dataframe(player2_total_df.style.format(total_fmt))
+            rows[1].dataframe(player2_df.style.format({'Price': '£{:.1f}'}),height=150)
 
-            rows[0].plotly_chart(get_stats_spider_plot(player1, player2))
-            rows[1].plotly_chart(get_ICT_spider_plot(player1, player2))
-        
+df_player1=collated_spider_df_from_name(player1)
+df_player2=collated_spider_df_from_name(player2)
 
-#st.plotly_chart(get_spider_plot(player1, player2), use_container_width=True)correct this
- 
+figg=plot_position_radar(df_player1,player1,df_player2,player2)
+clo=st.columns([1,8,1])
+with clo[1]:
+    st.write(figg)
