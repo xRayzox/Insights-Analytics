@@ -146,15 +146,12 @@ with col1:
 session = requests.Session()
 # Cache for loaded images
 image_cache = {}
-
-
-@lru_cache(maxsize=100)  # Cache up to 100 images
 def load_image(url):
     """Load an image from a URL and cache it."""
     if url not in image_cache:
         try:
             # Fetch the image from the URL
-            response = requests.get(url,stream=True)
+            response = requests.get(url, stream=True)
             response.raise_for_status()  # Raise an error for bad responses
             img = Image.open(BytesIO(response.content))  # Open the image
             image_cache[url] = img  # Cache the loaded image
