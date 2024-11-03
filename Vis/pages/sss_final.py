@@ -526,8 +526,8 @@ def plot_position_radar(df_player,name,df_player1,name1):
     )
 
     # add credits
-    CREDIT_1 = "data: statsbomb viz fbref"
-    CREDIT_2 = "inspired by: @Worville, @FootballSlices, @somazerofc & @Soumyaj15209314"
+    CREDIT_1 = "Fantasy Premier League"
+    CREDIT_2 = "Created by: @wael_hcin"
 
     fig.text(
         0.99, 0.005, f"{CREDIT_1}\n{CREDIT_2}", size=9,
