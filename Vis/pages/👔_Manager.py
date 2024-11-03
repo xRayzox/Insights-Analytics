@@ -195,10 +195,10 @@ with col5:
                 pl_cols = ['element', 'opponent_team', 'total_points', 'round']
                 test_cut = test[pl_cols]
                 test_new = test_cut.loc[test_cut['round'] == fpl_gw]
-                """
+                
                 if test_new.empty:
                     test_new = pd.DataFrame([[player_id, 'BLANK', 0, fpl_gw]], columns=pl_cols)
-                """
+
                 pts_list.append(test_new)
 
             pts_df = pd.concat(pts_list)
