@@ -564,7 +564,7 @@ else:
                             (ele_copy['price'] > slider1) &
                             (ele_copy['element_type'].isin(filter_pos))]
     
-    ele_cut.sort_values('price', ascending=False, inplace=True)
+    ele_cut = ele_cut.sort_values('price', ascending=False)
     ele_cut['full_name'] = ele_cut['first_name'].str.cat(ele_cut['second_name'].str.cat(ele_cut['team_name'].apply(lambda x: f" ({x})"), sep=''), sep=' ')
 
     id_dict = dict(zip(ele_cut['id'], ele_cut['full_name']))
