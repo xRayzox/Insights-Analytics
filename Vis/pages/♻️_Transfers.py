@@ -183,6 +183,7 @@ try:
             height=400)
     st.altair_chart(c, use_container_width=True)
     last_gw = player_hist_df['GW'].max()  # Get the latest game week
+    st.write(last_gw)
     previous_gw = last_gw - 1               # Get the previous game week
 
     # Filter the DataFrame for the last two game weeks
