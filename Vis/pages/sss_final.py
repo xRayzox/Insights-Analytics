@@ -564,7 +564,7 @@ else:
             styled_player2_next3 = player2_next3.style.map(color_fixtures, subset=new_fixt_df.columns) \
                     .format(subset=player2_next3.select_dtypes(include='float64') \
                             .columns.values, formatter='{:.2f}')
-            init_rows1[3].dataframe(styled_player2_next3)
+            init_rows1[3].dataframe(styled_player2_next3,width=200)
             
       
         rows = st.columns(2)
