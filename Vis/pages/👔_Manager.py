@@ -432,7 +432,7 @@ with col5:
             draw_bench_players(df_bench,ax,pitch)
 
 
-            st.plotly_chart(fig)
+            st.pyplot(fig)
 
 ###############################################################################
 
