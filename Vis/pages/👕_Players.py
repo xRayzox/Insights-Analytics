@@ -486,7 +486,7 @@ def plot_position_radar(df_player,name,df_player1,name1):
     fig, ax = baker.make_pizza(
         data,                     # list of values
         compare_values=data1,    # comparison values
-        figsize=(10, 10),             # adjust figsize according to your need
+        figsize=(11, 11),             # adjust figsize according to your need
         kwargs_slices=dict(
             facecolor="#1A78CF", edgecolor="#222222",
             zorder=2, linewidth=1
