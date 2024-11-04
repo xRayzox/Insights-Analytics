@@ -188,7 +188,9 @@ try:
     # Get the previous game week
     previous_gw = last_gw - 1  
 
-    st.write(player_hist_df.loc[previous_gw:last_gw, 'Price'])
+    price_difference = player_hist_df.loc[last_gw, 'Price'] - player_hist_df.loc[previous_gw, 'Price']
+
+    st.write(price_difference)
 
 except KeyError as e:
     st.write(f"An error occurred: {e}. Please wait for the Season to begin before viewing transfer data on individual players.")
