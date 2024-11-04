@@ -328,25 +328,23 @@ with col5:
                 ha='center',
                 va='center'
             )
-
+            
             # Function to draw player images and details
-            def draw_players(df, positions, ax, pitch):
-                for pos, group in df.groupby('Pos'):
-                    num_players = len(group)
+            def draw_players(df, positions,ax, pitch):
+                for index, row in df.iterrows():
+                    IMAGE_URL = row['code']
+                    image = load_image(IMAGE_URL)
+                    pos = row['Pos']
+                    num_players = len(df[df['Pos'] == pos])  # Number of players in this position
                     y_image = positions[pos]
-                    x_base = pitch_width / (num_players + 1)
-                    
-                    for index, row in group.iterrows():
-                        IMAGE_URL = row['code']
-                        image = load_image(IMAGE_URL)
-                        x_image = x_base * (index + 1)
+                    x_image = (pitch_width / (num_players + 1)) * (index % num_players + 1) if num_players > 1 else pitch_width / 2
 
-                        # Draw the player image on the pitch
-                        pitch.inset_image(y_image, x_image, image, height=9, ax=ax)
+                    # Draw the player image on the pitch
+                    pitch.inset_image(y_image, x_image, image, height=9, ax=ax)
 
-                        # Draw player's name and GWP points
-                        draw_player_details(ax, row, x_image, y_image)
-
+                    # Draw player's name and GWP points
+                    draw_player_details(ax, row, x_image, y_image)
+            
             # Function to draw player details
             def draw_player_details(ax, row, x_image, y_image):
                 player_name = row.Player  # Access using attribute-style access
@@ -386,7 +384,7 @@ with col5:
                 ax.text(x_image, y_image - rect_height - 5 + rect_height / 2, player_name, fontsize=7, ha='center', color='black', va='center')
 
             # Draw players who played
-            draw_players(df, positions, ax, pitch)
+            draw_players(df, positions,ax,pitch)
 
             ############################### Bench Players ##################
             df_bench = test[test['Played'] == False]  # Bench players
@@ -413,9 +411,9 @@ with col5:
             # Set the total number of bench slots
             bench_slots = 4
             slot_width = bench_width / bench_slots
-
+            
             # Function to draw bench players
-            def draw_bench_players(df_bench, ax, pitch):
+            def draw_bench_players(df_bench,ax,pitch):
                 for i, row in enumerate(df_bench.itertuples()):
                     IMAGE_URL = row.code  # Access using attribute-style access
                     image = load_image(IMAGE_URL)
@@ -431,10 +429,10 @@ with col5:
                     draw_player_details(ax, row, x_bench, y_bench)
 
             # Draw bench players
-            draw_bench_players(df_bench, ax, pitch)
+            draw_bench_players(df_bench,ax,pitch)
 
-            st.write(fig)
 
+            st.plotly_chart(fig)
 
 ###############################################################################
 
