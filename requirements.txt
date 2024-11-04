@@ -19,3 +19,4 @@ great_tables
 streamlit-aggrid
 webdriver_manager
 selenium
+chromedriver_autoinstaller
