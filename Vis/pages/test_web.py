@@ -18,6 +18,6 @@ options.add_argument("--disable-gpu")
 options.add_argument("--headless")
 
 driver = get_driver()
-driver.get("http://example.com")
+driver.get("https://www.whoscored.com/Matches/1821249/Live/England-Premier-League-2024-2025-Bournemouth-Manchester-City")
 
 st.code(driver.page_source)
