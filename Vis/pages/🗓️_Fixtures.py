@@ -16,6 +16,7 @@ from fpl_api_collection import (
     get_fixture_data
 )
 from fpl_utils import (
+    
     define_sidebar,
     get_annot_size,
     map_float_to_color,
