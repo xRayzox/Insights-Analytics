@@ -182,7 +182,7 @@ try:
         ).properties(
             height=400)
     st.altair_chart(c, use_container_width=True)
-
+    """
     last_gw = player_hist_df.index.max()  
 
     # Get the previous game week
@@ -191,6 +191,7 @@ try:
     price_difference = player_hist_df.loc[last_gw, 'Price'] - player_hist_df.loc[previous_gw, 'Price']
 
     st.write(price_difference)
+    """
 
 except KeyError as e:
     st.write(f"An error occurred: {e}. Please wait for the Season to begin before viewing transfer data on individual players.")
