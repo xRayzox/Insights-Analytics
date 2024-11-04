@@ -60,9 +60,9 @@ fixtures_df['local_hour'] = fixtures_df['datetime'].dt.tz_convert(timezone).dt.s
 # Retrieve fixture difficulty rating data
 team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
 
-
-st.write(fixtures_df)
-st.markdown("suiii")
-st.write(ele_copy)
-st.markdown("suiii")
-st.write(teams_df)
+st.markdown("FIXTURE")
+st.write(fixtures_df.columns)
+st.markdown("PLAYER STATS")
+st.write(ele_copy.columns)
+st.markdown("TEAM")
+st.write(teams_df.columns)
