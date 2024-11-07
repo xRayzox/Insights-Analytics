@@ -66,3 +66,4 @@ st.markdown("PLAYER STATS")
 st.write(ele_copy)
 st.markdown("TEAM")
 st.write(teams_df)
+
