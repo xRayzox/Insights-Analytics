@@ -52,3 +52,35 @@
 
     return fig
 """
+
+
+
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# Initialize the XGBoost regressor
+xgb_model = XGBRegressor(
+    objective='reg:squarederror',
+    n_estimators=500,
+    learning_rate=0.1,
+    max_depth=3,
+    min_child_weight=3,
+    subsample= 0.8,
+    colsample_bytree=0.8,
+    gamma=0.1,
+    alpha=0,
+    random_state=42
+)
+
+# Train the model
+xgb_model.fit(
+    X_train, y_train,
+    eval_set=[(X_test, y_test)],
+    verbose=False  # Set to True if you want to see logs
+)
+
+# Make predictions
+y_pred = xgb_model.predict(X_test)
+
+# Evaluate the model
+mse = mean_squared_error(y_test, y_pred)
+print(f'Mean Squared Error: {mse}')
