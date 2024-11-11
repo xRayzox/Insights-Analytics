@@ -24,6 +24,12 @@ from fpl_api_collection import (
 from fpl_utils import (
     define_sidebar
 )
+
+with open('./data/wave.css') as f:
+        css = f.read()
+
+st.markdown(f'<style>{css}</style>', unsafe_allow_html=True)
+########################################################
 st.set_page_config(page_title='PL Table', page_icon=':sports-medal:', layout='wide')
 define_sidebar()
 st.title('Premier League Table')

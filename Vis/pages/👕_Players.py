@@ -34,7 +34,11 @@ from fpl_api_collection import (
     get_fixt_dfs, get_current_gw, remove_moved_players, get_current_season
 )
 from fpl_utils import define_sidebar
+with open('./data/wave.css') as f:
+        css = f.read()
 
+st.markdown(f'<style>{css}</style>', unsafe_allow_html=True)
+########################################################
 st.set_page_config(page_title='Player Stats', page_icon=':shirt:', layout='wide')
 define_sidebar()
 st.title("Players")

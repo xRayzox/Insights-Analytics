@@ -41,7 +41,11 @@ from fpl_league import (
 )
 
 from fpl_params import MY_FPL_ID, BASE_URL
+with open('./data/wave.css') as f:
+        css = f.read()
 
+st.markdown(f'<style>{css}</style>', unsafe_allow_html=True)
+########################################################
 st.set_page_config(page_title='Manager', page_icon=':necktie:', layout='wide')
 define_sidebar()
 st.title('Manager')
