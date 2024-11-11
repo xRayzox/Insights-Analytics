@@ -24,6 +24,8 @@ from fpl_utils import (
     get_rotation,
     get_user_timezone
 )
+
+st.set_page_config(page_title='Fixtures', page_icon=':calendar:', layout='wide')
 st.markdown(
     """
     <style>
