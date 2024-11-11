@@ -34,6 +34,18 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+# Forcing dark mode
+st.markdown(
+    """
+    <style>
+    body {
+        background-color: #181818;
+        color: #f0f0f0;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 with open('./data/wave.css') as f:
         css = f.read()
 
