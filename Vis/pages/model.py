@@ -509,7 +509,7 @@ def objective_optuna(trial):
         'reg_lambda': trial.suggest_float('reg_lambda', 0.01, 1),
     }
 
-    model = XGBRegressor(objective='reg:squarederror', random_state=42,tree_method='gpu_hist', predictor='gpu_predictor',**params)
+    model = XGBRegressor(objective='reg:squarederror', random_state=42,**params)
 
     # Use K-fold cross-validation to better estimate performance
     kf = KFold(n_splits=5, shuffle=True, random_state=42)
@@ -555,7 +555,7 @@ def train_and_save_model(X, y, model_path="xgb_model.joblib", score_path="best_s
 
     # Tune hyperparameters if no previous params are found
     best_params = auto_tune_hyperparameters(X, y)
-    new_model = XGBRegressor(objective='reg:squarederror', random_state=42,tree_method='gpu_hist', predictor='gpu_predictor', **best_params)
+    new_model = XGBRegressor(objective='reg:squarederror', random_state=42, **best_params)
     print("Starting new model training with tuned hyperparameters.")
 
     # Train the model with early stopping
