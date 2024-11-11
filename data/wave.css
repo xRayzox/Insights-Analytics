@@ -14,8 +14,8 @@ body {
 /* Create a wave effect */
 .stApp {
     background: linear-gradient(135deg, #0E1117 25%, #3a5683 75%);
-    background-size: 400% 400%;
-    animation: waveAnimation 10s ease infinite;
+    background-size: 800% 800%; /* Increase size for more wave repetitions */
+    animation: waveAnimation 20s ease infinite; /* Slow down animation to 20s */
     width: 100%;
     height: 100%;
     position: absolute;
@@ -26,8 +26,10 @@ body {
 /* Smooth animation for wave movement */
 @keyframes waveAnimation {
     0% {background-position: 0% 0%;}
-    50% {background-position: 100% 100%;}
-    100% {background-position: 0% 0%;}
+    25% {background-position: 100% 100%;}
+    50% {background-position: 200% 0%;}
+    75% {background-position: 300% 100%;}
+    100% {background-position: 400% 0%;}
 }
 
 /* Style for text */
