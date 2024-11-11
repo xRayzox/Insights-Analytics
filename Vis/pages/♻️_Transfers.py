@@ -14,6 +14,7 @@ from fpl_api_collection import (
 from fpl_utils import (
     define_sidebar
 )
+st.set_page_config(page_title='Transfers', page_icon=':recycle:', layout='wide')
 
 st.markdown(
     """
@@ -31,7 +32,6 @@ with open('./data/wave.css') as f:
 
 st.markdown(f'<style>{css}</style>', unsafe_allow_html=True)
 ########################################################
-st.set_page_config(page_title='Transfers', page_icon=':recycle:', layout='wide')
 define_sidebar()
 st.title('Transfers')
 
