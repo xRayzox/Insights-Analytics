@@ -34,13 +34,24 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-
+# Forcing dark mode
+st.markdown(
+    """
+    <style>
+    body {
+        background-color: #181818;
+        color: #f0f0f0;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 with open('./data/wave.css') as f:
         css = f.read()
 
 st.markdown(f'<style>{css}</style>', unsafe_allow_html=True)
 ########################################################
-st.set_page_config(page_title='Fixtures', page_icon=':calendar:', layout='wide')
+
     # Define the custom color mapping for FDR values
 fdr_colors = {
         1: ("#257d5a", "black"),
