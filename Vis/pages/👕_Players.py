@@ -39,9 +39,10 @@ from fpl_utils import define_sidebar
 with open('./data/wave.css') as f:
         css = f.read()
 
-st.markdown(f'<style>{css}</style>', unsafe_allow_html=True)
 ########################################################
 st.set_page_config(page_title='Player Stats', page_icon=':shirt:', layout='wide')
+
+st.markdown(f'<style>{css}</style>', unsafe_allow_html=True)
 define_sidebar()
 st.title("Players")
 st.markdown("**Pick players who share the same positions to compare**")
