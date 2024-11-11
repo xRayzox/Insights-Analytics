@@ -34,6 +34,18 @@ from fpl_api_collection import (
     get_fixt_dfs, get_current_gw, remove_moved_players, get_current_season
 )
 from fpl_utils import define_sidebar
+
+st.markdown(
+    """
+    <style>
+    body {
+        background-color: #181818;
+        color: #f0f0f0;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 with open('./data/wave.css') as f:
         css = f.read()
 

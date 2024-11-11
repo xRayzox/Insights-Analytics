@@ -41,6 +41,18 @@ from fpl_league import (
 )
 
 from fpl_params import MY_FPL_ID, BASE_URL
+
+st.markdown(
+    """
+    <style>
+    body {
+        background-color: #181818;
+        color: #f0f0f0;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 with open('./data/wave.css') as f:
         css = f.read()
 

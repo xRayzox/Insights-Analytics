@@ -51,7 +51,7 @@ with open('./data/wave.css') as f:
 
 st.markdown(f'<style>{css}</style>', unsafe_allow_html=True)
 ########################################################
-
+st.set_page_config(page_title='Fixtures', page_icon=':calendar:', layout='wide')
     # Define the custom color mapping for FDR values
 fdr_colors = {
         1: ("#257d5a", "black"),
