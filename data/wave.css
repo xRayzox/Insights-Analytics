@@ -11,9 +11,9 @@ body {
     align-items: center;
 }
 
-/* Create a wave effect with the specified colors */
+/* Create a wave effect */
 .stApp {
-    background: linear-gradient(135deg, #00c8f3 25%, #645c73 75%);
+    background: linear-gradient(135deg, #0E1117 25%, #3a5683 75%);
     background-size: 400% 400%;
     animation: waveAnimation 10s ease infinite;
     width: 100%;
