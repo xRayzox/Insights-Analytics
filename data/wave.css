@@ -1,49 +1,16 @@
-/* Set up the body background and text color */
-body {
-    font-family: Arial, sans-serif;
-    color: white;
-    background: #0E1117; /* Dark background */
-    margin: 0;
-    height: 100vh;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-/* Create a wave effect */
-.stApp {
-    background: linear-gradient(135deg, #0E1117 25%, #3a5683 75%);
-    background-size: 800% 800%; /* Increase size for more wave repetitions */
-    animation: waveAnimation 20s ease infinite; /* Slow down animation to 20s */
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-}
-
-/* Smooth animation for wave movement */
-@keyframes waveAnimation {
-    0% {background-position: 0% 0%;}
-    25% {background-position: 100% 100%;}
-    50% {background-position: 200% 0%;}
-    75% {background-position: 300% 100%;}
-    100% {background-position: 400% 0%;}
-}
-
-/* Style for text */
-h1 {
-    font-size: 3em;
-    text-align: center;
-    font-weight: bold;
-    z-index: 2;
-    position: relative;
-}
-
-/* Example to adjust the header to your needs */
 .stApp > header {
     background-color: transparent;
-    text-align: center;
-    padding: 20px;
+}
+
+.stApp {
+    background: linear-gradient(45deg, #3a5683 10%, #0E1117 45%, #0E1117 55%, #3a5683 90%);
+    animation: my_animation 20s ease infinite;
+    background-size: 200% 200%;
+    background-attachment: fixed;
+}
+
+@keyframes my_animation {
+    0% {background-position: 0% 0%;}
+    50% {background-position: 100% 100%;}
+    100% {background-position: 0% 0%;}
 }
