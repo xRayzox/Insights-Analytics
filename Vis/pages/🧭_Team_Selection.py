@@ -28,58 +28,9 @@ from fpl_api_collection import (
     get_current_season,
     get_player_data,
 )
+import subprocess
 
-# Path to the Python file you want to execute
-python_path = "./Vis/pages/Prediction/model.py"
-
-# Function to execute the script
-def execute_script(script_path):
-    try:
-        # Run the script as a subprocess
-        result = subprocess.run(
-            ["python", script_path],  # The command to run the script
-            capture_output=True,       # Capture the output (stdout and stderr)
-            text=True                  # Convert byte output to string
-        )
-        # Return the result of the script execution
-        return result.stdout, result.stderr
-    except Exception as e:
-        return None, str(e)
-
-# Streamlit UI to trigger script execution
-st.title("Run FPL Prediction Model")
-st.write("Click below to run the model prediction script.")
-
-if st.button("Run Prediction Model"):
-    stdout, stderr = execute_script(python_path)
-    if stderr:
-        st.error(f"Error occurred: {stderr}")
-    else:
-        st.success(f"Model ran successfully!\n{stdout}")
-
-
-def task_to_run():
-    # Replace with the actual function you want to run
-    st.write("Running daily task...")
-    # Example: get_bootstrap_data(), or other functions you need to execute
-    data = get_bootstrap_data()
-    st.write("Task completed.")
-
-# Function to run the scheduled jobs
-def run_scheduler():
-    # Schedule the task to run once every day (24 hours)
-    schedule.every(24).hours.do(task_to_run)
-
-    while True:
-        schedule.run_pending()
-        time.sleep(1)  # Wait for the next run
-
-# Create a thread to run the scheduler so it doesn't block the main Streamlit app
-def start_scheduler():
-    scheduler_thread = threading.Thread(target=run_scheduler, daemon=True)
-    scheduler_thread.start()
-
-
+subprocess.run(["python", "./Vis/pages/Prediction/model.py"])
 
 start_time = time.time()
 
