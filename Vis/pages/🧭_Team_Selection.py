@@ -9,9 +9,6 @@ from concurrent.futures import ThreadPoolExecutor ,ProcessPoolExecutor,as_comple
 import joblib
 import time
 
-from thefuzz import process  # Install with: pip install thefuzz
-
-
 cwd = os.getcwd()
 # Construct the full path to the 'FPL' directory
 fpl_path = os.path.join(cwd, 'FPL')
@@ -436,24 +433,19 @@ fit['season'] = fit['team'].map(team_to_season)
 ####################################################################
 
 
-def find_opponent(team, df_fixture):
-    """Finds the opponent for a given team using fuzzy matching."""
-    best_match_home = process.extractOne(team, df_fixture['home_team'])
-    best_match_away = process.extractOne(team, df_fixture['away_team'])
 
-    if best_match_home and best_match_away:
-        if best_match_home[1] > best_match_away[1]:  # Compare match scores
-            return df_fixture.loc[df_fixture['home_team'] == best_match_home[0], 'away_team'].iloc[0]
-        else:
-            return df_fixture.loc[df_fixture['away_team'] == best_match_away[0], 'home_team'].iloc[0]
-    elif best_match_home:
-        return df_fixture.loc[df_fixture['home_team'] == best_match_home[0], 'away_team'].iloc[0]
-    elif best_match_away:
-        return df_fixture.loc[df_fixture['away_team'] == best_match_away[0], 'home_team'].iloc[0]
-    else:
-        return None  # No match found
+fit['vs'] = fit['team'].apply(
+    lambda team: df_fixture.loc[
+        (df_fixture['Team_home'].str.extract(r'([A-Za-z]+)')[0] == team), 'Team_away'
+    ].values[0] if not df_fixture.loc[
+        (df_fixture['Team_home'].str.extract(r'([A-Za-z]+)')[0] == team), 'Team_away'
+    ].empty else df_fixture.loc[
+        (df_fixture['Team_away'].str.extract(r'([A-Za-z]+)')[0] == team), 'Team_home'
+    ].values[0] if not df_fixture.loc[
+        (df_fixture['Team_away'].str.extract(r'([A-Za-z]+)')[0] == team), 'Team_home'
+    ].empty else None
+)
 
-fit['vs'] = fit['team'].apply(lambda team: find_opponent(team, df_fixture))
 
 pulga=filtered_players_fixture
 columns_to_normalize = [
