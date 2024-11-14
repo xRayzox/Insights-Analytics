@@ -29,7 +29,7 @@ from fpl_api_collection import (
     get_player_data,
 )
 import subprocess
-
+subprocess.run(["pip", "install", "pandas"], check=True)
 subprocess.run(["python", "./Vis/pages/Prediction/model.py"])
 
 start_time = time.time()
