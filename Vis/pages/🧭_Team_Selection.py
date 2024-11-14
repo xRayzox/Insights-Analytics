@@ -433,20 +433,9 @@ fit['season'] = fit['team'].map(team_to_season)
 ####################################################################
 
 
-
-def get_opponent(team, df_fixture):
-    """Efficiently retrieves the opponent of a given team from a fixture DataFrame."""
-    mask_home = df_fixture['Team_home'].str.extract(r'([A-Za-z]+)')[0] == team
-    mask_away = df_fixture['Team_away'].str.extract(r'([A-Za-z]+)')[0] == team
-
-    if mask_home.any():
-        return df_fixture.loc[mask_home, 'Team_away'].iloc[0]  # Use iloc for faster access
-    elif mask_away.any():
-        return df_fixture.loc[mask_away, 'Team_home'].iloc[0]
-    else:
-        return None
-
-fit['vs'] = fit['team'].apply(get_opponent, args=(df_fixture,))
+fit['vs'] = fit['team'].map(
+    df_fixture.set_index('home_team')['away_team']
+).fillna(fit['team'].map(df_fixture.set_index('away_team')['home_team']))
 
 
 pulga=filtered_players_fixture
