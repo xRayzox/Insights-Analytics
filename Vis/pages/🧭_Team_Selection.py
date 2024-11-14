@@ -117,20 +117,16 @@ def convert_opponent_string(df):
     return df
 
 @st.cache_data
-def collate_hist_df_from_name(player_name, full_player_dict, ele_copy, teams_df):
-    # Look up player details once
-    player_info = ele_copy[ele_copy['full_name'] == player_name].iloc[0]
+def collate_hist_df_from_name(player_name):
     p_id = [k for k, v in full_player_dict.items() if v == player_name]
-    
-    position = player_info['element_type']
-    Team = player_info['team_name']
-    
+    position = ele_copy.loc[ele_copy['full_name'] == player_name, 'element_type'].iloc[0]
+    Team = ele_copy.loc[ele_copy['full_name'] == player_name, 'team_name'].iloc[0]
     p_data = get_player_data(str(p_id[0]))
     p_df = pd.DataFrame(p_data['history'])
     convert_score_to_result(p_df)
     p_df.loc[p_df['result'] == '<NA>-<NA>', 'result'] = '-'
     
-    # Rename columns upfront
+    # Renaming columns in a single step
     rn_dict = {'round': 'GW', 'kickoff_time': 'kickoff_time', 'opponent_team': 'vs', 
                'total_points': 'Pts', 'minutes': 'Mins', 'goals_scored': 'GS', 
                'assists': 'A', 'clean_sheets': 'CS', 'goals_conceded': 'GC', 
@@ -143,14 +139,15 @@ def collate_hist_df_from_name(player_name, full_player_dict, ele_copy, teams_df)
                'expected_goal_involvements': 'xGI', 'expected_goals_conceded': 'xGC', 
                'result': 'Result'}
     p_df.rename(columns=rn_dict, inplace=True)
-
-    # Set column order upfront
+    
+    # Set column order once after renaming
     col_order = ['GW', 'kickoff_time', 'vs', 'Result', 'Pts', 'Mins', 'GS', 'xG', 'A', 'xA',
-                 'xGI', 'Pen_Miss', 'CS', 'GC', 'xGC', 'OG', 'Pen_Save', 'S', 'YC', 'RC', 'B', 
-                 'BPS', 'Price', 'I', 'C', 'T', 'ICT', 'SB', 'Tran_In', 'Tran_Out', 'was_home']
+                 'xGI', 'Pen_Miss', 'CS', 'GC', 'xGC', 'OG', 'Pen_Save', 'S',
+                 'YC', 'RC', 'B', 'BPS', 'Price', 'I', 'C', 'T', 'ICT', 'SB',
+                 'Tran_In', 'Tran_Out', 'was_home']
     p_df = p_df[col_order]
-
-    # Apply mappings to reduce redundancy
+    
+    # Apply mappings outside loop to save time
     p_df['Price'] = p_df['Price'] / 10
     p_df['vs'] = p_df['vs'].map(teams_df.set_index('id')['short_name'])
     p_df['Pos'] = position
@@ -161,13 +158,13 @@ def collate_hist_df_from_name(player_name, full_player_dict, ele_copy, teams_df)
     return p_df
 
 @st.cache_data
-def collate_all_players_parallel(full_player_dict, ele_copy, teams_df, max_workers=None):
+def collate_all_players_parallel(full_player_dict, max_workers=None):
     if max_workers is None:
         max_workers = min(32, os.cpu_count() * 2)  # Tune based on system capabilities
 
     def get_player_data_wrapper(player_name):
         try:
-            player_df = collate_hist_df_from_name(player_name, full_player_dict, ele_copy, teams_df)
+            player_df = collate_hist_df_from_name(player_name)
             player_df['Player'] = player_name
             return player_df
         except Exception as e:
@@ -184,7 +181,8 @@ def collate_all_players_parallel(full_player_dict, ele_copy, teams_df, max_worke
     return pd.concat(results, axis=0, ignore_index=True)
 
 # Run the optimized function
-all_players_data = collate_all_players_parallel(full_player_dict, ele_copy, teams_df)
+all_players_data = collate_all_players_parallel(full_player_dict)
+
 
 elapsed_time2 = time.time() - start_time
 st.error(f"2-Time taken by my_function: {elapsed_time2} seconds")
