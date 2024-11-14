@@ -401,9 +401,7 @@ fit=filtered_pl[['Team_player', 'Player', 'Pos', 'Price']]
 
 fit['team'] = fit['Team_player'].str.extract(r'([A-Za-z]+) \(')[0]
 
-# Now, assign 'GW', 'kickoff_time', and 'season' based on matching either Team_home or Team_away in df_fixture
-# Pre-extract team names once for both 'Team_home' and 'Team_away' columns
-# Pre-extract team names for both 'Team_home' and 'Team_away'
+# Pre-extract team names for both 'Team_home' and 'Team_away' once
 df_fixture['home_team'] = df_fixture['Team_home'].str.extract(r'([A-Za-z]+)')[0]
 df_fixture['away_team'] = df_fixture['Team_away'].str.extract(r'([A-Za-z]+)')[0]
 
@@ -422,26 +420,24 @@ for team, data in away_team_mapping.items():
     else:
         combined_mapping[team] = data
 
-# Now map the values to the 'fit' DataFrame
+# Now map the values to the 'fit' DataFrame for 'GW', 'kickoff_time', and 'season'
 fit['GW'] = fit['team'].map(lambda team: combined_mapping.get(team, {}).get('GW'))
 fit['kickoff_time'] = fit['team'].map(lambda team: combined_mapping.get(team, {}).get('kickoff_time'))
 fit['season'] = fit['team'].map(lambda team: combined_mapping.get(team, {}).get('season'))
 
 ####################################################################
 
+# Create dictionaries for home-to-away and away-to-home teams to find opponents
+home_to_away = df_fixture.set_index('home_team')['Team_away'].to_dict()
+away_to_home = df_fixture.set_index('away_team')['Team_home'].to_dict()
 
+# Combine home and away opponent mappings into a single dictionary
+combined_opponent_mapping = {}
+combined_opponent_mapping.update(home_to_away)
+combined_opponent_mapping.update(away_to_home)
 
-fit['vs'] = fit['team'].apply(
-    lambda team: df_fixture.loc[
-        (df_fixture['Team_home'].str.extract(r'([A-Za-z]+)')[0] == team), 'Team_away'
-    ].values[0] if not df_fixture.loc[
-        (df_fixture['Team_home'].str.extract(r'([A-Za-z]+)')[0] == team), 'Team_away'
-    ].empty else df_fixture.loc[
-        (df_fixture['Team_away'].str.extract(r'([A-Za-z]+)')[0] == team), 'Team_home'
-    ].values[0] if not df_fixture.loc[
-        (df_fixture['Team_away'].str.extract(r'([A-Za-z]+)')[0] == team), 'Team_home'
-    ].empty else None
-)
+# Map the 'vs' column in the 'fit' DataFrame to their corresponding opponent
+fit['vs'] = fit['team'].map(combined_opponent_mapping)
 
 
 pulga=filtered_players_fixture
