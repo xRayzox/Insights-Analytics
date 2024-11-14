@@ -11,6 +11,13 @@ from fpl_utils import (
     define_sidebar, chip_converter
 )
 st.set_page_config(page_title='Home', page_icon=':house:', layout='wide')
+
+
+with open('./data/wave.css') as f:
+        css = f.read()
+
+st.markdown(f'<style>{css}</style>', unsafe_allow_html=True)
+
 # Project Description
 define_sidebar()
 st.title("Fantasy Premier League Analysis and Insights ")
