@@ -1,20 +1,15 @@
+
 import warnings
 warnings.filterwarnings("ignore")
 import pandas as pd
 import sys
-import matplotlib.pyplot as plt  
+import matplotlib.pyplot as plt 
+import numpy as np 
 import os 
 from concurrent.futures import ThreadPoolExecutor ,ProcessPoolExecutor,as_completed
-import joblib
-import optuna
-from xgboost import XGBRegressor
-from sklearn.model_selection import train_test_split, cross_val_score, KFold
-from sklearn.metrics import mean_squared_error
-import numpy as np
 cwd = os.getcwd()
 # Construct the full path to the 'FPL' directory
-fpl_path = os.path.join(cwd, 'FPL')
-print(fpl_path)
+fpl_path = os.path.join(cwd, '..', '..', 'FPL')
 # Add it to the system path
 sys.path.append(fpl_path)
 from fpl_api_collection import (
@@ -26,6 +21,7 @@ from fpl_api_collection import (
     get_current_season,
     get_player_data,
 )
+
 # Retrieve and prepare player data
 ele_types_data = get_bootstrap_data()['element_types']
 ele_types_X_weighted = pd.DataFrame(ele_types_data)
@@ -335,8 +331,8 @@ new_fix_gw_test = new_fix_gw[['event', 'team_h_short_name', 'team_a_short_name',
     }
 )
 
-print('sssssssssuii')
-history_path= os.path.join(cwd, 'data', 'history', 'clean_player_2324.csv')
+
+history_path= os.path.join(cwd, '..', '..', 'data', 'history', 'clean_player_2324.csv')
 
 player_history = pd.read_csv(history_path, index_col=0)
 
@@ -479,8 +475,14 @@ df_player[columns_to_convert] = df_player[columns_to_convert].astype(float)
 # Make a copy of X to apply weights
 X_weighted = df_player.copy()
 
+import os
+import joblib
+import optuna
+from xgboost import XGBRegressor
+from sklearn.model_selection import train_test_split, cross_val_score, KFold
+from sklearn.metrics import mean_squared_error
+import numpy as np
 
-print('sssssssssuii2')
 # Define the objective function for Optuna
 def objective_optuna(trial):
     # Define the hyperparameter space
