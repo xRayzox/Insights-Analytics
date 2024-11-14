@@ -29,8 +29,10 @@ from fpl_api_collection import (
     get_player_data,
 )
 import subprocess
-subprocess.run(["pip", "install","./requirements.txt"], check=True)
-subprocess.run(["python", "./Vis/pages/Prediction/model.py"])
+# Install the requirements from the requirements.txt file
+subprocess.run(["pip", "install", "-r", "./requirements.txt"], check=True)
+# Run the model script
+subprocess.run(["python", "./Vis/pages/Prediction/model.py"], check=True)
 
 start_time = time.time()
 
