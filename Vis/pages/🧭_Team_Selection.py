@@ -12,6 +12,7 @@ from xgboost import XGBRegressor
 from sklearn.model_selection import train_test_split, cross_val_score, KFold
 from sklearn.metrics import mean_squared_error
 import numpy as np
+import time
 cwd = os.getcwd()
 # Construct the full path to the 'FPL' directory
 fpl_path = os.path.join(cwd, 'FPL')
@@ -29,6 +30,7 @@ from fpl_api_collection import (
 )
 
 
+start_time = time.time()
 
 
 # Retrieve and prepare player data
@@ -72,6 +74,10 @@ fixtures_df['local_hour'] = fixtures_df['datetime'].dt.tz_convert(timezone).dt.s
 # Retrieve fixture difficulty rating data
 team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
 full_player_dict = get_player_id_dict('total_points', web_name=False)
+
+elapsed_time = time.time() - start_time
+print(f"1-Time taken by my_function: {elapsed_time} seconds")
+
 
 def convert_score_to_result(df):
     df.loc[df['was_home'] == True, 'result'] = df['team_h_score'] \
@@ -163,7 +169,8 @@ def collate_all_players_parallel(full_player_dict, max_workers=None):
 
 all_players_data = collate_all_players_parallel(full_player_dict)
 
-
+elapsed_time = time.time() - start_time
+print(f"2-Time taken by my_function: {elapsed_time} seconds")
 merged_home = pd.merge(all_players_data, teams_df[['short_name',
                                                     'strength_overall_home', 
                                                     'strength_overall_away', 
@@ -203,7 +210,8 @@ new_fixt_cols = ['GW' + str(col) for col in new_fixt_df.columns.tolist()]
 new_fixt_df.columns = new_fixt_cols
 
 new_fdr_df = team_fdr_df.loc[:, ct_gw:(ct_gw+2)]
-
+elapsed_time = time.time() - start_time
+print(f"3-Time taken by my_function: {elapsed_time} seconds")
 def get_home_away_str_dict():
     new_fdr_df.columns = new_fixt_cols
     result_dict = {}
@@ -270,7 +278,8 @@ team_fdr_map = dict(zip(team_fdr_df['team'], team_fdr_df['fdr']))
 # Map the 'fdr' values to the 'merged_opponent' dataframe based on the 'Team_player' column
 merged_opponent['Team_fdr'] = merged_opponent['Team_player'].map(team_fdr_map)
 merged_opponent['opponent_fdr'] = merged_opponent['vs'].map(team_fdr_map)
-
+elapsed_time = time.time() - start_time
+print(f"4-Time taken by my_function: {elapsed_time} seconds")
 
 
 columns_to_convert = ['GW', 'Pts', 'Mins', 'GS', 'xG', 'A', 'xA', 'xGI', 'Pen_Miss', 
@@ -339,8 +348,9 @@ new_fix_gw_test = new_fix_gw[['event', 'team_h_short_name', 'team_a_short_name',
         'team_a_short_name': 'Team_away',
     }
 )
+elapsed_time = time.time() - start_time
+print(f"5-Time taken by my_function: {elapsed_time} seconds")
 
-print('ssssss')
 history_path= os.path.join(cwd, 'data', 'history', 'clean_player_2324.csv')
 
 player_history = pd.read_csv(history_path, index_col=0)
@@ -355,7 +365,8 @@ concatenated_df.reset_index(drop=True, inplace=True)
 
 new_fix_gw_test['season']=2425
 
-
+elapsed_time = time.time() - start_time
+print(f"6-Time taken by my_function: {elapsed_time} seconds")
 # 1. Calculate the average statistics for each team from df_player
 df_player=concatenated_df
 df_fixture=new_fix_gw_test
@@ -544,7 +555,8 @@ ssuiio['final_weight'] = (
     ssuiio['xa_weight']
 )
 
-
+elapsed_time = time.time() - start_time
+print(f"7-Time taken by my_function: {elapsed_time} seconds")
 XX = ssuiio[features]
 model_path="./Vis/pages/Prediction/xgb_model.joblib"
 best_model = joblib.load(model_path)
