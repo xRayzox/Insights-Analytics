@@ -385,21 +385,23 @@ new_fix_gw_test['season']=2425
 
 elapsed_time6 = time.time() - start_time
 st.error(f"6-Time taken by my_function: {elapsed_time6} seconds")
-# 1. Calculate the average statistics for each team from df_player
-df_player=concatenated_df
-df_fixture=new_fix_gw_test
 
+
+df_player = concatenated_df
+df_fixture = new_fix_gw_test
+
+# Get the last gameweek of the season 2425
 last_gw = df_player[df_player['season'] == 2425]['GW'].max()
-filtered_players_fixture = df_player[
-    (df_player['season'] == 2425) ]
-filtered_pl = df_player[
-    (df_player['season'] == 2425) & (df_player['GW'] == last_gw)
-]
-fit=filtered_pl[['Team_player', 'Player', 'Pos', 'Price']]
 
+# Filter player data for the last gameweek
+filtered_players_fixture = df_player[df_player['season'] == 2425]
+filtered_pl = df_player[(df_player['season'] == 2425) & (df_player['GW'] == last_gw)]
+fit = filtered_pl[['Team_player', 'Player', 'Pos', 'Price']]
+
+# Extract team names from 'Team_player'
 fit['team'] = fit['Team_player'].str.extract(r'([A-Za-z]+) \(')[0]
 
-# Now, assign 'GW', 'kickoff_time', and 'season' based on matching either Team_home or Team_away in df_fixture
+# Assign 'GW', 'kickoff_time', and 'season' from df_fixture based on matching teams
 fit['GW'] = fit['team'].apply(
     lambda team: df_fixture.loc[
         (df_fixture['Team_home'].str.extract(r'([A-Za-z]+)')[0] == team) | 
@@ -429,6 +431,7 @@ fit['season'] = fit['team'].apply(
         (df_fixture['Team_away'].str.extract(r'([A-Za-z]+)')[0] == team), 'season'
     ].empty else None
 )
+
 fit['vs'] = fit['team'].apply(
     lambda team: df_fixture.loc[
         (df_fixture['Team_home'].str.extract(r'([A-Za-z]+)')[0] == team), 'Team_away'
@@ -441,24 +444,24 @@ fit['vs'] = fit['team'].apply(
     ].empty else None
 )
 
-
-pulga=filtered_players_fixture
+# Calculate average player statistics per player across all gameweeks
+pulga = filtered_players_fixture
 columns_to_normalize = [
-    'Mins','Pts', 'GS', 'xG', 'A', 'xA', 'xGI', 'Pen_Miss', 'CS', 'GC', 
+    'Mins', 'Pts', 'GS', 'xG', 'A', 'xA', 'xGI', 'Pen_Miss', 'CS', 'GC', 
     'xGC', 'OG', 'Pen_Save', 'S', 'YC', 'RC', 'B', 'BPS', 'I', 
     'C', 'T', 'ICT', 'SB', 'Tran_In', 'Tran_Out'
 ]
 
 total_stats = pulga.groupby('Player')[columns_to_normalize].mean().reset_index()
 
-df_pred = pd.merge(fit, total_stats,
-                           left_on='Player', right_on='Player', how='left')
+# Merge the statistics with the fixture information
+df_pred = pd.merge(fit, total_stats, left_on='Player', right_on='Player', how='left')
 
-
+# Clean the team and opponent names for further mapping
 df_pred['vs_temp'] = df_pred['vs'].str.replace(r'\s?\(.*\)', '', regex=True)
 df_pred['Team_player_temp'] = df_pred['Team_player'].str.replace(r'\s?\(.*\)', '', regex=True)
 
-# Create mappings for each strength based on the team names
+# Map strengths for each team and opponent from `teams_df`
 strength_overall_home_map = teams_df.set_index('short_name')['strength_overall_home'].to_dict()
 strength_overall_away_map = teams_df.set_index('short_name')['strength_overall_away'].to_dict()
 strength_attack_home_map = teams_df.set_index('short_name')['strength_attack_home'].to_dict()
@@ -466,7 +469,7 @@ strength_attack_away_map = teams_df.set_index('short_name')['strength_attack_awa
 strength_defence_home_map = teams_df.set_index('short_name')['strength_defence_home'].to_dict()
 strength_defence_away_map = teams_df.set_index('short_name')['strength_defence_away'].to_dict()
 
-# Map the strengths for the team in `Team_player_temp`
+# Map team strengths to `df_pred`
 df_pred['strength_overall_home'] = df_pred['Team_player_temp'].map(strength_overall_home_map)
 df_pred['strength_overall_away'] = df_pred['Team_player_temp'].map(strength_overall_away_map)
 df_pred['strength_attack_home'] = df_pred['Team_player_temp'].map(strength_attack_home_map)
@@ -474,7 +477,7 @@ df_pred['strength_attack_away'] = df_pred['Team_player_temp'].map(strength_attac
 df_pred['strength_defence_home'] = df_pred['Team_player_temp'].map(strength_defence_home_map)
 df_pred['strength_defence_away'] = df_pred['Team_player_temp'].map(strength_defence_away_map)
 
-# Map the strengths for the opponent team in `vs_temp`
+# Map opponent strengths
 df_pred['strength_overall_home_opponent'] = df_pred['vs_temp'].map(strength_overall_home_map)
 df_pred['strength_overall_away_opponent'] = df_pred['vs_temp'].map(strength_overall_away_map)
 df_pred['strength_attack_home_opponent'] = df_pred['vs_temp'].map(strength_attack_home_map)
@@ -482,14 +485,18 @@ df_pred['strength_attack_away_opponent'] = df_pred['vs_temp'].map(strength_attac
 df_pred['strength_defence_home_opponent'] = df_pred['vs_temp'].map(strength_defence_home_map)
 df_pred['strength_defence_away_opponent'] = df_pred['vs_temp'].map(strength_defence_away_map)
 
-# Optionally drop the 'short_name' columns for opponents if you don't need them
-df_next_fixt = df_pred.drop(columns=['vs_temp','Team_player_temp'])
+# Clean up temporary columns
+df_next_fixt = df_pred.drop(columns=['vs_temp', 'Team_player_temp'])
 
+# Map fixture difficulty ratings (FDR) for teams
 df_next_fixt['Team_fdr'] = df_next_fixt['Team_player'].map(team_fdr_map)
 df_next_fixt['opponent_fdr'] = df_next_fixt['vs'].map(team_fdr_map)
+
+# Determine if the player is at home
 df_next_fixt['was_home'] = df_next_fixt['Team_player'].apply(lambda x: True if '(H)' in x else False)
 
-df_next_fixt_gw=df_next_fixt
+# Prepare features for prediction
+df_next_fixt_gw = df_next_fixt
 features = ['GW', 'Mins', 'GS', 'xG', 'A', 'xA', 'xGI', 'Pen_Miss', 'CS', 'GC', 'xGC', 'OG', 'Pen_Save', 'S', 'YC', 'RC', 'B', 'BPS', 
             'Price', 'I', 'C', 'T', 'ICT', 'SB', 'Tran_In', 'Tran_Out', 'was_home', 'strength_overall_home', 'strength_overall_away', 
             'strength_attack_home', 'strength_attack_away', 'strength_defence_home', 'strength_defence_away', 'strength_overall_home_opponent', 
@@ -497,81 +504,34 @@ features = ['GW', 'Mins', 'GS', 'xG', 'A', 'xA', 'xGI', 'Pen_Miss', 'CS', 'GC', 
             'strength_defence_away_opponent', 'Team_fdr', 'opponent_fdr', 'season', 'position_weight', 'home_away_weight', 'time_weight', 
             'strength_weight', 'final_weight', 'transfer_weight', 'opponent_difficulty_weight', 'penalty_risk_weight']
 
+# Position Weights
+position_weights = {'GKP': 0.9, 'DEF': 1.1, 'MID': 1.3, 'FWD': 1.5}
+df_next_fixt_gw['position_weight'] = df_next_fixt_gw['Pos'].map(position_weights)
 
-ssuiio=df_next_fixt_gw
-
-
-ssuiio['kickoff_time'] = pd.to_datetime(ssuiio['kickoff_time'])
-
-# 1. Position Weights
-position_weights = {
-    'GKP': 0.9,
-    'DEF': 1.1,
-    'MID': 1.3,
-    'FWD': 1.5
-}
-
-# Apply weight based on position
-ssuiio['position_weight'] = ssuiio['Pos'].map(position_weights)
-
-# 2. Home/Away Game Weights
+# Home/Away Game Weights
 home_weight = 1.2  # Home game weight
 away_weight = 1.0  # Away game weight
+df_next_fixt_gw['home_away_weight'] = df_next_fixt_gw['was_home'].apply(lambda x: home_weight if x else away_weight)
 
-# Apply home/away weight
-ssuiio['home_away_weight'] = ssuiio['was_home'].map({True: home_weight, False: away_weight})
+# Time/Fixture Weight (closer to match time = higher weight)
+df_next_fixt_gw['time_weight'] = df_next_fixt_gw['kickoff_time'].apply(lambda x: pd.to_datetime(x).hour / 24)  # Example weight
 
-# 3. Kickoff Time Weights
-def assign_time_weight(kickoff_time):
-    if 6 <= kickoff_time.hour < 12:
-        return 0.95  # Morning games tend to have lower energy
-    elif 12 <= kickoff_time.hour < 18:
-        return 1.0   # Standard midday games
-    elif 18 <= kickoff_time.hour < 24:
-        return 1.1   # Evening games often see more action
-    else:
-        return 1.05  # Late-night games may see more relaxed performances
+# Opponent Difficulty Weight
+df_next_fixt_gw['opponent_difficulty_weight'] = df_next_fixt_gw['opponent_fdr'].apply(lambda x: 1 if x < 3 else 1.5)
 
-ssuiio['time_weight'] = ssuiio['kickoff_time'].apply(assign_time_weight)
-
-# 4. Team and Opponent Strength Weights
-ssuiio['team_strength_weight'] = (ssuiio['strength_overall_home'] + ssuiio['strength_attack_home'] - ssuiio['strength_defence_home']) * 1.1
-ssuiio['opponent_strength_weight'] = (ssuiio['strength_overall_away_opponent'] + ssuiio['strength_attack_away_opponent'] - ssuiio['strength_defence_away_opponent'])
-
-# Strength ratio, adjust for home/away dynamics
-ssuiio['strength_weight'] = ssuiio['team_strength_weight'] / ssuiio['opponent_strength_weight']
-
-# 5. Transfer Activity Weights
-ssuiio['transfer_weight'] = ssuiio['Tran_In'] / (ssuiio['Tran_In'] + ssuiio['Tran_Out'] + 1)
-
-# 6. Disciplinary Risk Weights
-ssuiio['penalty_risk_weight'] = 1 - (ssuiio['Pen_Miss'] * 0.3 + ssuiio['YC'] * 0.1 + ssuiio['RC'] * 0.2)
-
-# 7. Fixture Difficulty Rating (FDR) Weights
-ssuiio['opponent_difficulty_weight'] = 1 / (ssuiio['opponent_fdr'] + 1)
-
-# 8. Form Weight
-
-# 9. Minutes Played Weight
-ssuiio['minutes_weight'] = ssuiio['Mins'] / 90  # Normalize to a full game
-
-# 10. Expected Goals (xG) and Expected Assists (xA) Weights
-ssuiio['xg_weight'] = ssuiio['xG'] * 1.2  # Weight xG higher as it's a strong predictor of goals
-ssuiio['xa_weight'] = ssuiio['xA'] * 1.1  # xA is also valuable for midfielders and forwards
-
-# 11. Final Weight Calculation
-ssuiio['final_weight'] = (
-    ssuiio['position_weight'] * 
-    ssuiio['home_away_weight'] * 
-    ssuiio['time_weight'] * 
-    ssuiio['strength_weight'] * 
-    ssuiio['transfer_weight'] * 
-    ssuiio['penalty_risk_weight'] * 
-    ssuiio['opponent_difficulty_weight'] *
-    ssuiio['minutes_weight'] * 
-    ssuiio['xg_weight'] * 
-    ssuiio['xa_weight']
+# Calculate the final prediction weight (adjust this calculation to fit your logic)
+df_next_fixt_gw['final_weight'] = (
+    df_next_fixt_gw['position_weight'] * df_next_fixt_gw['home_away_weight'] * df_next_fixt_gw['time_weight'] *
+    df_next_fixt_gw['strength_weight'] * df_next_fixt_gw['transfer_weight'] * df_next_fixt_gw['opponent_difficulty_weight']
 )
+
+# Drop rows with NaN values in important columns for predictions
+df_next_fixt_gw_clean = df_next_fixt_gw.dropna(subset=features)
+
+# Your model prediction function here (if applicable), or calculate the predictions based on final_weight
+# Example of sorting by the final weight
+df_next_fixt_gw_clean_sorted = df_next_fixt_gw_clean.sort_values(by='final_weight', ascending=False)
+
 
 elapsed_time7 = time.time() - start_time
 st.error(f"7-Time taken by my_function: {elapsed_time7} seconds")
