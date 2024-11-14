@@ -391,22 +391,16 @@ st.error(f"6-Time taken by my_function: {elapsed_time6} seconds")
 df_player=concatenated_df
 df_fixture=new_fix_gw_test
 
-df_player_2425 = df_player[df_player['season'] == 2425]
+last_gw = df_player[df_player['season'] == 2425]['GW'].max()
+filtered_players_fixture = df_player[
+    (df_player['season'] == 2425) ]
+filtered_pl = df_player[
+    (df_player['season'] == 2425) & (df_player['GW'] == last_gw)
+]
+fit=filtered_pl[['Team_player', 'Player', 'Pos', 'Price']]
 
-# Get the last gameweek directly from the filtered data
-last_gw = df_player_2425['GW'].max()
+fit['team'] = fit['Team_player'].str.extract(r'([A-Za-z]+) \(')[0]
 
-# Filter the relevant players for the last gameweek
-filtered_pl = df_player_2425[df_player_2425['GW'] == last_gw]
-
-# Select the necessary columns for further processing
-fit = filtered_pl[['Team_player', 'Player', 'Pos', 'Price']]
-
-# Extract the team names from 'Team_player' once
-fit['team'] = fit['Team_player'].str.extract(r'([A-Za-z]+) \(')
-
-elapsed_time8 = time.time() - start_time
-st.error(f"8-Time taken by my_function: {elapsed_time8} seconds")
 # Now, assign 'GW', 'kickoff_time', and 'season' based on matching either Team_home or Team_away in df_fixture
 fit['GW'] = fit['team'].apply(
     lambda team: df_fixture.loc[
