@@ -7,15 +7,7 @@ import matplotlib.pyplot as plt
 import os 
 from concurrent.futures import ThreadPoolExecutor ,ProcessPoolExecutor,as_completed
 import joblib
-import optuna
-from xgboost import XGBRegressor
-from sklearn.model_selection import train_test_split, cross_val_score, KFold
-from sklearn.metrics import mean_squared_error
-import numpy as np
 import time
-
-
-
 
 cwd = os.getcwd()
 # Construct the full path to the 'FPL' directory
@@ -36,7 +28,9 @@ from fpl_api_collection import (
 
 start_time = time.time()
 
-
+@st.cache_data
+def get_cached_fixture_data():
+    return get_fixture_data()
 # Cache bootstrap data retrieval to avoid repeated API calls
 @st.cache
 def get_bootstrap_data_cached():
@@ -57,7 +51,7 @@ def process_fixture_data():
     teams_df = pd.DataFrame(bootstrap_data['teams'])
     team_name_mapping = pd.Series(teams_df.name.values, index=teams_df.id).to_dict()
 
-    fixture_data = get_fixture_data()
+    fixture_data = get_cached_fixture_data()
     fixtures_df = pd.DataFrame(fixture_data).drop(columns='stats').replace(
         {'team_h': team_name_mapping, 'team_a': team_name_mapping}
     ).drop(columns=['pulse_id'])
@@ -88,6 +82,13 @@ def process_player_data():
     
     return ele_copy, team_name_mapping,teams_df
 
+@st.cache_data
+def get_cached_player_data(player_id):
+    return get_player_data(str(player_id))
+
+@st.cache_data
+def get_cached_fixt_dfs():
+    return get_fixt_dfs()
 # Streamlit UI Components
 st.title("Fantasy Premier League Data")
 
@@ -95,15 +96,12 @@ st.title("Fantasy Premier League Data")
 ele_copy, team_name_mapping,teams_df = process_player_data()
 fixtures_df = process_fixture_data()
 full_player_dict, crnt_season, ct_gw = get_player_and_season_data()
-
-team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
+team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_cached_fixt_dfs()
 elapsed_time = time.time() - start_time
 st.error(f"1-Time taken by my_function: {elapsed_time} seconds")
 
 
-from concurrent.futures import ThreadPoolExecutor, as_completed
-import pandas as pd
-import os
+
 
 def convert_score_to_result(df):
     df['result'] = df.apply(
@@ -122,7 +120,7 @@ def collate_hist_df_from_name(player_name):
     p_id = [k for k, v in full_player_dict.items() if v == player_name]
     position = ele_copy.loc[ele_copy['full_name'] == player_name, 'element_type'].iloc[0]
     Team = ele_copy.loc[ele_copy['full_name'] == player_name, 'team_name'].iloc[0]
-    p_data = get_player_data(str(p_id[0]))
+    p_data = get_cached_player_data(str(p_id[0]))
     p_df = pd.DataFrame(p_data['history'])
     convert_score_to_result(p_df)
     p_df.loc[p_df['result'] == '<NA>-<NA>', 'result'] = '-'
@@ -216,7 +214,7 @@ merged_opponent  = convert_opponent_string(merged_opponent )
 
 
 
-ct_gw = get_current_gw()
+
 
 new_fixt_df = team_fixt_df.loc[:, ct_gw:(ct_gw+2)]
 new_fixt_cols = ['GW' + str(col) for col in new_fixt_df.columns.tolist()]
@@ -258,9 +256,8 @@ def get_home_away_str_dict():
 	
 sui=get_home_away_str_dict()
 
-team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
 
-ct_gw = get_current_gw()
+
 
 new_fixt_df = team_fixt_df.loc[:, ct_gw:(ct_gw+2)]
 new_fixt_cols = ['GW' + str(col) for col in new_fixt_df.columns.tolist()]
