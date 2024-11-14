@@ -344,8 +344,6 @@ history_path= os.path.join(cwd, '..', '..', 'data', 'history', 'clean_player_232
 player_history = pd.read_csv(history_path, index_col=0)
 
 
-
-player_history = pd.read_csv(history_path, index_col=0)
 # Concatenating the dataframes vertically
 concatenated_df = pd.concat([filtered_players, player_history], ignore_index=True)
 
