@@ -186,33 +186,34 @@ all_players_data = collate_all_players_parallel(full_player_dict)
 
 elapsed_time2 = time.time() - start_time
 st.error(f"2-Time taken by my_function: {elapsed_time2} seconds")
-# Select only the necessary columns from teams_df for both home and away teams
-team_columns = ['short_name',
-                'strength_overall_home', 'strength_overall_away',
-                'strength_attack_home', 'strength_attack_away',
-                'strength_defence_home', 'strength_defence_away']
+merged_home = pd.merge(all_players_data, teams_df[['short_name',
+                                                    'strength_overall_home', 
+                                                    'strength_overall_away', 
+                                                    'strength_attack_home', 
+                                                    'strength_attack_away', 
+                                                    'strength_defence_home', 
+                                                    'strength_defence_away']],
+                       left_on='Team_player', 
+                       right_on='short_name', 
+                       how='left')
 
-# Merge home team data
-merged_teams = pd.merge(all_players_data,
-                        teams_df[team_columns],
-                        left_on='Team_player',
-                        right_on='short_name',
-                        how='left')
+# Merge for the opponent team
+merged_opponent = pd.merge(merged_home, 
+                            teams_df[['short_name',
+                                       'strength_overall_home', 
+                                       'strength_overall_away', 
+                                       'strength_attack_home', 
+                                       'strength_attack_away', 
+                                       'strength_defence_home', 
+                                       'strength_defence_away']],
+                            left_on='vs', 
+                            right_on='short_name', 
+                            how='left', 
+                            suffixes=('', '_opponent'))
 
-# Merge opponent team data (same columns but with suffix '_opponent')
-merged_teams = pd.merge(merged_teams,
-                        teams_df[team_columns],
-                        left_on='vs',
-                        right_on='short_name',
-                        how='left',
-                        suffixes=('', '_opponent'))
-
-# Drop redundant 'short_name' columns after merge
-merged_teams.drop(columns=['short_name', 'short_name_opponent'], inplace=True)
-
-# Apply the function to convert opponent string details
-merged_teams = convert_opponent_string(merged_teams)
-
+# Optionally drop the 'short_name' columns for opponents if you don't need them
+merged_opponent = merged_opponent.drop(columns=['short_name', 'short_name_opponent'])
+merged_opponent=convert_opponent_string(merged_opponent)
 
 
 team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
