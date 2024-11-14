@@ -161,8 +161,8 @@ def collate_all_players_parallel(full_player_dict, max_workers=None):
 all_players_data = collate_all_players_parallel(full_player_dict)
 
 
-elapsed_time = time.time() - start_time
-st.error(f"2-Time taken by my_function: {elapsed_time} seconds")
+elapsed_time2 = time.time() - start_time
+st.error(f"2-Time taken by my_function: {elapsed_time2} seconds")
 merged_home = pd.merge(all_players_data, teams_df[['short_name',
                                                     'strength_overall_home', 
                                                     'strength_overall_away', 
