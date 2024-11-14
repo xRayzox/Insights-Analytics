@@ -100,55 +100,63 @@ def fdr_styler_ga(ga_value):
 ##########################################################
 
 
-# Load data
-team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
-events_df = pd.DataFrame(get_bootstrap_data()['events'])
+import streamlit as st
+import pandas as pd
 
-gw_min = min(events_df['id'])
-gw_max = max(events_df['id'])
+@st.cache_data
+def load_and_prepare_data():
+    # Load data
+    team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
+    events_df = pd.DataFrame(get_bootstrap_data()['events'])
 
-ct_gw = get_current_gw()
-fixt = team_fixt_df.reset_index()
-drf = team_fdr_df.reset_index()
-ga = team_ga_df.reset_index()
-gf = team_gf_df.reset_index()
+    gw_min = min(events_df['id'])
+    gw_max = max(events_df['id'])
 
-# Rename the first column to 'Team'
-fixt.rename(columns={0: 'Team'}, inplace=True)
-drf.rename(columns={0: 'Team'}, inplace=True)
-ga.rename(columns={0: 'Team'}, inplace=True)
-gf.rename(columns={0: 'Team'}, inplace=True)
+    ct_gw = get_current_gw()
+    fixt = team_fixt_df.reset_index()
+    drf = team_fdr_df.reset_index()
+    ga = team_ga_df.reset_index()
+    gf = team_gf_df.reset_index()
 
+    # Rename the first column to 'Team'
+    fixt.rename(columns={0: 'Team'}, inplace=True)
+    drf.rename(columns={0: 'Team'}, inplace=True)
+    ga.rename(columns={0: 'Team'}, inplace=True)
+    gf.rename(columns={0: 'Team'}, inplace=True)
 
-teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
-teams_df['logo_url'] = "https://resources.premierleague.com/premierleague/badges/70/t" + teams_df['code'].astype(str) + ".png"
-team_logo_mapping = pd.Series(teams_df.logo_url.values, index=teams_df.short_name).to_dict()
+    teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
+    teams_df['logo_url'] = "https://resources.premierleague.com/premierleague/badges/70/t" + teams_df['code'].astype(str) + ".png"
+    team_logo_mapping = pd.Series(teams_df.logo_url.values, index=teams_df.short_name).to_dict()
 
-# Prepare fixture data
-fx = team_fixt_df.reset_index()
-fx.rename(columns={0: 'Team'}, inplace=True)
-fx_matrix = fx.melt(id_vars='Team', var_name='GameWeek', value_name='Team_Away')
+    # Prepare fixture data
+    fx = team_fixt_df.reset_index()
+    fx.rename(columns={0: 'Team'}, inplace=True)
+    fx_matrix = fx.melt(id_vars='Team', var_name='GameWeek', value_name='Team_Away')
 
-# Create FDR matrix directly from 'val' DataFrame
-fdr_matrix = drf.copy()
-fdr_matrix = fdr_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='FDR')
-# Convert FDR values to integers
-fdr_matrix['FDR'] = fdr_matrix['FDR'].astype(int)
+    # Create FDR matrix directly from 'val' DataFrame
+    fdr_matrix = drf.copy()
+    fdr_matrix = fdr_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='FDR')
+    # Convert FDR values to integers
+    fdr_matrix['FDR'] = fdr_matrix['FDR'].astype(int)
 
-combined_matrix_fdr = pd.merge(fx_matrix, fdr_matrix, on=['Team', 'GameWeek'])
+    combined_matrix_fdr = pd.merge(fx_matrix, fdr_matrix, on=['Team', 'GameWeek'])
 
-ga_matrix = ga.copy()
-ga_matrix = ga_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='GA')
-ga_matrix['GA'] = ga_matrix['GA'].astype(float)
+    ga_matrix = ga.copy()
+    ga_matrix = ga_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='GA')
+    ga_matrix['GA'] = ga_matrix['GA'].astype(float)
 
-combined_matrix_GA = pd.merge(fx_matrix, ga_matrix, on=['Team', 'GameWeek'])
+    combined_matrix_GA = pd.merge(fx_matrix, ga_matrix, on=['Team', 'GameWeek'])
 
+    gf_matrix = gf.copy()
+    gf_matrix = gf_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='GF')
+    gf_matrix['GF'] = gf_matrix['GF'].astype(float)
 
-gf_matrix = gf.copy()
-gf_matrix = gf_matrix.melt(id_vars='Team', var_name='GameWeek', value_name='GF')
-gf_matrix['GF'] = gf_matrix['GF'].astype(float)
+    combined_matrix_GF = pd.merge(fx_matrix, gf_matrix, on=['Team', 'GameWeek'])
 
-combined_matrix_GF = pd.merge(fx_matrix, gf_matrix, on=['Team', 'GameWeek'])
+    return combined_matrix_fdr, combined_matrix_GA, combined_matrix_GF, team_logo_mapping,ct_gw,gw_max,gw_min,events_df
+
+# Use the cached function
+combined_matrix_fdr, combined_matrix_GA, combined_matrix_GF, team_logo_mapping,ct_gw,gw_max,gw_min,events_df = load_and_prepare_data()
 
 
 
