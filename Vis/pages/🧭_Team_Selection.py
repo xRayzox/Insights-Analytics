@@ -37,41 +37,64 @@ from fpl_api_collection import (
 start_time = time.time()
 
 
-# Retrieve and prepare data
-bootstrap_data = get_bootstrap_data()
-teams_df = pd.DataFrame(bootstrap_data['teams'])
-element_types_df = pd.DataFrame(bootstrap_data['element_types'])
-elements_df = pd.DataFrame(bootstrap_data['elements'])
+# Cache bootstrap data retrieval to avoid repeated API calls
+@st.cache
+def get_bootstrap_data_cached():
+    return get_bootstrap_data()
 
-# Map team IDs to names
-team_name_mapping = pd.Series(teams_df.name.values, index=teams_df.id).to_dict()
+# Cache player dictionary and current season/gameweek retrieval
+@st.cache
+def get_player_and_season_data():
+    full_player_dict = get_player_id_dict('total_points', web_name=False)
+    crnt_season = get_current_season()
+    ct_gw = get_current_gw()
+    return full_player_dict, crnt_season, ct_gw
 
-# Prepare player data and map element types
-ele_copy = elements_df.assign(
-    element_type=lambda df: df['element_type'].map(element_types_df.set_index('id')['singular_name_short']),
-    team_name=lambda df: df['team'].map(teams_df.set_index('id')['short_name']),
-    full_name=lambda df: df['first_name'].str.cat(df['second_name'].str.cat(df['team_name'].apply(lambda x: f" ({x})"), sep=''), sep=' ')
-)
+# Cache fixture data processing
+@st.cache
+def process_fixture_data():
+    bootstrap_data = get_bootstrap_data_cached()
+    teams_df = pd.DataFrame(bootstrap_data['teams'])
+    team_name_mapping = pd.Series(teams_df.name.values, index=teams_df.id).to_dict()
 
-# Retrieve player dictionary and current season/gameweek
-full_player_dict = get_player_id_dict('total_points', web_name=False)
-crnt_season, ct_gw = get_current_season(), get_current_gw()
+    fixture_data = get_fixture_data()
+    fixtures_df = pd.DataFrame(fixture_data).drop(columns='stats').replace(
+        {'team_h': team_name_mapping, 'team_a': team_name_mapping}
+    ).drop(columns=['pulse_id'])
 
-# Retrieve and process fixture data
-fixture_data = get_fixture_data()
-fixtures_df = pd.DataFrame(fixture_data).drop(columns='stats').replace(
-    {'team_h': team_name_mapping, 'team_a': team_name_mapping}
-).drop(columns=['pulse_id'])
+    timezone = 'Europe/London'
+    fixtures_df['datetime'] = pd.to_datetime(fixtures_df['kickoff_time'], utc=True)
+    fixtures_df[['local_time', 'local_date', 'local_hour']] = fixtures_df['datetime'].dt.tz_convert(timezone).apply(
+        lambda x: pd.Series([x.strftime('%A %d %B %Y %H:%M'), x.strftime('%d %A %B %Y'), x.strftime('%H:%M')])
+    )
+    
+    return fixtures_df
 
-# Format fixture dates
-timezone = 'Europe/London'
-fixtures_df['datetime'] = pd.to_datetime(fixtures_df['kickoff_time'], utc=True)
-fixtures_df[['local_time', 'local_date', 'local_hour']] = fixtures_df['datetime'].dt.tz_convert(timezone).apply(
-    lambda x: pd.Series([x.strftime('%A %d %B %Y %H:%M'), x.strftime('%d %A %B %Y'), x.strftime('%H:%M')])
-)
+# Cache player and element type processing
+@st.cache
+def process_player_data():
+    bootstrap_data = get_bootstrap_data_cached()
+    teams_df = pd.DataFrame(bootstrap_data['teams'])
+    element_types_df = pd.DataFrame(bootstrap_data['element_types'])
+    elements_df = pd.DataFrame(bootstrap_data['elements'])
 
-# Retrieve fixture difficulty rating data
-team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
+    team_name_mapping = pd.Series(teams_df.name.values, index=teams_df.id).to_dict()
+
+    ele_copy = elements_df.assign(
+        element_type=lambda df: df['element_type'].map(element_types_df.set_index('id')['singular_name_short']),
+        team_name=lambda df: df['team'].map(teams_df.set_index('id')['short_name']),
+        full_name=lambda df: df['first_name'].str.cat(df['second_name'].str.cat(df['team_name'].apply(lambda x: f" ({x})"), sep=''), sep=' ')
+    )
+    
+    return ele_copy, team_name_mapping
+
+# Streamlit UI Components
+st.title("Fantasy Premier League Data")
+
+# Fetching and processing data
+ele_copy, team_name_mapping = process_player_data()
+fixtures_df = process_fixture_data()
+full_player_dict, crnt_season, ct_gw = get_player_and_season_data()
 
 elapsed_time = time.time() - start_time
 st.error(f"1-Time taken by my_function: {elapsed_time} seconds")
