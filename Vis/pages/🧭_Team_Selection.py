@@ -405,6 +405,7 @@ fit['team'] = fit['Team_player'].str.extract(r'([A-Za-z]+) \(')[0]
 # Pre-extract team names once for both 'Team_home' and 'Team_away' columns
 df_fixture['home_team'] = df_fixture['Team_home'].str.extract(r'([A-Za-z]+)')[0]
 df_fixture['away_team'] = df_fixture['Team_away'].str.extract(r'([A-Za-z]+)')[0]
+####################################################################
 
 # Use a map to get the corresponding GW for each team
 team_to_gw = df_fixture.set_index('home_team')['GW'].to_dict()
@@ -414,38 +415,31 @@ team_to_gw.update(df_fixture.set_index('away_team')['GW'].to_dict())
 fit['GW'] = fit['team'].map(team_to_gw)
 
 
+####################################################################
 
-fit['kickoff_time'] = fit['team'].apply(
-    lambda team: df_fixture.loc[
-        (df_fixture['Team_home'].str.extract(r'([A-Za-z]+)')[0] == team) | 
-        (df_fixture['Team_away'].str.extract(r'([A-Za-z]+)')[0] == team), 'kickoff_time'
-    ].values[0] if not df_fixture.loc[
-        (df_fixture['Team_home'].str.extract(r'([A-Za-z]+)')[0] == team) | 
-        (df_fixture['Team_away'].str.extract(r'([A-Za-z]+)')[0] == team), 'kickoff_time'
-    ].empty else None
-)
+# Create a dictionary that maps teams (both home and away) to kickoff_time
+team_to_kickoff_time = df_fixture.set_index('home_team')['kickoff_time'].to_dict()
+team_to_kickoff_time.update(df_fixture.set_index('away_team')['kickoff_time'].to_dict())
 
-fit['season'] = fit['team'].apply(
-    lambda team: df_fixture.loc[
-        (df_fixture['Team_home'].str.extract(r'([A-Za-z]+)')[0] == team) | 
-        (df_fixture['Team_away'].str.extract(r'([A-Za-z]+)')[0] == team), 'season'
-    ].values[0] if not df_fixture.loc[
-        (df_fixture['Team_home'].str.extract(r'([A-Za-z]+)')[0] == team) | 
-        (df_fixture['Team_away'].str.extract(r'([A-Za-z]+)')[0] == team), 'season'
-    ].empty else None
-)
-fit['vs'] = fit['team'].apply(
-    lambda team: df_fixture.loc[
-        (df_fixture['Team_home'].str.extract(r'([A-Za-z]+)')[0] == team), 'Team_away'
-    ].values[0] if not df_fixture.loc[
-        (df_fixture['Team_home'].str.extract(r'([A-Za-z]+)')[0] == team), 'Team_away'
-    ].empty else df_fixture.loc[
-        (df_fixture['Team_away'].str.extract(r'([A-Za-z]+)')[0] == team), 'Team_home'
-    ].values[0] if not df_fixture.loc[
-        (df_fixture['Team_away'].str.extract(r'([A-Za-z]+)')[0] == team), 'Team_home'
-    ].empty else None
-)
+# Now map the 'team' in the fit dataframe to their kickoff times
+fit['kickoff_time'] = fit['team'].map(team_to_kickoff_time)
 
+####################################################################
+team_to_season = df_fixture.set_index('home_team')['season'].to_dict()
+team_to_season.update(df_fixture.set_index('away_team')['season'].to_dict())
+
+# Now map the 'team' in the fit dataframe to their season
+fit['season'] = fit['team'].map(team_to_season)
+####################################################################
+
+
+
+# Create dictionaries to map teams to their opponents (away/home)
+home_to_away = df_fixture.set_index('home_team')['away_team'].to_dict()
+away_to_home = df_fixture.set_index('away_team')['home_team'].to_dict()
+
+# Map the opponent team to 'vs' for each team in the 'fit' DataFrame
+fit['vs'] = fit['team'].map(home_to_away).fillna(fit['team'].map(away_to_home))
 
 pulga=filtered_players_fixture
 columns_to_normalize = [
