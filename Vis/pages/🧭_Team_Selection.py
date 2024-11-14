@@ -583,5 +583,5 @@ azdazdazd=best_model.predict(XX)
 ssuiio['prediction']=azdazdazd
 
 
-st.write(ssuiio[['Player', 'Pos', 'Price', 'Team_Player', 'prediction']])
+st.write(ssuiio[['GW','Player', 'Pos', 'Price', 'Team_player', 'prediction']])
 
