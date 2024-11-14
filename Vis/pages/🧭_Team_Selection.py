@@ -28,29 +28,7 @@ from fpl_api_collection import (
     get_current_season,
     get_player_data,
 )
-import threading
-import schedule
 
-def run_model_in_background():
-    st.error("sss test")
-    python_path = sys.executable
-    subprocess.run([python_path, "./Vis/pages/Prediction/model.py"], check=True)
-    st.error("suiiiiiiiiiiii2")
-
-# Function to run the scheduled task
-def job():
-    threading.Thread(target=run_model_in_background, daemon=True).start()
-
-# Schedule the job to run daily at a specific time (e.g., 00:00)
-schedule.every().day.at("16:30").do(job)
-def run_scheduled_tasks():
-    while True:
-        schedule.run_pending()
-        time.sleep(1)  # Sleep to avoid blocking the main thread
-
-# Start the scheduler in a background thread
-scheduler_thread = threading.Thread(target=run_scheduled_tasks, daemon=True)
-scheduler_thread.start()
 start_time = time.time()
 
 @st.cache_data
