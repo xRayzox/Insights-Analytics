@@ -73,8 +73,12 @@ def collate_hist_df_from_name(player_name):
     if not p_id:
         return pd.DataFrame()  # Return empty DataFrame if player not found
 
-    position = ele_df.loc[ele_df['full_name'] == player_name, 'element_type'].iloc[0]
-    team = ele_df.loc[ele_df['full_name'] == player_name, 'team_name'].iloc[0]
+    try:
+        position = ele_df.loc[ele_df['full_name'] == player_name, 'element_type'].values[0]
+        team = ele_df.loc[ele_df['full_name'] == player_name, 'team_name'].values[0]
+    except IndexError:  # Handle the case where no match is found
+        print(f"Player {player_name} not found in ele_df.")  # Or log the error
+        return pd.DataFrame()
     p_data = get_player_data(str(p_id))
 
     if 'history' not in p_data:
