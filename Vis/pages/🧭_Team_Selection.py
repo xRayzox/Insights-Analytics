@@ -28,14 +28,16 @@ from fpl_api_collection import (
     get_current_season,
     get_player_data,
 )
-import sys
-import subprocess
+import threading
 
-# Get the path of the current Python executable
-python_path = sys.executable
+# Function to run the script in the background
+def run_model_in_background():
+    python_path = sys.executable
+    subprocess.run([python_path, "./Vis/pages/Prediction/model.py"], check=True)
 
-# Run the model.py script using subprocess
-subprocess.run([python_path, "./Vis/pages/Prediction/model.py"], check=True)
+# Start the model script in the background using a separate thread
+background_thread = threading.Thread(target=run_model_in_background, daemon=True)
+background_thread.start()
 
 start_time = time.time()
 
