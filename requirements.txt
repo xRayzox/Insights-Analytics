@@ -21,3 +21,4 @@ xgboost
 joblib
 scikit-learn
 optuna
+thefuzz

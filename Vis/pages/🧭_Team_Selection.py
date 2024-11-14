@@ -433,10 +433,24 @@ fit['season'] = fit['team'].map(team_to_season)
 ####################################################################
 
 
-fit['vs'] = fit['team'].map(
-    df_fixture.set_index('home_team')['away_team']
-).fillna(fit['team'].map(df_fixture.set_index('away_team')['home_team']))
+def find_opponent(team, df_fixture):
+    """Finds the opponent for a given team using fuzzy matching."""
+    best_match_home = process.extractOne(team, df_fixture['home_team'])
+    best_match_away = process.extractOne(team, df_fixture['away_team'])
 
+    if best_match_home and best_match_away:
+        if best_match_home[1] > best_match_away[1]:  # Compare match scores
+            return df_fixture.loc[df_fixture['home_team'] == best_match_home[0], 'away_team'].iloc[0]
+        else:
+            return df_fixture.loc[df_fixture['away_team'] == best_match_away[0], 'home_team'].iloc[0]
+    elif best_match_home:
+        return df_fixture.loc[df_fixture['home_team'] == best_match_home[0], 'away_team'].iloc[0]
+    elif best_match_away:
+        return df_fixture.loc[df_fixture['away_team'] == best_match_away[0], 'home_team'].iloc[0]
+    else:
+        return None  # No match found
+
+fit['vs'] = fit['team'].apply(lambda team: find_opponent(team, df_fixture))
 
 pulga=filtered_players_fixture
 columns_to_normalize = [
