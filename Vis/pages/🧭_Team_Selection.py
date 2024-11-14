@@ -34,6 +34,7 @@ import threading
 def run_model_in_background():
     python_path = sys.executable
     subprocess.run([python_path, "./Vis/pages/Prediction/model.py"], check=True)
+    st.error("suiiiiiiiiiiii")
 
 # Start the model script in the background using a separate thread
 background_thread = threading.Thread(target=run_model_in_background, daemon=True)
