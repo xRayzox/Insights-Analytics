@@ -20,3 +20,4 @@ streamlit-aggrid
 xgboost 
 joblib
 scikit-learn
+optuna
