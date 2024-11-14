@@ -511,7 +511,7 @@ def auto_tune_hyperparameters(X, y, n_trials=5):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     # Check if previous Optuna study exists
-    study_path = "optuna_study.joblib"
+    study_path = "./Vis/pages/Prediction/optuna_study.joblib"
     if os.path.exists(study_path):
         study = joblib.load(study_path)
         print("Loaded existing Optuna study for incremental tuning.")
@@ -531,7 +531,7 @@ def auto_tune_hyperparameters(X, y, n_trials=5):
     return best_params
 
 # Function to train, evaluate, and save the model if it improves performance
-def train_and_save_model(X, y, model_path="xgb_model.joblib", score_path="best_score.joblib"):
+def train_and_save_model(X, y, model_path="./Vis/pages/Prediction/xgb_model.joblib", score_path="./Vis/pages/Prediction/best_score.joblib"):
     # Check if a model and score already exist
     if os.path.exists(model_path) and os.path.exists(score_path):
         model = joblib.load(model_path)
@@ -649,90 +649,6 @@ y = X_weighted['Pts']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 best_model = train_and_save_model(X_train, y_train)
-best_model
 
-
-ssuiio=df_next_fixt_gw
-
-
-ssuiio['kickoff_time'] = pd.to_datetime(ssuiio['kickoff_time'])
-
-# 1. Position Weights
-position_weights = {
-    'GKP': 0.9,
-    'DEF': 1.1,
-    'MID': 1.3,
-    'FWD': 1.5
-}
-
-# Apply weight based on position
-ssuiio['position_weight'] = ssuiio['Pos'].map(position_weights)
-
-# 2. Home/Away Game Weights
-home_weight = 1.2  # Home game weight
-away_weight = 1.0  # Away game weight
-
-# Apply home/away weight
-ssuiio['home_away_weight'] = ssuiio['was_home'].map({True: home_weight, False: away_weight})
-
-# 3. Kickoff Time Weights
-def assign_time_weight(kickoff_time):
-    if 6 <= kickoff_time.hour < 12:
-        return 0.95  # Morning games tend to have lower energy
-    elif 12 <= kickoff_time.hour < 18:
-        return 1.0   # Standard midday games
-    elif 18 <= kickoff_time.hour < 24:
-        return 1.1   # Evening games often see more action
-    else:
-        return 1.05  # Late-night games may see more relaxed performances
-
-ssuiio['time_weight'] = ssuiio['kickoff_time'].apply(assign_time_weight)
-
-# 4. Team and Opponent Strength Weights
-ssuiio['team_strength_weight'] = (ssuiio['strength_overall_home'] + ssuiio['strength_attack_home'] - ssuiio['strength_defence_home']) * 1.1
-ssuiio['opponent_strength_weight'] = (ssuiio['strength_overall_away_opponent'] + ssuiio['strength_attack_away_opponent'] - ssuiio['strength_defence_away_opponent'])
-
-# Strength ratio, adjust for home/away dynamics
-ssuiio['strength_weight'] = ssuiio['team_strength_weight'] / ssuiio['opponent_strength_weight']
-
-# 5. Transfer Activity Weights
-ssuiio['transfer_weight'] = ssuiio['Tran_In'] / (ssuiio['Tran_In'] + ssuiio['Tran_Out'] + 1)
-
-# 6. Disciplinary Risk Weights
-ssuiio['penalty_risk_weight'] = 1 - (ssuiio['Pen_Miss'] * 0.3 + ssuiio['YC'] * 0.1 + ssuiio['RC'] * 0.2)
-
-# 7. Fixture Difficulty Rating (FDR) Weights
-ssuiio['opponent_difficulty_weight'] = 1 / (ssuiio['opponent_fdr'] + 1)
-
-# 8. Form Weight
-
-# 9. Minutes Played Weight
-ssuiio['minutes_weight'] = ssuiio['Mins'] / 90  # Normalize to a full game
-
-# 10. Expected Goals (xG) and Expected Assists (xA) Weights
-ssuiio['xg_weight'] = ssuiio['xG'] * 1.2  # Weight xG higher as it's a strong predictor of goals
-ssuiio['xa_weight'] = ssuiio['xA'] * 1.1  # xA is also valuable for midfielders and forwards
-
-# 11. Final Weight Calculation
-ssuiio['final_weight'] = (
-    ssuiio['position_weight'] * 
-    ssuiio['home_away_weight'] * 
-    ssuiio['time_weight'] * 
-    ssuiio['strength_weight'] * 
-    ssuiio['transfer_weight'] * 
-    ssuiio['penalty_risk_weight'] * 
-    ssuiio['opponent_difficulty_weight'] *
-    ssuiio['minutes_weight'] * 
-    ssuiio['xg_weight'] * 
-    ssuiio['xa_weight']
-)
-
-
-XX = ssuiio[features]
-
-azdazdazd=best_model.predict(XX)
-
-
-ssuiio['prediction']=azdazdazd
 
 
