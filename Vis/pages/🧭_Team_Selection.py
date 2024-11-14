@@ -95,7 +95,7 @@ st.title("Fantasy Premier League Data")
 ele_copy, team_name_mapping,teams_df = process_player_data()
 fixtures_df = process_fixture_data()
 full_player_dict, crnt_season, ct_gw = get_player_and_season_data()
-
+team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
 elapsed_time = time.time() - start_time
 st.error(f"1-Time taken by my_function: {elapsed_time} seconds")
 
@@ -187,43 +187,41 @@ all_players_data = collate_all_players_parallel(full_player_dict)
 elapsed_time2 = time.time() - start_time
 st.error(f"2-Time taken by my_function: {elapsed_time2} seconds")
 # Select only the necessary columns from teams_df for both home and away teams
-# Merge home team data with opponent data in a single operation
-team_columns = ['short_name', 'strength_overall_home', 'strength_overall_away',
-                'strength_attack_home', 'strength_attack_away', 'strength_defence_home', 'strength_defence_away']
+team_columns = ['short_name',
+                'strength_overall_home', 'strength_overall_away',
+                'strength_attack_home', 'strength_attack_away',
+                'strength_defence_home', 'strength_defence_away']
 
-# Merge both teams in one go with suffixes to differentiate home and away
-merged_teams_opponent = pd.merge(
-    all_players_data,
-    teams_df[team_columns].add_suffix('_home'),  # Suffix for home team columns
-    left_on='Team_player', right_on='short_name',
-    how='left'
-)
+# Merge home team data
+merged_teams = pd.merge(all_players_data,
+                        teams_df[team_columns],
+                        left_on='Team_player',
+                        right_on='short_name',
+                        how='left')
 
-merged_teams_opponent = pd.merge(
-    merged_teams_opponent,
-    teams_df[team_columns].add_suffix('_away'),  # Suffix for opponent team columns
-    left_on='vs', right_on='short_name',
-    how='left'
-)
+# Merge opponent team data (same columns but with suffix '_opponent')
+merged_opponent  = pd.merge(merged_teams,
+                        teams_df[team_columns],
+                        left_on='vs',
+                        right_on='short_name',
+                        how='left',
+                        suffixes=('', '_opponent'))
 
-# Drop redundant 'short_name' columns from both merges
-merged_teams_opponent.drop(columns=['short_name_home', 'short_name_away'], inplace=True)
+# Drop redundant 'short_name' columns after merge
+merged_opponent .drop(columns=['short_name', 'short_name_opponent'], inplace=True)
+# Apply the function to convert opponent string details
+merged_opponent  = convert_opponent_string(merged_opponent )
 
-# Apply the function to convert opponent string details efficiently
-merged_teams_opponent = convert_opponent_string(merged_teams_opponent)
 
-# Fetch fixture and FDR data only once
-team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
 
-# Current gameweek (ct_gw)
+
 ct_gw = get_current_gw()
 
-# Slice the fixtures and FDR data for the upcoming weeks (current GW and the next two)
-new_fixt_df = team_fixt_df.loc[:, ct_gw:(ct_gw + 2)]
-new_fixt_df.columns = ['GW' + str(col) for col in new_fixt_df.columns]
+new_fixt_df = team_fixt_df.loc[:, ct_gw:(ct_gw+2)]
+new_fixt_cols = ['GW' + str(col) for col in new_fixt_df.columns.tolist()]
+new_fixt_df.columns = new_fixt_cols
 
-new_fdr_df = team_fdr_df.loc[:, ct_gw:(ct_gw + 2)]
-
+new_fdr_df = team_fdr_df.loc[:, ct_gw:(ct_gw+2)]
 elapsed_time3 = time.time() - start_time
 st.error(f"3-Time taken by my_function: {elapsed_time3} seconds")
 def get_home_away_str_dict():
