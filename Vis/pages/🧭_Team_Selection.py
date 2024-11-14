@@ -434,12 +434,18 @@ fit['season'] = fit['team'].map(team_to_season)
 
 
 
-# Create dictionaries to map teams to their opponents (away/home)
-home_to_away = df_fixture.set_index('home_team')['away_team'].to_dict()
-away_to_home = df_fixture.set_index('away_team')['home_team'].to_dict()
+fit['vs'] = fit['team'].apply(
+    lambda team: df_fixture.loc[
+        (df_fixture['Team_home'].str.extract(r'([A-Za-z]+)')[0] == team), 'Team_away'
+    ].values[0] if not df_fixture.loc[
+        (df_fixture['Team_home'].str.extract(r'([A-Za-z]+)')[0] == team), 'Team_away'
+    ].empty else df_fixture.loc[
+        (df_fixture['Team_away'].str.extract(r'([A-Za-z]+)')[0] == team), 'Team_home'
+    ].values[0] if not df_fixture.loc[
+        (df_fixture['Team_away'].str.extract(r'([A-Za-z]+)')[0] == team), 'Team_home'
+    ].empty else None
+)
 
-# Map the opponent team to 'vs' for each team in the 'fit' DataFrame
-fit['vs'] = fit['team'].map(home_to_away).fillna(fit['team'].map(away_to_home))
 
 pulga=filtered_players_fixture
 columns_to_normalize = [
