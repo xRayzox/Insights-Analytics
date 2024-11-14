@@ -38,12 +38,12 @@ start_time = time.time()
 def get_cached_fixture_data():
     return get_fixture_data()
 # Cache bootstrap data retrieval to avoid repeated API calls
-@st.cache
+@st.cache_data
 def get_bootstrap_data_cached():
     return get_bootstrap_data()
 
 # Cache player dictionary and current season/gameweek retrieval
-@st.cache
+@st.cache_data
 def get_player_and_season_data():
     full_player_dict = get_player_id_dict('total_points', web_name=False)
     crnt_season = get_current_season()
@@ -51,7 +51,7 @@ def get_player_and_season_data():
     return full_player_dict, crnt_season, ct_gw
 
 # Cache fixture data processing
-@st.cache
+@st.cache_data
 def process_fixture_data():
     bootstrap_data = get_bootstrap_data_cached()
     teams_df = pd.DataFrame(bootstrap_data['teams'])
@@ -71,7 +71,7 @@ def process_fixture_data():
     return fixtures_df
 
 # Cache player and element type processing
-@st.cache
+@st.cache_data
 def process_player_data():
     bootstrap_data = get_bootstrap_data_cached()
     teams_df = pd.DataFrame(bootstrap_data['teams'])
