@@ -79,19 +79,20 @@ elapsed_time = time.time() - start_time
 st.error(f"1-Time taken by my_function: {elapsed_time} seconds")
 
 
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import pandas as pd
+import os
+
 def convert_score_to_result(df):
-    df.loc[df['was_home'] == True, 'result'] = df['team_h_score'] \
-        .astype('Int64').astype(str) \
-        + '-' + df['team_a_score'].astype('Int64').astype(str)
-    df.loc[df['was_home'] == False, 'result'] = df['team_a_score'] \
-        .astype('Int64').astype(str) \
-        + '-' + df['team_h_score'].astype('Int64').astype(str)
-        
+    df['result'] = df.apply(
+        lambda row: f"{row['team_h_score']}-{row['team_a_score']}" if row['was_home'] 
+                    else f"{row['team_a_score']}-{row['team_h_score']}",
+        axis=1
+    )
+
 def convert_opponent_string(df):
-    df.loc[df['was_home'] == True, 'vs'] = df['vs'] + ' (A)'
-    df.loc[df['was_home'] == False, 'vs'] = df['vs'] + ' (H)'
-    df.loc[df['was_home'] == True, 'Team_player'] = df['Team_player'] + ' (H)'
-    df.loc[df['was_home'] == False, 'Team_player'] = df['Team_player'] + ' (A)'
+    df['vs'] += df['was_home'].apply(lambda x: ' (A)' if x else ' (H)')
+    df['Team_player'] += df['was_home'].apply(lambda x: ' (H)' if x else ' (A)')
     return df
 
 def collate_hist_df_from_name(player_name):
@@ -102,72 +103,63 @@ def collate_hist_df_from_name(player_name):
     p_df = pd.DataFrame(p_data['history'])
     convert_score_to_result(p_df)
     p_df.loc[p_df['result'] == '<NA>-<NA>', 'result'] = '-'
-    rn_dict = {'round': 'GW','kickoff_time':'kickoff_time', 'opponent_team': 'vs', 'total_points': 'Pts',
-               'minutes': 'Mins', 'goals_scored': 'GS', 'assists': 'A',
-               'clean_sheets': 'CS', 'goals_conceded': 'GC', 'own_goals': 'OG',
-               'penalties_saved': 'Pen_Save', 'penalties_missed': 'Pen_Miss',
-               'yellow_cards': 'YC', 'red_cards': 'RC', 'saves': 'S',
-               'bonus': 'B', 'bps': 'BPS', 'influence': 'I', 'creativity': 'C',
-               'threat': 'T', 'ict_index': 'ICT', 'value': 'Price',
-               'selected': 'SB', 'transfers_in': 'Tran_In',
-               'transfers_out': 'Tran_Out', 'expected_goals': 'xG',
-               'expected_assists': 'xA', 'expected_goal_involvements': 'xGI',
-               'expected_goals_conceded': 'xGC', 'result': 'Result'}
+    
+    # Renaming columns in a single step
+    rn_dict = {'round': 'GW', 'kickoff_time': 'kickoff_time', 'opponent_team': 'vs', 
+               'total_points': 'Pts', 'minutes': 'Mins', 'goals_scored': 'GS', 
+               'assists': 'A', 'clean_sheets': 'CS', 'goals_conceded': 'GC', 
+               'own_goals': 'OG', 'penalties_saved': 'Pen_Save', 'penalties_missed': 'Pen_Miss',
+               'yellow_cards': 'YC', 'red_cards': 'RC', 'saves': 'S', 'bonus': 'B', 
+               'bps': 'BPS', 'influence': 'I', 'creativity': 'C', 'threat': 'T', 
+               'ict_index': 'ICT', 'value': 'Price', 'selected': 'SB', 
+               'transfers_in': 'Tran_In', 'transfers_out': 'Tran_Out', 
+               'expected_goals': 'xG', 'expected_assists': 'xA', 
+               'expected_goal_involvements': 'xGI', 'expected_goals_conceded': 'xGC', 
+               'result': 'Result'}
     p_df.rename(columns=rn_dict, inplace=True)
-    col_order = ['GW','kickoff_time', 'vs', 'Result', 'Pts', 'Mins', 'GS', 'xG', 'A', 'xA',
+    
+    # Set column order once after renaming
+    col_order = ['GW', 'kickoff_time', 'vs', 'Result', 'Pts', 'Mins', 'GS', 'xG', 'A', 'xA',
                  'xGI', 'Pen_Miss', 'CS', 'GC', 'xGC', 'OG', 'Pen_Save', 'S',
                  'YC', 'RC', 'B', 'BPS', 'Price', 'I', 'C', 'T', 'ICT', 'SB',
                  'Tran_In', 'Tran_Out', 'was_home']
     p_df = p_df[col_order]
-    # map opponent teams
     
-    p_df['Price'] = p_df['Price']/10
+    # Apply mappings outside loop to save time
+    p_df['Price'] = p_df['Price'] / 10
     p_df['vs'] = p_df['vs'].map(teams_df.set_index('id')['short_name'])
     p_df['Pos'] = position
     p_df['Team_player'] = Team
-    #convert_opponent_string(p_df)
-    #p_df.drop('was_home', axis=1, inplace=True)
-    #p_df.set_index('GW', inplace=True)
+    
+    # Finalize DataFrame format and return
     p_df.sort_values('GW', ascending=False, inplace=True)
     return p_df
 
-
 def collate_all_players_parallel(full_player_dict, max_workers=None):
-    # Determine optimal max_workers if not provided
     if max_workers is None:
-        max_workers = os.cpu_count() * 2  # Suitable for I/O-bound tasks like web scraping
+        max_workers = min(32, os.cpu_count() * 2)  # Tune based on system capabilities
 
-    # Define a helper function to retrieve data for a single player
-    def get_player_data(player_name):
-        try:  # Add exception handling inside the worker function
+    def get_player_data_wrapper(player_name):
+        try:
             player_df = collate_hist_df_from_name(player_name)
-            player_df['Player'] = player_name  # Add player name column
+            player_df['Player'] = player_name
             return player_df
         except Exception as e:
             print(f"Error processing {player_name}: {e}")
-            return pd.DataFrame() # Return empty DataFrame on error
+            return pd.DataFrame()  # Return empty DataFrame on error
 
-
-    # Use ThreadPoolExecutor with a with statement for proper resource management
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        # Submit tasks and store futures in a dictionary for easier error handling
-        futures = {executor.submit(get_player_data, player_name): player_name 
-                   for player_name in full_player_dict.values()}
+        futures = {executor.submit(get_player_data_wrapper, name): name 
+                   for name in full_player_dict.values()}
+        
+        # Use list comprehension for faster result collection
+        results = [future.result() for future in as_completed(futures) if not future.exception()]
 
-        results = []
-        for future in as_completed(futures):
-            player_name = futures[future]
-            try:
-                result_df = future.result()  # Get the result or raise an exception
-                results.append(result_df)
-            except Exception as e:
-                print(f"Error retrieving result for {player_name}: {e}")
+    return pd.concat(results, axis=0, ignore_index=True)
 
-    # Concatenate all successful results into a single DataFrame outside the loop
-    all_players_df = pd.concat(results, axis=0, ignore_index=True)  # ignore_index for cleaner index
-    return all_players_df
-
+# Run the optimized function
 all_players_data = collate_all_players_parallel(full_player_dict)
+
 
 elapsed_time = time.time() - start_time
 st.error(f"2-Time taken by my_function: {elapsed_time} seconds")
