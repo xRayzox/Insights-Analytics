@@ -104,6 +104,9 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import pandas as pd
 import os
 
+# Precompute team name mapping once
+team_name_mapping = teams_df.set_index('id')['short_name'].to_dict()
+
 def convert_score_to_result(df):
     df['result'] = df.apply(
         lambda row: f"{row['team_h_score']}-{row['team_a_score']}" if row['was_home'] 
@@ -117,15 +120,19 @@ def convert_opponent_string(df):
     return df
 
 def collate_hist_df_from_name(player_name):
+    # Directly retrieve player ID, position, and team using pre-mapped data
     p_id = [k for k, v in full_player_dict.items() if v == player_name]
     position = ele_copy.loc[ele_copy['full_name'] == player_name, 'element_type'].iloc[0]
     Team = ele_copy.loc[ele_copy['full_name'] == player_name, 'team_name'].iloc[0]
+    
     p_data = get_player_data(str(p_id[0]))
     p_df = pd.DataFrame(p_data['history'])
+    
+    # Apply the result conversion
     convert_score_to_result(p_df)
     p_df.loc[p_df['result'] == '<NA>-<NA>', 'result'] = '-'
     
-    # Renaming columns in a single step
+    # Renaming columns in one go
     rn_dict = {'round': 'GW', 'kickoff_time': 'kickoff_time', 'opponent_team': 'vs', 
                'total_points': 'Pts', 'minutes': 'Mins', 'goals_scored': 'GS', 
                'assists': 'A', 'clean_sheets': 'CS', 'goals_conceded': 'GC', 
@@ -139,20 +146,18 @@ def collate_hist_df_from_name(player_name):
                'result': 'Result'}
     p_df.rename(columns=rn_dict, inplace=True)
     
-    # Set column order once after renaming
-    col_order = ['GW', 'kickoff_time', 'vs', 'Result', 'Pts', 'Mins', 'GS', 'xG', 'A', 'xA',
-                 'xGI', 'Pen_Miss', 'CS', 'GC', 'xGC', 'OG', 'Pen_Save', 'S',
-                 'YC', 'RC', 'B', 'BPS', 'Price', 'I', 'C', 'T', 'ICT', 'SB',
-                 'Tran_In', 'Tran_Out', 'was_home']
-    p_df = p_df[col_order]
-    
-    # Apply mappings outside loop to save time
+    # Apply mappings for team names and positions outside the loop
     p_df['Price'] = p_df['Price'] / 10
-    p_df['vs'] = p_df['vs'].map(teams_df.set_index('id')['short_name'])
+    p_df['vs'] = p_df['vs'].map(team_name_mapping)
     p_df['Pos'] = position
     p_df['Team_player'] = Team
     
-    # Finalize DataFrame format and return
+    # Sort and return the final DataFrame
+    p_df = p_df[['GW', 'kickoff_time', 'vs', 'Result', 'Pts', 'Mins', 'GS', 'xG', 'A', 'xA',
+                 'xGI', 'Pen_Miss', 'CS', 'GC', 'xGC', 'OG', 'Pen_Save', 'S',
+                 'YC', 'RC', 'B', 'BPS', 'Price', 'I', 'C', 'T', 'ICT', 'SB',
+                 'Tran_In', 'Tran_Out', 'was_home']]
+    
     p_df.sort_values('GW', ascending=False, inplace=True)
     return p_df
 
