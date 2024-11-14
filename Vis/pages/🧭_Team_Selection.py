@@ -402,24 +402,49 @@ fit=filtered_pl[['Team_player', 'Player', 'Pos', 'Price']]
 fit['team'] = fit['Team_player'].str.extract(r'([A-Za-z]+) \(')[0]
 
 # Now, assign 'GW', 'kickoff_time', and 'season' based on matching either Team_home or Team_away in df_fixture
-# Merge df_fixture with fit based on home and away teams
-home_fixtures = df_fixture[['Team_home', 'Team_away', 'GW', 'kickoff_time', 'season']]
-home_fixtures['vs'] = home_fixtures['Team_away']
+# Pre-extract team names once for both 'Team_home' and 'Team_away' columns
+df_fixture['home_team'] = df_fixture['Team_home'].str.extract(r'([A-Za-z]+)')[0]
+df_fixture['away_team'] = df_fixture['Team_away'].str.extract(r'([A-Za-z]+)')[0]
 
-away_fixtures = df_fixture[['Team_away', 'Team_home', 'GW', 'kickoff_time', 'season']]
-away_fixtures['vs'] = away_fixtures['Team_home']
+# Use a map to get the corresponding GW for each team
+team_to_gw = df_fixture.set_index('home_team')['GW'].to_dict()
+team_to_gw.update(df_fixture.set_index('away_team')['GW'].to_dict())
 
-# Concatenate home and away fixtures
-all_fixtures = pd.concat([home_fixtures, away_fixtures], ignore_index=True)
+# Now apply this map to the fit dataframe
+fit['GW'] = fit['team'].map(team_to_gw)
 
-# Rename for easier merging
-all_fixtures = all_fixtures.rename(columns={'Team_home': 'team'})
 
-# Merge fit with the all_fixtures dataframe
-fit = fit.merge(all_fixtures[['team', 'GW', 'kickoff_time', 'season', 'vs']], on='team', how='left')
 
-# Now fit contains the additional columns: 'GW', 'kickoff_time', 'season', 'vs'
+fit['kickoff_time'] = fit['team'].apply(
+    lambda team: df_fixture.loc[
+        (df_fixture['Team_home'].str.extract(r'([A-Za-z]+)')[0] == team) | 
+        (df_fixture['Team_away'].str.extract(r'([A-Za-z]+)')[0] == team), 'kickoff_time'
+    ].values[0] if not df_fixture.loc[
+        (df_fixture['Team_home'].str.extract(r'([A-Za-z]+)')[0] == team) | 
+        (df_fixture['Team_away'].str.extract(r'([A-Za-z]+)')[0] == team), 'kickoff_time'
+    ].empty else None
+)
 
+fit['season'] = fit['team'].apply(
+    lambda team: df_fixture.loc[
+        (df_fixture['Team_home'].str.extract(r'([A-Za-z]+)')[0] == team) | 
+        (df_fixture['Team_away'].str.extract(r'([A-Za-z]+)')[0] == team), 'season'
+    ].values[0] if not df_fixture.loc[
+        (df_fixture['Team_home'].str.extract(r'([A-Za-z]+)')[0] == team) | 
+        (df_fixture['Team_away'].str.extract(r'([A-Za-z]+)')[0] == team), 'season'
+    ].empty else None
+)
+fit['vs'] = fit['team'].apply(
+    lambda team: df_fixture.loc[
+        (df_fixture['Team_home'].str.extract(r'([A-Za-z]+)')[0] == team), 'Team_away'
+    ].values[0] if not df_fixture.loc[
+        (df_fixture['Team_home'].str.extract(r'([A-Za-z]+)')[0] == team), 'Team_away'
+    ].empty else df_fixture.loc[
+        (df_fixture['Team_away'].str.extract(r'([A-Za-z]+)')[0] == team), 'Team_home'
+    ].values[0] if not df_fixture.loc[
+        (df_fixture['Team_away'].str.extract(r'([A-Za-z]+)')[0] == team), 'Team_home'
+    ].empty else None
+)
 
 
 pulga=filtered_players_fixture
