@@ -288,70 +288,78 @@ team_fdr_map = dict(zip(team_fdr_df['team'], team_fdr_df['fdr']))
 # Map the 'fdr' values to the 'merged_opponent' dataframe based on the 'Team_player' column
 merged_opponent['Team_fdr'] = merged_opponent['Team_player'].map(team_fdr_map)
 merged_opponent['opponent_fdr'] = merged_opponent['vs'].map(team_fdr_map)
+
+
+
 elapsed_time4 = time.time() - start_time
 st.error(f"4-Time taken by my_function: {elapsed_time4} seconds")
 
 
-columns_to_convert = ['GW', 'Pts', 'Mins', 'GS', 'xG', 'A', 'xA', 'xGI', 'Pen_Miss', 
-                      'CS', 'GC', 'xGC', 'OG', 'Pen_Save', 'S', 'YC', 'RC', 'B', 'BPS', 
-                      'Price', 'I', 'C', 'T', 'ICT', 'SB', 'Tran_In', 'Tran_Out', 
-                      'strength_overall_home', 'strength_overall_away', 'strength_attack_home', 'strength_attack_away', 
-                      'strength_defence_home', 'strength_defence_away', 'strength_overall_home_opponent', 
-                      'strength_overall_away_opponent', 'strength_attack_home_opponent', 'strength_attack_away_opponent', 
-                      'strength_defence_home_opponent', 'strength_defence_away_opponent', 'Team_fdr', 'opponent_fdr']
+columns_to_convert = [
+    'GW', 'Pts', 'Mins', 'GS', 'xG', 'A', 'xA', 'xGI', 'Pen_Miss', 
+    'CS', 'GC', 'xGC', 'OG', 'Pen_Save', 'S', 'YC', 'RC', 'B', 'BPS', 
+    'Price', 'I', 'C', 'T', 'ICT', 'SB', 'Tran_In', 'Tran_Out', 
+    'strength_overall_home', 'strength_overall_away', 'strength_attack_home', 'strength_attack_away', 
+    'strength_defence_home', 'strength_defence_away', 'strength_overall_home_opponent', 
+    'strength_overall_away_opponent', 'strength_attack_home_opponent', 'strength_attack_away_opponent', 
+    'strength_defence_home_opponent', 'strength_defence_away_opponent', 'Team_fdr', 'opponent_fdr'
+]
 
-
-# Convert specified columns to float
+# Convert specified columns to numeric
 for col in columns_to_convert:
-    merged_opponent[col] = pd.to_numeric(merged_opponent[col], errors='coerce')  # Convert to float and set errors to NaN if conversion fails
+    merged_opponent[col] = pd.to_numeric(merged_opponent[col], errors='coerce')  # Coerce errors to NaN
 
-merged_opponent['season']=2425
-next_fixture_gw = fixtures_df[fixtures_df['event']==ct_gw]
+# Add season information for filtering purposes
+merged_opponent['season'] = 2425
 
+# Filter fixtures for the current gameweek
+next_fixture_gw = fixtures_df[fixtures_df['event'] == ct_gw]
 
-# Merge for team_a
+# Merge fixture data with team information for team_a
 new_fix_gw_a = pd.merge(
     next_fixture_gw,
-    teams_df[['short_name', 'name']],  # Include 'name' for matching
-    left_on='team_a',  # Match with team_a
+    teams_df[['short_name', 'name']],  # Only need 'short_name' and 'name'
+    left_on='team_a',  # Match with 'team_a' column
     right_on='name', 
     how='left'
 )
 
-# Rename the short_name column for clarity
+# Rename the 'short_name' column for clarity
 new_fix_gw_a.rename(columns={'short_name': 'team_a_short_name'}, inplace=True)
 
-# Merge for team_h
+# Merge fixture data with team information for team_h
 new_fix_gw = pd.merge(
     new_fix_gw_a,
-    teams_df[['short_name', 'name']],  # Include 'name' for matching
-    left_on='team_h',  # Match with team_h
+    teams_df[['short_name', 'name']],  # Only need 'short_name' and 'name'
+    left_on='team_h',  # Match with 'team_h' column
     right_on='name', 
     how='left'
 )
 
-# Rename the short_name column for clarity
+# Rename the 'short_name' column for clarity and drop unnecessary columns
 new_fix_gw.rename(columns={'short_name': 'team_h_short_name'}, inplace=True)
 new_fix_gw = new_fix_gw.drop(columns=['name_x', 'name_y'], errors='ignore')
+
+# Append (H) for home teams and (A) for away teams
 new_fix_gw['team_h_short_name'] = new_fix_gw['team_h_short_name'] + ' (H)'
 new_fix_gw['team_a_short_name'] = new_fix_gw['team_a_short_name'] + ' (A)'
 
-
-
+# Create a unique list of teams for the next gameweek
 teams_next_gw = pd.concat([new_fix_gw['team_a_short_name'], new_fix_gw['team_h_short_name']]).unique()
-filtered_players = merged_opponent
 
+# Prepare player data for filtering by game result
+filtered_players = merged_opponent.copy()  # Create a copy to avoid modifying the original
+
+# Split 'Result' into 'team_player_score' and 'vs_score', and convert to integers
 filtered_players[['team_player_score', 'vs_score']] = filtered_players['Result'].str.split('-', expand=True)
-
-# Convert the scores to integers (optional, depending on how you want to use them)
 filtered_players['team_player_score'] = filtered_players['team_player_score'].astype(int)
 filtered_players['vs_score'] = filtered_players['vs_score'].astype(int)
+
+# Drop the original 'Result' column as it's no longer needed
 filtered_players.drop(columns=['Result'], axis=1, inplace=True)
 
-
-
-
-new_fix_gw_test = new_fix_gw[['event', 'team_h_short_name', 'team_a_short_name','kickoff_time']].rename(
+# Create a new fixture dataframe with only relevant columns and rename for clarity
+new_fix_gw_test = new_fix_gw[['event', 'team_h_short_name', 'team_a_short_name', 'kickoff_time']].rename(
     columns={
         'event': 'GW',
         'team_h_short_name': 'Team_home',
