@@ -403,33 +403,30 @@ fit['team'] = fit['Team_player'].str.extract(r'([A-Za-z]+) \(')[0]
 
 # Now, assign 'GW', 'kickoff_time', and 'season' based on matching either Team_home or Team_away in df_fixture
 # Pre-extract team names once for both 'Team_home' and 'Team_away' columns
+# Pre-extract team names for both 'Team_home' and 'Team_away'
 df_fixture['home_team'] = df_fixture['Team_home'].str.extract(r'([A-Za-z]+)')[0]
 df_fixture['away_team'] = df_fixture['Team_away'].str.extract(r'([A-Za-z]+)')[0]
-####################################################################
 
-# Use a map to get the corresponding GW for each team
-team_to_gw = df_fixture.set_index('home_team')['GW'].to_dict()
-team_to_gw.update(df_fixture.set_index('away_team')['GW'].to_dict())
+# Create dictionaries for home and away team mappings for 'GW', 'kickoff_time', and 'season'
+home_team_mapping = df_fixture.set_index('home_team')[['GW', 'kickoff_time', 'season']].to_dict(orient='index')
+away_team_mapping = df_fixture.set_index('away_team')[['GW', 'kickoff_time', 'season']].to_dict(orient='index')
 
-# Now apply this map to the fit dataframe
-fit['GW'] = fit['team'].map(team_to_gw)
+# Combine home and away team mappings
+combined_mapping = {}
+for team, data in home_team_mapping.items():
+    combined_mapping[team] = data
+for team, data in away_team_mapping.items():
+    if team in combined_mapping:
+        # Merge the home and away data (if applicable)
+        combined_mapping[team].update(data)
+    else:
+        combined_mapping[team] = data
 
+# Now map the values to the 'fit' DataFrame
+fit['GW'] = fit['team'].map(lambda team: combined_mapping.get(team, {}).get('GW'))
+fit['kickoff_time'] = fit['team'].map(lambda team: combined_mapping.get(team, {}).get('kickoff_time'))
+fit['season'] = fit['team'].map(lambda team: combined_mapping.get(team, {}).get('season'))
 
-####################################################################
-
-# Create a dictionary that maps teams (both home and away) to kickoff_time
-team_to_kickoff_time = df_fixture.set_index('home_team')['kickoff_time'].to_dict()
-team_to_kickoff_time.update(df_fixture.set_index('away_team')['kickoff_time'].to_dict())
-
-# Now map the 'team' in the fit dataframe to their kickoff times
-fit['kickoff_time'] = fit['team'].map(team_to_kickoff_time)
-
-####################################################################
-team_to_season = df_fixture.set_index('home_team')['season'].to_dict()
-team_to_season.update(df_fixture.set_index('away_team')['season'].to_dict())
-
-# Now map the 'team' in the fit dataframe to their season
-fit['season'] = fit['team'].map(team_to_season)
 ####################################################################
 
 
