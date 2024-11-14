@@ -3,9 +3,22 @@ import pandas as pd
 import altair as alt
 import sys
 import os
+import subprocess
 
 pd.set_option('future.no_silent_downcasting', True)
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..', 'FPL')))
+
+import threading
+
+# Function to run the script in the background
+def run_model_in_background():
+    python_path = sys.executable
+    subprocess.run([python_path, "./FPL/transfer_collection.py"], check=True)
+    st.error("suiiiiiiiiiiii2")
+
+# Start the model script in the background using a separate thread
+background_thread = threading.Thread(target=run_model_in_background, daemon=True)
+background_thread.start()
 
 
 from fpl_api_collection import (
