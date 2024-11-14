@@ -4,22 +4,33 @@ import altair as alt
 import sys
 import os
 import subprocess
-
+import threading
+import schedule
+import time
+import sys
+import subprocess
 pd.set_option('future.no_silent_downcasting', True)
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..', 'FPL')))
 
-import threading
-
-# Function to run the script in the background
 def run_model_in_background():
     python_path = sys.executable
     subprocess.run([python_path, "./FPL/transfer_collection.py"], check=True)
     st.error("suiiiiiiiiiiii2")
 
-# Start the model script in the background using a separate thread
-background_thread = threading.Thread(target=run_model_in_background, daemon=True)
-background_thread.start()
+# Function to run the scheduled task
+def job():
+    threading.Thread(target=run_model_in_background, daemon=True).start()
 
+# Schedule the job to run daily at a specific time (e.g., 00:00)
+schedule.every().day.at("00:00").do(job)
+def run_scheduled_tasks():
+    while True:
+        schedule.run_pending()
+        time.sleep(1)  # Sleep to avoid blocking the main thread
+
+# Start the scheduler in a background thread
+scheduler_thread = threading.Thread(target=run_scheduled_tasks, daemon=True)
+scheduler_thread.start()
 
 from fpl_api_collection import (
     get_bootstrap_data, get_total_fpl_players, get_player_id_dict, get_player_data
