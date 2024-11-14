@@ -95,6 +95,7 @@ st.title("Fantasy Premier League Data")
 ele_copy, team_name_mapping,teams_df = process_player_data()
 fixtures_df = process_fixture_data()
 full_player_dict, crnt_season, ct_gw = get_player_and_season_data()
+
 team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
 elapsed_time = time.time() - start_time
 st.error(f"1-Time taken by my_function: {elapsed_time} seconds")
