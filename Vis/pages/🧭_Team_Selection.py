@@ -202,8 +202,8 @@ new_fixt_cols = ['GW' + str(col) for col in new_fixt_df.columns.tolist()]
 new_fixt_df.columns = new_fixt_cols
 
 new_fdr_df = team_fdr_df.loc[:, ct_gw:(ct_gw+2)]
-elapsed_time = time.time() - start_time
-st.error(f"3-Time taken by my_function: {elapsed_time} seconds")
+elapsed_time3 = time.time() - start_time
+st.error(f"3-Time taken by my_function: {elapsed_time3} seconds")
 def get_home_away_str_dict():
     new_fdr_df.columns = new_fixt_cols
     result_dict = {}
@@ -270,8 +270,8 @@ team_fdr_map = dict(zip(team_fdr_df['team'], team_fdr_df['fdr']))
 # Map the 'fdr' values to the 'merged_opponent' dataframe based on the 'Team_player' column
 merged_opponent['Team_fdr'] = merged_opponent['Team_player'].map(team_fdr_map)
 merged_opponent['opponent_fdr'] = merged_opponent['vs'].map(team_fdr_map)
-elapsed_time = time.time() - start_time
-st.error(f"4-Time taken by my_function: {elapsed_time} seconds")
+elapsed_time4 = time.time() - start_time
+st.error(f"4-Time taken by my_function: {elapsed_time4} seconds")
 
 
 columns_to_convert = ['GW', 'Pts', 'Mins', 'GS', 'xG', 'A', 'xA', 'xGI', 'Pen_Miss', 
@@ -340,8 +340,8 @@ new_fix_gw_test = new_fix_gw[['event', 'team_h_short_name', 'team_a_short_name',
         'team_a_short_name': 'Team_away',
     }
 )
-elapsed_time = time.time() - start_time
-st.error(f"5-Time taken by my_function: {elapsed_time} seconds")
+elapsed_time5 = time.time() - start_time
+st.error(f"5-Time taken by my_function: {elapsed_time5} seconds")
 
 history_path= os.path.join(cwd, 'data', 'history', 'clean_player_2324.csv')
 
@@ -357,8 +357,8 @@ concatenated_df.reset_index(drop=True, inplace=True)
 
 new_fix_gw_test['season']=2425
 
-elapsed_time = time.time() - start_time
-st.error(f"6-Time taken by my_function: {elapsed_time} seconds")
+elapsed_time6 = time.time() - start_time
+st.error(f"6-Time taken by my_function: {elapsed_time6} seconds")
 # 1. Calculate the average statistics for each team from df_player
 df_player=concatenated_df
 df_fixture=new_fix_gw_test
@@ -547,8 +547,8 @@ ssuiio['final_weight'] = (
     ssuiio['xa_weight']
 )
 
-elapsed_time = time.time() - start_time
-st.error(f"7-Time taken by my_function: {elapsed_time} seconds")
+elapsed_time7 = time.time() - start_time
+st.error(f"7-Time taken by my_function: {elapsed_time7} seconds")
 XX = ssuiio[features]
 model_path="./Vis/pages/Prediction/xgb_model.joblib"
 best_model = joblib.load(model_path)
