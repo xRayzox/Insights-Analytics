@@ -86,13 +86,13 @@ def process_player_data():
         full_name=lambda df: df['first_name'].str.cat(df['second_name'].str.cat(df['team_name'].apply(lambda x: f" ({x})"), sep=''), sep=' ')
     )
     
-    return ele_copy, team_name_mapping
+    return ele_copy, team_name_mapping,teams_df
 
 # Streamlit UI Components
 st.title("Fantasy Premier League Data")
 
 # Fetching and processing data
-ele_copy, team_name_mapping = process_player_data()
+ele_copy, team_name_mapping,teams_df = process_player_data()
 fixtures_df = process_fixture_data()
 full_player_dict, crnt_season, ct_gw = get_player_and_season_data()
 
