@@ -1,3 +1,4 @@
+
 import warnings
 warnings.filterwarnings("ignore")
 import pandas as pd
@@ -6,12 +7,15 @@ import matplotlib.pyplot as plt
 import os 
 from concurrent.futures import ThreadPoolExecutor ,ProcessPoolExecutor,as_completed
 import joblib
+import time
+import subprocess
+import os
+import joblib
 import optuna
 from xgboost import XGBRegressor
 from sklearn.model_selection import train_test_split, cross_val_score, KFold
 from sklearn.metrics import mean_squared_error
 import numpy as np
-
 
 cwd = os.getcwd()
 # Construct the full path to the 'FPL' directory
@@ -28,172 +32,193 @@ from fpl_api_collection import (
     get_current_season,
     get_player_data,
 )
-# Retrieve and prepare player data
-ele_types_data = get_bootstrap_data()['element_types']
-ele_types_X_weighted = pd.DataFrame(ele_types_data)
-ele_data = get_bootstrap_data()['elements']
-ele_df = pd.DataFrame(ele_data)
-ele_df['element_type'] = ele_df['element_type'].map(ele_types_X_weighted.set_index('id')['singular_name_short'])
-ele_copy = ele_df.copy()
 
-# Retrieve and prepare team data
-teams_data = get_bootstrap_data()['teams']
-teams_df = pd.DataFrame(teams_data)
+start_time = time.time()
 
-# Map team IDs to names for fixture processing
-team_name_mapping = pd.Series(teams_df.name.values, index=teams_df.id).to_dict()
-ele_copy['team_name'] = ele_copy['team'].map(teams_df.set_index('id')['short_name'])
-ele_copy['full_name'] = ele_copy['first_name'].str.cat(ele_copy['second_name'].str.cat(ele_copy['team_name'].apply(lambda x: f" ({x})"), sep=''), sep=' ')
 
-# Retrieve player dictionary and current season/gameweek
-full_player_dict = get_player_id_dict('total_points', web_name=False)
-crnt_season = get_current_season()
-ct_gw = get_current_gw()
+def get_cached_fixture_data():
+    return get_fixture_data()
+# Cache bootstrap data retrieval to avoid repeated API calls
 
-# Retrieve and process fixture data
-fixture_data = get_fixture_data()
-fixtures_df = pd.DataFrame(fixture_data)
-fixtures_df.drop(columns='stats', inplace=True)
+def get_bootstrap_data_cached():
+    return get_bootstrap_data()
 
-fixtures_df['team_h'] = fixtures_df['team_h'].replace(team_name_mapping)
-fixtures_df['team_a'] = fixtures_df['team_a'].replace(team_name_mapping)
-fixtures_df = fixtures_df.drop(columns=['pulse_id'])
+# Cache player dictionary and current season/gameweek retrieval
 
-# Format fixture dates
-timezone = 'Europe/London'
-fixtures_df['datetime'] = pd.to_datetime(fixtures_df['kickoff_time'], utc=True)
-fixtures_df['local_time'] = fixtures_df['datetime'].dt.tz_convert(timezone).dt.strftime('%A %d %B %Y %H:%M')
-fixtures_df['local_date'] = fixtures_df['datetime'].dt.tz_convert(timezone).dt.strftime('%d %A %B %Y')
-fixtures_df['local_hour'] = fixtures_df['datetime'].dt.tz_convert(timezone).dt.strftime('%H:%M')
+def get_player_and_season_data():
+    full_player_dict = get_player_id_dict('total_points', web_name=False)
+    crnt_season = get_current_season()
+    ct_gw = get_current_gw()
+    return full_player_dict, crnt_season, ct_gw
 
-# Retrieve fixture difficulty rating data
-team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
-full_player_dict = get_player_id_dict('total_points', web_name=False)
+# Cache fixture data processing
+
+def process_fixture_data():
+    bootstrap_data = get_bootstrap_data_cached()
+    teams_df = pd.DataFrame(bootstrap_data['teams'])
+    team_name_mapping = pd.Series(teams_df.name.values, index=teams_df.id).to_dict()
+
+    fixture_data = get_cached_fixture_data()
+    fixtures_df = pd.DataFrame(fixture_data).drop(columns='stats').replace(
+        {'team_h': team_name_mapping, 'team_a': team_name_mapping}
+    ).drop(columns=['pulse_id'])
+
+    timezone = 'Europe/London'
+    fixtures_df['datetime'] = pd.to_datetime(fixtures_df['kickoff_time'], utc=True)
+    fixtures_df[['local_time', 'local_date', 'local_hour']] = fixtures_df['datetime'].dt.tz_convert(timezone).apply(
+        lambda x: pd.Series([x.strftime('%A %d %B %Y %H:%M'), x.strftime('%d %A %B %Y'), x.strftime('%H:%M')])
+    )
+    
+    return fixtures_df
+
+# Cache player and element type processing
+
+def process_player_data():
+    bootstrap_data = get_bootstrap_data_cached()
+    teams_df = pd.DataFrame(bootstrap_data['teams'])
+    element_types_df = pd.DataFrame(bootstrap_data['element_types'])
+    elements_df = pd.DataFrame(bootstrap_data['elements'])
+
+    team_name_mapping = pd.Series(teams_df.name.values, index=teams_df.id).to_dict()
+
+    ele_copy = elements_df.assign(
+        element_type=lambda df: df['element_type'].map(element_types_df.set_index('id')['singular_name_short']),
+        team_name=lambda df: df['team'].map(teams_df.set_index('id')['short_name']),
+        full_name=lambda df: df['first_name'].str.cat(df['second_name'].str.cat(df['team_name'].apply(lambda x: f" ({x})"), sep=''), sep=' ')
+    )
+    
+    return ele_copy, team_name_mapping,teams_df
+
+
+def get_cached_player_data(player_id):
+    return get_player_data(str(player_id))
+
+
+def get_cached_fixt_dfs():
+    return get_fixt_dfs()
+
+
+# Fetching and processing data
+ele_copy, team_name_mapping,teams_df = process_player_data()
+fixtures_df = process_fixture_data()
+full_player_dict, crnt_season, ct_gw = get_player_and_season_data()
+team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_cached_fixt_dfs()
+
+
+
+
 
 def convert_score_to_result(df):
-    df.loc[df['was_home'] == True, 'result'] = df['team_h_score'] \
-        .astype('Int64').astype(str) \
-        + '-' + df['team_a_score'].astype('Int64').astype(str)
-    df.loc[df['was_home'] == False, 'result'] = df['team_a_score'] \
-        .astype('Int64').astype(str) \
-        + '-' + df['team_h_score'].astype('Int64').astype(str)
-        
+    df['result'] = df.apply(
+        lambda row: f"{row['team_h_score']}-{row['team_a_score']}" if row['was_home'] 
+                    else f"{row['team_a_score']}-{row['team_h_score']}",
+        axis=1
+    )
+
 def convert_opponent_string(df):
-    df.loc[df['was_home'] == True, 'vs'] = df['vs'] + ' (A)'
-    df.loc[df['was_home'] == False, 'vs'] = df['vs'] + ' (H)'
-    df.loc[df['was_home'] == True, 'Team_player'] = df['Team_player'] + ' (H)'
-    df.loc[df['was_home'] == False, 'Team_player'] = df['Team_player'] + ' (A)'
+    df['vs'] += df['was_home'].apply(lambda x: ' (A)' if x else ' (H)')
+    df['Team_player'] += df['was_home'].apply(lambda x: ' (H)' if x else ' (A)')
     return df
+
 
 def collate_hist_df_from_name(player_name):
     p_id = [k for k, v in full_player_dict.items() if v == player_name]
     position = ele_copy.loc[ele_copy['full_name'] == player_name, 'element_type'].iloc[0]
     Team = ele_copy.loc[ele_copy['full_name'] == player_name, 'team_name'].iloc[0]
-    p_data = get_player_data(str(p_id[0]))
+    p_data = get_cached_player_data(str(p_id[0]))
     p_df = pd.DataFrame(p_data['history'])
     convert_score_to_result(p_df)
     p_df.loc[p_df['result'] == '<NA>-<NA>', 'result'] = '-'
-    rn_dict = {'round': 'GW','kickoff_time':'kickoff_time', 'opponent_team': 'vs', 'total_points': 'Pts',
-               'minutes': 'Mins', 'goals_scored': 'GS', 'assists': 'A',
-               'clean_sheets': 'CS', 'goals_conceded': 'GC', 'own_goals': 'OG',
-               'penalties_saved': 'Pen_Save', 'penalties_missed': 'Pen_Miss',
-               'yellow_cards': 'YC', 'red_cards': 'RC', 'saves': 'S',
-               'bonus': 'B', 'bps': 'BPS', 'influence': 'I', 'creativity': 'C',
-               'threat': 'T', 'ict_index': 'ICT', 'value': 'Price',
-               'selected': 'SB', 'transfers_in': 'Tran_In',
-               'transfers_out': 'Tran_Out', 'expected_goals': 'xG',
-               'expected_assists': 'xA', 'expected_goal_involvements': 'xGI',
-               'expected_goals_conceded': 'xGC', 'result': 'Result'}
+    
+    # Renaming columns in a single step
+    rn_dict = {'round': 'GW', 'kickoff_time': 'kickoff_time', 'opponent_team': 'vs', 
+               'total_points': 'Pts', 'minutes': 'Mins', 'goals_scored': 'GS', 
+               'assists': 'A', 'clean_sheets': 'CS', 'goals_conceded': 'GC', 
+               'own_goals': 'OG', 'penalties_saved': 'Pen_Save', 'penalties_missed': 'Pen_Miss',
+               'yellow_cards': 'YC', 'red_cards': 'RC', 'saves': 'S', 'bonus': 'B', 
+               'bps': 'BPS', 'influence': 'I', 'creativity': 'C', 'threat': 'T', 
+               'ict_index': 'ICT', 'value': 'Price', 'selected': 'SB', 
+               'transfers_in': 'Tran_In', 'transfers_out': 'Tran_Out', 
+               'expected_goals': 'xG', 'expected_assists': 'xA', 
+               'expected_goal_involvements': 'xGI', 'expected_goals_conceded': 'xGC', 
+               'result': 'Result'}
     p_df.rename(columns=rn_dict, inplace=True)
-    col_order = ['GW','kickoff_time', 'vs', 'Result', 'Pts', 'Mins', 'GS', 'xG', 'A', 'xA',
+    
+    # Set column order once after renaming
+    col_order = ['GW', 'kickoff_time', 'vs', 'Result', 'Pts', 'Mins', 'GS', 'xG', 'A', 'xA',
                  'xGI', 'Pen_Miss', 'CS', 'GC', 'xGC', 'OG', 'Pen_Save', 'S',
                  'YC', 'RC', 'B', 'BPS', 'Price', 'I', 'C', 'T', 'ICT', 'SB',
                  'Tran_In', 'Tran_Out', 'was_home']
     p_df = p_df[col_order]
-    # map opponent teams
     
-    p_df['Price'] = p_df['Price']/10
+    # Apply mappings outside loop to save time
+    p_df['Price'] = p_df['Price'] / 10
     p_df['vs'] = p_df['vs'].map(teams_df.set_index('id')['short_name'])
     p_df['Pos'] = position
     p_df['Team_player'] = Team
-    #convert_opponent_string(p_df)
-    #p_df.drop('was_home', axis=1, inplace=True)
-    #p_df.set_index('GW', inplace=True)
+    
+    # Finalize DataFrame format and return
     p_df.sort_values('GW', ascending=False, inplace=True)
     return p_df
 
 
 def collate_all_players_parallel(full_player_dict, max_workers=None):
-    # Determine optimal max_workers if not provided
     if max_workers is None:
-        max_workers = os.cpu_count() * 2  # Suitable for I/O-bound tasks like web scraping
+        max_workers = min(32, os.cpu_count() * 2)  # Tune based on system capabilities
 
-    # Define a helper function to retrieve data for a single player
-    def get_player_data(player_name):
-        try:  # Add exception handling inside the worker function
+    def get_player_data_wrapper(player_name):
+        try:
             player_df = collate_hist_df_from_name(player_name)
-            player_df['Player'] = player_name  # Add player name column
+            player_df['Player'] = player_name
             return player_df
         except Exception as e:
             print(f"Error processing {player_name}: {e}")
-            return pd.DataFrame() # Return empty DataFrame on error
+            return pd.DataFrame()  # Return empty DataFrame on error
 
-
-    # Use ThreadPoolExecutor with a with statement for proper resource management
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        # Submit tasks and store futures in a dictionary for easier error handling
-        futures = {executor.submit(get_player_data, player_name): player_name 
-                   for player_name in full_player_dict.values()}
+        futures = {executor.submit(get_player_data_wrapper, name): name 
+                   for name in full_player_dict.values()}
+        
+        # Use list comprehension for faster result collection
+        results = [future.result() for future in as_completed(futures) if not future.exception()]
 
-        results = []
-        for future in as_completed(futures):
-            player_name = futures[future]
-            try:
-                result_df = future.result()  # Get the result or raise an exception
-                results.append(result_df)
-            except Exception as e:
-                print(f"Error retrieving result for {player_name}: {e}")
+    return pd.concat(results, axis=0, ignore_index=True)
 
-    # Concatenate all successful results into a single DataFrame outside the loop
-    all_players_df = pd.concat(results, axis=0, ignore_index=True)  # ignore_index for cleaner index
-    return all_players_df
-
+# Run the optimized function
 all_players_data = collate_all_players_parallel(full_player_dict)
 
 
-merged_home = pd.merge(all_players_data, teams_df[['short_name',
-                                                    'strength_overall_home', 
-                                                    'strength_overall_away', 
-                                                    'strength_attack_home', 
-                                                    'strength_attack_away', 
-                                                    'strength_defence_home', 
-                                                    'strength_defence_away']],
-                       left_on='Team_player', 
-                       right_on='short_name', 
-                       how='left')
 
-# Merge for the opponent team
-merged_opponent = pd.merge(merged_home, 
-                            teams_df[['short_name',
-                                       'strength_overall_home', 
-                                       'strength_overall_away', 
-                                       'strength_attack_home', 
-                                       'strength_attack_away', 
-                                       'strength_defence_home', 
-                                       'strength_defence_away']],
-                            left_on='vs', 
-                            right_on='short_name', 
-                            how='left', 
-                            suffixes=('', '_opponent'))
+# Select only the necessary columns from teams_df for both home and away teams
+team_columns = ['short_name',
+                'strength_overall_home', 'strength_overall_away',
+                'strength_attack_home', 'strength_attack_away',
+                'strength_defence_home', 'strength_defence_away']
 
-# Optionally drop the 'short_name' columns for opponents if you don't need them
-merged_opponent = merged_opponent.drop(columns=['short_name', 'short_name_opponent'])
-merged_opponent=convert_opponent_string(merged_opponent)
+# Merge home team data
+merged_teams = pd.merge(all_players_data,
+                        teams_df[team_columns],
+                        left_on='Team_player',
+                        right_on='short_name',
+                        how='left')
+
+# Merge opponent team data (same columns but with suffix '_opponent')
+merged_opponent  = pd.merge(merged_teams,
+                        teams_df[team_columns],
+                        left_on='vs',
+                        right_on='short_name',
+                        how='left',
+                        suffixes=('', '_opponent'))
+
+# Drop redundant 'short_name' columns after merge
+merged_opponent .drop(columns=['short_name', 'short_name_opponent'], inplace=True)
+# Apply the function to convert opponent string details
+merged_opponent  = convert_opponent_string(merged_opponent )
 
 
-team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
 
-ct_gw = get_current_gw()
+
+
 
 new_fixt_df = team_fixt_df.loc[:, ct_gw:(ct_gw+2)]
 new_fixt_cols = ['GW' + str(col) for col in new_fixt_df.columns.tolist()]
@@ -234,9 +259,8 @@ def get_home_away_str_dict():
 	
 sui=get_home_away_str_dict()
 
-team_fdr_df, team_fixt_df, team_ga_df, team_gf_df = get_fixt_dfs()
 
-ct_gw = get_current_gw()
+
 
 new_fixt_df = team_fixt_df.loc[:, ct_gw:(ct_gw+2)]
 new_fixt_cols = ['GW' + str(col) for col in new_fixt_df.columns.tolist()]
@@ -270,66 +294,73 @@ merged_opponent['opponent_fdr'] = merged_opponent['vs'].map(team_fdr_map)
 
 
 
-columns_to_convert = ['GW', 'Pts', 'Mins', 'GS', 'xG', 'A', 'xA', 'xGI', 'Pen_Miss', 
-                      'CS', 'GC', 'xGC', 'OG', 'Pen_Save', 'S', 'YC', 'RC', 'B', 'BPS', 
-                      'Price', 'I', 'C', 'T', 'ICT', 'SB', 'Tran_In', 'Tran_Out', 
-                      'strength_overall_home', 'strength_overall_away', 'strength_attack_home', 'strength_attack_away', 
-                      'strength_defence_home', 'strength_defence_away', 'strength_overall_home_opponent', 
-                      'strength_overall_away_opponent', 'strength_attack_home_opponent', 'strength_attack_away_opponent', 
-                      'strength_defence_home_opponent', 'strength_defence_away_opponent', 'Team_fdr', 'opponent_fdr']
 
 
-# Convert specified columns to float
+columns_to_convert = [
+    'GW', 'Pts', 'Mins', 'GS', 'xG', 'A', 'xA', 'xGI', 'Pen_Miss', 
+    'CS', 'GC', 'xGC', 'OG', 'Pen_Save', 'S', 'YC', 'RC', 'B', 'BPS', 
+    'Price', 'I', 'C', 'T', 'ICT', 'SB', 'Tran_In', 'Tran_Out', 
+    'strength_overall_home', 'strength_overall_away', 'strength_attack_home', 'strength_attack_away', 
+    'strength_defence_home', 'strength_defence_away', 'strength_overall_home_opponent', 
+    'strength_overall_away_opponent', 'strength_attack_home_opponent', 'strength_attack_away_opponent', 
+    'strength_defence_home_opponent', 'strength_defence_away_opponent', 'Team_fdr', 'opponent_fdr'
+]
+
+# Convert specified columns to numeric
 for col in columns_to_convert:
-    merged_opponent[col] = pd.to_numeric(merged_opponent[col], errors='coerce')  # Convert to float and set errors to NaN if conversion fails
+    merged_opponent[col] = pd.to_numeric(merged_opponent[col], errors='coerce')  # Coerce errors to NaN
 
-merged_opponent['season']=2425
-next_fixture_gw = fixtures_df[fixtures_df['event']==ct_gw]
+# Add season information for filtering purposes
+merged_opponent['season'] = 2425
 
+# Filter fixtures for the current gameweek
+next_fixture_gw = fixtures_df[fixtures_df['event'] == ct_gw]
 
-# Merge for team_a
+# Merge fixture data with team information for team_a
 new_fix_gw_a = pd.merge(
     next_fixture_gw,
-    teams_df[['short_name', 'name']],  # Include 'name' for matching
-    left_on='team_a',  # Match with team_a
+    teams_df[['short_name', 'name']],  # Only need 'short_name' and 'name'
+    left_on='team_a',  # Match with 'team_a' column
     right_on='name', 
     how='left'
 )
 
-# Rename the short_name column for clarity
+# Rename the 'short_name' column for clarity
 new_fix_gw_a.rename(columns={'short_name': 'team_a_short_name'}, inplace=True)
 
-# Merge for team_h
+# Merge fixture data with team information for team_h
 new_fix_gw = pd.merge(
     new_fix_gw_a,
-    teams_df[['short_name', 'name']],  # Include 'name' for matching
-    left_on='team_h',  # Match with team_h
+    teams_df[['short_name', 'name']],  # Only need 'short_name' and 'name'
+    left_on='team_h',  # Match with 'team_h' column
     right_on='name', 
     how='left'
 )
 
-# Rename the short_name column for clarity
+# Rename the 'short_name' column for clarity and drop unnecessary columns
 new_fix_gw.rename(columns={'short_name': 'team_h_short_name'}, inplace=True)
 new_fix_gw = new_fix_gw.drop(columns=['name_x', 'name_y'], errors='ignore')
+
+# Append (H) for home teams and (A) for away teams
 new_fix_gw['team_h_short_name'] = new_fix_gw['team_h_short_name'] + ' (H)'
 new_fix_gw['team_a_short_name'] = new_fix_gw['team_a_short_name'] + ' (A)'
 
-
-
+# Create a unique list of teams for the next gameweek
 teams_next_gw = pd.concat([new_fix_gw['team_a_short_name'], new_fix_gw['team_h_short_name']]).unique()
-filtered_players = merged_opponent
 
+# Prepare player data for filtering by game result
+filtered_players = merged_opponent.copy()  # Create a copy to avoid modifying the original
+
+# Split 'Result' into 'team_player_score' and 'vs_score', and convert to integers
 filtered_players[['team_player_score', 'vs_score']] = filtered_players['Result'].str.split('-', expand=True)
-
-# Convert the scores to integers (optional, depending on how you want to use them)
 filtered_players['team_player_score'] = filtered_players['team_player_score'].astype(int)
 filtered_players['vs_score'] = filtered_players['vs_score'].astype(int)
+
+# Drop the original 'Result' column as it's no longer needed
 filtered_players.drop(columns=['Result'], axis=1, inplace=True)
 
-
-
-
-new_fix_gw_test = new_fix_gw[['event', 'team_h_short_name', 'team_a_short_name','kickoff_time']].rename(
+# Create a new fixture dataframe with only relevant columns and rename for clarity
+new_fix_gw_test = new_fix_gw[['event', 'team_h_short_name', 'team_a_short_name', 'kickoff_time']].rename(
     columns={
         'event': 'GW',
         'team_h_short_name': 'Team_home',
@@ -337,7 +368,8 @@ new_fix_gw_test = new_fix_gw[['event', 'team_h_short_name', 'team_a_short_name',
     }
 )
 
-print('sssssssssuii')
+
+
 history_path= os.path.join(cwd, 'data', 'history', 'clean_player_2324.csv')
 
 player_history = pd.read_csv(history_path, index_col=0)
@@ -352,7 +384,6 @@ concatenated_df.reset_index(drop=True, inplace=True)
 
 new_fix_gw_test['season']=2425
 
-
 # 1. Calculate the average statistics for each team from df_player
 df_player=concatenated_df
 df_fixture=new_fix_gw_test
@@ -360,54 +391,58 @@ df_fixture=new_fix_gw_test
 last_gw = df_player[df_player['season'] == 2425]['GW'].max()
 filtered_players_fixture = df_player[
     (df_player['season'] == 2425) ]
+
+
 filtered_pl = df_player[
     (df_player['season'] == 2425) & (df_player['GW'] == last_gw)
 ]
+
+
 fit=filtered_pl[['Team_player', 'Player', 'Pos', 'Price']]
 
 fit['team'] = fit['Team_player'].str.extract(r'([A-Za-z]+) \(')[0]
 
-# Now, assign 'GW', 'kickoff_time', and 'season' based on matching either Team_home or Team_away in df_fixture
-fit['GW'] = fit['team'].apply(
-    lambda team: df_fixture.loc[
-        (df_fixture['Team_home'].str.extract(r'([A-Za-z]+)')[0] == team) | 
-        (df_fixture['Team_away'].str.extract(r'([A-Za-z]+)')[0] == team), 'GW'
-    ].values[0] if not df_fixture.loc[
-        (df_fixture['Team_home'].str.extract(r'([A-Za-z]+)')[0] == team) | 
-        (df_fixture['Team_away'].str.extract(r'([A-Za-z]+)')[0] == team), 'GW'
-    ].empty else None
-)
+# Pre-extract team names for both 'Team_home' and 'Team_away' once
+df_fixture['home_team'] = df_fixture['Team_home'].str.extract(r'([A-Za-z]+)')[0]
+df_fixture['away_team'] = df_fixture['Team_away'].str.extract(r'([A-Za-z]+)')[0]
 
-fit['kickoff_time'] = fit['team'].apply(
-    lambda team: df_fixture.loc[
-        (df_fixture['Team_home'].str.extract(r'([A-Za-z]+)')[0] == team) | 
-        (df_fixture['Team_away'].str.extract(r'([A-Za-z]+)')[0] == team), 'kickoff_time'
-    ].values[0] if not df_fixture.loc[
-        (df_fixture['Team_home'].str.extract(r'([A-Za-z]+)')[0] == team) | 
-        (df_fixture['Team_away'].str.extract(r'([A-Za-z]+)')[0] == team), 'kickoff_time'
-    ].empty else None
-)
+# Create dictionaries for home and away team mappings for 'GW', 'kickoff_time', and 'season'
+home_team_mapping = df_fixture.set_index('home_team')[['GW', 'kickoff_time', 'season','Team_home']].to_dict(orient='index')
+away_team_mapping = df_fixture.set_index('away_team')[['GW', 'kickoff_time', 'season','Team_away']].to_dict(orient='index')
 
-fit['season'] = fit['team'].apply(
-    lambda team: df_fixture.loc[
-        (df_fixture['Team_home'].str.extract(r'([A-Za-z]+)')[0] == team) | 
-        (df_fixture['Team_away'].str.extract(r'([A-Za-z]+)')[0] == team), 'season'
-    ].values[0] if not df_fixture.loc[
-        (df_fixture['Team_home'].str.extract(r'([A-Za-z]+)')[0] == team) | 
-        (df_fixture['Team_away'].str.extract(r'([A-Za-z]+)')[0] == team), 'season'
-    ].empty else None
-)
-fit['vs'] = fit['team'].apply(
-    lambda team: df_fixture.loc[
-        (df_fixture['Team_home'].str.extract(r'([A-Za-z]+)')[0] == team), 'Team_away'
-    ].values[0] if not df_fixture.loc[
-        (df_fixture['Team_home'].str.extract(r'([A-Za-z]+)')[0] == team), 'Team_away'
-    ].empty else df_fixture.loc[
-        (df_fixture['Team_away'].str.extract(r'([A-Za-z]+)')[0] == team), 'Team_home'
-    ].values[0] if not df_fixture.loc[
-        (df_fixture['Team_away'].str.extract(r'([A-Za-z]+)')[0] == team), 'Team_home'
-    ].empty else None
-)
+# Combine home and away team mappings
+combined_mapping = {}
+for team, data in home_team_mapping.items():
+    combined_mapping[team] = data
+for team, data in away_team_mapping.items():
+    if team in combined_mapping:
+        # Merge the home and away data (if applicable)
+        combined_mapping[team].update(data)
+    else:
+        combined_mapping[team] = data
+
+# Now map the values to the 'fit' DataFrame for 'GW', 'kickoff_time', and 'season'
+fit['GW'] = fit['team'].map(lambda team: combined_mapping.get(team, {}).get('GW'))
+fit['kickoff_time'] = fit['team'].map(lambda team: combined_mapping.get(team, {}).get('kickoff_time'))
+fit['season'] = fit['team'].map(lambda team: combined_mapping.get(team, {}).get('season'))
+fit['Team_player'] = fit['team'].map(lambda team: combined_mapping.get(team, {}).get('Team_home') or 
+                                combined_mapping.get(team, {}).get('Team_away'))
+
+
+
+####################################################################
+
+# Create dictionaries for home-to-away and away-to-home teams to find opponents
+home_to_away = df_fixture.set_index('home_team')['Team_away'].to_dict()
+away_to_home = df_fixture.set_index('away_team')['Team_home'].to_dict()
+
+# Combine home and away opponent mappings into a single dictionary
+combined_opponent_mapping = {}
+combined_opponent_mapping.update(home_to_away)
+combined_opponent_mapping.update(away_to_home)
+
+# Map the 'vs' column in the 'fit' DataFrame to their corresponding opponent
+fit['vs'] = fit['team'].map(combined_opponent_mapping)
 
 
 
@@ -418,7 +453,13 @@ columns_to_normalize = [
     'C', 'T', 'ICT', 'SB', 'Tran_In', 'Tran_Out'
 ]
 
-total_stats = pulga.groupby('Player')[columns_to_normalize].mean().reset_index()
+
+pulga['Recency_Weight'] = pulga['GW'].apply(lambda x: 1 / (max(pulga['GW']) - x + 1))
+
+# Weighted average for each player
+total_stats = pulga.groupby('Player')[columns_to_normalize + ['Recency_Weight']].apply(
+    lambda x: (x[columns_to_normalize].multiply(x['Recency_Weight'], axis=0).sum()) / x['Recency_Weight'].sum()
+).reset_index()
 
 df_pred = pd.merge(fit, total_stats,
                            left_on='Player', right_on='Player', how='left')
