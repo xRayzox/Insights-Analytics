@@ -283,10 +283,15 @@ with col5:
             import matplotlib.image as mpimg
             from matplotlib.patches import Circle
 
+            # Load the image
             img = mpimg.imread("./data/Pitch.png")
 
             # Create the figure and axis
             fig, ax = plt.subplots()
+
+            # Set transparent background for the figure
+            fig.patch.set_alpha(0)  # This makes the figure background transparent
+            ax.set_facecolor('none')  # Set the axes facecolor to none (transparent)
 
             # Display the image
             ax.imshow(img)
@@ -298,9 +303,8 @@ with col5:
             # Hide axes
             ax.axis('off')
 
-            # Display the figure in Streamlit
+            # Display the figure in Streamlit with transparent background
             st.pyplot(fig)
-
             
 
 
