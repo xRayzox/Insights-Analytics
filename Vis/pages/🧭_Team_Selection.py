@@ -430,7 +430,7 @@ for team, data in away_team_mapping.items():
 fit['GW'] = fit['team'].map(lambda team: combined_mapping.get(team, {}).get('GW'))
 fit['kickoff_time'] = fit['team'].map(lambda team: combined_mapping.get(team, {}).get('kickoff_time'))
 fit['season'] = fit['team'].map(lambda team: combined_mapping.get(team, {}).get('season'))
-st.write(fit)
+
 ####################################################################
 
 # Create dictionaries for home-to-away and away-to-home teams to find opponents
@@ -445,7 +445,7 @@ combined_opponent_mapping.update(away_to_home)
 # Map the 'vs' column in the 'fit' DataFrame to their corresponding opponent
 fit['vs'] = fit['team'].map(combined_opponent_mapping)
 
-
+st.write(fit)
 pulga=filtered_players_fixture
 columns_to_normalize = [
     'Mins','Pts', 'GS', 'xG', 'A', 'xA', 'xGI', 'Pen_Miss', 'CS', 'GC', 
