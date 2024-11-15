@@ -386,7 +386,7 @@ concatenated_df.reset_index(drop=True, inplace=True)
 
 
 new_fix_gw_test['season']=2425
-st.write(new_fix_gw_test)
+
 elapsed_time6 = time.time() - start_time
 st.error(f"6-Time taken by my_function: {elapsed_time6} seconds")
 
@@ -398,13 +398,15 @@ df_fixture=new_fix_gw_test
 last_gw = df_player[df_player['season'] == 2425]['GW'].max()
 filtered_players_fixture = df_player[
     (df_player['season'] == 2425) ]
+
+
 filtered_pl = df_player[
     (df_player['season'] == 2425) & (df_player['GW'] == last_gw)
 ]
 fit=filtered_pl[['Team_player', 'Player', 'Pos', 'Price']]
 
 fit['team'] = fit['Team_player'].str.extract(r'([A-Za-z]+) \(')[0]
-
+st.write(fit)
 # Pre-extract team names for both 'Team_home' and 'Team_away' once
 df_fixture['home_team'] = df_fixture['Team_home'].str.extract(r'([A-Za-z]+)')[0]
 df_fixture['away_team'] = df_fixture['Team_away'].str.extract(r'([A-Za-z]+)')[0]
