@@ -598,3 +598,49 @@ st.table(ssuiio[['GW','Player', 'Pos', 'Price', 'Team_player', 'prediction','vs'
 from pulp import LpMaximize, LpProblem, LpVariable, lpSum, LpInteger, LpStatus, LpBinary, LpConstraintVar, LpConstraint, LpAffineExpression
 
 
+
+
+# Create the optimization problem
+model = LpProblem(name="FPL_Team_Selection", sense=LpMaximize)
+
+# Define player indices and variables
+players = ssuiio.index
+player_vars = LpVariable.dicts("Player", players, cat="Binary")
+
+# Objective Function: Maximize predicted points
+model += lpSum(ssuiio.loc[i, 'prediction'] * player_vars[i] for i in players), "Total_Predicted_Points"
+
+# Constraints
+# Total budget
+model += lpSum(ssuiio.loc[i, 'Price'] * player_vars[i] for i in players) <= 830, "Max_Budget"
+model += lpSum(ssuiio.loc[i, 'Price'] * player_vars[i] for i in players) >= 820, "Min_Budget"
+
+# Position constraints
+model += lpSum(player_vars[i] for i in players if ssuiio.loc[i, 'Pos'] == 'GKP') == 1, "GKP_Constraint"
+model += lpSum(player_vars[i] for i in players if ssuiio.loc[i, 'Pos'] == 'DEF') >= 3, "Min_DEF"
+model += lpSum(player_vars[i] for i in players if ssuiio.loc[i, 'Pos'] == 'DEF') <= 5, "Max_DEF"
+model += lpSum(player_vars[i] for i in players if ssuiio.loc[i, 'Pos'] == 'MID') >= 3, "Min_MID"
+model += lpSum(player_vars[i] for i in players if ssuiio.loc[i, 'Pos'] == 'MID') <= 5, "Max_MID"
+model += lpSum(player_vars[i] for i in players if ssuiio.loc[i, 'Pos'] == 'FWD') >= 1, "Min_FWD"
+model += lpSum(player_vars[i] for i in players if ssuiio.loc[i, 'Pos'] == 'FWD') <= 3, "Max_FWD"
+
+# Exactly 11 players must be selected
+model += lpSum(player_vars[i] for i in players) == 11, "Total_Players"
+
+# No more than 3 players from a single team
+teams = ssuiio['Team_player'].unique()
+for team in teams:
+    model += lpSum(player_vars[i] for i in players if ssuiio.loc[i, 'Team_player'] == team) <= 3, f"Max_3_Players_{team}"
+
+# Solve the optimization problem
+model.solve()
+
+# Get the recommended players
+recommended_players = [i for i in players if player_vars[i].varValue == 1]
+
+# Print the recommended players
+print("Recommended Team:")
+for player in recommended_players:
+    print(f"Player: {ssuiio.loc[player, 'Player']}, Position: {ssuiio.loc[player, 'Pos']}, "
+          f"Predicted Points: {ssuiio.loc[player, 'prediction']:.2f}, Price: {ssuiio.loc[player, 'Price']:.2f}, "
+          f"Team: {ssuiio.loc[player, 'Team_player']}")
