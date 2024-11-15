@@ -342,7 +342,7 @@ new_fix_gw = pd.merge(
 # Rename the 'short_name' column for clarity and drop unnecessary columns
 new_fix_gw.rename(columns={'short_name': 'team_h_short_name'}, inplace=True)
 new_fix_gw = new_fix_gw.drop(columns=['name_x', 'name_y'], errors='ignore')
-
+st.write(new_fix_gw)
 # Append (H) for home teams and (A) for away teams
 new_fix_gw['team_h_short_name'] = new_fix_gw['team_h_short_name'] + ' (H)'
 new_fix_gw['team_a_short_name'] = new_fix_gw['team_a_short_name'] + ' (A)'
