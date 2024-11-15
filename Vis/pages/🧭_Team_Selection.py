@@ -393,7 +393,7 @@ st.error(f"6-Time taken by my_function: {elapsed_time6} seconds")
 # 1. Calculate the average statistics for each team from df_player
 df_player=concatenated_df
 df_fixture=new_fix_gw_test
-st.write(df_fixture)
+
 last_gw = df_player[df_player['season'] == 2425]['GW'].max()
 filtered_players_fixture = df_player[
     (df_player['season'] == 2425) ]
@@ -442,7 +442,7 @@ combined_opponent_mapping.update(away_to_home)
 # Map the 'vs' column in the 'fit' DataFrame to their corresponding opponent
 fit['vs'] = fit['team'].map(combined_opponent_mapping)
 
-
+st.write(fit)
 pulga=filtered_players_fixture
 columns_to_normalize = [
     'Mins','Pts', 'GS', 'xG', 'A', 'xA', 'xGI', 'Pen_Miss', 'CS', 'GC', 
