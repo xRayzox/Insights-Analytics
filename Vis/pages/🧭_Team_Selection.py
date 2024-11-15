@@ -408,14 +408,14 @@ filtered_pl = df_player[
 fit=filtered_pl[['Team_player', 'Player', 'Pos', 'Price']]
 
 fit['team'] = fit['Team_player'].str.extract(r'([A-Za-z]+) \(')[0]
-st.write(df_fixture['Team_home'])
+
 # Pre-extract team names for both 'Team_home' and 'Team_away' once
 df_fixture['home_team'] = df_fixture['Team_home'].str.extract(r'([A-Za-z]+)')[0]
 df_fixture['away_team'] = df_fixture['Team_away'].str.extract(r'([A-Za-z]+)')[0]
 
 # Create dictionaries for home and away team mappings for 'GW', 'kickoff_time', and 'season'
-home_team_mapping = df_fixture.set_index('home_team')[['GW', 'kickoff_time', 'season']].to_dict(orient='index')
-away_team_mapping = df_fixture.set_index('away_team')[['GW', 'kickoff_time', 'season']].to_dict(orient='index')
+home_team_mapping = df_fixture.set_index('home_team')[['GW', 'kickoff_time', 'season','Team_home']].to_dict(orient='index')
+away_team_mapping = df_fixture.set_index('away_team')[['GW', 'kickoff_time', 'season','Team_away']].to_dict(orient='index')
 
 # Combine home and away team mappings
 combined_mapping = {}
@@ -432,7 +432,11 @@ for team, data in away_team_mapping.items():
 fit['GW'] = fit['team'].map(lambda team: combined_mapping.get(team, {}).get('GW'))
 fit['kickoff_time'] = fit['team'].map(lambda team: combined_mapping.get(team, {}).get('kickoff_time'))
 fit['season'] = fit['team'].map(lambda team: combined_mapping.get(team, {}).get('season'))
+fit['Teammm'] = fit['team'].map(lambda team: combined_mapping.get(team, {}).get('Team_home') or 
+                                combined_mapping.get(team, {}).get('Team_away'))
 
+
+st.write(fit)
 ####################################################################
 
 # Create dictionaries for home-to-away and away-to-home teams to find opponents
