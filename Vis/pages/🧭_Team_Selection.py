@@ -436,7 +436,7 @@ fit['Team_player'] = fit['team'].map(lambda team: combined_mapping.get(team, {})
                                 combined_mapping.get(team, {}).get('Team_away'))
 
 
-st.write(fit)
+
 ####################################################################
 
 # Create dictionaries for home-to-away and away-to-home teams to find opponents
@@ -451,7 +451,7 @@ combined_opponent_mapping.update(away_to_home)
 # Map the 'vs' column in the 'fit' DataFrame to their corresponding opponent
 fit['vs'] = fit['team'].map(combined_opponent_mapping)
 
-
+st.write(fit)
 
 
 
