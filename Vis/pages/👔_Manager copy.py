@@ -281,6 +281,7 @@ with col5:
 
 
             import matplotlib.image as mpimg
+            from matplotlib.patches import Circle
 
             img = mpimg.imread("./data/Pitch.png")
 
