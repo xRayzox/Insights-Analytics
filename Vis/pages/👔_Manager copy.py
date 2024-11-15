@@ -285,129 +285,187 @@ with col5:
 
             # Load the image
             img = mpimg.imread("./data/Pitch.png")
-            pitch_length, pitch_width, _ = img.shape
+
+
+            pitch_length, pitch_width, _ = img.shape   
+
 
             # Create the figure and axis
-            fig, ax = plt.subplots(figsize=(12, 7))
-            fig.patch.set_alpha(0)  # Transparent background
-            ax.set_facecolor('none')
+            fig, ax = plt.subplots(figsize=(20, 20))
+
+            # Set transparent background for the figure
+            fig.patch.set_alpha(0)  # This makes the figure background transparent
+            ax.set_facecolor('none')  # Set the axes facecolor to none (transparent)
 
             # Display the image
-            ax.imshow(img, extent=[0, pitch_width, 0, pitch_length])
+            ax.imshow(img)
 
-            # Set pitch zones for positions
-            zone_height = pitch_length / 6  # Divide pitch into 6 horizontal zones
+            # Add a circle on the image (example coordinates and size)
+            circle = Circle((pitch_length, 250), 50, color='red', fill=False, linewidth=2)  # Position (x, y), radius, color
+            ax.add_patch(circle)
 
-            # Position calculations for roles
+            # Hide axes
+            ax.axis('off')
+            # Extract pitch dimensions from the figure
+            pitch_length = fig.get_figheight() * 10  # Scaling factor
+            pitch_width = fig.get_figwidth() * 10  # Scaling factor
+
+            # Define placements for each position zone
+            zone_height = pitch_length / 6  
+
+            # Position calculations
             positions = {
-                'GKP': pitch_length - 5 * zone_height,
-                'DEF': pitch_length - 4 * zone_height,
-                'MID': pitch_length - 3 * zone_height,
-                'FWD': pitch_length - 2 * zone_height,
+                'GKP': pitch_length + 2.7 * zone_height,
+                'DEF': pitch_length + 1.5 * zone_height,
+                'MID': pitch_length + 1/3 * zone_height,
+                'FWD': pitch_length - zone_height
             }
 
             # Filter DataFrame for players who played
             df = test[test['Played'] == True]
             total_gwp = df['GWP'].sum()
 
-            # Draw Game Week details
-            rect_width = pitch_width / 5
-            rect_height = pitch_length / 12
-            gw_rect_y = pitch_length - 0.5 * zone_height
-
-            # Game Week Rectangle
-            rect = FancyBboxPatch(
-                (10, gw_rect_y),
-                rect_width,
-                rect_height,
-                boxstyle="round,pad=0.2",
-                facecolor=(55/255, 0/255, 60/255),
-                edgecolor='white',
-                linewidth=2,
-                alpha=0.8
+            # Create and position rectangle for Game Week
+            rect = plt.Rectangle(
+                (0, pitch_length + 1.8 * zone_height),
+                pitch_width / 5,
+                pitch_width / 5,
+                color=(55/255, 0/255, 60/255)
             )
             ax.add_patch(rect)
 
-            # Add Game Week text
-            ax.text(10 + rect_width / 2, gw_rect_y + rect_height / 2, f'GW{fpl_gw}', fontsize=15, ha='center', va='center', color='white')
-            ax.text(10 + rect_width / 2, gw_rect_y + rect_height / 4, f"{total_gwp}", fontsize=12, ha='center', va='center', color=(5/255, 250/255, 135/255))
+            # Add text to the rectangle for Game Week
+            ax.text(
+                0.5 * (pitch_width / 5),
+                (pitch_length + 1.8 * zone_height + (pitch_width / 5) / 2) + 3,
+                f'GW{fpl_gw}',
+                fontsize=20,
+                color='white',
+                ha='center',
+                va='center'
+            )
 
-            # Function to draw players
-            def draw_players(df, positions, ax):
+            # Color for total GWP
+            total_gwp_color = (5/255, 250/255, 135/255)
+            # Add total GWP text
+            ax.text(
+                0.5 * (pitch_width / 5),
+                (pitch_length + 1.8 * zone_height + (pitch_width / 5) / 2) - 2,
+                str(total_gwp),
+                fontsize=20,
+                color=total_gwp_color,
+                ha='center',
+                va='center'
+            )
+            
+            # Function to draw player images and details
+            def draw_players(df, positions,ax, pitch):
                 for index, row in df.iterrows():
                     IMAGE_URL = row['code']
-                    image = load_image(IMAGE_URL)  # Custom function to load images
+                    image = load_image(IMAGE_URL)
                     pos = row['Pos']
-
-                    # Number of players in the position
-                    num_players = len(df[df['Pos'] == pos])
+                    num_players = len(df[df['Pos'] == pos])  # Number of players in this position
                     y_image = positions[pos]
-                    x_image = pitch_width / (num_players + 1) * (index % num_players + 1)
+                    x_image = (pitch_width / (num_players + 1)) * (index % num_players + 1) if num_players > 1 else pitch_width / 2
 
-                    # Draw player image
-                    ax.imshow(image, extent=[x_image - 20, x_image + 20, y_image - 20, y_image + 20], aspect='auto')
+                    # Draw the player image on the pitch
+                    pitch.inset_image(y_image, x_image, image, height=9, ax=ax)
 
-                    # Draw player details
+                    # Draw player's name and GWP points
                     draw_player_details(ax, row, x_image, y_image)
-
+            
             # Function to draw player details
             def draw_player_details(ax, row, x_image, y_image):
-                player_name = row['Player']
-                gwp_points = row['GWP']
+                player_name = row.Player  # Access using attribute-style access
+                gwp_points = row.GWP  
 
-                # Draw player name
-                ax.text(x_image, y_image - 25, player_name, fontsize=8, ha='center', va='center', color='black')
+                # Draw player's name rectangle
+                tp = TextPath((0, 0), player_name, size=2)
+                rect_width = tp.get_extents().width  # Width of text bounding box
+                rect_height = 1
 
-                # Draw GWP points
-                ax.text(x_image, y_image - 35, f"{gwp_points} Pts", fontsize=7, ha='center', va='center', color='blue')
+                rounded_rect = FancyBboxPatch(
+                    (x_image - rect_width / 2, y_image - rect_height - 5),
+                    rect_width,
+                    rect_height,
+                    facecolor='white',
+                    edgecolor='white',
+                    linewidth=1,
+                    alpha=0.8
+                )
+                ax.add_patch(rounded_rect)
 
-            # Draw players on the pitch
-            draw_players(df, positions, ax)
+                # Draw GWP rectangle
+                gwp_rect_y = y_image - rect_height - 7  # Adjust y position for GWP rectangle
+                gwp_rect = FancyBboxPatch(
+                    (x_image - rect_width / 2, gwp_rect_y),
+                    rect_width,
+                    rect_height,
+                    facecolor=(55 / 255, 0 / 255, 60 / 255),
+                    edgecolor='white',
+                    linewidth=1,
+                    alpha=0.9
+                )
+                ax.add_patch(gwp_rect)
 
-            # Bench Configuration
+                # Add text for GWP points and player name
+                ax.text(x_image, gwp_rect_y + rect_height / 2, f"{gwp_points}", fontsize=7, ha='center', color='white', va='center') 
+                ax.text(x_image, y_image - rect_height - 5 + rect_height / 2, player_name, fontsize=7, ha='center', color='black', va='center')
+
+            # Draw players who played
+            draw_players(df, positions,ax,pitch)
+
+            ############################### Bench Players ##################
+            df_bench = test[test['Played'] == False]  # Bench players
+
+            # Define bench position and dimensions
             bench_width = pitch_width
-            bench_height = pitch_length / 7
-            bench_y = pitch_length - zone_height / 2
+            bench_height = pitch_length / 5.3
+            bench_x = pitch_width - bench_width
+            bench_y = pitch_length - 3 * zone_height
 
-            # Bench Rectangle
+            # Create a rectangle for the bench area
             bench_rect = FancyBboxPatch(
-                (0, bench_y),
+                (bench_x, bench_y),
                 bench_width,
                 bench_height,
                 boxstyle="round,pad=0.2",
                 facecolor='#72cf9f',
-                edgecolor='white',
+                edgecolor='#72cf9f',
                 linewidth=2,
                 alpha=0.8
             )
             ax.add_patch(bench_rect)
 
-            # Draw bench players
-            def draw_bench_players(df_bench, ax):
+            # Set the total number of bench slots
+            bench_slots = 4
+            slot_width = bench_width / bench_slots
+            
+            # Function to draw bench players
+            def draw_bench_players(df_bench,ax,pitch):
                 for i, row in enumerate(df_bench.itertuples()):
-                    IMAGE_URL = row.code
+                    IMAGE_URL = row.code  # Access using attribute-style access
                     image = load_image(IMAGE_URL)
 
-                    # Position for bench player
-                    x_bench = (bench_width / 5) * (i + 1)
-                    y_bench = bench_y + bench_height / 2
+                    # Calculate x position for bench players
+                    x_bench = bench_x + (slot_width * (i + 0.5))
+                    y_bench = bench_y + (bench_height / 2) + 2
 
-                    # Draw image
-                    ax.imshow(image, extent=[x_bench - 15, x_bench + 15, y_bench - 15, y_bench + 15], aspect='auto')
+                    # Place player images in the bench area
+                    pitch.inset_image(y_bench, x_bench, image, height=9, ax=ax)  # Smaller image size for bench players
 
-                    # Draw details
+                    # Draw player details on bench
                     draw_player_details(ax, row, x_bench, y_bench)
 
-            # Filter for bench players
-            df_bench = test[test['Played'] == False]
-            draw_bench_players(df_bench, ax)
+            # Draw bench players
+            draw_bench_players(df_bench,ax,pitch)
 
-            # Hide axes
-            ax.axis('off')
 
-            # Display the pitch in Streamlit
+
+
+
+            # Display the figure in Streamlit with transparent background
             st.pyplot(fig)
-
             
 
 
