@@ -403,6 +403,8 @@ filtered_players_fixture = df_player[
 filtered_pl = df_player[
     (df_player['season'] == 2425) & (df_player['GW'] == last_gw)
 ]
+
+st.write(filtered_pl)
 fit=filtered_pl[['Team_player', 'Player', 'Pos', 'Price']]
 
 fit['team'] = fit['Team_player'].str.extract(r'([A-Za-z]+) \(')[0]
@@ -446,7 +448,7 @@ combined_opponent_mapping.update(away_to_home)
 fit['vs'] = fit['team'].map(combined_opponent_mapping)
 
 
-st.write(fit)
+
 
 
 
