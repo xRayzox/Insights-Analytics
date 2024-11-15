@@ -352,7 +352,7 @@ teams_next_gw = pd.concat([new_fix_gw['team_a_short_name'], new_fix_gw['team_h_s
 
 # Prepare player data for filtering by game result
 filtered_players = merged_opponent.copy()  # Create a copy to avoid modifying the original
-
+st.write(filtered_players)
 # Split 'Result' into 'team_player_score' and 'vs_score', and convert to integers
 filtered_players[['team_player_score', 'vs_score']] = filtered_players['Result'].str.split('-', expand=True)
 filtered_players['team_player_score'] = filtered_players['team_player_score'].astype(int)
@@ -442,7 +442,7 @@ combined_opponent_mapping.update(away_to_home)
 # Map the 'vs' column in the 'fit' DataFrame to their corresponding opponent
 fit['vs'] = fit['team'].map(combined_opponent_mapping)
 
-st.write(fit)
+
 pulga=filtered_players_fixture
 columns_to_normalize = [
     'Mins','Pts', 'GS', 'xG', 'A', 'xA', 'xGI', 'Pen_Miss', 'CS', 'GC', 
