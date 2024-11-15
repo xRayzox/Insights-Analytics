@@ -289,7 +289,7 @@ with col5:
             fig, ax = plt.subplots(figsize=fig_size)
 
             # Hide the axes ticks and labels – you won't need them with the image
-            ax.axis('on')  
+            ax.axis('off')  
 
             # Get image dimensions –  important for positioning elements
             img = plt.imread("./data/Pitch.png")
