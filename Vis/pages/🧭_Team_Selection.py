@@ -515,8 +515,8 @@ ssuiio=df_next_fixt_gw
 
 # 1. Position Weights
 position_weights = {
-    'GKP': 1.0,  # GKP is important for clean sheets and saves
-    'DEF': 1.3,  # Defenders get points for goals, clean sheets
+    'GKP': 2.0,  # GKP is important for clean sheets and saves
+    'DEF': 2.3,  # Defenders get points for goals, clean sheets
     'MID': 1.5,  # Midfielders are critical for goals, assists, and xGI
     'FWD': 1.8   # Forwards tend to score more points for goals
 }
@@ -525,7 +525,7 @@ position_weights = {
 ssuiio['position_weight'] = ssuiio['Pos'].map(position_weights)
 
 # 2. Home/Away Game Weights
-home_weight = 1.2  # Home game weight
+home_weight = 2.5  # Home game weight
 away_weight = 1.0  # Away game weight
 ssuiio['home_away_weight'] = ssuiio['was_home'].map({True: home_weight, False: away_weight})
 
