@@ -460,7 +460,8 @@ columns_to_normalize = [
     'C', 'T', 'ICT', 'SB', 'Tran_In', 'Tran_Out'
 ]
 
-pulga['Recency_Weight'] = pulga['GW'].apply(lambda x: 1 / (max(pulga['GW']) - x + 1))
+# Create a weight that combines recency and minutes played
+pulga['Combined_Weight'] = pulga['GW'].apply(lambda x: 1 / (max(pulga['GW']) - x + 1)) * pulga['Mins']
 
 # Weighted average for each player
 total_stats = pulga.groupby('Player')[columns_to_normalize + ['Recency_Weight']].apply(
