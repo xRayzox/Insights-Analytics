@@ -282,25 +282,26 @@ with col5:
 
 
             # Define the figure size – adjust this based on your pitch image size
-            fig_size = (10, 10) 
+            fig_size = (10, 10)
 
             # Create a Matplotlib figure and axes, but don't draw a pitch 
             # The pitch image is the background
             fig, ax = plt.subplots(figsize=fig_size)
 
             # Hide the axes ticks and labels – you won't need them with the image
-            ax.axis('off')  
+            ax.axis('off')
 
-            # Get image dimensions –  important for positioning elements
+            # Get image dimensions – important for positioning elements
             img = plt.imread("./data/Pitch.png")
             pitch_length = img.shape[0]
             pitch_width = img.shape[1]
 
+            # Display the pitch image
+            ax.imshow(img, extent=[0, pitch_width, 0, pitch_length])
 
-            
+            # Display the figure in Streamlit
+            st.pyplot(fig)
 
-
-            st.write(fig)
             
 
 
