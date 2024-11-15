@@ -695,3 +695,17 @@ st.markdown("### Total Prices:")
 st.write(f"Total Price for Starting 11: £{starting_price_total:.2f}")
 st.write(f"Total Price for Substitutes: £{substitutes_price_total:.2f}")
 st.write(f"Overall Total Price: £{(starting_price_total + substitutes_price_total):.2f}")
+
+
+
+# Sum the predicted points for the starting 11 players
+starting_predicted_points_total = ssuiio.loc[starting_players, 'prediction'].sum()
+
+# Sum the predicted points for the substitutes
+substitutes_predicted_points_total = ssuiio.loc[substitutes, 'prediction'].sum()
+
+# Display the total predicted points
+st.markdown("### Total Predicted Points:")
+st.write(f"Total Predicted Points for Starting 11: {starting_predicted_points_total:.0f}")
+st.write(f"Total Predicted Points for Substitutes: {substitutes_predicted_points_total:.0f}")
+st.write(f"Overall Total Predicted Points: {starting_predicted_points_total + substitutes_predicted_points_total:.0f}")
