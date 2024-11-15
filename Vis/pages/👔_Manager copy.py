@@ -286,6 +286,10 @@ with col5:
             # Load the image
             img = mpimg.imread("./data/Pitch.png")
 
+
+            pitch_length, pitch_width, _ = img.shape   
+
+
             # Create the figure and axis
             fig, ax = plt.subplots(figsize=(20, 20))
 
@@ -297,7 +301,7 @@ with col5:
             ax.imshow(img)
 
             # Add a circle on the image (example coordinates and size)
-            circle = Circle((250, 250), 50, color='red', fill=False, linewidth=2)  # Position (x, y), radius, color
+            circle = Circle((pitch_length, 250), 50, color='red', fill=False, linewidth=2)  # Position (x, y), radius, color
             ax.add_patch(circle)
 
             # Hide axes
