@@ -459,13 +459,12 @@ columns_to_normalize = [
     'xGC', 'OG', 'Pen_Save', 'S', 'YC', 'RC', 'B', 'BPS', 'I', 
     'C', 'T', 'ICT', 'SB', 'Tran_In', 'Tran_Out'
 ]
-
 # Create a weight that combines recency and minutes played
 pulga['Combined_Weight'] = pulga['GW'].apply(lambda x: 1 / (max(pulga['GW']) - x + 1)) * pulga['Mins']
 
 # Weighted average for each player
-total_stats = pulga.groupby('Player')[columns_to_normalize + ['Recency_Weight']].apply(
-    lambda x: (x[columns_to_normalize].multiply(x['Recency_Weight'], axis=0).sum()) / x['Recency_Weight'].sum()
+total_stats = pulga.groupby('Player')[columns_to_normalize + ['Combined_Weight']].apply(
+    lambda x: (x[columns_to_normalize].multiply(x['Combined_Weight'], axis=0).sum()) / x['Combined_Weight'].sum()
 ).reset_index()
 
 df_pred = pd.merge(fit, total_stats,
