@@ -61,7 +61,7 @@ st.markdown(f'<style>{css}</style>', unsafe_allow_html=True)
 
 define_sidebar()
 st.title('Manager')
-st.image("./data/Pitch.png")
+
 @st.cache_data()
 def get_total_fpl_players():
     base_resp = requests.get(BASE_URL + 'bootstrap-static/')
@@ -278,178 +278,33 @@ with col5:
             # Reset index of the manager's team DataFrame
             test = manager_team_df.reset_index()
 
-            # Define the figure size
-            fig_size = (8, 8)  # Set to desired size (width, height)
-
-            # Create a vertical pitch with specified size
-            pitch = VerticalPitch(
-                pitch_color='grass',
-                line_color='white',
-                stripe=True,
-                corner_arcs=True,
-                half=True,
-                pad_bottom=20
-            )
-
-            fig, ax = pitch.draw(figsize=fig_size, tight_layout=False)  # Draw the pitch
-
-            # Extract pitch dimensions from the figure
-            pitch_length = fig.get_figheight() * 10  # Scaling factor
-            pitch_width = fig.get_figwidth() * 10  # Scaling factor
-
-            # Define placements for each position zone
-            zone_height = pitch_length / 6  
-
-            # Position calculations
-            positions = {
-                'GKP': pitch_length + 2.7 * zone_height,
-                'DEF': pitch_length + 1.5 * zone_height,
-                'MID': pitch_length + 1/3 * zone_height,
-                'FWD': pitch_length - zone_height
-            }
-
-            # Filter DataFrame for players who played
-            df = test[test['Played'] == True]
-            total_gwp = df['GWP'].sum()
-
-            # Create and position rectangle for Game Week
-            rect = plt.Rectangle(
-                (0, pitch_length + 1.8 * zone_height),
-                pitch_width / 5,
-                pitch_width / 5,
-                color=(55/255, 0/255, 60/255)
-            )
-            ax.add_patch(rect)
-
-            # Add text to the rectangle for Game Week
-            ax.text(
-                0.5 * (pitch_width / 5),
-                (pitch_length + 1.8 * zone_height + (pitch_width / 5) / 2) + 3,
-                f'GW{fpl_gw}',
-                fontsize=20,
-                color='white',
-                ha='center',
-                va='center'
-            )
-
-            # Color for total GWP
-            total_gwp_color = (5/255, 250/255, 135/255)
-            # Add total GWP text
-            ax.text(
-                0.5 * (pitch_width / 5),
-                (pitch_length + 1.8 * zone_height + (pitch_width / 5) / 2) - 2,
-                str(total_gwp),
-                fontsize=20,
-                color=total_gwp_color,
-                ha='center',
-                va='center'
-            )
-            
-            # Function to draw player images and details
-            def draw_players(df, positions,ax, pitch):
-                for index, row in df.iterrows():
-                    IMAGE_URL = row['code']
-                    image = load_image(IMAGE_URL)
-                    pos = row['Pos']
-                    num_players = len(df[df['Pos'] == pos])  # Number of players in this position
-                    y_image = positions[pos]
-                    x_image = (pitch_width / (num_players + 1)) * (index % num_players + 1) if num_players > 1 else pitch_width / 2
-
-                    # Draw the player image on the pitch
-                    pitch.inset_image(y_image, x_image, image, height=9, ax=ax)
-
-                    # Draw player's name and GWP points
-                    draw_player_details(ax, row, x_image, y_image)
-            
-            # Function to draw player details
-            def draw_player_details(ax, row, x_image, y_image):
-                player_name = row.Player  # Access using attribute-style access
-                gwp_points = row.GWP  
-
-                # Draw player's name rectangle
-                tp = TextPath((0, 0), player_name, size=2)
-                rect_width = tp.get_extents().width  # Width of text bounding box
-                rect_height = 1
-
-                rounded_rect = FancyBboxPatch(
-                    (x_image - rect_width / 2, y_image - rect_height - 5),
-                    rect_width,
-                    rect_height,
-                    facecolor='white',
-                    edgecolor='white',
-                    linewidth=1,
-                    alpha=0.8
-                )
-                ax.add_patch(rounded_rect)
-
-                # Draw GWP rectangle
-                gwp_rect_y = y_image - rect_height - 7  # Adjust y position for GWP rectangle
-                gwp_rect = FancyBboxPatch(
-                    (x_image - rect_width / 2, gwp_rect_y),
-                    rect_width,
-                    rect_height,
-                    facecolor=(55 / 255, 0 / 255, 60 / 255),
-                    edgecolor='white',
-                    linewidth=1,
-                    alpha=0.9
-                )
-                ax.add_patch(gwp_rect)
-
-                # Add text for GWP points and player name
-                ax.text(x_image, gwp_rect_y + rect_height / 2, f"{gwp_points}", fontsize=7, ha='center', color='white', va='center') 
-                ax.text(x_image, y_image - rect_height - 5 + rect_height / 2, player_name, fontsize=7, ha='center', color='black', va='center')
-
-            # Draw players who played
-            draw_players(df, positions,ax,pitch)
-
-            ############################### Bench Players ##################
-            df_bench = test[test['Played'] == False]  # Bench players
-
-            # Define bench position and dimensions
-            bench_width = pitch_width
-            bench_height = pitch_length / 5.3
-            bench_x = pitch_width - bench_width
-            bench_y = pitch_length - 3 * zone_height
-
-            # Create a rectangle for the bench area
-            bench_rect = FancyBboxPatch(
-                (bench_x, bench_y),
-                bench_width,
-                bench_height,
-                boxstyle="round,pad=0.2",
-                facecolor='#72cf9f',
-                edgecolor='#72cf9f',
-                linewidth=2,
-                alpha=0.8
-            )
-            ax.add_patch(bench_rect)
-
-            # Set the total number of bench slots
-            bench_slots = 4
-            slot_width = bench_width / bench_slots
-            
-            # Function to draw bench players
-            def draw_bench_players(df_bench,ax,pitch):
-                for i, row in enumerate(df_bench.itertuples()):
-                    IMAGE_URL = row.code  # Access using attribute-style access
-                    image = load_image(IMAGE_URL)
-
-                    # Calculate x position for bench players
-                    x_bench = bench_x + (slot_width * (i + 0.5))
-                    y_bench = bench_y + (bench_height / 2) + 2
-
-                    # Place player images in the bench area
-                    pitch.inset_image(y_bench, x_bench, image, height=9, ax=ax)  # Smaller image size for bench players
-
-                    # Draw player details on bench
-                    draw_player_details(ax, row, x_bench, y_bench)
-
-            # Draw bench players
-            draw_bench_players(df_bench,ax,pitch)
 
 
-            st.pyplot(fig)
 
+            # Define the figure size – adjust this based on your pitch image size
+            fig_size = (8, 6) 
+
+            # Create a Matplotlib figure and axes, but don't draw a pitch 
+            # The pitch image is the background
+            fig, ax = plt.subplots(figsize=fig_size)
+
+            # Hide the axes ticks and labels – you won't need them with the image
+            ax.axis('off')  
+
+
+            # Get image dimensions –  important for positioning elements
+            img = plt.imread("./data/Pitch.png")
+            pitch_length = img.shape[0]
+            pitch_width = img.shape[1]
+
+
+
+
+
+
+
+
+st.image("./data/Pitch.png")
 ###############################################################################
 
 ################################################################################
