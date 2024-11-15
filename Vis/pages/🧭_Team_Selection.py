@@ -600,47 +600,83 @@ from pulp import LpMaximize, LpProblem, LpVariable, lpSum, LpInteger, LpStatus, 
 
 
 
-# Create the optimization problem
-model = LpProblem(name="FPL_Team_Selection", sense=LpMaximize)
+from pulp import LpProblem, LpMaximize, LpVariable, lpSum
+import numpy as np
+
+# Define the model
+model = LpProblem(name="FPL_Team_Selection_Advanced", sense=LpMaximize)
 
 # Define player indices and variables
 players = ssuiio.index
 player_vars = LpVariable.dicts("Player", players, cat="Binary")
+captain_vars = LpVariable.dicts("Captain", players, cat="Binary")
+sub_vars = LpVariable.dicts("Sub", players, cat="Binary")
 
-# Objective Function: Maximize predicted points
-model += lpSum(ssuiio.loc[i, 'prediction'] * player_vars[i] for i in players), "Total_Predicted_Points"
+# Objective Function: Maximize predicted points with weights for captaincy and substitutes
+sub_factor = 0.2
+model += lpSum(
+    (captain_vars[i] + player_vars[i] + sub_factor * sub_vars[i]) * ssuiio.loc[i, 'prediction']
+    for i in players
+), "Total_Predicted_Points"
 
 # Constraints
 # Total budget
-model += lpSum(ssuiio.loc[i, 'Price'] * player_vars[i] for i in players) <= 830, "Max_Budget"
-model += lpSum(ssuiio.loc[i, 'Price'] * player_vars[i] for i in players) >= 820, "Min_Budget"
+model += lpSum(ssuiio.loc[i, 'Price'] * (player_vars[i] + sub_vars[i]) for i in players) <= 830, "Max_Budget"
+model += lpSum(ssuiio.loc[i, 'Price'] * (player_vars[i] + sub_vars[i]) for i in players) >= 820, "Min_Budget"
 
 # Position constraints
 model += lpSum(player_vars[i] for i in players if ssuiio.loc[i, 'Pos'] == 'GKP') == 1, "GKP_Constraint"
+model += lpSum(player_vars[i] + sub_vars[i] for i in players if ssuiio.loc[i, 'Pos'] == 'GKP') == 2, "Total_GKP"
+
 model += lpSum(player_vars[i] for i in players if ssuiio.loc[i, 'Pos'] == 'DEF') >= 3, "Min_DEF"
 model += lpSum(player_vars[i] for i in players if ssuiio.loc[i, 'Pos'] == 'DEF') <= 5, "Max_DEF"
+model += lpSum(player_vars[i] + sub_vars[i] for i in players if ssuiio.loc[i, 'Pos'] == 'DEF') == 5, "Total_DEF"
+
 model += lpSum(player_vars[i] for i in players if ssuiio.loc[i, 'Pos'] == 'MID') >= 3, "Min_MID"
 model += lpSum(player_vars[i] for i in players if ssuiio.loc[i, 'Pos'] == 'MID') <= 5, "Max_MID"
+model += lpSum(player_vars[i] + sub_vars[i] for i in players if ssuiio.loc[i, 'Pos'] == 'MID') == 5, "Total_MID"
+
 model += lpSum(player_vars[i] for i in players if ssuiio.loc[i, 'Pos'] == 'FWD') >= 1, "Min_FWD"
 model += lpSum(player_vars[i] for i in players if ssuiio.loc[i, 'Pos'] == 'FWD') <= 3, "Max_FWD"
+model += lpSum(player_vars[i] + sub_vars[i] for i in players if ssuiio.loc[i, 'Pos'] == 'FWD') == 3, "Total_FWD"
 
-# Exactly 11 players must be selected
+# Total players in starting 11
 model += lpSum(player_vars[i] for i in players) == 11, "Total_Players"
+
+# Captain constraints
+model += lpSum(captain_vars[i] for i in players) == 1, "One_Captain"
+for i in players:
+    model += captain_vars[i] <= player_vars[i], f"Captain_Constraint_{i}"
+
+# Substitution constraints
+for i in players:
+    model += player_vars[i] + sub_vars[i] <= 1, f"Valid_Sub_{i}"
 
 # No more than 3 players from a single team
 teams = ssuiio['Team_player'].unique()
 for team in teams:
-    model += lpSum(player_vars[i] for i in players if ssuiio.loc[i, 'Team_player'] == team) <= 3, f"Max_3_Players_{team}"
+    model += lpSum(player_vars[i] + sub_vars[i] for i in players if ssuiio.loc[i, 'Team_player'] == team) <= 3, f"Max_3_Players_{team}"
 
 # Solve the optimization problem
 model.solve()
 
 # Get the recommended players
-recommended_players = [i for i in players if player_vars[i].varValue == 1]
-st.write(recommended_players)
+starting_players = [i for i in players if player_vars[i].varValue == 1]
+substitutes = [i for i in players if sub_vars[i].varValue == 1]
+captain = [i for i in players if captain_vars[i].varValue == 1][0]
+
 # Print the recommended players
-st.markdown("Recommended Team:")
-for player in recommended_players:
+st.markdown("### Recommended Starting 11:")
+for player in starting_players:
     st.write(f"Player: {ssuiio.loc[player, 'Player']}, Position: {ssuiio.loc[player, 'Pos']}, "
-          f"Predicted Points: {ssuiio.loc[player, 'prediction']:.2f}, Price: {ssuiio.loc[player, 'Price']:.2f}, "
-          f"Team: {ssuiio.loc[player, 'Team_player']}")
+             f"Predicted Points: {ssuiio.loc[player, 'prediction']:.2f}, Price: {ssuiio.loc[player, 'Price']:.2f}, "
+             f"Team: {ssuiio.loc[player, 'Team_player']}")
+
+st.markdown("### Captain:")
+st.write(f"Player: {ssuiio.loc[captain, 'Player']}, Predicted Points: {ssuiio.loc[captain, 'prediction']:.2f}")
+
+st.markdown("### Substitutes:")
+for player in substitutes:
+    st.write(f"Player: {ssuiio.loc[player, 'Player']}, Position: {ssuiio.loc[player, 'Pos']}, "
+             f"Predicted Points: {ssuiio.loc[player, 'prediction']:.2f}, Price: {ssuiio.loc[player, 'Price']:.2f}, "
+             f"Team: {ssuiio.loc[player, 'Team_player']}")
