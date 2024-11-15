@@ -369,7 +369,7 @@ new_fix_gw_test = new_fix_gw[['event', 'team_h_short_name', 'team_a_short_name',
         'team_a_short_name': 'Team_away',
     }
 )
-st.write(new_fix_gw_test)
+
 elapsed_time5 = time.time() - start_time
 st.error(f"5-Time taken by my_function: {elapsed_time5} seconds")
 
@@ -386,7 +386,7 @@ concatenated_df.reset_index(drop=True, inplace=True)
 
 
 new_fix_gw_test['season']=2425
-
+st.write(new_fix_gw_test)
 elapsed_time6 = time.time() - start_time
 st.error(f"6-Time taken by my_function: {elapsed_time6} seconds")
 
