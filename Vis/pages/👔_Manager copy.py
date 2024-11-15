@@ -287,7 +287,7 @@ with col5:
             img = mpimg.imread("./data/Pitch.png")
 
             # Create the figure and axis
-            fig, ax = plt.subplots()
+            fig, ax = plt.subplots(figsize=(12, 12))
 
             # Set transparent background for the figure
             fig.patch.set_alpha(0)  # This makes the figure background transparent
