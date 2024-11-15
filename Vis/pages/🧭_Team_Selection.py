@@ -446,7 +446,7 @@ combined_opponent_mapping.update(away_to_home)
 fit['vs'] = fit['team'].map(combined_opponent_mapping)
 
 
-st.write(combined_opponent_mapping)
+st.write(fit)
 
 
 
