@@ -439,13 +439,25 @@ away_to_home = df_fixture.set_index('away_team')['Team_home'].to_dict()
 
 # Combine home and away opponent mappings into a single dictionary
 combined_opponent_mapping = {}
-combined_opponent_mapping.update(home_to_away)
 combined_opponent_mapping.update(away_to_home)
+combined_opponent_mapping.update(home_to_away)
 
 # Map the 'vs' column in the 'fit' DataFrame to their corresponding opponent
 fit['vs'] = fit['team'].map(combined_opponent_mapping)
 
+
 st.write(fit)
+
+
+
+
+
+
+
+
+
+
+
 pulga=filtered_players_fixture
 columns_to_normalize = [
     'Mins','Pts', 'GS', 'xG', 'A', 'xA', 'xGI', 'Pen_Miss', 'CS', 'GC', 
