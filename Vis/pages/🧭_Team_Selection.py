@@ -534,13 +534,14 @@ ssuiio['kickoff_time'] = pd.to_datetime(ssuiio['kickoff_time'])
 # Then, you can apply the time weight function
 def assign_time_weight(kickoff_time):
     if 6 <= kickoff_time.day < 7:
-        return 0.95  # Morning games tend to have lower energy
+        return 2.5  # Morning games tend to have lower energy
     elif 12 <= kickoff_time.day < 30:
-        return 1.0   # Standard midday games
+        return 2  # Standard midday games
     elif 18 <= kickoff_time.day < 60:
-        return 1.1   # Evening games often see more action
+        return 0.9  # Evening games often see more action
     else:
-        return 1.05  # Late-night games may see more relaxed performances
+        return 0.5 # Late-night games may see more relaxed performances
+    
 
 # Apply the function to 'kickoff_time'
 ssuiio['time_weight'] = ssuiio['kickoff_time'].apply(assign_time_weight)

@@ -548,7 +548,7 @@ def objective_optuna(trial):
     return mean_mse
 
 # Function to perform hyperparameter tuning using Optuna
-def auto_tune_hyperparameters(X, y, n_trials=5):
+def auto_tune_hyperparameters(X, y, n_trials=10):
     global X_train, X_test, y_train, y_test
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
@@ -608,31 +608,32 @@ def train_and_save_model(X, y, model_path="./Vis/pages/Prediction/xgb_model.jobl
 
 # 1. Position Weights
 position_weights = {
-    'GKP': 1.0,
-    'DEF': 1.3,
-    'MID': 1.5,
-    'FWD': 1.8
+    'GKP': 2.0,  # GKP is important for clean sheets and saves
+    'DEF': 2.3,  # Defenders get points for goals, clean sheets
+    'MID': 1.5,  # Midfielders are critical for goals, assists, and xGI
+    'FWD': 1.8   # Forwards tend to score more points for goals
 }
 
 X_weighted['position_weight'] = X_weighted['Pos'].map(position_weights)
 
 # 2. Home/Away Game Weights
-home_weight = 1.2
-away_weight = 1.0
+home_weight = 2.5  # Home game weight
+away_weight = 1.0  # Away game weight
 X_weighted['home_away_weight'] = X_weighted['was_home'].map({True: home_weight, False: away_weight})
 
 X_weighted['kickoff_time'] = pd.to_datetime(X_weighted['kickoff_time'])
 
 # Then, you can apply the time weight function
 def assign_time_weight(kickoff_time):
-    if 6 <= kickoff_time.hour < 12:
-        return 0.95  # Morning games tend to have lower energy
-    elif 12 <= kickoff_time.hour < 18:
-        return 1.0   # Standard midday games
-    elif 18 <= kickoff_time.hour < 24:
-        return 1.1   # Evening games often see more action
+    if 6 <= kickoff_time.day < 7:
+        return 2.5  # Morning games tend to have lower energy
+    elif 12 <= kickoff_time.day < 30:
+        return 2  # Standard midday games
+    elif 18 <= kickoff_time.day < 60:
+        return 0.9  # Evening games often see more action
     else:
-        return 1.05  # Late-night games may see more relaxed performances
+        return 0.5 # Late-night games may see more relaxed performances
+    
 
 # Apply the function to 'kickoff_time'
 X_weighted['time_weight'] = X_weighted['kickoff_time'].apply(assign_time_weight)
