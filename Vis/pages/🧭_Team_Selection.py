@@ -683,3 +683,16 @@ for player in substitutes:
     st.write(f"Player: {ssuiio.loc[player, 'Player']}, Position: {ssuiio.loc[player, 'Pos']}, "
              f"Predicted Points: {ssuiio.loc[player, 'prediction']:.0f}, Price: {ssuiio.loc[player, 'Price']:.2f}, "
              f"Team: {ssuiio.loc[player, 'Team_player']}")
+
+
+# Sum the prices of the recommended starting 11 players
+starting_price_total = ssuiio.loc[starting_players, 'Price'].sum()
+
+# Sum the prices of the substitutes
+substitutes_price_total = ssuiio.loc[substitutes, 'Price'].sum()
+
+# Display the total prices
+st.markdown("### Total Prices:")
+st.write(f"Total Price for Starting 11: £{starting_price_total:.2f}")
+st.write(f"Total Price for Substitutes: £{substitutes_price_total:.2f}")
+st.write(f"Overall Total Price: £{(starting_price_total + substitutes_price_total):.2f}")
