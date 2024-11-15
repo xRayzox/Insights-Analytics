@@ -680,5 +680,5 @@ st.write(f"Player: {ssuiio.loc[captain, 'Player']}, Predicted Points: {ssuiio.lo
 st.markdown("### Substitutes:")
 for player in substitutes:
     st.write(f"Player: {ssuiio.loc[player, 'Player']}, Position: {ssuiio.loc[player, 'Pos']}, "
-             f"Predicted Points: {ssuiio.loc[player, 'prediction']:.2f}, Price: {ssuiio.loc[player, 'Price']:.2f}, "
+             f"Predicted Points: {ssuiio.loc[player, 'prediction']:.0f}, Price: {ssuiio.loc[player, 'Price']:.2f}, "
              f"Team: {ssuiio.loc[player, 'Team_player']}")
