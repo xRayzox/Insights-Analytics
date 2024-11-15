@@ -39,7 +39,7 @@ from fpl_league import (
     get_bootstrap_data,
 
 )
-st.image("./data/history/Pitch.png",width=150)
+st.image("./data/Pitch.png",width=150)
 from fpl_params import MY_FPL_ID, BASE_URL
 st.set_page_config(page_title='Manager', page_icon=':necktie:', layout='wide')
 st.markdown(
