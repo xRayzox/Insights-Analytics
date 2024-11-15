@@ -39,7 +39,7 @@ from fpl_league import (
     get_bootstrap_data,
 
 )
-st.image("./data/Pitch.png",width=150)
+
 from fpl_params import MY_FPL_ID, BASE_URL
 st.set_page_config(page_title='Manager', page_icon=':necktie:', layout='wide')
 st.markdown(
@@ -61,7 +61,7 @@ st.markdown(f'<style>{css}</style>', unsafe_allow_html=True)
 
 define_sidebar()
 st.title('Manager')
-
+st.image("./data/Pitch.png",width=150)
 @st.cache_data()
 def get_total_fpl_players():
     base_resp = requests.get(BASE_URL + 'bootstrap-static/')
