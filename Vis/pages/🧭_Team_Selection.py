@@ -697,15 +697,20 @@ st.write(f"Total Price for Substitutes: £{substitutes_price_total:.2f}")
 st.write(f"Overall Total Price: £{(starting_price_total + substitutes_price_total):.2f}")
 
 
-
-# Sum the predicted points for the starting 11 players
+# Sum the predicted points for the starting 11 players, double the captain's points
 starting_predicted_points_total = ssuiio.loc[starting_players, 'prediction'].sum()
+
+# Double the captain's predicted points
+captain_predicted_points = ssuiio.loc[captain, 'prediction'] * 2
+
+# Add the captain's doubled points to the total
+starting_predicted_points_total += captain_predicted_points - ssuiio.loc[captain, 'prediction']
 
 # Sum the predicted points for the substitutes
 substitutes_predicted_points_total = ssuiio.loc[substitutes, 'prediction'].sum()
 
 # Display the total predicted points
 st.markdown("### Total Predicted Points:")
-st.write(f"Total Predicted Points for Starting 11: {starting_predicted_points_total:.0f}")
+st.write(f"Total Predicted Points for Starting 11 (with Captain doubled): {starting_predicted_points_total:.0f}")
 st.write(f"Total Predicted Points for Substitutes: {substitutes_predicted_points_total:.0f}")
 st.write(f"Overall Total Predicted Points: {starting_predicted_points_total + substitutes_predicted_points_total:.0f}")
