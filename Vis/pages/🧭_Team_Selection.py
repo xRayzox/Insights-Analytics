@@ -637,7 +637,7 @@ model.solve()
 
 # Get the recommended players
 recommended_players = [i for i in players if player_vars[i].varValue == 1]
-
+st.write(recommended_players)
 # Print the recommended players
 st.markdown("Recommended Team:")
 for player in recommended_players:
