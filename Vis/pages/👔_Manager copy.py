@@ -295,7 +295,8 @@ with col5:
             img = plt.imread("./data/Pitch.png")
             pitch_length = img.shape[0]
             pitch_width = img.shape[1]
-            st.write(pitch_length)
+            
+            
 
 
 
@@ -305,7 +306,8 @@ with col5:
 
 
 
-st.image("./data/Pitch.png")
+
+
 ###############################################################################
 
 ################################################################################
