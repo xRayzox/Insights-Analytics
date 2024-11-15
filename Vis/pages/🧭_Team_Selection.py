@@ -458,7 +458,6 @@ total_stats = pulga.groupby('Player')[columns_to_normalize + ['Combined_Weight']
 ).reset_index()
 
 
-st.write(total_stats)
 df_pred = pd.merge(fit, total_stats,
                            left_on='Player', right_on='Player', how='left')
 
