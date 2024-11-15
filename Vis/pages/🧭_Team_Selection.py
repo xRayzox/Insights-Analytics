@@ -639,8 +639,8 @@ model.solve()
 recommended_players = [i for i in players if player_vars[i].varValue == 1]
 
 # Print the recommended players
-print("Recommended Team:")
+st.markdown("Recommended Team:")
 for player in recommended_players:
-    print(f"Player: {ssuiio.loc[player, 'Player']}, Position: {ssuiio.loc[player, 'Pos']}, "
+    st.write(f"Player: {ssuiio.loc[player, 'Player']}, Position: {ssuiio.loc[player, 'Pos']}, "
           f"Predicted Points: {ssuiio.loc[player, 'prediction']:.2f}, Price: {ssuiio.loc[player, 'Price']:.2f}, "
           f"Team: {ssuiio.loc[player, 'Team_player']}")
