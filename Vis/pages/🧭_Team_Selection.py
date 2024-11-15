@@ -460,8 +460,12 @@ columns_to_normalize = [
     'C', 'T', 'ICT', 'SB', 'Tran_In', 'Tran_Out'
 ]
 
-total_stats = pulga.groupby('Player')[columns_to_normalize].mean().reset_index()
+pulga['Recency_Weight'] = pulga['GW'].apply(lambda x: 1 / (max(pulga['GW']) - x + 1))
 
+# Weighted average for each player
+total_stats = pulga.groupby('Player')[columns_to_normalize + ['Recency_Weight']].apply(
+    lambda x: (x[columns_to_normalize].multiply(x['Recency_Weight'], axis=0).sum()) / x['Recency_Weight'].sum()
+).reset_index()
 st.write(total_stats)
 df_pred = pd.merge(fit, total_stats,
                            left_on='Player', right_on='Player', how='left')
