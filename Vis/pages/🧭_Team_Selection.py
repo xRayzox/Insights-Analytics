@@ -671,11 +671,11 @@ captain = [i for i in players if captain_vars[i].varValue == 1][0]
 st.markdown("### Recommended Starting 11:")
 for player in starting_players:
     st.write(f"Player: {ssuiio.loc[player, 'Player']}, Position: {ssuiio.loc[player, 'Pos']}, "
-             f"Predicted Points: {ssuiio.loc[player, 'prediction']:.2f}, Price: {ssuiio.loc[player, 'Price']:.2f}, "
+             f"Predicted Points: {ssuiio.loc[player, 'prediction']:.0f}, Price: {ssuiio.loc[player, 'Price']:.2f}, "
              f"Team: {ssuiio.loc[player, 'Team_player']}")
 
 st.markdown("### Captain:")
-st.write(f"Player: {ssuiio.loc[captain, 'Player']}, Predicted Points: {ssuiio.loc[captain, 'prediction']:.2f}")
+st.write(f"Player: {ssuiio.loc[captain, 'Player']}, Predicted Points: {ssuiio.loc[captain, 'prediction']:.0f}")
 
 st.markdown("### Substitutes:")
 for player in substitutes:
