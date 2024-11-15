@@ -352,7 +352,7 @@ teams_next_gw = pd.concat([new_fix_gw['team_a_short_name'], new_fix_gw['team_h_s
 
 # Prepare player data for filtering by game result
 filtered_players = merged_opponent.copy()  # Create a copy to avoid modifying the original
-st.write(filtered_players)
+
 # Split 'Result' into 'team_player_score' and 'vs_score', and convert to integers
 filtered_players[['team_player_score', 'vs_score']] = filtered_players['Result'].str.split('-', expand=True)
 filtered_players['team_player_score'] = filtered_players['team_player_score'].astype(int)
@@ -369,6 +369,7 @@ new_fix_gw_test = new_fix_gw[['event', 'team_h_short_name', 'team_a_short_name',
         'team_a_short_name': 'Team_away',
     }
 )
+st.write(new_fix_gw_test)
 elapsed_time5 = time.time() - start_time
 st.error(f"5-Time taken by my_function: {elapsed_time5} seconds")
 
