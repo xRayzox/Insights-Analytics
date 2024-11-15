@@ -184,9 +184,9 @@ try:
               scale=alt.Scale(domain=[min_price-0.2, max_price+0.2]))
     )
     
-    sel_by = base.mark_line(color='blue').encode(
+    sel_by = base.mark_line(color='Green').encode(
         alt.Y('SB',
-              axis=alt.Axis(tickMinStep=0.1, title='Selected By', titleColor='Blue'),
+              axis=alt.Axis(tickMinStep=0.1, title='Selected By', titleColor='Green'),
               scale=alt.Scale(domain=[0, max_sb+1000000]))
     )
     
