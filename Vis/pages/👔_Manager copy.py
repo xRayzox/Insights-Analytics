@@ -282,7 +282,7 @@ with col5:
 
 
             # Define the figure size – adjust this based on your pitch image size
-            fig_size = (8, 6) 
+            fig_size = (10, 10) 
 
             # Create a Matplotlib figure and axes, but don't draw a pitch 
             # The pitch image is the background
