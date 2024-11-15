@@ -451,17 +451,6 @@ combined_opponent_mapping.update(away_to_home)
 # Map the 'vs' column in the 'fit' DataFrame to their corresponding opponent
 fit['vs'] = fit['team'].map(combined_opponent_mapping)
 
-st.write(fit)
-
-
-
-
-
-
-
-
-
-
 
 
 pulga=filtered_players_fixture
