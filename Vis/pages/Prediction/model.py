@@ -607,27 +607,24 @@ def train_and_save_model(X, y, model_path="./Vis/pages/Prediction/xgb_model.jobl
         return model
 
 
-X_weighted['kickoff_time'] = pd.to_datetime(X_weighted['kickoff_time'])
-
 # 1. Position Weights
 position_weights = {
-    'GKP': 0.9,
-    'DEF': 1.1,
-    'MID': 1.3,
-    'FWD': 1.5
+    'GKP': 1.0,
+    'DEF': 1.3,
+    'MID': 1.5,
+    'FWD': 1.8
 }
 
-# Apply weight based on position
 X_weighted['position_weight'] = X_weighted['Pos'].map(position_weights)
 
 # 2. Home/Away Game Weights
-home_weight = 1.2  # Home game weight
-away_weight = 1.0  # Away game weight
-
-# Apply home/away weight
+home_weight = 1.2
+away_weight = 1.0
 X_weighted['home_away_weight'] = X_weighted['was_home'].map({True: home_weight, False: away_weight})
 
-# 3. Kickoff Time Weights
+X_weighted['kickoff_time'] = pd.to_datetime(X_weighted['kickoff_time'])
+
+# Then, you can apply the time weight function
 def assign_time_weight(kickoff_time):
     if 6 <= kickoff_time.hour < 12:
         return 0.95  # Morning games tend to have lower energy
@@ -638,13 +635,18 @@ def assign_time_weight(kickoff_time):
     else:
         return 1.05  # Late-night games may see more relaxed performances
 
+# Apply the function to 'kickoff_time'
 X_weighted['time_weight'] = X_weighted['kickoff_time'].apply(assign_time_weight)
 
 # 4. Team and Opponent Strength Weights
-X_weighted['team_strength_weight'] = (X_weighted['strength_overall_home'] + X_weighted['strength_attack_home'] - X_weighted['strength_defence_home']) * 1.1
-X_weighted['opponent_strength_weight'] = (X_weighted['strength_overall_away_opponent'] + X_weighted['strength_attack_away_opponent'] - X_weighted['strength_defence_away_opponent'])
+X_weighted['team_strength_weight'] = (
+    X_weighted['strength_overall_home'] + X_weighted['strength_attack_home'] - X_weighted['strength_defence_home']
+) * 1.1
 
-# Strength ratio, adjust for home/away dynamics
+X_weighted['opponent_strength_weight'] = (
+    X_weighted['strength_overall_away_opponent'] + X_weighted['strength_attack_away_opponent'] - X_weighted['strength_defence_away_opponent']
+)
+
 X_weighted['strength_weight'] = X_weighted['team_strength_weight'] / X_weighted['opponent_strength_weight']
 
 # 5. Transfer Activity Weights
@@ -656,15 +658,13 @@ X_weighted['penalty_risk_weight'] = 1 - (X_weighted['Pen_Miss'] * 0.3 + X_weight
 # 7. Fixture Difficulty Rating (FDR) Weights
 X_weighted['opponent_difficulty_weight'] = 1 / (X_weighted['opponent_fdr'] + 1)
 
+# 8. SB (Selected By) Weights
+X_weighted['sb_weight'] = X_weighted['SB'] / X_weighted['SB'].max()
 
-# 9. Minutes Played Weight
-X_weighted['minutes_weight'] = X_weighted['Mins'] / 90  # Normalize to a full game
+# 9. ICT (Influence, Creativity, and Threat Index) Weights
+X_weighted['ict_weight'] = X_weighted['ICT'] / X_weighted['ICT'].max()
 
-# 10. Expected Goals (xG) and Expected Assists (xA) Weights
-X_weighted['xg_weight'] = X_weighted['xG'] * 1.2  # Weight xG higher as it's a strong predictor of goals
-X_weighted['xa_weight'] = X_weighted['xA'] * 1.1  # xA is also valuable for midfielders and forwards
-
-# 11. Final Weight Calculation
+# 10. Final Weight Calculation
 X_weighted['final_weight'] = (
     X_weighted['position_weight'] * 
     X_weighted['home_away_weight'] * 
@@ -673,18 +673,22 @@ X_weighted['final_weight'] = (
     X_weighted['transfer_weight'] * 
     X_weighted['penalty_risk_weight'] * 
     X_weighted['opponent_difficulty_weight'] *
-    X_weighted['minutes_weight'] * 
-    X_weighted['xg_weight'] * 
-    X_weighted['xa_weight']
+    X_weighted['sb_weight'] *
+    X_weighted['ict_weight']   
 )
 
 
-features = ['GW', 'Mins', 'GS', 'xG', 'A', 'xA', 'xGI', 'Pen_Miss', 'CS', 'GC', 'xGC', 'OG', 'Pen_Save', 'S', 'YC', 'RC', 'B', 'BPS', 
-            'Price', 'I', 'C', 'T', 'ICT', 'SB', 'Tran_In', 'Tran_Out', 'was_home', 'strength_overall_home', 'strength_overall_away', 
-            'strength_attack_home', 'strength_attack_away', 'strength_defence_home', 'strength_defence_away', 'strength_overall_home_opponent', 
-            'strength_overall_away_opponent', 'strength_attack_home_opponent', 'strength_attack_away_opponent', 'strength_defence_home_opponent', 
-            'strength_defence_away_opponent', 'Team_fdr', 'opponent_fdr', 'season', 'position_weight', 'home_away_weight', 'time_weight', 
-            'strength_weight', 'final_weight', 'transfer_weight', 'opponent_difficulty_weight', 'penalty_risk_weight']
+features = [
+    'GW', 'Mins', 'GS', 'xG', 'A', 'xA', 'xGI', 'Pen_Miss', 'CS', 'GC', 'xGC', 'OG', 'Pen_Save', 
+    'S', 'YC', 'RC', 'B', 'BPS', 'Price', 'I', 'C', 'T', 'ICT', 'SB', 'Tran_In', 'Tran_Out', 
+    'was_home', 'strength_overall_home', 'strength_overall_away', 'strength_attack_home', 
+    'strength_attack_away', 'strength_defence_home', 'strength_defence_away', 'strength_overall_home_opponent', 
+    'strength_overall_away_opponent', 'strength_attack_home_opponent', 'strength_attack_away_opponent', 
+    'strength_defence_home_opponent', 'strength_defence_away_opponent', 'Team_fdr', 'opponent_fdr', 
+    'season', 'position_weight', 'home_away_weight', 'time_weight', 'strength_weight', 
+    'final_weight', 'transfer_weight', 'opponent_difficulty_weight', 'penalty_risk_weight'
+]
+
 X = X_weighted[features]
 y = X_weighted['Pts']
 
