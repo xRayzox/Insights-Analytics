@@ -346,7 +346,7 @@ new_fix_gw = new_fix_gw.drop(columns=['name_x', 'name_y'], errors='ignore')
 # Append (H) for home teams and (A) for away teams
 new_fix_gw['team_h_short_name'] = new_fix_gw['team_h_short_name'] + ' (H)'
 new_fix_gw['team_a_short_name'] = new_fix_gw['team_a_short_name'] + ' (A)'
-st.write(new_fix_gw)
+
 # Create a unique list of teams for the next gameweek
 teams_next_gw = pd.concat([new_fix_gw['team_a_short_name'], new_fix_gw['team_h_short_name']]).unique()
 
@@ -393,7 +393,7 @@ st.error(f"6-Time taken by my_function: {elapsed_time6} seconds")
 # 1. Calculate the average statistics for each team from df_player
 df_player=concatenated_df
 df_fixture=new_fix_gw_test
-
+st.write(df_fixture)
 last_gw = df_player[df_player['season'] == 2425]['GW'].max()
 filtered_players_fixture = df_player[
     (df_player['season'] == 2425) ]
