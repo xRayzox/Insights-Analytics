@@ -280,24 +280,22 @@ with col5:
 
 
 
+            import matplotlib.image as mpimg
 
-            # Define the figure size – adjust this based on your pitch image size
-            fig_size = (10, 10)
+            img = mpimg.imread("./data/Pitch.png")
 
-            # Create a Matplotlib figure and axes, but don't draw a pitch 
-            # The pitch image is the background
-            fig, ax = plt.subplots(figsize=fig_size)
+            # Create the figure and axis
+            fig, ax = plt.subplots()
 
-            # Hide the axes ticks and labels – you won't need them with the image
+            # Display the image
+            ax.imshow(img)
+
+            # Add a circle on the image (example coordinates and size)
+            circle = Circle((250, 250), 50, color='red', fill=False, linewidth=2)  # Position (x, y), radius, color
+            ax.add_patch(circle)
+
+            # Hide axes
             ax.axis('off')
-
-            # Get image dimensions – important for positioning elements
-            img = plt.imread("./data/Pitch.png")
-            pitch_length = img.shape[0]
-            pitch_width = img.shape[1]
-
-            # Display the pitch image
-            ax.imshow(img, extent=[0, pitch_width, 0, pitch_length])
 
             # Display the figure in Streamlit
             st.pyplot(fig)
