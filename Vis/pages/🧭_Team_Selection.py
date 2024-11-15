@@ -432,7 +432,7 @@ for team, data in away_team_mapping.items():
 fit['GW'] = fit['team'].map(lambda team: combined_mapping.get(team, {}).get('GW'))
 fit['kickoff_time'] = fit['team'].map(lambda team: combined_mapping.get(team, {}).get('kickoff_time'))
 fit['season'] = fit['team'].map(lambda team: combined_mapping.get(team, {}).get('season'))
-fit['Teammm'] = fit['team'].map(lambda team: combined_mapping.get(team, {}).get('Team_home') or 
+fit['Team_player'] = fit['team'].map(lambda team: combined_mapping.get(team, {}).get('Team_home') or 
                                 combined_mapping.get(team, {}).get('Team_away'))
 
 
