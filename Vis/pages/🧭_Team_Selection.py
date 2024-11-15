@@ -593,5 +593,8 @@ azdazdazd=best_model.predict(XX)
 ssuiio['prediction']=azdazdazd
 
 
-st.write(ssuiio[['GW','Player', 'Pos', 'Price', 'Team_player', 'prediction']])
+st.write(ssuiio[['GW','Player', 'Pos', 'Price', 'Team_player', 'prediction','vs']])
+
+from pulp import LpMaximize, LpProblem, LpVariable, lpSum, LpInteger, LpStatus, LpBinary, LpConstraintVar, LpConstraint, LpAffineExpression
+
 
