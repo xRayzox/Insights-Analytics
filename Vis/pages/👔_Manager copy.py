@@ -61,7 +61,7 @@ st.markdown(f'<style>{css}</style>', unsafe_allow_html=True)
 
 define_sidebar()
 st.title('Manager')
-st.image("./data/Pitch.png",width=150)
+st.image("./data/Pitch.png")
 @st.cache_data()
 def get_total_fpl_players():
     base_resp = requests.get(BASE_URL + 'bootstrap-static/')
