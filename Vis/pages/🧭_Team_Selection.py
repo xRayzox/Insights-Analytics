@@ -541,8 +541,7 @@ ssuiio = df_next_fixt_gw  # Make sure df_next_fixt_gw is correctly defined
 # Ensure the target variable 'Pts' is in the dataframe
 df = ssuiio[selected_features + ['Pts']]
 
-# Handle missing values: Drop rows with missing values (or impute if necessary)
-df = df.dropna()
+
 
 # Encode categorical variables using LabelEncoder
 label_encoder = LabelEncoder()
