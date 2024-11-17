@@ -677,11 +677,9 @@ X_weighted['final_weight'] = (
     X_weighted['minutes_weight']
 )
 
-
-
 features = [
-    'GW', 'Mins', 'GS', 'xG', 'A', 'xA', 'xGI', 'Pen_Miss', 'CS', 'GC', 'xGC', 'OG', 'Pen_Save', 
-    'S', 'YC', 'RC', 'B', 'BPS', 'Price', 'I', 'C', 'T', 'ICT', 'SB', 'Tran_In', 'Tran_Out', 
+    'GW', 'Mins', 'xG', 'xA', 'xGI','xGC', 'Pen_Save', 
+     'B', 'BPS', 'Price', 'I', 'C', 'T', 'ICT', 'SB', 'Tran_In', 'Tran_Out', 
     'was_home', 'strength_overall_home', 'strength_overall_away', 'strength_attack_home', 
     'strength_attack_away', 'strength_defence_home', 'strength_defence_away', 'strength_overall_home_opponent', 
     'strength_overall_away_opponent', 'strength_attack_home_opponent', 'strength_attack_away_opponent', 

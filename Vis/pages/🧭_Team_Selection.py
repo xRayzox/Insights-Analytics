@@ -517,8 +517,8 @@ df_next_fixt['was_home'] = df_next_fixt['Team_player'].apply(lambda x: True if '
 
 df_next_fixt_gw=df_next_fixt
 features = [
-    'GW', 'Mins', 'GS', 'xG', 'A', 'xA', 'xGI', 'Pen_Miss', 'CS', 'GC', 'xGC', 'OG', 'Pen_Save', 
-    'S', 'YC', 'RC', 'B', 'BPS', 'Price', 'I', 'C', 'T', 'ICT', 'SB', 'Tran_In', 'Tran_Out', 
+    'GW', 'Mins', 'xG', 'xA', 'xGI','xGC', 'Pen_Save', 
+    'B', 'BPS', 'Price', 'I', 'C', 'T', 'ICT', 'SB', 'Tran_In', 'Tran_Out', 
     'was_home', 'strength_overall_home', 'strength_overall_away', 'strength_attack_home', 
     'strength_attack_away', 'strength_defence_home', 'strength_defence_away', 'strength_overall_home_opponent', 
     'strength_overall_away_opponent', 'strength_attack_home_opponent', 'strength_attack_away_opponent', 
@@ -526,6 +526,7 @@ features = [
     'season', 'home_away_weight', 'time_weight', 'strength_weight', 'final_weight', 'transfer_weight', 
     'opponent_difficulty_weight', 'penalty_risk_weight', 'minutes_weight'
 ]
+
 
 
 
