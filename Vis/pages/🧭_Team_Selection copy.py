@@ -324,10 +324,10 @@ for col in columns_to_convert:
 merged_opponent['season'] = 2425
 
 
-st.markdown(f"### Recommended Lineup for gameweek {selected_gw}:")
+st.markdown(f"### Recommended Lineup for gameweek {12}:")
 
 # Filter fixtures for the current gameweek
-next_fixture_gw = fixtures_df[fixtures_df['event'] == selected_gw]
+next_fixture_gw = fixtures_df[fixtures_df['event'] == 12]
 
 # Merge fixture data with team information for team_a
 new_fix_gw_a = pd.merge(
