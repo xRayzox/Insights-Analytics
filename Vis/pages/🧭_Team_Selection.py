@@ -520,7 +520,7 @@ df_next_fixt['was_home'] = df_next_fixt['Team_player'].apply(lambda x: True if '
 
 df_next_fixt_gw=df_next_fixt
 features = [
-    'GW', 'kickoff_time', 'vs', 'Mins', 'GS', 'xG', 'A', 'xA', 'xGI',
+    'GW', 'vs', 'Mins', 'GS', 'xG', 'A', 'xA', 'xGI',
     'Pen_Miss', 'CS', 'GC', 'xGC', 'OG', 'Pen_Save', 'S', 'YC', 'RC', 'B',
     'BPS', 'Price', 'I', 'C', 'T', 'ICT', 'SB', 'Tran_In', 'Tran_Out',
     'was_home', 'Pos', 'Team_player', 'Player', 'strength_overall_home',
@@ -536,7 +536,7 @@ features = [
 
 
 ssuiio=df_next_fixt_gw
-df = pd.get_dummies(ssuiio, columns=['Pos', 'Team_player','vs','Player','kickoff_time'], drop_first=True)
+df = pd.get_dummies(ssuiio, columns=['Pos', 'Team_player','vs','Player'], drop_first=True)
 
 st.write(df.columns)
 # Step 4: Scale the numerical features

@@ -618,7 +618,7 @@ def train_and_save_model(X, y, model_path="./Vis/pages/Prediction/xgb_model.jobl
 
 # Step 1: Select features for prediction
 selected_features = [
-    'GW', 'kickoff_time', 'vs', 'Mins', 'GS', 'xG', 'A', 'xA', 'xGI',
+    'GW', 'vs', 'Mins', 'GS', 'xG', 'A', 'xA', 'xGI',
     'Pen_Miss', 'CS', 'GC', 'xGC', 'OG', 'Pen_Save', 'S', 'YC', 'RC', 'B',
     'BPS', 'Price', 'I', 'C', 'T', 'ICT', 'SB', 'Tran_In', 'Tran_Out',
     'was_home', 'Pos', 'Team_player', 'Player', 'strength_overall_home',
@@ -629,6 +629,7 @@ selected_features = [
     'strength_defence_home_opponent', 'strength_defence_away_opponent',
     'Team_fdr', 'opponent_fdr', 'season'
 ]
+from sklearn.preprocessing import StandardScaler, LabelEncoder, OneHotEncoder
 
 # Ensure your data contains these columns
 df = X_weighted[selected_features + ['Pts']]  # Include the target variable 'Pts'
@@ -637,7 +638,13 @@ df.dtypes
 df = df.dropna()  # Drop rows with missing values, or use imputation if needed
 
 # Step 3: Encode categorical variables
-df = pd.get_dummies(df, columns=['Pos', 'Team_player','vs','Player','kickoff_time'], drop_first=True)
+label_encoder = LabelEncoder()
+
+# Apply LabelEncoder to categorical columns
+df['Pos'] = label_encoder.fit_transform(df['Pos'])
+df['Team_player'] = label_encoder.fit_transform(df['Team_player'])
+df['vs'] = label_encoder.fit_transform(df['vs'])
+df['Player'] = label_encoder.fit_transform(df['Player'])
 
 # Step 4: Scale the numerical features
 scaler = StandardScaler()
