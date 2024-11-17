@@ -467,13 +467,12 @@ fit['vs'] = fit['team'].map(combined_opponent_mapping)
 
 pulga=filtered_players_fixture
 columns_to_normalize_weighted = [
-    'Mins', 'Pts', 'GS', 'xG', 'A', 'xA', 'xGI', 'Pen_Miss', 'CS', 'GC', 
-    'xGC', 'OG', 'Pen_Save', 'S', 'YC', 'RC', 'B', 'BPS', 'I', 
-    'C', 'T', 'ICT', 'SB', 'Tran_In', 'Tran_Out'
+    'Pts', 'GS', 'xG', 'A', 'xA', 'xGI', 'Pen_Miss', 'CS', 'GC', 
+    'xGC', 'OG', 'Pen_Save', 'S', 'YC', 'RC', 'B', 'BPS'
 ]
 
 columns_to_normalize_mean = [
-    'I', 'C', 'T', 'ICT', 'SB', 'Tran_In', 'Tran_Out'
+    'I', 'C', 'T', 'ICT', 'SB', 'Tran_In', 'Tran_Out','Mins'
 ]
 
 # Create a weight that combines recency and minutes played
@@ -484,15 +483,11 @@ total_stats_weighted = pulga.groupby('Player')[columns_to_normalize_weighted + [
     lambda x: (x[columns_to_normalize_weighted].multiply(x['Combined_Weight'], axis=0).sum()) / x['Combined_Weight'].sum()
 ).reset_index()
 
-# Mean for the mean columns (excluding Mins)
+# Mean for the mean columns
 total_stats_mean = pulga.groupby('Player')[columns_to_normalize_mean].mean().reset_index()
-
-# Add the mean Mins value to the total_stats_mean dataframe
-total_stats_mean['Mins'] = pulga.groupby('Player')['Mins'].mean().reset_index()['Mins']
 
 # Combine both results
 total_stats = total_stats_weighted.merge(total_stats_mean, on='Player', how='left')
-
 df_pred = pd.merge(fit, total_stats,
                            left_on='Player', right_on='Player', how='left')
 
