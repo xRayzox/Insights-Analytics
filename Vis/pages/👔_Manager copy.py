@@ -296,7 +296,7 @@ with col5:
             img_width, img_height = background_img.size
 
             # Create figure and axis
-            fig, ax = plt.subplots(figsize=(10, 10))  # Adjust figure size as needed
+            fig, ax = plt.subplots(figsize=(15, 15))  # Adjust figure size as needed
             ax.imshow(background_img)
 
             # Set transparent background for Streamlit
@@ -335,7 +335,7 @@ with col5:
                     x_start = img_width * margin_factor
                     x_end = img_width * (1 - margin_factor)
                     x_range = x_end - x_start 
-                    x_image = x_start + (x_range / (num_players + 1)) * (index % num_players + 1)* 0.9 if num_players > 1 else img_width / 2
+                    x_image = x_start + (x_range / (num_players + 1)) * (index % num_players + 1) if num_players > 1 else img_width / 2
 
                     # Place player image on the background
                     player_image = OffsetImage(image, zoom=0.1)  # Adjust zoom as needed
