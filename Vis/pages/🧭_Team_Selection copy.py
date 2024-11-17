@@ -323,7 +323,7 @@ for col in columns_to_convert:
 # Add season information for filtering purposes
 merged_opponent['season'] = 2425
 
-selected_gw = st.slider('Select Gameweek:', ct_gw, ct_gw+2, ct_gw) 
+
 st.markdown(f"### Recommended Lineup for gameweek {selected_gw}:")
 
 # Filter fixtures for the current gameweek
@@ -402,6 +402,11 @@ new_fix_gw_test['season']=2425
 
 # 1. Calculate the average statistics for each team from df_player
 df_player=concatenated_df
+selected_gw = st.slider('Select Gameweek:', 1, ct_gw, 1) 
+
+dff_player=df_player[
+    (df_player['season'] == 2425) & (df_player['GW'] == selected_gw)
+]
 df_fixture=new_fix_gw_test
 
 last_gw = df_player[df_player['season'] == 2425]['GW'].max()
@@ -530,7 +535,7 @@ features = [
 
 
 
-ssuiio=df_next_fixt_gw
+ssuiio=dff_player
 
 # 1. Home/Away Game Weights
 home_weight = 2.5  # Home game weight
