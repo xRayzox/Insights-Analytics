@@ -293,8 +293,23 @@ with col5:
             import matplotlib.image as mpimg
 
             # Load custom background image (or create a blank canvas)
-            background_img = mpimg.imread("./data/Pitch.png")  # Replace with your desired image
+            # Read the image
+            import cv2
+
+            background_img = cv2.imread("./data/Pitch.png")
+
+            # Get original dimensions
             img_height, img_width, _ = background_img.shape
+
+            # Define new width and calculate the new height to maintain aspect ratio
+            new_width = int(img_width * 1.5)  # Increase width by 50%
+            new_height = int(img_height * (new_width / img_width))
+
+            # Resize the image
+            resized_img = cv2.resize(background_img, (new_width, new_height))
+
+            # Save or display the resized image
+            cv2.imwrite("./data/Resized_Pitch.png", resized_img)
 
             # Create figure and axis
             fig, ax = plt.subplots(figsize=(20, 20))

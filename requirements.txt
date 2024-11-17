@@ -24,3 +24,5 @@ optuna
 thefuzz
 schedule
 pulp
+
+cv2
