@@ -320,21 +320,6 @@ with col5:
                 'FWD': pitch_length - zone_height
             }
 
-            # Example DataFrame to simulate player data
-            import pandas as pd
-            test = pd.DataFrame({
-                'Player': ['Player1', 'Player2', 'Player3', 'Player4', 'Player5'],
-                'Played': [True, True, False, False, True],
-                'Pos': ['GKP', 'DEF', 'MID', 'FWD', 'DEF'],
-                'GWP': [6, 8, 0, 0, 7],
-                'code': ['image1.png', 'image2.png', 'image3.png', 'image4.png', 'image5.png']
-            })
-
-            # Function to load images (replace with actual loader)
-            def load_image(image_url):
-                # Dummy function: Replace with actual image loading logic
-                return mpimg.imread(f"./data/{image_url}")
-
             # Draw players
             def draw_players(df, positions, ax, img_width):
                 for index, row in df.iterrows():
