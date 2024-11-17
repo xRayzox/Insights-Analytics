@@ -624,7 +624,7 @@ ssuiio.drop(columns='full_name', inplace=True)
 
 # Now ssuiio has the 'code', 'selected_by_percent', 'status', and 'player_image_url' columns
 
-st.write(ssuiio[['code']])
+
 from pulp import LpProblem, LpMaximize, LpVariable, lpSum
 import numpy as np
 
@@ -695,6 +695,8 @@ starting_players = [i for i in players if player_vars[i].varValue == 1]
 substitutes = [i for i in players if sub_vars[i].varValue == 1]
 captain = [i for i in players if captain_vars[i].varValue == 1][0]
 
+
+st.write(starting_players[['code']])
 # Print the recommended players
 st.markdown("### Recommended Starting 11:")
 for player in starting_players:
