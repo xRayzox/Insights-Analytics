@@ -608,7 +608,7 @@ azdazdazd=best_model.predict(XX)
 ssuiio['prediction']=azdazdazd
 
 
-st.write(ssuiio[['GW','Player', 'Pos', 'Price', 'Team_player', 'prediction','vs']])
+
 
 
 ele_copy['code'] = ele_copy.apply(lambda row: f"https://resources.premierleague.com/premierleague/photos/players/250x250/p{row['code']}.png", axis=1)
@@ -619,15 +619,12 @@ ssuiio = ssuiio.merge(ele_copy[['full_name', 'code', 'selected_by_percent', 'sta
                       right_on='full_name', 
                       how='left')
 
-# Generate the URL for the 'code' column if needed
-ssuiio['player_image_url'] = ssuiio['code'].apply(lambda x: f"https://resources.premierleague.com/premierleague/photos/players/250x250/p{x}.png" if pd.notna(x) else None)
-
 # Drop the 'full_name' column as it's no longer needed
 ssuiio.drop(columns='full_name', inplace=True)
 
 # Now ssuiio has the 'code', 'selected_by_percent', 'status', and 'player_image_url' columns
 
-st.write(ssuiio)
+st.write(ssuiio[['GW','Player', 'Pos', 'Price', 'Team_player', 'prediction','vs','status','code','selected_by_percent']])
 
 from pulp import LpProblem, LpMaximize, LpVariable, lpSum
 import numpy as np
