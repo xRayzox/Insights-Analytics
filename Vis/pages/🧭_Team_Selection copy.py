@@ -530,7 +530,7 @@ features = [
 
 
 
-ssuiio=df_player
+ssuiio=df_next_fixt_gw
 
 # 1. Home/Away Game Weights
 home_weight = 2.5  # Home game weight
