@@ -328,7 +328,7 @@ with col5:
                 'GKP': pitch_length - 5.5 * zone_height,
                 'DEF': pitch_length - 4.5 * zone_height,
                 'MID': pitch_length - 3.5 * zone_height,
-                'FWD': pitch_length - zone_height
+                'FWD': pitch_length - 2 * zone_height
             }
             def draw_players(df, positions, ax, img_width):
                 for index, row in df.iterrows():
