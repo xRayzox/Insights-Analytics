@@ -325,7 +325,7 @@ with col5:
             # Define placements for each position zone based on the new background
             zone_height = pitch_length / 6  # Adjust height zones for positions
             positions = {
-                'GKP': pitch_length ,
+                'GKP': pitch_length - 5 * zone_height,
                 'DEF': pitch_length - 1.5 * zone_height,
                 'MID': pitch_length - 1 / 3 * zone_height,
                 'FWD': pitch_length - zone_height
