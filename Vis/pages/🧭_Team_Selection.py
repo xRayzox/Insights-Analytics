@@ -539,7 +539,7 @@ ssuiio['home_away_weight'] = ssuiio['was_home'].map({True: home_weight, False: a
 # 2. Team and Opponent Strength Weights
 ssuiio['team_strength_weight'] = (
     ssuiio['strength_overall_home'] + ssuiio['strength_attack_home'] - ssuiio['strength_defence_home']
-) * 1.1
+) * 2.5
 
 ssuiio['opponent_strength_weight'] = (
     ssuiio['strength_overall_away_opponent'] + ssuiio['strength_attack_away_opponent'] - ssuiio['strength_defence_away_opponent']
@@ -556,14 +556,14 @@ ssuiio['kickoff_time'] = pd.to_datetime(ssuiio['kickoff_time'])
 
 def assign_time_weight(kickoff_time):
     # Adjust time weight based on the kickoff time of the match
-    if 6 <= kickoff_time.hour < 12:
+    if 6 <= kickoff_time.day < 12:
         return 2.5  # Morning games tend to have lower energy
-    elif 12 <= kickoff_time.hour < 18:
+    elif 12 <= kickoff_time.day < 18:
         return 2  # Standard midday games
-    elif 18 <= kickoff_time.hour < 22:
+    elif 18 <= kickoff_time.day < 22:
         return 0.9  # Evening games often see more action
     else:
-        return 0.5  # Late-night games may see more relaxed performances
+        return 1  # Late-night games may see more relaxed performances
 
 # Apply the function to 'kickoff_time'
 ssuiio['time_weight'] = ssuiio['kickoff_time'].apply(assign_time_weight)

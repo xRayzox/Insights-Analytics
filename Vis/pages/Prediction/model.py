@@ -530,7 +530,7 @@ print('sssssssssuii2')
 def objective_optuna(trial):
     # Define the hyperparameter space
     params = {
-        'n_estimators': trial.suggest_int('n_estimators', 100, 500, step=10),
+        'n_estimators': trial.suggest_int('n_estimators', 100, 500),
         'learning_rate': trial.suggest_loguniform('learning_rate', 0.15, 0.25),
         'max_depth': trial.suggest_int('max_depth', 2,8),
         'min_child_weight': trial.suggest_int('min_child_weight', 0.1, 3),
@@ -551,7 +551,7 @@ def objective_optuna(trial):
     return mean_mse
 
 # Function to perform hyperparameter tuning using Optuna
-def auto_tune_hyperparameters(X, y, n_trials=10):
+def auto_tune_hyperparameters(X, y, n_trials=5):
     global X_train, X_test, y_train, y_test
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
@@ -617,7 +617,7 @@ X_weighted['home_away_weight'] = X_weighted['was_home'].map({True: home_weight, 
 # 2. Team and Opponent Strength Weights
 X_weighted['team_strength_weight'] = (
     X_weighted['strength_overall_home'] + X_weighted['strength_attack_home'] - X_weighted['strength_defence_home']
-) * 1.1
+) * 2.5 
 
 X_weighted['opponent_strength_weight'] = (
     X_weighted['strength_overall_away_opponent'] + X_weighted['strength_attack_away_opponent'] - X_weighted['strength_defence_away_opponent']
@@ -634,14 +634,14 @@ X_weighted['kickoff_time'] = pd.to_datetime(X_weighted['kickoff_time'])
 
 def assign_time_weight(kickoff_time):
     # Adjust time weight based on the kickoff time of the match
-    if 6 <= kickoff_time.hour < 12:
+    if 6 <= kickoff_time.day < 12:
         return 2.5  # Morning games tend to have lower energy
-    elif 12 <= kickoff_time.hour < 18:
+    elif 12 <= kickoff_time.day < 18:
         return 2  # Standard midday games
-    elif 18 <= kickoff_time.hour < 22:
+    elif 18 <= kickoff_time.day < 22:
         return 0.9  # Evening games often see more action
     else:
-        return 0.5  # Late-night games may see more relaxed performances
+        return 1  # Late-night games may see more relaxed performances
 
 # Apply the function to 'kickoff_time'
 X_weighted['time_weight'] = X_weighted['kickoff_time'].apply(assign_time_weight)
