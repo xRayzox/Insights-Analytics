@@ -295,8 +295,6 @@ with col5:
             # Load custom background image (or create a blank canvas)
             # Read the image
             from PIL import Image
-
-            from PIL import Image
             import matplotlib.pyplot as plt
 
             # Read the image
@@ -314,7 +312,7 @@ with col5:
 
             # Create figure and axis
             fig, ax = plt.subplots(figsize=(20, 20))  # Adjust figure size as needed
-            ax.imshow(resized_img)  # Display the resized background image
+            ax.imshow(resized_img)
 
             # Set transparent background for Streamlit
             fig.patch.set_alpha(0)
@@ -354,37 +352,6 @@ with col5:
                     player_image = OffsetImage(image, zoom=0.1)  # Adjust zoom as needed
                     player_box = AnnotationBbox(player_image, (x_image, y_image), frameon=False)
                     ax.add_artist(player_box)
-
-                    # Add player details
-                    draw_player_details(ax, row, x_image, y_image)
-
-            # Draw player details
-            def draw_player_details(ax, row, x_image, y_image):
-                player_name = row['Player']
-                gwp_points = row['GWP']
-
-                # Draw player's name rectangle
-                tp = TextPath((0, 0), player_name, size=10)
-                rect_width = tp.get_extents().width  # Width of text bounding box
-                rect_height = 10
-
-                rounded_rect = FancyBboxPatch(
-                    (x_image - rect_width / 2, y_image - rect_height - 5),
-                    rect_width,
-                    rect_height,
-                    facecolor='white',
-                    edgecolor='white',
-                    linewidth=1,
-                    alpha=0.8
-                )
-                ax.add_patch(rounded_rect)
-
-                # Add text for player name
-                ax.text(x_image, y_image - 10, player_name, fontsize=8, ha='center', color='black')
-
-            # Draw players who played
-            df_played = test[test['Played'] == True]
-            draw_players(df_played, positions, ax, pitch_width)
 
             # Display in Streamlit
             import streamlit as st
