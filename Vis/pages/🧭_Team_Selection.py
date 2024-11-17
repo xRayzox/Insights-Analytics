@@ -833,7 +833,6 @@ def draw_player_details(ax, row, x_image, y_image, max_name_length=15):
 def draw_players(df, positions, ax, pitch):
     # Preload all player images to avoid reloading within the loop
     player_images = {row['code']: load_image(row['code']) for _, row in df.iterrows()}
-    st.image('./data/captain.png')
     # Group players by their positions
     grouped_by_position = df.groupby('Pos')
     
@@ -852,7 +851,7 @@ def draw_players(df, positions, ax, pitch):
             # Draw the player image on the pitch
             pitch.inset_image(y_image, x_image, image, height=9, ax=ax)
             # If this player is the captain, overlay the captain icon
-            if row['role'] == captain:
+            if row['Role'] == 'Captain':
                 pitch.inset_image(y_image, x_image, './data/captain.png', height=4, ax=ax)  # Adjust height as needed
 
             # Draw player's name and GWP points
