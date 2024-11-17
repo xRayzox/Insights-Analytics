@@ -303,16 +303,9 @@ with col5:
             # Get original dimensions
             img_width, img_height = background_img.size
 
-            # Define new dimensions (increase width by 50%)
-            new_width = int(img_width * 1.5)
-            new_height = int(img_height * 1.5)  # Ensure height scales proportionally
-
-            # Resize the image
-            resized_img = background_img.resize((new_width, new_height))
-
             # Create figure and axis
             fig, ax = plt.subplots(figsize=(20, 20))  # Adjust figure size as needed
-            ax.imshow(resized_img)
+            ax.imshow(background_img)
 
             # Set transparent background for Streamlit
             fig.patch.set_alpha(0)
@@ -322,8 +315,8 @@ with col5:
             ax.axis('off')
 
             # Replace pitch dimensions with resized image dimensions
-            pitch_length = new_height  # Use the resized height
-            pitch_width = new_width  # Use the resized width
+            pitch_length = img_height  # Use the resized height
+            pitch_width = img_width  # Use the resized width
 
             # Show the plot (for testing purposes)
             plt.show()
