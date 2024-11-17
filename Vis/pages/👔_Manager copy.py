@@ -326,7 +326,7 @@ with col5:
             zone_height = pitch_length / 6  # Adjust height zones for positions
             positions = {
                 'GKP': pitch_length - 5.5 * zone_height,
-                'DEF': pitch_length - 1.5 * zone_height,
+                'DEF': pitch_length - 4.5 * zone_height,
                 'MID': pitch_length - 1 / 3 * zone_height,
                 'FWD': pitch_length - zone_height
             }
