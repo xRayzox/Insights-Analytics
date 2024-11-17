@@ -462,6 +462,7 @@ total_stats = pulga.groupby('Player')[columns_to_normalize + ['Recency_Weight']]
     lambda x: (x[columns_to_normalize].multiply(x['Recency_Weight'], axis=0).sum()) / x['Recency_Weight'].sum()
 ).reset_index()
 
+total_stats[columns_to_normalize] = 0
 df_pred = pd.merge(fit, total_stats,
                            left_on='Player', right_on='Player', how='left')
 
