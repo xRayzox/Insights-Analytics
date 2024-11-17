@@ -304,7 +304,7 @@ with col5:
             img_width, img_height = background_img.size
 
             # Create figure and axis
-            fig, ax = plt.subplots(figsize=(1, 1))  # Adjust figure size as needed
+            fig, ax = plt.subplots(figsize=(40, 40))  # Adjust figure size as needed
             ax.imshow(background_img)
 
             # Set transparent background for Streamlit
