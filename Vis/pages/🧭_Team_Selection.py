@@ -9,7 +9,20 @@ from concurrent.futures import ThreadPoolExecutor ,ProcessPoolExecutor,as_comple
 import joblib
 import time
 import subprocess
-
+from mplsoccer import VerticalPitch
+import matplotlib.patches as patches 
+from PIL import Image
+from urllib.request import urlopen
+import random
+from matplotlib.patches import FancyBboxPatch
+from matplotlib.textpath import TextPath
+from PIL import Image, ImageDraw, ImageOps
+from PIL import Image
+from urllib.request import urlopen
+import io
+import requests
+from functools import lru_cache
+from io import BytesIO
 
 
 
@@ -714,3 +727,11 @@ st.markdown("### Total Predicted Points:")
 st.write(f"Total Predicted Points for Starting 11 (with Captain doubled): {starting_predicted_points_total:.0f}")
 st.write(f"Total Predicted Points for Substitutes: {substitutes_predicted_points_total:.0f}")
 st.write(f"Overall Total Predicted Points: {starting_predicted_points_total + substitutes_predicted_points_total:.0f}")
+
+
+
+ele_copy['code'] = ele_copy.apply(lambda row: f"https://resources.premierleague.com/premierleague/photos/players/250x250/p{row['code']}.png", axis=1)
+
+
+st.write(ele_copy)
+
