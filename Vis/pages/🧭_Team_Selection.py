@@ -519,7 +519,7 @@ df_next_fixt['opponent_fdr'] = df_next_fixt['vs'].map(team_fdr_map)
 df_next_fixt['was_home'] = df_next_fixt['Team_player'].apply(lambda x: True if '(H)' in x else False)
 
 df_next_fixt_gw=df_next_fixt
-features = [
+selected_features = [
     'GW', 'vs', 'Mins', 'GS', 'xG', 'A', 'xA', 'xGI',
     'Pen_Miss', 'CS', 'GC', 'xGC', 'OG', 'Pen_Save', 'S', 'YC', 'RC', 'B',
     'BPS', 'Price', 'I', 'C', 'T', 'ICT', 'SB', 'Tran_In', 'Tran_Out',
@@ -536,11 +536,13 @@ features = [
 
 from sklearn.preprocessing import StandardScaler, LabelEncoder, OneHotEncoder
 ssuiio=df_next_fixt_gw
+# Ensure your data contains these columns
+df = ssuiio[selected_features + ['Pts']]  # Include the target variable 'Pts'
+df.dtypes
+# Step 2: Handle missing values
+df = df.dropna()  # Drop rows with missing values, or use imputation if needed
+
 # Step 3: Encode categorical variables
-
-
-df=ssuiio
-
 label_encoder = LabelEncoder()
 
 # Apply LabelEncoder to categorical columns
@@ -548,6 +550,7 @@ df['Pos'] = label_encoder.fit_transform(df['Pos'])
 df['Team_player'] = label_encoder.fit_transform(df['Team_player'])
 df['vs'] = label_encoder.fit_transform(df['vs'])
 df['Player'] = label_encoder.fit_transform(df['Player'])
+
 # Step 4: Scale the numerical features
 scaler = StandardScaler()
 numerical_features = df.select_dtypes(include=['float64', 'int64']).columns
