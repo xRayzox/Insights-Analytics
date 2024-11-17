@@ -3,7 +3,6 @@ import datetime as dt
 import altair as alt
 import pandas as pd
 import requests
-import tempfile
 import sys
 import os
 import matplotlib.pyplot as plt
@@ -449,16 +448,7 @@ with col5:
             draw_bench_players(df_bench,ax,pitch)
 
 
-
-        # Save the figure as an image before displaying in Streamlit
-with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as temp_file:
-            temp_file_path = temp_file.name  # Temporary file path
-
-            # Save the figure to the temporary file
-            fig.savefig(temp_file_path, bbox_inches='tight', dpi=300)
-
-        # Load and display the image in Streamlit
-st.image(temp_file_path, use_column_width=True)
+            st.pyplot(fig)
 
 ###############################################################################
 
