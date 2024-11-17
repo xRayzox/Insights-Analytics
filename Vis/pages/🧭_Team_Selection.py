@@ -721,9 +721,18 @@ st.write(combined_players)
 
 
 
+import requests
+from io import BytesIO
+from PIL import Image
+import streamlit as st
+from matplotlib.patches import FancyBboxPatch
+from matplotlib.textpath import TextPath
+from mplsoccer import VerticalPitch
+
 @st.cache_resource
-def load_image(url):
+def load_image(player_code):
     """Load an image from a URL and cache it."""
+    url = f"https://some_image_host/{player_code}.jpg"  # Assuming you have a pattern for image URLs
     try:
         # Fetch the image from the URL
         response = requests.get(url, stream=True)
@@ -733,7 +742,6 @@ def load_image(url):
     except Exception as e:
         st.error(f"Error loading image from {url}: {e}")
         return None
-    
 
 
 # Define the figure size
@@ -786,11 +794,11 @@ def draw_players(df, positions, ax, pitch):
             image = player_images[row['code']]
             x_image = x_positions[index]
 
-    # Draw the player image on the pitch
-    pitch.inset_image(y_image, x_image, image, height=9, ax=ax)
+            # Draw the player image on the pitch
+            pitch.inset_image(y_image, x_image, image, height=9, ax=ax)
 
-    # Draw player's name and GWP points
-    draw_player_details(ax, row, x_image, y_image)
+            # Draw player's name and GWP points
+            draw_player_details(ax, row, x_image, y_image)
 
 # Optimized Function to Draw Player Details
 def draw_player_details(ax, row, x_image, y_image):
@@ -835,6 +843,5 @@ def draw_player_details(ax, row, x_image, y_image):
 draw_players(combined_players, positions, ax, pitch)
 
 st.pyplot(fig)
-
 
 
