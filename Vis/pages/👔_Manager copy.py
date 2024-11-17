@@ -327,7 +327,7 @@ with col5:
             positions = {
                 'GKP': pitch_length - 5.5 * zone_height,
                 'DEF': pitch_length - 4.5 * zone_height,
-                'MID': pitch_length - 1 / 3 * zone_height,
+                'MID': pitch_length - 3.5 * zone_height,
                 'FWD': pitch_length - zone_height
             }
             def draw_players(df, positions, ax, img_width):
