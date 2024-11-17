@@ -294,26 +294,28 @@ with col5:
 
             # Load custom background image (or create a blank canvas)
             # Read the image
-            import cv2
+            from PIL import Image
 
-            background_img = cv2.imread("./data/Pitch.png")
+            # Read the image
+            background_img = Image.open("./data/Pitch.png")
 
             # Get original dimensions
-            img_height, img_width, _ = background_img.shape
+            img_width, img_height = background_img.size
 
             # Define new width and calculate the new height to maintain aspect ratio
             new_width = int(img_width * 1.5)  # Increase width by 50%
             new_height = int(img_height * (new_width / img_width))
 
             # Resize the image
-            resized_img = cv2.resize(background_img, (new_width, new_height))
+            resized_img = background_img.resize((new_width, new_height))
 
             # Save or display the resized image
-            cv2.imwrite("./data/Resized_Pitch.png", resized_img)
+            
+
 
             # Create figure and axis
             fig, ax = plt.subplots(figsize=(20, 20))
-            ax.imshow(background_img)  # Display the new background image
+            ax.imshow(resized_img)  # Display the new background image
 
             # Transparent background for Streamlit
             fig.patch.set_alpha(0)
