@@ -732,10 +732,9 @@ from mplsoccer import VerticalPitch
 @st.cache_resource
 def load_image(player_code):
     """Load an image from a URL and cache it."""
-    url = f"https://some_image_host/{player_code}.jpg"  # Assuming you have a pattern for image URLs
     try:
         # Fetch the image from the URL
-        response = requests.get(url, stream=True)
+        response = requests.get(player_code, stream=True)
         response.raise_for_status()  # Raise an error for bad responses
         img = Image.open(BytesIO(response.content))  # Open the image
         return img
