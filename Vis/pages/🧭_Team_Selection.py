@@ -614,7 +614,7 @@ ssuiio['prediction']=azdazdazd
 ele_copy['code'] = ele_copy.apply(lambda row: f"https://resources.premierleague.com/premierleague/photos/players/250x250/p{row['code']}.png", axis=1)
 
 # Assuming 'full_name' in ele_copy matches 'Player' in ssuiio
-ssuiio = ssuiio.merge(ele_copy[['full_name', 'code', 'selected_by_percent', 'status']], 
+ssuiio = ssuiio.merge(ele_copy[['full_name', 'code', 'selected_by_percent', 'status','web_name']], 
                       left_on='Player', 
                       right_on='full_name', 
                       how='left')
@@ -702,13 +702,13 @@ substitute_data = []
 
 # Add data for starting players
 for player in starting_players:
-    player_data = ssuiio.loc[player, ['Player', 'Pos', 'prediction', 'Price', 'Team_player','code','selected_by_percent']]
+    player_data = ssuiio.loc[player, ['Player', 'Pos', 'prediction', 'Price', 'Team_player','code','selected_by_percent','web_name']]
     player_data['Role'] = 'Starting'
     starting_data.append(player_data)
 
 # Add data for substitutes
 for player in substitutes:
-    player_data = ssuiio.loc[player, ['Player', 'Pos', 'prediction', 'Price', 'Team_player','code','selected_by_percent']]
+    player_data = ssuiio.loc[player, ['Player', 'Pos', 'prediction', 'Price', 'Team_player','code','selected_by_percent','web_name']]
     player_data['Role'] = 'Substitute'
     substitute_data.append(player_data)
 
@@ -779,7 +779,7 @@ from matplotlib.patches import FancyBboxPatch
 import textwrap
 
 def draw_player_details(ax, row, x_image, y_image, max_name_length=15):
-    player_name = row.Player  # Access player name
+    player_name = row.web_name  # Access player name
     gwp_points = row.selected_by_percent  # Access GWP points
 
     # Wrap player name if it's too long
