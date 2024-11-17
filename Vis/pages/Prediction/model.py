@@ -535,22 +535,12 @@ print('sssssssssuii2')
 # Define the objective function for Optuna
 def objective_optuna(trial):
     # Define the hyperparameter space
-    params = {
-        'n_estimators': trial.suggest_int('n_estimators', 100, 500),
-        'learning_rate': trial.suggest_loguniform('learning_rate', 0.15, 0.25),
-        'max_depth': trial.suggest_int('max_depth', 2,8),
-        'min_child_weight': trial.suggest_int('min_child_weight', 0.1, 3),
-        'subsample': trial.suggest_float('subsample', 0.5, 0.9),
-        'colsample_bytree': trial.suggest_float('colsample_bytree', 0.5, 0.9),
-        'gamma': trial.suggest_float('gamma', 0.01, 0.5),
-        'reg_alpha': trial.suggest_float('reg_alpha', 0.01, 1),
-        'reg_lambda': trial.suggest_float('reg_lambda', 0.01, 1),
-    }
+    
 
-    model = XGBRegressor(objective='reg:squarederror', random_state=42,**params)
+    model = XGBRegressor(objective='reg:squarederror', random_state=999)
 
     # Use K-fold cross-validation to better estimate performance
-    kf = KFold(n_splits=5, shuffle=True, random_state=42)
+    kf = KFold(n_splits=5, shuffle=True, random_state=999)
     mse_scores = cross_val_score(model, X_train, y_train, cv=kf, scoring='neg_mean_squared_error')
     mean_mse = -mse_scores.mean()  # Take the negative because cross_val_score returns negative MSE
 
@@ -559,7 +549,7 @@ def objective_optuna(trial):
 # Function to perform hyperparameter tuning using Optuna
 def auto_tune_hyperparameters(X, y, n_trials=5):
     global X_train, X_test, y_train, y_test
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=999)
 
     # Check if previous Optuna study exists
     study_path = "./Vis/pages/Prediction/optuna_study.joblib"
@@ -593,7 +583,7 @@ def train_and_save_model(X, y, model_path="./Vis/pages/Prediction/xgb_model.jobl
 
     # Tune hyperparameters if no previous params are found
     best_params = auto_tune_hyperparameters(X, y)
-    new_model = XGBRegressor(objective='reg:squarederror', random_state=42, **best_params)
+    new_model = XGBRegressor(objective='reg:squarederror', random_state=999, **best_params)
     print("Starting new model training with tuned hyperparameters.")
 
     # Train the model with early stopping
@@ -654,7 +644,7 @@ df[numerical_features] = scaler.fit_transform(df[numerical_features])
 # Step 5: Split the data into training and testing sets
 X = df.drop(columns='Pts')
 y = df['Pts']
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=999)
 best_model = train_and_save_model(X_train, y_train)
 
 
