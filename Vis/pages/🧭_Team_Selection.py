@@ -702,13 +702,13 @@ substitute_data = []
 
 # Add data for starting players
 for player in starting_players:
-    player_data = ssuiio.loc[player, ['Player', 'Pos', 'prediction', 'Price', 'Team_player','code']]
+    player_data = ssuiio.loc[player, ['Player', 'Pos', 'prediction', 'Price', 'Team_player','code','selected_by_percent']]
     player_data['Role'] = 'Starting'
     starting_data.append(player_data)
 
 # Add data for substitutes
 for player in substitutes:
-    player_data = ssuiio.loc[player, ['Player', 'Pos', 'prediction', 'Price', 'Team_player','code']]
+    player_data = ssuiio.loc[player, ['Player', 'Pos', 'prediction', 'Price', 'Team_player','code','selected_by_percent']]
     player_data['Role'] = 'Substitute'
     substitute_data.append(player_data)
 
@@ -795,7 +795,7 @@ def draw_players(df, positions, ax, pitch):
 # Optimized Function to Draw Player Details
 def draw_player_details(ax, row, x_image, y_image):
     player_name = row.Player  # Access using attribute-style access
-    gwp_points = row.GWP
+    gwp_points = row.selected_by_percent
 
     # Create text bounding box for player name only once
     tp_name = TextPath((0, 0), player_name, size=2)
