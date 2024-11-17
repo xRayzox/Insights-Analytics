@@ -696,54 +696,29 @@ substitutes = [i for i in players if sub_vars[i].varValue == 1]
 captain = [i for i in players if captain_vars[i].varValue == 1][0]
 
 
-st.write(starting_players)
-# Print the recommended players
-st.markdown("### Recommended Starting 11:")
+# Create a list of starting players and substitutes with their relevant data
+starting_data = []
+substitute_data = []
+
+# Add data for starting players
 for player in starting_players:
-    st.write(f"Player: {ssuiio.loc[player, 'Player']}, Position: {ssuiio.loc[player, 'Pos']}, "
-             f"Predicted Points: {ssuiio.loc[player, 'prediction']:.0f}, Price: {ssuiio.loc[player, 'Price']:.2f}, "
-             f"Team: {ssuiio.loc[player, 'Team_player']}")
+    player_data = ssuiio.loc[player, ['Player', 'Pos', 'prediction', 'Price', 'Team_player']]
+    player_data['Role'] = 'Starting'
+    starting_data.append(player_data)
 
-st.markdown("### Captain:")
-st.write(f"Player: {ssuiio.loc[captain, 'Player']}, Predicted Points: {ssuiio.loc[captain, 'prediction']:.0f}")
-
-st.markdown("### Substitutes:")
+# Add data for substitutes
 for player in substitutes:
-    st.write(f"Player: {ssuiio.loc[player, 'Player']}, Position: {ssuiio.loc[player, 'Pos']}, "
-             f"Predicted Points: {ssuiio.loc[player, 'prediction']:.0f}, Price: {ssuiio.loc[player, 'Price']:.2f}, "
-             f"Team: {ssuiio.loc[player, 'Team_player']}")
+    player_data = ssuiio.loc[player, ['Player', 'Pos', 'prediction', 'Price', 'Team_player']]
+    player_data['Role'] = 'Substitute'
+    substitute_data.append(player_data)
 
+# Combine both lists into a single DataFrame
+combined_players = pd.DataFrame(starting_data + substitute_data)
 
-# Sum the prices of the recommended starting 11 players
-starting_price_total = ssuiio.loc[starting_players, 'Price'].sum()
+# Display the combined DataFrame using Streamlit
+st.markdown("### Recommended Lineup (Starting + Substitutes):")
+st.write(combined_players)
 
-# Sum the prices of the substitutes
-substitutes_price_total = ssuiio.loc[substitutes, 'Price'].sum()
-
-# Display the total prices
-st.markdown("### Total Prices:")
-st.write(f"Total Price for Starting 11: £{starting_price_total:.2f}")
-st.write(f"Total Price for Substitutes: £{substitutes_price_total:.2f}")
-st.write(f"Overall Total Price: £{(starting_price_total + substitutes_price_total):.2f}")
-
-
-# Sum the predicted points for the starting 11 players, double the captain's points
-starting_predicted_points_total = ssuiio.loc[starting_players, 'prediction'].sum()
-
-# Double the captain's predicted points
-captain_predicted_points = ssuiio.loc[captain, 'prediction'] * 2
-
-# Add the captain's doubled points to the total
-starting_predicted_points_total += captain_predicted_points - ssuiio.loc[captain, 'prediction']
-
-# Sum the predicted points for the substitutes
-substitutes_predicted_points_total = ssuiio.loc[substitutes, 'prediction'].sum()
-
-# Display the total predicted points
-st.markdown("### Total Predicted Points:")
-st.write(f"Total Predicted Points for Starting 11 (with Captain doubled): {starting_predicted_points_total:.0f}")
-st.write(f"Total Predicted Points for Substitutes: {substitutes_predicted_points_total:.0f}")
-st.write(f"Overall Total Predicted Points: {starting_predicted_points_total + substitutes_predicted_points_total:.0f}")
 
 
 @st.cache_resource
@@ -857,7 +832,7 @@ def draw_player_details(ax, row, x_image, y_image):
     ax.text(x_image, y_image - rect_height - 5 + rect_height / 2, player_name, fontsize=7, ha='center', color='black', va='center')
 
 # Draw players who played
-draw_players(ssuiio, positions, ax, pitch)
+draw_players(combined_players, positions, ax, pitch)
 
 
 
