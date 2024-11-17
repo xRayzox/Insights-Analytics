@@ -488,7 +488,7 @@ total_stats_mean = pulga.groupby('Player')[columns_to_normalize_mean].mean().res
 
 # Combine both results
 total_stats = total_stats_weighted.merge(total_stats_mean, on='Player', how='left')
-
+st.write(total_stats)
 df_pred = pd.merge(fit, total_stats,
                            left_on='Player', right_on='Player', how='left')
 
