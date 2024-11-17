@@ -683,6 +683,11 @@ teams = ssuiio['Team_player'].unique()
 for team in teams:
     model += lpSum(player_vars[i] + sub_vars[i] for i in players if ssuiio.loc[i, 'Team_player'] == team) <= 3, f"Max_3_Players_{team}"
 
+for i in players:
+    if ssuiio.loc[i, 'status'] in ['i', 's', 'u']:
+        model += player_vars[i] == 0, f"Invalid_Status_{i}"
+        model += sub_vars[i] == 0, f"Invalid_Status_Sub_{i}"
+
 # Solve the optimization problem
 model.solve()
 
