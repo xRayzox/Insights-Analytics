@@ -701,7 +701,7 @@ substitute_data = []
 
 # Add data for starting players
 for player in starting_players:
-    player_data = ssuiio.loc[player, ['Player', 'Pos', 'prediction', 'Price', 'Team_player', 'code', 'selected_by_percent', 'web_name']]
+    player_data = ssuiio.loc[player, ['Player', 'Pos', 'prediction', 'Price', 'Team_player', 'code', 'selected_by_percent', 'web_name','vs']]
     # If player is captain, set role as 'Captain'
     if player == captain:
         player_data['Role'] = 'Captain'
@@ -711,7 +711,7 @@ for player in starting_players:
 
 # Add data for substitutes
 for player in substitutes:
-    player_data = ssuiio.loc[player, ['Player', 'Pos', 'prediction', 'Price', 'Team_player', 'code', 'selected_by_percent', 'web_name']]
+    player_data = ssuiio.loc[player, ['Player', 'Pos', 'prediction', 'Price', 'Team_player', 'code', 'selected_by_percent', 'web_name','vs']]
     player_data['Role'] = 'Substitute'
     substitute_data.append(player_data)
 
