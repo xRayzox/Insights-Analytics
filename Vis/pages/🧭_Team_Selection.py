@@ -785,8 +785,6 @@ import textwrap
 def draw_player_details(ax, row, x_image, y_image, max_name_length=15):
     player_name = row.web_name  # Access player name
     gwp_points = row.selected_by_percent  # Access GWP points
-    if row.Role== 'Captain':
-        pitch.inset_image(1, 1, './data/captain.png', height=4, ax=ax)  # Adjust height as needed
 
     # Wrap player name if it's too long
     wrapped_name = textwrap.fill(player_name, width=max_name_length)
@@ -824,7 +822,6 @@ def draw_player_details(ax, row, x_image, y_image, max_name_length=15):
     # Add Text for GWP Points and Player Name
     ax.text(x_image, gwp_rect_y + rect_height / 2, f"{gwp_points}", fontsize=7, ha='center', color='white', va='center')
     
-
     # Split the wrapped name into multiple lines and center them
     name_lines = wrapped_name.split('\n')
     y_offset = y_image - rect_height - 5 + rect_height / 2
@@ -836,6 +833,7 @@ def draw_player_details(ax, row, x_image, y_image, max_name_length=15):
 def draw_players(df, positions, ax, pitch):
     # Preload all player images to avoid reloading within the loop
     player_images = {row['code']: load_image(row['code']) for _, row in df.iterrows()}
+    
     # Group players by their positions
     grouped_by_position = df.groupby('Pos')
     
@@ -851,12 +849,8 @@ def draw_players(df, positions, ax, pitch):
             image = player_images[row['code']]
             x_image = x_positions[index]
 
-
-            
             # Draw the player image on the pitch
             pitch.inset_image(y_image, x_image, image, height=9, ax=ax)
-            
-
 
             # Draw player's name and GWP points
             draw_player_details(ax, row, x_image, y_image)
