@@ -517,89 +517,22 @@ df_next_fixt['was_home'] = df_next_fixt['Team_player'].apply(lambda x: True if '
 
 df_next_fixt_gw=df_next_fixt
 features = [
-    'GW', 'Mins', 'xG', 'xA', 'xGI','xGC', 'Pen_Save', 
-    'B', 'BPS', 'Price', 'I', 'C', 'T', 'ICT', 'SB', 'Tran_In', 'Tran_Out', 
-    'was_home', 'strength_overall_home', 'strength_overall_away', 'strength_attack_home', 
-    'strength_attack_away', 'strength_defence_home', 'strength_defence_away', 'strength_overall_home_opponent', 
-    'strength_overall_away_opponent', 'strength_attack_home_opponent', 'strength_attack_away_opponent', 
-    'strength_defence_home_opponent', 'strength_defence_away_opponent', 'Team_fdr', 'opponent_fdr', 
-    'season', 'home_away_weight', 'time_weight', 'strength_weight', 'final_weight', 'transfer_weight', 
-    'opponent_difficulty_weight', 'penalty_risk_weight', 'minutes_weight'
+    'GW', 'kickoff_time', 'vs', 'Mins', 'GS', 'xG', 'A', 'xA', 'xGI',
+    'Pen_Miss', 'CS', 'GC', 'xGC', 'OG', 'Pen_Save', 'S', 'YC', 'RC', 'B',
+    'BPS', 'Price', 'I', 'C', 'T', 'ICT', 'SB', 'Tran_In', 'Tran_Out',
+    'was_home', 'Pos', 'Team_player', 'Player', 'strength_overall_home',
+    'strength_overall_away', 'strength_attack_home', 'strength_attack_away',
+    'strength_defence_home', 'strength_defence_away',
+    'strength_overall_home_opponent', 'strength_overall_away_opponent',
+    'strength_attack_home_opponent', 'strength_attack_away_opponent',
+    'strength_defence_home_opponent', 'strength_defence_away_opponent',
+    'Team_fdr', 'opponent_fdr', 'season'
 ]
 
 
 
 
 ssuiio=df_next_fixt_gw
-
-# 1. Home/Away Game Weights
-home_weight = 2.5  # Home game weight
-away_weight = 1.0  # Away game weight
-ssuiio['home_away_weight'] = ssuiio['was_home'].map({True: home_weight, False: away_weight})
-
-# 2. Team and Opponent Strength Weights
-ssuiio['team_strength_weight'] = (
-    ssuiio['strength_overall_home'] + ssuiio['strength_attack_home'] - ssuiio['strength_defence_home']
-) * 2.5
-
-ssuiio['opponent_strength_weight'] = (
-    ssuiio['strength_overall_away_opponent'] + ssuiio['strength_attack_away_opponent'] - ssuiio['strength_defence_away_opponent']
-)
-
-# 3. Strength ratio for home/away adjustment
-ssuiio['strength_weight'] = ssuiio['team_strength_weight'] / ssuiio['opponent_strength_weight']
-
-# 4. Combined Home/Away and Strength Weight
-ssuiio['combined_weight'] = ssuiio['home_away_weight'] * ssuiio['strength_weight']
-
-# 5. Kickoff Time Weight
-ssuiio['kickoff_time'] = pd.to_datetime(ssuiio['kickoff_time'])
-
-def assign_time_weight(kickoff_time):
-    # Adjust time weight based on the kickoff time of the match
-    if 6 <= kickoff_time.day < 12:
-        return 2.5  # Morning games tend to have lower energy
-    elif 12 <= kickoff_time.day < 18:
-        return 2  # Standard midday games
-    elif 18 <= kickoff_time.day < 22:
-        return 0.9  # Evening games often see more action
-    else:
-        return 1  # Late-night games may see more relaxed performances
-
-# Apply the function to 'kickoff_time'
-ssuiio['time_weight'] = ssuiio['kickoff_time'].apply(assign_time_weight)
-
-# 6. Transfer Activity Weights
-ssuiio['transfer_weight'] = ssuiio['Tran_In'] / (ssuiio['Tran_In'] + ssuiio['Tran_Out'] + 1)
-
-# 7. SB (Selected by) Weight
-ssuiio['sb_weight'] = ssuiio['SB'] / ssuiio['SB'].max()  # Normalize by max value to prevent extreme outliers
-
-# 8. ICT (Influence, Creativity, and Threat Index)
-ssuiio['ict_weight'] = ssuiio['ICT'] / ssuiio['ICT'].max()  # Normalize ICT index
-
-# 9. Penalty Risk Weight (for players who are more likely to be involved in penalties)
-ssuiio['penalty_risk_weight'] = (ssuiio['Pen_Miss'] + ssuiio['Pen_Save']) / (ssuiio['Pen_Miss'] + ssuiio['Pen_Save'] + 1)
-
-# 10. Opponent Difficulty Weight (based on the opponent's defensive strength)
-ssuiio['opponent_difficulty_weight'] = ssuiio['strength_defence_away_opponent'] + ssuiio['strength_defence_home_opponent']
-
-# 11. Minutes Played Weight (More minutes played generally means more opportunities for points)
-ssuiio['minutes_weight'] = ssuiio['Mins'] / ssuiio['Mins'].max()  # Normalize by max value to prevent extreme outliers
-
-# 12. Final Weight Calculation (Without Position Weight)
-ssuiio['final_weight'] = (
-    ssuiio['home_away_weight'] *
-    ssuiio['time_weight'] *
-    ssuiio['strength_weight'] *
-    ssuiio['transfer_weight'] *
-    ssuiio['penalty_risk_weight'] *
-    ssuiio['sb_weight'] *
-    ssuiio['ict_weight'] *
-    ssuiio['opponent_difficulty_weight'] *
-    ssuiio['minutes_weight']
-)
-
 
 XX = ssuiio[features]
 model_path="./Vis/pages/Prediction/xgb_model.joblib"

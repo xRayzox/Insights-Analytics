@@ -10,12 +10,18 @@ import joblib
 import time
 import subprocess
 import os
+from sklearn.feature_selection import RFE
 import joblib
 import optuna
 from xgboost import XGBRegressor
 from sklearn.model_selection import train_test_split, cross_val_score, KFold
 from sklearn.metrics import mean_squared_error
 import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from xgboost import XGBRegressor
+from sklearn.metrics import mean_squared_error
+from sklearn.preprocessing import StandardScaler
 
 cwd = os.getcwd()
 # Construct the full path to the 'FPL' directory
@@ -609,88 +615,38 @@ def train_and_save_model(X, y, model_path="./Vis/pages/Prediction/xgb_model.jobl
         return model
 
 
-# 1. Home/Away Game Weights
-home_weight = 2.5  # Home game weight
-away_weight = 1.0  # Away game weight
-X_weighted['home_away_weight'] = X_weighted['was_home'].map({True: home_weight, False: away_weight})
 
-# 2. Team and Opponent Strength Weights
-X_weighted['team_strength_weight'] = (
-    X_weighted['strength_overall_home'] + X_weighted['strength_attack_home'] - X_weighted['strength_defence_home']
-) * 2.5 
-
-X_weighted['opponent_strength_weight'] = (
-    X_weighted['strength_overall_away_opponent'] + X_weighted['strength_attack_away_opponent'] - X_weighted['strength_defence_away_opponent']
-)
-
-# 3. Strength ratio for home/away adjustment
-X_weighted['strength_weight'] = X_weighted['team_strength_weight'] / X_weighted['opponent_strength_weight']
-
-# 4. Combined Home/Away and Strength Weight
-X_weighted['combined_weight'] = X_weighted['home_away_weight'] * X_weighted['strength_weight']
-
-# 5. Kickoff Time Weight
-X_weighted['kickoff_time'] = pd.to_datetime(X_weighted['kickoff_time'])
-
-def assign_time_weight(kickoff_time):
-    # Adjust time weight based on the kickoff time of the match
-    if 6 <= kickoff_time.day < 12:
-        return 2.5  # Morning games tend to have lower energy
-    elif 12 <= kickoff_time.day < 18:
-        return 2  # Standard midday games
-    elif 18 <= kickoff_time.day < 22:
-        return 0.9  # Evening games often see more action
-    else:
-        return 1  # Late-night games may see more relaxed performances
-
-# Apply the function to 'kickoff_time'
-X_weighted['time_weight'] = X_weighted['kickoff_time'].apply(assign_time_weight)
-
-# 6. Transfer Activity Weights
-X_weighted['transfer_weight'] = X_weighted['Tran_In'] / (X_weighted['Tran_In'] + X_weighted['Tran_Out'] + 1)
-
-# 7. SB (Selected by) Weight
-X_weighted['sb_weight'] = X_weighted['SB'] / X_weighted['SB'].max()  # Normalize by max value to prevent extreme outliers
-
-# 8. ICT (Influence, Creativity, and Threat Index)
-X_weighted['ict_weight'] = X_weighted['ICT'] / X_weighted['ICT'].max()  # Normalize ICT index
-
-# 9. Penalty Risk Weight (for players who are more likely to be involved in penalties)
-X_weighted['penalty_risk_weight'] = (X_weighted['Pen_Miss'] + X_weighted['Pen_Save']) / (X_weighted['Pen_Miss'] + X_weighted['Pen_Save'] + 1)
-
-# 10. Opponent Difficulty Weight (based on the opponent's defensive strength)
-X_weighted['opponent_difficulty_weight'] = X_weighted['strength_defence_away_opponent'] + X_weighted['strength_defence_home_opponent']
-
-# 11. Minutes Played Weight (More minutes played generally means more opportunities for points)
-X_weighted['minutes_weight'] = X_weighted['Mins'] / X_weighted['Mins'].max()  # Normalize by max value to prevent extreme outliers
-
-# 12. Final Weight Calculation (Without Position Weight)
-X_weighted['final_weight'] = (
-    X_weighted['home_away_weight'] *
-    X_weighted['time_weight'] *
-    X_weighted['strength_weight'] *
-    X_weighted['transfer_weight'] *
-    X_weighted['penalty_risk_weight'] *
-    X_weighted['sb_weight'] *
-    X_weighted['ict_weight'] *
-    X_weighted['opponent_difficulty_weight'] *
-    X_weighted['minutes_weight']
-)
-
-features = [
-    'GW', 'Mins', 'xG', 'xA', 'xGI','xGC', 'Pen_Save', 
-     'B', 'BPS', 'Price', 'I', 'C', 'T', 'ICT', 'SB', 'Tran_In', 'Tran_Out', 
-    'was_home', 'strength_overall_home', 'strength_overall_away', 'strength_attack_home', 
-    'strength_attack_away', 'strength_defence_home', 'strength_defence_away', 'strength_overall_home_opponent', 
-    'strength_overall_away_opponent', 'strength_attack_home_opponent', 'strength_attack_away_opponent', 
-    'strength_defence_home_opponent', 'strength_defence_away_opponent', 'Team_fdr', 'opponent_fdr', 
-    'season', 'home_away_weight', 'time_weight', 'strength_weight', 'final_weight', 'transfer_weight', 
-    'opponent_difficulty_weight', 'penalty_risk_weight', 'minutes_weight'
+# Step 1: Select features for prediction
+selected_features = [
+    'GW', 'kickoff_time', 'vs', 'Mins', 'GS', 'xG', 'A', 'xA', 'xGI',
+    'Pen_Miss', 'CS', 'GC', 'xGC', 'OG', 'Pen_Save', 'S', 'YC', 'RC', 'B',
+    'BPS', 'Price', 'I', 'C', 'T', 'ICT', 'SB', 'Tran_In', 'Tran_Out',
+    'was_home', 'Pos', 'Team_player', 'Player', 'strength_overall_home',
+    'strength_overall_away', 'strength_attack_home', 'strength_attack_away',
+    'strength_defence_home', 'strength_defence_away',
+    'strength_overall_home_opponent', 'strength_overall_away_opponent',
+    'strength_attack_home_opponent', 'strength_attack_away_opponent',
+    'strength_defence_home_opponent', 'strength_defence_away_opponent',
+    'Team_fdr', 'opponent_fdr', 'season'
 ]
 
-X = X_weighted[features]
-y = X_weighted['Pts']
+# Ensure your data contains these columns
+df = X_weighted[selected_features + ['Pts']]  # Include the target variable 'Pts'
+df.dtypes
+# Step 2: Handle missing values
+df = df.dropna()  # Drop rows with missing values, or use imputation if needed
 
+# Step 3: Encode categorical variables
+df = pd.get_dummies(df, columns=['Pos', 'Team_player','vs','Player','kickoff_time'], drop_first=True)
+
+# Step 4: Scale the numerical features
+scaler = StandardScaler()
+numerical_features = df.select_dtypes(include=['float64', 'int64']).columns
+df[numerical_features] = scaler.fit_transform(df[numerical_features])
+
+# Step 5: Split the data into training and testing sets
+X = df.drop(columns='Pts')
+y = df['Pts']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 best_model = train_and_save_model(X_train, y_train)
 
