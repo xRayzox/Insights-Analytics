@@ -739,7 +739,7 @@ def load_image(player_code):
         img = Image.open(BytesIO(response.content))  # Open the image
         return img
     except Exception as e:
-        st.error(f"Error loading image from {url}: {e}")
+        st.error(f"Error loading image from {player_code}: {e}")
         return None
 
 
