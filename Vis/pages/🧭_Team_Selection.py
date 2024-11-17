@@ -773,6 +773,44 @@ positions = {
     'FWD': pitch_length - zone_height
 }
 
+def draw_player_details(ax, row, x_image, y_image):
+    player_name = row.Player  # Access using attribute-style access
+    gwp_points = row.selected_by_percent
+
+    # Create text bounding box for player name only once
+    tp_name = TextPath((0, 0), player_name, size=2)
+    rect_width = tp_name.get_extents().width  # Width of text bounding box
+    rect_height = 1
+
+    # Draw Player Name Rectangle
+    name_rect = FancyBboxPatch(
+    (x_image - rect_width / 2, y_image - rect_height - 5),
+                    rect_width,
+                    rect_height,
+                    facecolor='white',
+                    edgecolor='white',
+                    linewidth=1,
+                    alpha=0.8
+                )
+    ax.add_patch(name_rect)
+
+                # Draw GWP Rectangle
+    gwp_rect_y = y_image - rect_height - 7  # Adjust y position for GWP rectangle
+    gwp_rect = FancyBboxPatch(
+                    (x_image - rect_width / 2, gwp_rect_y),
+                    rect_width,
+                    rect_height,
+                    facecolor=(55 / 255, 0 / 255, 60 / 255),
+                    edgecolor='white',
+                    linewidth=1,
+                    alpha=0.9
+                )
+    ax.add_patch(gwp_rect)
+
+                # Add Text for GWP Points and Player Name
+    ax.text(x_image, gwp_rect_y + rect_height / 2, f"{gwp_points}", fontsize=7, ha='center', color='white', va='center') 
+    ax.text(x_image, y_image - rect_height - 5 + rect_height / 2, player_name, fontsize=7, ha='center', color='black', va='center')
+
 # Function to draw player images and details
 def draw_players(df, positions, ax, pitch):
     # Preload all player images to avoid reloading within the loop
@@ -799,44 +837,6 @@ def draw_players(df, positions, ax, pitch):
             # Draw player's name and GWP points
             draw_player_details(ax, row, x_image, y_image)
 
-# Optimized Function to Draw Player Details
-def draw_player_details(ax, row, x_image, y_image):
-    player_name = row.Player  # Access using attribute-style access
-    gwp_points = row.selected_by_percent
-
-    # Create text bounding box for player name only once
-    tp_name = TextPath((0, 0), player_name, size=2)
-    rect_width = tp_name.get_extents().width  # Width of text bounding box
-    rect_height = 1
-
-    # Draw Player Name Rectangle
-    name_rect = FancyBboxPatch(
-        (x_image - rect_width / 2, y_image - rect_height - 5),
-        rect_width,
-        rect_height,
-        facecolor='white',
-        edgecolor='white',
-        linewidth=1,
-        alpha=0.8
-    )
-    ax.add_patch(name_rect)
-
-    # Draw GWP Rectangle
-    gwp_rect_y = y_image - rect_height - 7  # Adjust y position for GWP rectangle
-    gwp_rect = FancyBboxPatch(
-        (x_image - rect_width / 2, gwp_rect_y),
-        rect_width,
-        rect_height,
-        facecolor=(55 / 255, 0 / 255, 60 / 255),
-        edgecolor='white',
-        linewidth=1,
-        alpha=0.9
-    )
-    ax.add_patch(gwp_rect)
-
-    # Add Text for GWP Points and Player Name
-    ax.text(x_image, gwp_rect_y + rect_height / 2, f"{gwp_points}", fontsize=7, ha='center', color='white', va='center') 
-    ax.text(x_image, y_image - rect_height - 5 + rect_height / 2, player_name, fontsize=7, ha='center', color='black', va='center')
 
 # Draw players who played
 draw_players(combined_players, positions, ax, pitch)
