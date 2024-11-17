@@ -782,7 +782,8 @@ import textwrap
 
 def draw_player_details(ax, row, x_image, y_image, max_name_length=15):
     player_name = row.web_name  # Access player name
-    gwp_points = row.prediction  # Access GWP points
+    gwp_points = row.selected_by_percent  # Access GWP points
+    vs_name = row.vs
 
     # Wrap player name if it's too long
     wrapped_name = textwrap.fill(player_name, width=max_name_length)
@@ -818,7 +819,7 @@ def draw_player_details(ax, row, x_image, y_image, max_name_length=15):
     ax.add_patch(gwp_rect)
 
     # Add Text for GWP Points and Player Name
-    ax.text(x_image, gwp_rect_y + rect_height / 2, f"{gwp_points}", fontsize=7, ha='center', color='white', va='center')
+    ax.text(x_image, gwp_rect_y + rect_height / 2, f"{vs_name}|{gwp_points}", fontsize=7, ha='center', color='white', va='center')
     
     # Split the wrapped name into multiple lines and center them
     name_lines = wrapped_name.split('\n')
