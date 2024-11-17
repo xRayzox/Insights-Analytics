@@ -785,6 +785,8 @@ import textwrap
 def draw_player_details(ax, row, x_image, y_image, max_name_length=15):
     player_name = row.web_name  # Access player name
     gwp_points = row.selected_by_percent  # Access GWP points
+    if row.Role== 'Captain':
+                pitch.inset_image(1, 1, './data/captain.png', height=4, ax=ax)  # Adjust height as needed
 
     # Wrap player name if it's too long
     wrapped_name = textwrap.fill(player_name, width=max_name_length)
@@ -850,9 +852,7 @@ def draw_players(df, positions, ax, pitch):
 
             # Draw the player image on the pitch
             pitch.inset_image(y_image, x_image, image, height=9, ax=ax)
-            # If this player is the captain, overlay the captain icon
-            if row['Role'] == 'Captain':
-                pitch.inset_image(1, 1, './data/captain.png', height=4, ax=ax)  # Adjust height as needed
+            
 
             # Draw player's name and GWP points
             draw_player_details(ax, row, x_image, y_image)
