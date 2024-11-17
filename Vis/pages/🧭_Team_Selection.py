@@ -537,7 +537,6 @@ selected_features = [
 from sklearn.preprocessing import StandardScaler, LabelEncoder, OneHotEncoder
 # Ensure you have the necessary columns in your dataframe
 ssuiio = df_next_fixt_gw  # Make sure df_next_fixt_gw is correctly defined
-selected_features = ['feature1', 'feature2', 'feature3']  # Define your selected features properly
 
 # Ensure the target variable 'Pts' is in the dataframe
 df = ssuiio[selected_features + ['Pts']]
