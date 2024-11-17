@@ -106,7 +106,7 @@ def get_cached_player_data(player_id):
 def get_cached_fixt_dfs():
     return get_fixt_dfs()
 # Streamlit UI Components
-st.title("Fantasy Premier League Data")
+st.title("Team Selection Fantasy premier league")
 
 # Fetching and processing data
 ele_copy, team_name_mapping,teams_df = process_player_data()
@@ -323,8 +323,11 @@ for col in columns_to_convert:
 # Add season information for filtering purposes
 merged_opponent['season'] = 2425
 
+selected_gw = st.slider('Select Gameweek:', ct_gw, ct_gw+3, ct_gw) 
+st.markdown(f"### Recommended Lineup for gameweek {selected_gw}:")
+
 # Filter fixtures for the current gameweek
-next_fixture_gw = fixtures_df[fixtures_df['event'] == ct_gw]
+next_fixture_gw = fixtures_df[fixtures_df['event'] == selected_gw]
 
 # Merge fixture data with team information for team_a
 new_fix_gw_a = pd.merge(
@@ -719,9 +722,8 @@ for player in substitutes:
 # Combine both lists into a single DataFrame
 combined_players = pd.DataFrame(starting_data + substitute_data)
 
-# Display the combined DataFrame using Streamlit
-st.markdown("### Recommended Lineup (Starting + Substitutes):")
-st.write(combined_players)
+
+
 
 
 
