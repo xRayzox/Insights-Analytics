@@ -753,7 +753,7 @@ pitch = VerticalPitch(
     stripe=True,
     corner_arcs=True,
     half=True,
-    pad_bottom=10
+    pad_bottom=8
 )
 
 fig, ax = pitch.draw(figsize=fig_size, tight_layout=False)  # Draw the pitch
