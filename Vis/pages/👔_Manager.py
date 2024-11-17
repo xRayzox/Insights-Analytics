@@ -159,7 +159,7 @@ with col1:
         except ValueError:
             st.write('Please enter a valid FPL ID.')
 ###############################################################################################################
-@st.cache_data(persist="disk")
+@st.cache_resource
 def load_image(url):
     """Load an image from a URL and cache it."""
     try:
@@ -346,32 +346,43 @@ with col5:
             )
             
             # Function to draw player images and details
-            def draw_players(df, positions,ax, pitch):
-                for index, row in df.iterrows():
-                    IMAGE_URL = row['code']
-                    image = load_image(IMAGE_URL)
-                    pos = row['Pos']
-                    num_players = len(df[df['Pos'] == pos])  # Number of players in this position
+            def draw_players(df, positions, ax, pitch):
+                # Preload all player images to avoid reloading within the loop
+                player_images = {row['code']: load_image(row['code']) for _, row in df.iterrows()}
+                
+                # Group players by their positions
+                grouped_by_position = df.groupby('Pos')
+                
+                for pos, group in grouped_by_position:
+                    num_players = len(group)  # Number of players in this position
                     y_image = positions[pos]
-                    x_image = (pitch_width / (num_players + 1)) * (index % num_players + 1) if num_players > 1 else pitch_width / 2
+                    
+                    # Precompute x positions for this group of players
+                    x_positions = [(pitch_width / (num_players + 1)) * (i + 1) if num_players > 1 else pitch_width / 2 for i in range(num_players)]
+                    
+                    # Loop through the group and place images
+                    for index, (i, row) in enumerate(group.iterrows()):
+                        image = player_images[row['code']]
+                        x_image = x_positions[index]
 
-                    # Draw the player image on the pitch
-                    pitch.inset_image(y_image, x_image, image, height=9, ax=ax)
+                        # Draw the player image on the pitch
+                        pitch.inset_image(y_image, x_image, image, height=9, ax=ax)
 
-                    # Draw player's name and GWP points
-                    draw_player_details(ax, row, x_image, y_image)
+                        # Draw player's name and GWP points
+                        draw_player_details(ax, row, x_image, y_image)
             
-            # Function to draw player details
+            # Optimized Function to Draw Player Details
             def draw_player_details(ax, row, x_image, y_image):
                 player_name = row.Player  # Access using attribute-style access
-                gwp_points = row.GWP  
+                gwp_points = row.GWP
 
-                # Draw player's name rectangle
-                tp = TextPath((0, 0), player_name, size=2)
-                rect_width = tp.get_extents().width  # Width of text bounding box
+                # Create text bounding box for player name only once
+                tp_name = TextPath((0, 0), player_name, size=2)
+                rect_width = tp_name.get_extents().width  # Width of text bounding box
                 rect_height = 1
 
-                rounded_rect = FancyBboxPatch(
+                # Draw Player Name Rectangle
+                name_rect = FancyBboxPatch(
                     (x_image - rect_width / 2, y_image - rect_height - 5),
                     rect_width,
                     rect_height,
@@ -380,9 +391,9 @@ with col5:
                     linewidth=1,
                     alpha=0.8
                 )
-                ax.add_patch(rounded_rect)
+                ax.add_patch(name_rect)
 
-                # Draw GWP rectangle
+                # Draw GWP Rectangle
                 gwp_rect_y = y_image - rect_height - 7  # Adjust y position for GWP rectangle
                 gwp_rect = FancyBboxPatch(
                     (x_image - rect_width / 2, gwp_rect_y),
@@ -395,12 +406,13 @@ with col5:
                 )
                 ax.add_patch(gwp_rect)
 
-                # Add text for GWP points and player name
+                # Add Text for GWP Points and Player Name
                 ax.text(x_image, gwp_rect_y + rect_height / 2, f"{gwp_points}", fontsize=7, ha='center', color='white', va='center') 
                 ax.text(x_image, y_image - rect_height - 5 + rect_height / 2, player_name, fontsize=7, ha='center', color='black', va='center')
 
             # Draw players who played
-            draw_players(df, positions,ax,pitch)
+            draw_players(df, positions, ax, pitch)
+
 
             ############################### Bench Players ##################
             df_bench = test[test['Played'] == False]  # Bench players
@@ -428,24 +440,30 @@ with col5:
             bench_slots = 4
             slot_width = bench_width / bench_slots
             
-            # Function to draw bench players
-            def draw_bench_players(df_bench,ax,pitch):
+            # Optimized Function to Draw Bench Players
+            def draw_bench_players(df_bench, ax, pitch):
+                # Preload all bench player images to avoid reloading
+                bench_player_images = {row.code: load_image(row.code) for row in df_bench.itertuples()}
+                
+                # Calculate x and y positions for all bench players at once
+                num_bench_players = len(df_bench)
+                x_positions = [bench_x + (slot_width * (i + 0.5)) for i in range(num_bench_players)]
+                y_bench = bench_y + (bench_height / 2) + 2  # Constant y position for all bench players
+                
+                # Loop through the bench players
                 for i, row in enumerate(df_bench.itertuples()):
-                    IMAGE_URL = row.code  # Access using attribute-style access
-                    image = load_image(IMAGE_URL)
-
-                    # Calculate x position for bench players
-                    x_bench = bench_x + (slot_width * (i + 0.5))
-                    y_bench = bench_y + (bench_height / 2) + 2
+                    image = bench_player_images[row.code]
+                    x_bench = x_positions[i]
 
                     # Place player images in the bench area
-                    pitch.inset_image(y_bench, x_bench, image, height=9, ax=ax)  # Smaller image size for bench players
+                    pitch.inset_image(y_bench, x_bench, image, height=9, ax=ax)
 
-                    # Draw player details on bench
+                    # Draw player details on the bench
                     draw_player_details(ax, row, x_bench, y_bench)
 
             # Draw bench players
-            draw_bench_players(df_bench,ax,pitch)
+            draw_bench_players(df_bench, ax, pitch)
+
 
 
             st.pyplot(fig)
