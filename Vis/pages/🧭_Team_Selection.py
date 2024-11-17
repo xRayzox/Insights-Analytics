@@ -565,7 +565,7 @@ best_model = joblib.load(model_path)
 
 # Make predictions using the model
 predictions = best_model.predict(XX)
-
+ssuiio=ssuiio[selected_features]
 # Add predictions to the original dataframe ssuiio
 ssuiio['prediction'] = predictions
 
