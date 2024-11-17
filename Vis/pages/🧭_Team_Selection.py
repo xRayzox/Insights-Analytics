@@ -824,10 +824,7 @@ def draw_player_details(ax, row, x_image, y_image, max_name_length=15):
     # Add Text for GWP Points and Player Name
     ax.text(x_image, gwp_rect_y + rect_height / 2, f"{gwp_points}", fontsize=7, ha='center', color='white', va='center')
     
-    x_imageeeee = Image.open('./data/captain.png')  # Open the image file
 
-    if row.Role == 'Captain':
-        pitch.inset_image(x_image, gwp_rect, x_imageeeee, height=4, ax=ax)  # Use the actual image object
     # Split the wrapped name into multiple lines and center them
     name_lines = wrapped_name.split('\n')
     y_offset = y_image - rect_height - 5 + rect_height / 2
@@ -854,9 +851,14 @@ def draw_players(df, positions, ax, pitch):
             image = player_images[row['code']]
             x_image = x_positions[index]
 
+
+            
             # Draw the player image on the pitch
             pitch.inset_image(y_image, x_image, image, height=9, ax=ax)
             
+
+            if row.Role== 'Captain':
+                pitch.inset_image(x_image, y_image, './data/captain.png', height=4, ax=ax)  # Adjust height as needed
 
             # Draw player's name and GWP points
             draw_player_details(ax, row, x_image, y_image)
