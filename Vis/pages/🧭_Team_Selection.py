@@ -852,7 +852,7 @@ def draw_players(df, positions, ax, pitch):
             pitch.inset_image(y_image, x_image, image, height=9, ax=ax)
             # If this player is the captain, overlay the captain icon
             if row['Role'] == 'Captain':
-                pitch.inset_image(y_image, x_image, './data/captain.png', height=4, ax=ax)  # Adjust height as needed
+                pitch.inset_image(1, 1, './data/captain.png', height=4, ax=ax)  # Adjust height as needed
 
             # Draw player's name and GWP points
             draw_player_details(ax, row, x_image, y_image)
