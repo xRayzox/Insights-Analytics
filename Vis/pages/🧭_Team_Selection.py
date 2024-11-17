@@ -535,35 +535,40 @@ selected_features = [
 
 
 from sklearn.preprocessing import StandardScaler, LabelEncoder, OneHotEncoder
-ssuiio=df_next_fixt_gw
-# Ensure your data contains these columns
-df = ssuiio[selected_features + ['Pts']]  # Include the target variable 'Pts'
-df.dtypes
-# Step 2: Handle missing values
-df = df.dropna()  # Drop rows with missing values, or use imputation if needed
+# Ensure you have the necessary columns in your dataframe
+ssuiio = df_next_fixt_gw  # Make sure df_next_fixt_gw is correctly defined
+selected_features = ['feature1', 'feature2', 'feature3']  # Define your selected features properly
 
-# Step 3: Encode categorical variables
+# Ensure the target variable 'Pts' is in the dataframe
+df = ssuiio[selected_features + ['Pts']]
+
+# Handle missing values: Drop rows with missing values (or impute if necessary)
+df = df.dropna()
+
+# Encode categorical variables using LabelEncoder
 label_encoder = LabelEncoder()
-
-# Apply LabelEncoder to categorical columns
 df['Pos'] = label_encoder.fit_transform(df['Pos'])
 df['Team_player'] = label_encoder.fit_transform(df['Team_player'])
 df['vs'] = label_encoder.fit_transform(df['vs'])
 df['Player'] = label_encoder.fit_transform(df['Player'])
 
-# Step 4: Scale the numerical features
+# Scale the numerical features using StandardScaler
 scaler = StandardScaler()
 numerical_features = df.select_dtypes(include=['float64', 'int64']).columns
 df[numerical_features] = scaler.fit_transform(df[numerical_features])
 
-# Step 5: Split the data into training and testing sets
+# Split the data into features (XX) and target ('Pts')
 XX = df.drop(columns='Pts')
 
-model_path="./Vis/pages/Prediction/xgb_model.joblib"
+# Load the pre-trained model
+model_path = "./Vis/pages/Prediction/xgb_model.joblib"
 best_model = joblib.load(model_path)
-azdazdazd=best_model.predict(XX)
-ssuiio['prediction']=azdazdazd
 
+# Make predictions using the model
+predictions = best_model.predict(XX)
+
+# Add predictions to the original dataframe ssuiio
+ssuiio['prediction'] = predictions
 
 
 
