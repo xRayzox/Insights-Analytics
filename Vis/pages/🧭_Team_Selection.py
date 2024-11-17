@@ -537,6 +537,8 @@ features = [
 
 ssuiio=df_next_fixt_gw
 df = pd.get_dummies(ssuiio, columns=['Pos', 'Team_player','vs','Player','kickoff_time'], drop_first=True)
+
+st.write(df.columns)
 # Step 4: Scale the numerical features
 scaler = StandardScaler()
 numerical_features = df.select_dtypes(include=['float64', 'int64']).columns
