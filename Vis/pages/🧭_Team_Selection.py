@@ -702,13 +702,13 @@ substitute_data = []
 
 # Add data for starting players
 for player in starting_players:
-    player_data = ssuiio.loc[player, ['Player', 'Pos', 'prediction', 'Price', 'Team_player']]
+    player_data = ssuiio.loc[player, ['Player', 'Pos', 'prediction', 'Price', 'Team_player','code']]
     player_data['Role'] = 'Starting'
     starting_data.append(player_data)
 
 # Add data for substitutes
 for player in substitutes:
-    player_data = ssuiio.loc[player, ['Player', 'Pos', 'prediction', 'Price', 'Team_player']]
+    player_data = ssuiio.loc[player, ['Player', 'Pos', 'prediction', 'Price', 'Team_player','code']]
     player_data['Role'] = 'Substitute'
     substitute_data.append(player_data)
 
@@ -833,8 +833,6 @@ def draw_player_details(ax, row, x_image, y_image):
 
 # Draw players who played
 draw_players(combined_players, positions, ax, pitch)
-
-
 
 st.pyplot(fig)
 
