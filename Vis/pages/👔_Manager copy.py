@@ -335,7 +335,7 @@ with col5:
                     x_start = img_width * margin_factor
                     x_end = img_width * (1 - margin_factor)
                     x_range = x_end - x_start 
-                    x_image = x_start + (x_range / (num_players + 1)) * (index % num_players + 1) if num_players > 1 else img_width / 2
+                    x_image = x_start + (x_range / (num_players + 1)) * (index % num_players + 1)*0.1 if num_players > 1 else img_width / 2
 
                     # Place player image on the background
                     player_image = OffsetImage(image, zoom=0.1)  # Adjust zoom as needed
