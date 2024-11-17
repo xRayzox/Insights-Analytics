@@ -696,7 +696,7 @@ substitutes = [i for i in players if sub_vars[i].varValue == 1]
 captain = [i for i in players if captain_vars[i].varValue == 1][0]
 
 
-st.write(starting_players[['code']])
+st.write(starting_players)
 # Print the recommended players
 st.markdown("### Recommended Starting 11:")
 for player in starting_players:
