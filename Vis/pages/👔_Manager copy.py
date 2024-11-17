@@ -339,7 +339,7 @@ with col5:
                     pos = row['Pos']
                     num_players = len(df[df['Pos'] == pos])  # Number of players in this position
                     y_image = positions[pos]
-                    x_image = (img_width - 10 / (num_players + 1)) * (index % num_players + 1)  if num_players > 1 else img_width / 2
+                    x_image = (img_width / (num_players + 1)) * (index % num_players + 1)  if num_players > 1 else img_width / 2
 
                     # Place player image on the background
                     player_image = OffsetImage(image, zoom=0.1)  # Adjust zoom as needed
