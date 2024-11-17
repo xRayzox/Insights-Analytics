@@ -330,8 +330,6 @@ with col5:
                 'MID': pitch_length - 1 / 3 * zone_height,
                 'FWD': pitch_length - zone_height
             }
-
-            # Draw players
             def draw_players(df, positions, ax, img_width):
                 for index, row in df.iterrows():
                     IMAGE_URL = row['code']
@@ -339,7 +337,13 @@ with col5:
                     pos = row['Pos']
                     num_players = len(df[df['Pos'] == pos])  # Number of players in this position
                     y_image = positions[pos]
-                    x_image = (img_width / (num_players + 1)) * (index % num_players + 1)  if num_players > 1 else img_width / 2
+                    
+                    # Adjust horizontal spacing for players in the same position
+                    margin_factor = 0.1  # Adjust this to reduce spacing
+                    x_start = img_width * margin_factor
+                    x_end = img_width * (1 - margin_factor)
+                    x_range = x_end - x_start
+                    x_image = x_start + (x_range / (num_players + 1)) * (index % num_players + 1) if num_players > 1 else img_width / 2
 
                     # Place player image on the background
                     player_image = OffsetImage(image, zoom=0.1)  # Adjust zoom as needed
