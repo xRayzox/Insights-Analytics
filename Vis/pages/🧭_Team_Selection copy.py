@@ -707,7 +707,7 @@ substitute_data = []
 
 # Add data for starting players
 for player in starting_players:
-    player_data = ssuiio.loc[player, ['Player', 'Pos', 'prediction', 'Price', 'Team_player', 'code', 'selected_by_percent', 'web_name','vs']]
+    player_data = ssuiio.loc[player, ['Player','Pts', 'Pos', 'prediction', 'Price', 'Team_player', 'code', 'selected_by_percent', 'web_name','vs']]
     # If player is captain, set role as 'Captain'
     if player == captain:
         player_data['Role'] = 'Captain'
@@ -717,7 +717,7 @@ for player in starting_players:
 
 # Add data for substitutes
 for player in substitutes:
-    player_data = ssuiio.loc[player, ['Player', 'Pos', 'prediction', 'Price', 'Team_player', 'code', 'selected_by_percent', 'web_name','vs']]
+    player_data = ssuiio.loc[player, ['Player','Pts', 'Pos', 'prediction', 'Price', 'Team_player', 'code', 'selected_by_percent', 'web_name','vs']]
     player_data['Role'] = 'Substitute'
     substitute_data.append(player_data)
 
@@ -788,8 +788,8 @@ import textwrap
 
 def draw_player_details(ax, row, x_image, y_image, max_name_length=15):
     player_name = row.web_name  # Access player name
-    gwp_points = row.selected_by_percent  # Access GWP points
-    vs_name = row.vs
+    gwp_points = row.prediction  # Access GWP points
+    vs_name = row.Pts
 
     # Wrap player name if it's too long
     wrapped_name = textwrap.fill(player_name, width=max_name_length)
