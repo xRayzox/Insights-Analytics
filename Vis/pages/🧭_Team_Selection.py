@@ -532,8 +532,6 @@ selected_features = [
     'Team_fdr', 'opponent_fdr', 'season'
 ]
 
-
-
 from sklearn.preprocessing import StandardScaler, LabelEncoder, OneHotEncoder
 # Ensure you have the necessary columns in your dataframe
 ssuiio = df_next_fixt_gw  # Make sure df_next_fixt_gw is correctly defined
