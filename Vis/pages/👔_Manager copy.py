@@ -339,7 +339,7 @@ with col5:
                     y_image = positions[pos]
                     
                     # Adjust horizontal spacing for players in the same position
-                    margin_factor = 0.1  # Adjust this to reduce spacing
+                    margin_factor = 0.9  # Adjust this to reduce spacing
                     x_start = img_width * margin_factor
                     x_end = img_width * (1 - margin_factor)
                     x_range = x_end - x_start
