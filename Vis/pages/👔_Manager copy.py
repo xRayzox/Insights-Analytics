@@ -197,7 +197,7 @@ with col2:
         st.dataframe(hist_df)
 #############################################################################
 
-col4,col5,col6 = st.columns([0,500,0])
+col4,col5,col6 = st.columns([1,500,1])
 ############################################
 
 
@@ -304,7 +304,7 @@ with col5:
             img_width, img_height = background_img.size
 
             # Create figure and axis
-            fig, ax = plt.subplots(figsize=(40, 40))  # Adjust figure size as needed
+            fig, ax = plt.subplots(figsize=(10, 10))  # Adjust figure size as needed
             ax.imshow(background_img)
 
             # Set transparent background for Streamlit
