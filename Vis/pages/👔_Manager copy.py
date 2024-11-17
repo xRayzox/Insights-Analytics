@@ -296,33 +296,40 @@ with col5:
             # Read the image
             from PIL import Image
 
+            from PIL import Image
+            import matplotlib.pyplot as plt
+
             # Read the image
             background_img = Image.open("./data/Pitch.png")
 
             # Get original dimensions
             img_width, img_height = background_img.size
 
-            # Define new width and calculate the new height to maintain aspect ratio
-            new_width = int(img_width * 1.5)  # Increase width by 50%
-            new_height = int(img_height * (new_width / img_width))
+            # Define new dimensions (increase width by 50%)
+            new_width = int(img_width * 1.5)
+            new_height = int(img_height * 1.5)  # Ensure height scales proportionally
 
             # Resize the image
             resized_img = background_img.resize((new_width, new_height))
 
             # Create figure and axis
-            fig, ax = plt.subplots(figsize=(10, 10))
-            ax.imshow(resized_img)  # Display the new background image
+            fig, ax = plt.subplots(figsize=(10, 10))  # Adjust figure size as needed
+            ax.imshow(resized_img)  # Display the resized background image
 
-            # Transparent background for Streamlit
+            # Set transparent background for Streamlit
             fig.patch.set_alpha(0)
             ax.set_facecolor('none')
 
-            # Hide axes
+            # Hide axes for a clean display
             ax.axis('off')
 
-            # Replace pitch dimensions with background image dimensions
-            pitch_length = img_height
-            pitch_width = img_width
+            # Replace pitch dimensions with resized image dimensions
+            pitch_length = new_height  # Use the resized height
+            pitch_width = new_width  # Use the resized width
+
+            # Show the plot (for testing purposes)
+            plt.show()
+
 
             # Define placements for each position zone based on the new background
             zone_height = pitch_length / 6  # Adjust height zones for positions
