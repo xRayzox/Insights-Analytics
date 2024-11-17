@@ -786,7 +786,7 @@ def draw_player_details(ax, row, x_image, y_image, max_name_length=15):
     player_name = row.web_name  # Access player name
     gwp_points = row.selected_by_percent  # Access GWP points
     if row.Role== 'Captain':
-                pitch.inset_image(1, 1, './data/captain.png', height=4, ax=ax)  # Adjust height as needed
+        pitch.inset_image(1, 1, './data/captain.png', height=4, ax=ax)  # Adjust height as needed
 
     # Wrap player name if it's too long
     wrapped_name = textwrap.fill(player_name, width=max_name_length)
@@ -824,6 +824,8 @@ def draw_player_details(ax, row, x_image, y_image, max_name_length=15):
     # Add Text for GWP Points and Player Name
     ax.text(x_image, gwp_rect_y + rect_height / 2, f"{gwp_points}", fontsize=7, ha='center', color='white', va='center')
     
+    if row.Role== 'Captain':
+        pitch.inset_image(x_image, gwp_rect, './data/captain.png', height=4, ax=ax)  # Adjust height as needed
     # Split the wrapped name into multiple lines and center them
     name_lines = wrapped_name.split('\n')
     y_offset = y_image - rect_height - 5 + rect_height / 2
