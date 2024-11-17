@@ -159,7 +159,7 @@ with col1:
         except ValueError:
             st.write('Please enter a valid FPL ID.')
 ###############################################################################################################
-@st.cache_data(persist="disk")
+@st.cache_resource
 def load_image(url):
     """Load an image from a URL and cache it."""
     try:
@@ -277,14 +277,6 @@ with col5:
             
             # Reset index of the manager's team DataFrame
             test = manager_team_df.reset_index()
-
-
-
-            import matplotlib.image as mpimg
-            from matplotlib.patches import Circle
-
-            # Load the image
-            img = mpimg.imread("./data/Pitch.png")
 
             import matplotlib.pyplot as plt
             from matplotlib.patches import FancyBboxPatch
