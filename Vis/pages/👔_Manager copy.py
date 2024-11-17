@@ -310,7 +310,7 @@ with col5:
             resized_img = background_img.resize((new_width, new_height))
 
             # Create figure and axis
-            fig, ax = plt.subplots(figsize=(500, 500))
+            fig, ax = plt.subplots(figsize=(200, 200))
             ax.imshow(resized_img)  # Display the new background image
 
             # Transparent background for Streamlit
