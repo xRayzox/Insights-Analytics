@@ -856,7 +856,7 @@ def draw_players(df, positions, ax, pitch):
             # Draw the player image on the pitch
             pitch.inset_image(y_image, x_image, image, height=9, ax=ax)
             
-            pic=load_image("https://e7.pngegg.com/pngimages/506/864/png-clipart-captain-armband-premier-league-text-logo.png")
+            pic=Image.open('./data/captain.png')
             if row.Role== 'Captain':
                 pitch.inset_image(x_image, y_image, pic, height=4, ax=ax)  # Adjust height as needed
 
