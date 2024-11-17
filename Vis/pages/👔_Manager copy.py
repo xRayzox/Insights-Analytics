@@ -308,7 +308,7 @@ with col5:
             ax.imshow(background_img)
 
             # Set transparent background for Streamlit
-            fig.patch.set_alpha(0)
+            #fig.patch.set_alpha(0)
             ax.set_facecolor('none')
 
             # Hide axes for a clean display
