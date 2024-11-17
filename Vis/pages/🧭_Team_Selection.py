@@ -382,16 +382,20 @@ new_fix_gw_test = new_fix_gw[['event', 'team_h_short_name', 'team_a_short_name',
 )
 
 
-history_path= os.path.join(cwd, 'data', 'history', 'clean_player_2324.csv')
+history_path = os.path.join(cwd, 'data', 'history', 'clean_player_2324.csv')
+history_path2 = os.path.join(cwd, 'data', 'history', 'clean_player_2223.csv')
 
+# Read the CSV files into DataFrames
 player_history = pd.read_csv(history_path, index_col=0)
+player_history2 = pd.read_csv(history_path2, index_col=0)  # Correcting path for player_history2
 
+# Concatenate the dataframes (filtered_players and player_history)
+concatenated_df = pd.concat([filtered_players, player_history, player_history2], ignore_index=True)
 
-# Concatenating the dataframes vertically
-concatenated_df = pd.concat([filtered_players, player_history], ignore_index=True)
-
-# If you want to reset the index after concatenation
+# Reset the index after concatenation
 concatenated_df.reset_index(drop=True, inplace=True)
+
+
 
 
 new_fix_gw_test['season']=2425
