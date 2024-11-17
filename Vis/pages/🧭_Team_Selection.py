@@ -851,7 +851,9 @@ def draw_players(df, positions, ax, pitch):
 
             # Draw the player image on the pitch
             pitch.inset_image(y_image, x_image, image, height=9, ax=ax)
-
+            pic=Image.open('./data/captain.png')
+            if row.Role== 'Captain':
+                st.write(pic)
             # Draw player's name and GWP points
             draw_player_details(ax, row, x_image, y_image)
 
