@@ -782,7 +782,7 @@ import textwrap
 
 def draw_player_details(ax, row, x_image, y_image, max_name_length=15):
     player_name = row.web_name  # Access player name
-    gwp_points = row.selected_by_percent  # Access GWP points
+    gwp_points = row.prediction  # Access GWP points
 
     # Wrap player name if it's too long
     wrapped_name = textwrap.fill(player_name, width=max_name_length)
