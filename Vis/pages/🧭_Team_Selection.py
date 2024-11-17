@@ -24,7 +24,10 @@ import requests
 from functools import lru_cache
 from io import BytesIO
 
-
+from sklearn.model_selection import train_test_split
+from xgboost import XGBRegressor
+from sklearn.metrics import mean_squared_error
+from sklearn.preprocessing import StandardScaler
 
 cwd = os.getcwd()
 # Construct the full path to the 'FPL' directory
@@ -533,8 +536,15 @@ features = [
 
 
 ssuiio=df_next_fixt_gw
+df = pd.get_dummies(ssuiio, columns=['Pos', 'Team_player','vs','Player','kickoff_time'], drop_first=True)
+# Step 4: Scale the numerical features
+scaler = StandardScaler()
+numerical_features = df.select_dtypes(include=['float64', 'int64']).columns
+df[numerical_features] = scaler.fit_transform(df[numerical_features])
 
-XX = ssuiio[features]
+# Step 5: Split the data into training and testing sets
+XX = df.drop(columns='Pts')
+
 model_path="./Vis/pages/Prediction/xgb_model.joblib"
 best_model = joblib.load(model_path)
 azdazdazd=best_model.predict(XX)
