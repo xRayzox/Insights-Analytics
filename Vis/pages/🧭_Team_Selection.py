@@ -745,8 +745,122 @@ st.write(f"Total Predicted Points for Substitutes: {substitutes_predicted_points
 st.write(f"Overall Total Predicted Points: {starting_predicted_points_total + substitutes_predicted_points_total:.0f}")
 
 
+@st.cache_resource
+def load_image(url):
+    """Load an image from a URL and cache it."""
+    try:
+        # Fetch the image from the URL
+        response = requests.get(url, stream=True)
+        response.raise_for_status()  # Raise an error for bad responses
+        img = Image.open(BytesIO(response.content))  # Open the image
+        return img
+    except Exception as e:
+        st.error(f"Error loading image from {url}: {e}")
+        return None
+    
 
 
+# Define the figure size
+fig_size = (8, 8)  # Set to desired size (width, height)
+
+# Create a vertical pitch with specified size
+pitch = VerticalPitch(
+    pitch_color='grass',
+    line_color='white',
+    stripe=True,
+    corner_arcs=True,
+    half=True,
+    pad_bottom=20
+)
+
+fig, ax = pitch.draw(figsize=fig_size, tight_layout=False)  # Draw the pitch
+
+# Extract pitch dimensions from the figure
+pitch_length = fig.get_figheight() * 10  # Scaling factor
+pitch_width = fig.get_figwidth() * 10  # Scaling factor
+
+# Define placements for each position zone
+zone_height = pitch_length / 6  
+
+# Position calculations
+positions = {
+    'GKP': pitch_length + 2.7 * zone_height,
+    'DEF': pitch_length + 1.5 * zone_height,
+    'MID': pitch_length + 1/3 * zone_height,
+    'FWD': pitch_length - zone_height
+}
+
+# Function to draw player images and details
+def draw_players(df, positions, ax, pitch):
+    # Preload all player images to avoid reloading within the loop
+    player_images = {row['code']: load_image(row['code']) for _, row in df.iterrows()}
+    
+    # Group players by their positions
+    grouped_by_position = df.groupby('Pos')
+    
+    for pos, group in grouped_by_position:
+        num_players = len(group)  # Number of players in this position
+        y_image = positions[pos]
+        
+        # Precompute x positions for this group of players
+        x_positions = [(pitch_width / (num_players + 1)) * (i + 1) if num_players > 1 else pitch_width / 2 for i in range(num_players)]
+        
+        # Loop through the group and place images
+        for index, (i, row) in enumerate(group.iterrows()):
+            image = player_images[row['code']]
+            x_image = x_positions[index]
+
+    # Draw the player image on the pitch
+    pitch.inset_image(y_image, x_image, image, height=9, ax=ax)
+
+    # Draw player's name and GWP points
+    draw_player_details(ax, row, x_image, y_image)
+
+# Optimized Function to Draw Player Details
+def draw_player_details(ax, row, x_image, y_image):
+    player_name = row.Player  # Access using attribute-style access
+    gwp_points = row.GWP
+
+    # Create text bounding box for player name only once
+    tp_name = TextPath((0, 0), player_name, size=2)
+    rect_width = tp_name.get_extents().width  # Width of text bounding box
+    rect_height = 1
+
+    # Draw Player Name Rectangle
+    name_rect = FancyBboxPatch(
+        (x_image - rect_width / 2, y_image - rect_height - 5),
+        rect_width,
+        rect_height,
+        facecolor='white',
+        edgecolor='white',
+        linewidth=1,
+        alpha=0.8
+    )
+    ax.add_patch(name_rect)
+
+    # Draw GWP Rectangle
+    gwp_rect_y = y_image - rect_height - 7  # Adjust y position for GWP rectangle
+    gwp_rect = FancyBboxPatch(
+        (x_image - rect_width / 2, gwp_rect_y),
+        rect_width,
+        rect_height,
+        facecolor=(55 / 255, 0 / 255, 60 / 255),
+        edgecolor='white',
+        linewidth=1,
+        alpha=0.9
+    )
+    ax.add_patch(gwp_rect)
+
+    # Add Text for GWP Points and Player Name
+    ax.text(x_image, gwp_rect_y + rect_height / 2, f"{gwp_points}", fontsize=7, ha='center', color='white', va='center') 
+    ax.text(x_image, y_image - rect_height - 5 + rect_height / 2, player_name, fontsize=7, ha='center', color='black', va='center')
+
+# Draw players who played
+draw_players(ssuiio, positions, ax, pitch)
+
+
+
+st.pyplot(fig)
 
 
 
