@@ -323,7 +323,7 @@ for col in columns_to_convert:
 # Add season information for filtering purposes
 merged_opponent['season'] = 2425
 
-selected_gw = st.slider('Select Gameweek:', ct_gw, ct_gw+3, ct_gw) 
+selected_gw = st.slider('Select Gameweek:', ct_gw, ct_gw+2, ct_gw) 
 st.markdown(f"### Recommended Lineup for gameweek {selected_gw}:")
 
 # Filter fixtures for the current gameweek
