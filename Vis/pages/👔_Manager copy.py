@@ -353,6 +353,10 @@ with col5:
                     player_box = AnnotationBbox(player_image, (x_image, y_image), frameon=False)
                     ax.add_artist(player_box)
 
+            # Draw players who played
+            df_played = test[test['Played'] == True]
+            draw_players(df_played, positions, ax, pitch_width)
+
             # Display in Streamlit
             import streamlit as st
             st.pyplot(fig)
