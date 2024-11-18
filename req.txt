@@ -4,3 +4,4 @@ scikit-learn
 xgboost
 joblib
 optuna
+matplotlib
