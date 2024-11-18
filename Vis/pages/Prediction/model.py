@@ -537,10 +537,6 @@ def objective_optuna(trial):
     # Define the hyperparameter space
     
 
-
-
-    
-
     model = XGBRegressor(objective='reg:squarederror', random_state=999)
 
     # Use K-fold cross-validation to better estimate performance
@@ -623,13 +619,12 @@ selected_features = [
     'strength_defence_home_opponent', 'strength_defence_away_opponent',
     'Team_fdr', 'opponent_fdr', 'season'
 ]
+
 from sklearn.preprocessing import StandardScaler, LabelEncoder, OneHotEncoder
 
 # Ensure your data contains these columns
 df = X_weighted[selected_features + ['Pts']]  # Include the target variable 'Pts'
-df.dtypes
 # Step 2: Handle missing values
-df = df.dropna()  # Drop rows with missing values, or use imputation if needed
 
 # Step 3: Encode categorical variables
 label_encoder = LabelEncoder()
