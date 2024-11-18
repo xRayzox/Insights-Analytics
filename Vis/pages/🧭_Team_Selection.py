@@ -467,7 +467,7 @@ fit['vs'] = fit['team'].map(combined_opponent_mapping)
 
 pulga=filtered_players_fixture
 columns_to_normalize_weighted = [
-    'GS', 'xG'
+    'GS', 'xG','Pts'
 ]
 
 columns_to_normalize_mean = [
