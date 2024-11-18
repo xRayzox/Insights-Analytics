@@ -3,6 +3,8 @@ import sys
 import os
 import sys
 import pandas as pd
+import time
+import requests
 pd.set_option('future.no_silent_downcasting', True)
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'FPL')))
 
@@ -35,13 +37,17 @@ This tool leverages various FPL datasets to generate interactive visualizations,
 """)
 
 
-from selenium import webdriver
-import time
-
-url = 'https://fpl-insights.streamlit.app/'
-options = webdriver.ChromeOptions()
-options.add_argument('--headless')
-browser = webdriver.Chrome(options=options)
-page = browser.get(url)
-time.sleep(10)
-browser.quit()
+def keep_streamlit_awake():
+    while True:
+        try:
+            # Replace with your Streamlit app's URL
+            response = requests.get("https://fpl-insights.streamlit.app")
+            if response.status_code == 200:
+                print("Streamlit app is awake!")
+            else:
+                print(f"Error: Received status code {response.status_code}")
+        except Exception as e:
+            print(f"Error pinging Streamlit app: {e}")
+        
+        # Wait for 20 minutes before sending the next request
+        time.sleep(1)  # 1200 seconds = 20 minutes
