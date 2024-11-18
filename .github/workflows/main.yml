@@ -32,17 +32,18 @@ jobs:
     - name: Run FPL Prediction
       run: |
         python ./Vis/pages/Prediction/model.py
+        python ./FPL/transfer_collection.py
 
     # Commit and push changes (if any)
     - name: Commit and push changes
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-        git add ./Vis/pages/Prediction
+        git add .
         if git diff --cached --quiet; then
           echo "No changes to commit."
         else
-          git commit -m "Update prediction results"
+          git commit -m "Update  Files"
           git push
         fi
       env:
