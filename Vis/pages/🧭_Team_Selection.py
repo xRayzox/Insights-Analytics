@@ -3,32 +3,25 @@ import warnings
 warnings.filterwarnings("ignore")
 import pandas as pd
 import sys
-import matplotlib.pyplot as plt  
 import os 
-from concurrent.futures import ThreadPoolExecutor ,ProcessPoolExecutor,as_completed
+from concurrent.futures import ThreadPoolExecutor ,as_completed
 import joblib
 import time
-import subprocess
 from mplsoccer import VerticalPitch
-import matplotlib.patches as patches 
 from PIL import Image
-from urllib.request import urlopen
-import random
 from matplotlib.patches import FancyBboxPatch
 from matplotlib.textpath import TextPath
-from PIL import Image, ImageDraw, ImageOps
 from PIL import Image
-from urllib.request import urlopen
-import io
 import requests
-from functools import lru_cache
 from io import BytesIO
-
-from sklearn.model_selection import train_test_split
-from xgboost import XGBRegressor
-from sklearn.metrics import mean_squared_error
 from sklearn.preprocessing import StandardScaler
-
+import requests
+from io import BytesIO
+from PIL import Image
+import streamlit as st
+from matplotlib.patches import FancyBboxPatch
+from matplotlib.textpath import TextPath
+from mplsoccer import VerticalPitch
 cwd = os.getcwd()
 # Construct the full path to the 'FPL' directory
 fpl_path = os.path.join(cwd, 'FPL')
@@ -537,7 +530,8 @@ selected_features = [
     'strength_overall_home_opponent', 'strength_overall_away_opponent',
     'strength_attack_home_opponent', 'strength_attack_away_opponent',
     'strength_defence_home_opponent', 'strength_defence_away_opponent',
-    'Team_fdr', 'opponent_fdr', 'season'
+    'Team_fdr', 'opponent_fdr', 'season','final_weight','minutes_weight','opponent_difficulty_weight',
+    'ict_weight','sb_weight','penalty_risk_weight','strength_weight','home_away_weight','time_weight'
 ]
 
 from sklearn.preprocessing import StandardScaler, LabelEncoder, OneHotEncoder
@@ -554,6 +548,73 @@ df['Pos'] = label_encoder.fit_transform(df['Pos'])
 df['Team_player'] = label_encoder.fit_transform(df['Team_player'])
 df['vs'] = label_encoder.fit_transform(df['vs'])
 df['Player'] = label_encoder.fit_transform(df['Player'])
+# 1. Home/Away Game Weights
+home_weight = 2.5  # Home game weight
+away_weight = 1.0  # Away game weight
+df['home_away_weight'] = df['was_home'].map({True: home_weight, False: away_weight})
+
+# 2. Team and Opponent Strength Weights
+df['team_strength_weight'] = (
+    df['strength_overall_home'] + df['strength_attack_home'] - df['strength_defence_home']
+) * 1.1
+
+df['opponent_strength_weight'] = (
+    df['strength_overall_away_opponent'] + df['strength_attack_away_opponent'] - df['strength_defence_away_opponent']
+)
+
+# 3. Strength ratio for home/away adjustment
+df['strength_weight'] = df['team_strength_weight'] / df['opponent_strength_weight']
+
+# 4. Combined Home/Away and Strength Weight
+df['combined_weight'] = df['home_away_weight'] * df['strength_weight']
+
+# 5. Kickoff Time Weight
+df['kickoff_time'] = pd.to_datetime(df['kickoff_time'])
+
+def assign_time_weight(kickoff_time):
+    # Adjust time weight based on the kickoff time of the match
+    if 6 <= kickoff_time.hour < 12:
+        return 2.5  # Morning games tend to have lower energy
+    elif 12 <= kickoff_time.hour < 18:
+        return 2  # Standard midday games
+    elif 18 <= kickoff_time.hour < 22:
+        return 0.9  # Evening games often see more action
+    else:
+        return 0.5  # Late-night games may see more relaxed performances
+
+# Apply the function to 'kickoff_time'
+df['time_weight'] = df['kickoff_time'].apply(assign_time_weight)
+
+# 6. Transfer Activity Weights
+df['transfer_weight'] = df['Tran_In'] / (df['Tran_In'] + df['Tran_Out'] + 1)
+
+# 7. SB (Selected by) Weight
+df['sb_weight'] = df['SB'] / df['SB'].max()  # Normalize by max value to prevent extreme outliers
+
+# 8. ICT (Influence, Creativity, and Threat Index)
+df['ict_weight'] = df['ICT'] / df['ICT'].max()  # Normalize ICT index
+
+# 9. Penalty Risk Weight (for players who are more likely to be involved in penalties)
+df['penalty_risk_weight'] = (df['Pen_Miss'] + df['Pen_Save']) / (df['Pen_Miss'] + df['Pen_Save'] + 1)
+
+# 10. Opponent Difficulty Weight (based on the opponent's defensive strength)
+df['opponent_difficulty_weight'] = df['strength_defence_away_opponent'] + df['strength_defence_home_opponent']
+
+# 11. Minutes Played Weight (More minutes played generally means more opportunities for points)
+df['minutes_weight'] = df['Mins'] / df['Mins'].max()  # Normalize by max value to prevent extreme outliers
+
+# 12. Final Weight Calculation (Without Position Weight)
+df['final_weight'] = (
+    df['home_away_weight'] *
+    df['time_weight'] *
+    df['strength_weight'] *
+    df['transfer_weight'] *
+    df['penalty_risk_weight'] *
+    df['sb_weight'] *
+    df['ict_weight'] *
+    df['opponent_difficulty_weight'] *
+    df['minutes_weight']
+)
 
 # Scale the numerical features using StandardScaler
 scaler = StandardScaler()
@@ -690,13 +751,6 @@ combined_players = pd.DataFrame(starting_data + substitute_data)
 
 
 
-import requests
-from io import BytesIO
-from PIL import Image
-import streamlit as st
-from matplotlib.patches import FancyBboxPatch
-from matplotlib.textpath import TextPath
-from mplsoccer import VerticalPitch
 
 @st.cache_resource
 def load_image(player_code):
