@@ -1,4 +1,4 @@
-name: Run FPL Pipeline
+name: Run FPL Prediction
 
 on:
   push:
@@ -29,7 +29,7 @@ jobs:
         pip install -r requirements.txt
 
     # Run the Python script
-    - name: Run FPL Pipeline
+    - name: Run FPL Prediction
       run: |
         python ./Vis/pages/Prediction/model.py
 
@@ -38,6 +38,7 @@ jobs:
       run: |
         git config --global user.name 'xRayzox'
         git config --global user.email 'wael.hcine@esprit.tn'
+        git init
         git add ./Vis/pages/Prediction
         git commit -m "Update prediction results"
         git push
