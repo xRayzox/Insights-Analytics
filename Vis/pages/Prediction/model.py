@@ -537,6 +537,10 @@ def objective_optuna(trial):
     # Define the hyperparameter space
     
 
+
+
+    
+
     model = XGBRegressor(objective='reg:squarederror', random_state=999)
 
     # Use K-fold cross-validation to better estimate performance
@@ -644,7 +648,7 @@ df[numerical_features] = scaler.fit_transform(df[numerical_features])
 # Step 5: Split the data into training and testing sets
 X = df.drop(columns='Pts')
 y = df['Pts']
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=999)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2,shuffle=True,random_state=999)
 best_model = train_and_save_model(X_train, y_train)
 
 
