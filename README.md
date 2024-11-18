@@ -1,4 +1,5 @@
 # FPL Insights
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)]([https://share.streamlit.io/streamlit/roadmap](https://fpl-insights.streamlit.app/))
 
 Welcome to **FPL Insights**, your ultimate tool for optimizing your Fantasy Premier League (FPL) strategy! This app provides detailed analysis and data-driven insights to help you make smarter decisions throughout the FPL season.
 
