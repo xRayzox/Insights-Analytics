@@ -613,7 +613,7 @@ model += lpSum(
 # Constraints
 # Total budget
 model += lpSum(ssuiio.loc[i, 'Price'] * (player_vars[i] + sub_vars[i]) for i in players) <= 100, "Max_Budget"
-model += lpSum(ssuiio.loc[i, 'Price'] * (player_vars[i] + sub_vars[i]) for i in players) >= 96, "Min_Budget"
+model += lpSum(ssuiio.loc[i, 'Price'] * (player_vars[i] + sub_vars[i]) for i in players) >= 0, "Min_Budget"
 
 # Position constraints
 model += lpSum(player_vars[i] for i in players if ssuiio.loc[i, 'Pos'] == 'GKP') == 1, "GKP_Constraint"
