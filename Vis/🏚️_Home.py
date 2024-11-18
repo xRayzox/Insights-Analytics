@@ -33,3 +33,15 @@ This application provides a detailed analysis of Fantasy Premier League (FPL) da
 
 This tool leverages various FPL datasets to generate interactive visualizations, making it easier to analyze performance and optimize your fantasy football strategy.
 """)
+
+
+from selenium import webdriver
+import time
+
+url = 'https://fpl-insights.streamlit.app/'
+options = webdriver.ChromeOptions()
+options.add_argument('--headless')
+browser = webdriver.Chrome(options=options)
+page = browser.get(url)
+time.sleep(10)
+browser.quit()

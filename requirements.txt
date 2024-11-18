@@ -24,3 +24,4 @@ optuna
 thefuzz
 schedule
 pulp
+selenium
