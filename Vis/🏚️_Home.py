@@ -22,21 +22,58 @@ st.markdown(f'<style>{css}</style>', unsafe_allow_html=True)
 
 # Project Description
 define_sidebar()
-st.title("Fantasy Premier League Analysis and Insights ")
-st.markdown("""
-### Objective:
-This application provides a detailed analysis of Fantasy Premier League (FPL) data, offering key insights to help users make better decisions throughout the season.
+st.title("Welcome to FPL Insights")
 
-### Features:
-- **Player Performance Analysis**: Detailed breakdown of player stats such as goals, assists, and minutes played, helping users identify top performers.
-- **Fixture Difficulty Rating (FDR)**: Visual representation of team fixture difficulties, enabling users to plan transfers and captain choices based on future fixtures.
-- **Gameweek Trends**: Analysis of team and player trends across gameweeks, allowing for early identification of rising stars or underperforming players.
-- **Customized Recommendations**: Data-driven insights to assist in making transfers, picking captains, and optimizing squad selection.
-
-This tool leverages various FPL datasets to generate interactive visualizations, making it easier to analyze performance and optimize your fantasy football strategy.
+# Introduction Section
+st.header("Unlock Your Fantasy Premier League Potential")
+st.write("""
+FPL Insights is your ultimate tool for data-driven decision-making in Fantasy Premier League. 
+With detailed performance analysis, fixture insights, and customized recommendations, 
+this app helps you make informed choices to optimize your FPL strategy throughout the season.
 """)
 
+# Features Section
+st.header("Features")
 
+# Feature List with Icons and Descriptions
+st.markdown("""
+- **Player Performance Analysis**:  
+  Dive deep into player stats such as goals, assists, and minutes played, to identify top performers and optimize transfers.
+  
+- **Fixture Difficulty Rating (FDR)**:  
+  Visualize upcoming fixture difficulty to plan your transfers, captain picks, and team strategy effectively.
+  
+- **Gameweek Trends**:  
+  Analyze player and team performance trends across gameweeks, spotting rising stars and underperforming players.
+
+- **Customized Recommendations**:  
+  Get tailored data-driven insights for transfers, captain choices, and optimal squad selection.
+
+- **Team Performance & Comparison**:  
+  Track team standings with key metrics, and compare teams across various parameters for better decision-making.
+
+- **Manager Dashboard**:  
+  View detailed team history, including past gameweek performance, season stats, and league rankings with interactive charts.
+
+- **Player Comparison**:  
+  Compare players' gameweek performance and advanced metrics, visualized through comparative charts for easy analysis.
+
+- **Fixture & FDR Insights**:  
+  Access a comprehensive list of fixtures and results, with an advanced FDR matrix to evaluate matchups between teams.
+
+- **Optimal Team Selection**:  
+  Predict the best lineup for the next gameweek using machine learning (XGBoost), optimizing your strategy based on performance data.
+""")
+
+# Call to Action
+st.header("Get Started")
+st.write("""
+Start exploring the insights and take your Fantasy Premier League strategy to the next level. 
+Choose a section from the sidebar to begin analyzing player data, tracking fixture difficulty, or optimizing your team selection.
+""")
+
+# Footer Section
+st.write("Made with ❤️ by FPL Insights")
 
 
 
