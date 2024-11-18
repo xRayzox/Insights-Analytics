@@ -33,14 +33,17 @@ jobs:
       run: |
         python ./Vis/pages/Prediction/model.py
 
-    # Commit and push changes
+    # Commit and push changes (if any)
     - name: Commit and push changes
       run: |
-        git config --global user.name 'xRayzox'
-        git config --global user.email 'wael.hcine@esprit.tn'
-        git init
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
         git add ./Vis/pages/Prediction
-        git commit -m "Update prediction results"
-        git push
+        if git diff --cached --quiet; then
+          echo "No changes to commit."
+        else
+          git commit -m "Update prediction results"
+          git push
+        fi
       env:
-        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
