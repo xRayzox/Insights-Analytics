@@ -535,9 +535,18 @@ print('sssssssssuii2')
 # Define the objective function for Optuna
 def objective_optuna(trial):
     # Define the hyperparameter space
-    
+    params = {
+        'n_estimators': trial.suggest_int('n_estimators', 100, 1000),
+        'learning_rate': trial.suggest_float('learning_rate', 0.01, 0.3),
+        'max_depth': trial.suggest_int('max_depth', 3, 12),
+        'subsample': trial.suggest_float('subsample', 0.5, 1.0),
+        'colsample_bytree': trial.suggest_float('colsample_bytree', 0.5, 1.0),
+        'gamma': trial.suggest_float('gamma', 0, 10),
+        'reg_alpha': trial.suggest_float('reg_alpha', 0, 10),
+        'reg_lambda': trial.suggest_float('reg_lambda', 0, 10),
+    }
 
-    model = XGBRegressor(objective='reg:squarederror', random_state=999)
+    model = XGBRegressor(objective='reg:squarederror', random_state=999,**params)
 
     # Use K-fold cross-validation to better estimate performance
     kf = KFold(n_splits=5, shuffle=True, random_state=999)
@@ -634,6 +643,7 @@ df['Pos'] = label_encoder.fit_transform(df['Pos'])
 df['Team_player'] = label_encoder.fit_transform(df['Team_player'])
 df['vs'] = label_encoder.fit_transform(df['vs'])
 df['Player'] = label_encoder.fit_transform(df['Player'])
+
 
 # Step 4: Scale the numerical features
 scaler = StandardScaler()
