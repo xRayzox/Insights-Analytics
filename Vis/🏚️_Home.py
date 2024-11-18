@@ -75,7 +75,7 @@ Choose a section from the sidebar to begin analyzing player data, tracking fixtu
 """)
 
 # Footer Section
-st.write("Made with ❤️ by FPL Insights")
+st.write("Made with ❤️ by Wael Hcine")
 
 
 
