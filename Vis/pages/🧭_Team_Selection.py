@@ -467,12 +467,12 @@ fit['vs'] = fit['team'].map(combined_opponent_mapping)
 
 pulga=filtered_players_fixture
 columns_to_normalize_weighted = [
-    'Pts', 'GS', 'xG', 'A', 'xA', 'xGI', 'Pen_Miss', 'CS', 'GC', 
-    'xGC', 'OG', 'Pen_Save', 'S', 'YC', 'RC', 'B', 'BPS'
+    'GS', 'xG'
 ]
 
 columns_to_normalize_mean = [
-    'I', 'C', 'T', 'ICT', 'SB', 'Tran_In', 'Tran_Out','Mins'
+    'I', 'C', 'T', 'ICT', 'SB', 'Tran_In', 'Tran_Out','Mins', 'A', 'xA', 'xGI', 'Pen_Miss', 'CS', 'GC', 
+    'xGC', 'OG', 'Pen_Save', 'S', 'YC', 'RC', 'B', 'BPS'
 ]
 
 # Create a weight that combines recency and minutes played
