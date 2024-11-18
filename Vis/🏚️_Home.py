@@ -43,14 +43,14 @@ def keep_streamlit_awake():
             # Replace with your Streamlit app's URL
             response = requests.get("https://fpl-insights.streamlit.app")
             if response.status_code == 200:
-                st.error("Streamlit app is awake!")
+                print("Streamlit app is awake!")
             else:
-                st.error(f"Error: Received status code {response.status_code}")
+                print(f"Error: Received status code {response.status_code}")
         except Exception as e:
             print(f"Error pinging Streamlit app: {e}")
         
         # Wait for 20 minutes before sending the next request
-        time.sleep(1)  # 1200 seconds = 20 minutes
+        time.sleep(1200)  # 1200 seconds = 20 minutes
 
 
 keep_streamlit_awake()
