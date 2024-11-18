@@ -36,12 +36,14 @@ This tool leverages various FPL datasets to generate interactive visualizations,
 
 
 from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
 import time
 
 url = 'https://fpl-insights.streamlit.app/'
-options = webdriver.ChromeOptions()
-options.add_argument('--headless')
-browser = webdriver.Chrome(options=options)
-page = browser.get(url)
+
+# Use WebDriverManager to automatically fetch the correct driver
+browser = webdriver.Chrome(ChromeDriverManager().install())
+
+browser.get(url)
 time.sleep(10)
 browser.quit()

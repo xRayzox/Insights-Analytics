@@ -25,3 +25,4 @@ thefuzz
 schedule
 pulp
 selenium
+webdriver-manager
