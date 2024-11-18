@@ -842,7 +842,7 @@ def draw_player_details(ax, row, x_image, y_image, max_name_length=15):
     ax.add_patch(gwp_rect)
 
     # Add Text for GWP Points and Player Name
-    ax.text(x_image, gwp_rect_y + rect_height / 2, f"{vs_name}|{gwp_points:0f}", fontsize=7, ha='center', color='white', va='center')
+    ax.text(x_image, gwp_rect_y + rect_height / 2, f"{vs_name}|{gwp_points:.0f}", fontsize=7, ha='center', color='white', va='center')
     
     # Split the wrapped name into multiple lines and center them
     name_lines = wrapped_name.split('\n')
