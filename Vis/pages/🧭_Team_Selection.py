@@ -538,38 +538,29 @@ from sklearn.preprocessing import StandardScaler, LabelEncoder, OneHotEncoder
 # Ensure you have the necessary columns in your dataframe
 ssuiio = df_next_fixt_gw  # Make sure df_next_fixt_gw is correctly defined
 
-# Ensure the target variable 'Pts' is in the dataframe
-df = ssuiio[selected_features + ['Pts']]
 
-
-# Encode categorical variables using LabelEncoder
-label_encoder = LabelEncoder()
-df['Pos'] = label_encoder.fit_transform(df['Pos'])
-df['Team_player'] = label_encoder.fit_transform(df['Team_player'])
-df['vs'] = label_encoder.fit_transform(df['vs'])
-df['Player'] = label_encoder.fit_transform(df['Player'])
 # 1. Home/Away Game Weights
 home_weight = 2.5  # Home game weight
 away_weight = 1.0  # Away game weight
-df['home_away_weight'] = df['was_home'].map({True: home_weight, False: away_weight})
+ssuiio['home_away_weight'] = ssuiio['was_home'].map({True: home_weight, False: away_weight})
 
 # 2. Team and Opponent Strength Weights
-df['team_strength_weight'] = (
-    df['strength_overall_home'] + df['strength_attack_home'] - df['strength_defence_home']
+ssuiio['team_strength_weight'] = (
+    ssuiio['strength_overall_home'] + ssuiio['strength_attack_home'] - ssuiio['strength_defence_home']
 ) * 1.1
 
-df['opponent_strength_weight'] = (
-    df['strength_overall_away_opponent'] + df['strength_attack_away_opponent'] - df['strength_defence_away_opponent']
+ssuiio['opponent_strength_weight'] = (
+    ssuiio['strength_overall_away_opponent'] + ssuiio['strength_attack_away_opponent'] - ssuiio['strength_defence_away_opponent']
 )
 
 # 3. Strength ratio for home/away adjustment
-df['strength_weight'] = df['team_strength_weight'] / df['opponent_strength_weight']
+ssuiio['strength_weight'] = ssuiio['team_strength_weight'] / ssuiio['opponent_strength_weight']
 
 # 4. Combined Home/Away and Strength Weight
-df['combined_weight'] = df['home_away_weight'] * df['strength_weight']
+ssuiio['combined_weight'] = ssuiio['home_away_weight'] * ssuiio['strength_weight']
 
 # 5. Kickoff Time Weight
-df['kickoff_time'] = pd.to_datetime(df['kickoff_time'])
+ssuiio['kickoff_time'] = pd.to_datetime(ssuiio['kickoff_time'])
 
 def assign_time_weight(kickoff_time):
     # Adjust time weight based on the kickoff time of the match
@@ -583,38 +574,49 @@ def assign_time_weight(kickoff_time):
         return 0.5  # Late-night games may see more relaxed performances
 
 # Apply the function to 'kickoff_time'
-df['time_weight'] = df['kickoff_time'].apply(assign_time_weight)
+ssuiio['time_weight'] = ssuiio['kickoff_time'].apply(assign_time_weight)
 
 # 6. Transfer Activity Weights
-df['transfer_weight'] = df['Tran_In'] / (df['Tran_In'] + df['Tran_Out'] + 1)
+ssuiio['transfer_weight'] = ssuiio['Tran_In'] / (ssuiio['Tran_In'] + ssuiio['Tran_Out'] + 1)
 
 # 7. SB (Selected by) Weight
-df['sb_weight'] = df['SB'] / df['SB'].max()  # Normalize by max value to prevent extreme outliers
+ssuiio['sb_weight'] = ssuiio['SB'] / ssuiio['SB'].max()  # Normalize by max value to prevent extreme outliers
 
 # 8. ICT (Influence, Creativity, and Threat Index)
-df['ict_weight'] = df['ICT'] / df['ICT'].max()  # Normalize ICT index
+ssuiio['ict_weight'] = ssuiio['ICT'] / ssuiio['ICT'].max()  # Normalize ICT index
 
 # 9. Penalty Risk Weight (for players who are more likely to be involved in penalties)
-df['penalty_risk_weight'] = (df['Pen_Miss'] + df['Pen_Save']) / (df['Pen_Miss'] + df['Pen_Save'] + 1)
+ssuiio['penalty_risk_weight'] = (ssuiio['Pen_Miss'] + ssuiio['Pen_Save']) / (ssuiio['Pen_Miss'] + ssuiio['Pen_Save'] + 1)
 
 # 10. Opponent Difficulty Weight (based on the opponent's defensive strength)
-df['opponent_difficulty_weight'] = df['strength_defence_away_opponent'] + df['strength_defence_home_opponent']
+ssuiio['opponent_difficulty_weight'] = ssuiio['strength_defence_away_opponent'] + ssuiio['strength_defence_home_opponent']
 
 # 11. Minutes Played Weight (More minutes played generally means more opportunities for points)
-df['minutes_weight'] = df['Mins'] / df['Mins'].max()  # Normalize by max value to prevent extreme outliers
+ssuiio['minutes_weight'] = ssuiio['Mins'] / ssuiio['Mins'].max()  # Normalize by max value to prevent extreme outliers
 
 # 12. Final Weight Calculation (Without Position Weight)
-df['final_weight'] = (
-    df['home_away_weight'] *
-    df['time_weight'] *
-    df['strength_weight'] *
-    df['transfer_weight'] *
-    df['penalty_risk_weight'] *
-    df['sb_weight'] *
-    df['ict_weight'] *
-    df['opponent_difficulty_weight'] *
-    df['minutes_weight']
+ssuiio['final_weight'] = (
+    ssuiio['home_away_weight'] *
+    ssuiio['time_weight'] *
+    ssuiio['strength_weight'] *
+    ssuiio['transfer_weight'] *
+    ssuiio['penalty_risk_weight'] *
+    ssuiio['sb_weight'] *
+    ssuiio['ict_weight'] *
+    ssuiio['opponent_difficulty_weight'] *
+    ssuiio['minutes_weight']
 )
+
+# Ensure the target variable 'Pts' is in the dataframe
+df = ssuiio[selected_features + ['Pts']]
+
+
+# Encode categorical variables using LabelEncoder
+label_encoder = LabelEncoder()
+df['Pos'] = label_encoder.fit_transform(df['Pos'])
+df['Team_player'] = label_encoder.fit_transform(df['Team_player'])
+df['vs'] = label_encoder.fit_transform(df['vs'])
+df['Player'] = label_encoder.fit_transform(df['Player'])
 
 # Scale the numerical features using StandardScaler
 scaler = StandardScaler()
