@@ -51,3 +51,6 @@ def keep_streamlit_awake():
         
         # Wait for 20 minutes before sending the next request
         time.sleep(1)  # 1200 seconds = 20 minutes
+
+
+keep_streamlit_awake()
