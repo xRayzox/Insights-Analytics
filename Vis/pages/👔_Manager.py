@@ -368,7 +368,7 @@ with col5:
                         pitch.inset_image(y_image, x_image, image, height=9, ax=ax)
                         # Add captain badge if applicable
                         if row['role'] == "(C)":
-                            st.write('suiii')
+                            st.error('suiii')
                             captain_icon = Image.open('./data/captain.png')
                             pitch.inset_image(y_image - 2, x_image - 3, captain_icon, height=10, ax=ax)
                         # Draw player's name and GWP points
