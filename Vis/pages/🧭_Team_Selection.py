@@ -792,7 +792,7 @@ pitch = VerticalPitch(
 )
 
 fig, ax = pitch.draw(figsize=fig_size, tight_layout=False)  # Draw the pitch
-
+fig.set_facecolor('none')
 # Extract pitch dimensions from the figure
 pitch_length = fig.get_figheight() * 10  # Scaling factor
 pitch_width = fig.get_figwidth() * 10  # Scaling factor
