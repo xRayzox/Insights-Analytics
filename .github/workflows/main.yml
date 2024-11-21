@@ -1,6 +1,5 @@
-
+"""
 name: Run FPL Prediction
-
 on:
   push:
     branches:
@@ -50,3 +49,4 @@ jobs:
         fi
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+"""
