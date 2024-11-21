@@ -364,7 +364,7 @@ with col5:
                     # Loop through the group and place images
                     for index, (i, row) in enumerate(group.iterrows()):
                         image = player_images[row['code']]
-                        st.write(image.size[0])
+                    
                         x_image = x_positions[index]
                         # Draw the player image on the pitch
                         pitch.inset_image(y_image, x_image, image, height=9, ax=ax)
@@ -392,7 +392,9 @@ with col5:
                 # Calculate bounding box dimensions for player name and GWP text
                 name_rect_width = tp_name.get_extents().width
                 gwp_rect_width = tp_gwp.get_extents().width
-                rect_width = max(name_rect_width, gwp_rect_width)-2   # Add padding
+
+                default_width=15
+                rect_width = max(default_width, max(name_rect_width, gwp_rect_width)) 
                 rect_height = 2  # Height of each rectangle
 
                 # Draw Player Name Rectangle
