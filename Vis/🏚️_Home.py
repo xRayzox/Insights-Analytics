@@ -96,7 +96,7 @@ def keep_streamlit_awake():
             print(f"Error pinging Streamlit app: {e}")
         
         # Wait for 20 minutes before sending the next request
-        time.sleep(1200)  # 1200 seconds = 20 minutes
+        time.sleep(1800)  # 1200 seconds = 20 minutes
 
 
 keep_streamlit_awake()
