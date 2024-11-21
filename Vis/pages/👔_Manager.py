@@ -396,11 +396,11 @@ with col5:
                 rect_height = 2  # Height of each rectangle
 
                 # Draw Player Name Rectangle
-                name_rect_y = y_image - rect_height - 5  # Adjust y position
+                name_rect_y = y_image - rect_height - 5.5  # Adjust y position
                 name_rect = FancyBboxPatch(
                     (x_image - rect_width / 2, name_rect_y),
                     rect_width,
-                    rect_height-1,
+                    rect_height,
                     facecolor='white',
                     edgecolor='white',
                     linewidth=1,
