@@ -262,7 +262,7 @@ with col5:
             manager_team_df = manager_team_df.infer_objects()
 
             # Select relevant columns and rename them
-            manager_team_df = manager_team_df[['web_name', 'element_type', 'team', 'opponent_team', 'total_points', 'Played','code']]
+            manager_team_df = manager_team_df[['web_name', 'element_type', 'team', 'opponent_team', 'total_points', 'Played','code','role']]
             rn_cols = {
                 'web_name': 'Player', 'element_type': 'Pos',
                 'team': 'Team', 'opponent_team': 'vs',
