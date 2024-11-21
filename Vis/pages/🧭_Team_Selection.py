@@ -911,7 +911,7 @@ def draw_legend(ax, pitch_width, pitch_length):
 
     # Position legend rectangle in the bottom-left corner
     legend_x = (pitch_width * 0.05) - 3.5  # 5% from the left edge
-    legend_y = (pitch_length * 0.05) + 113  # 5% from the bottom edge
+    legend_y = (pitch_length * 0.05) + 113.5  # 5% from the bottom edge
 
     # Draw the legend rectangle
     legend_rect = FancyBboxPatch(
@@ -926,7 +926,7 @@ def draw_legend(ax, pitch_width, pitch_length):
     ax.add_patch(legend_rect)
 
     # Add text to the legend
-    legend_text = "VS|TSB %"
+    legend_text = "VS | TSB %"
     ax.text(
         legend_x + legend_width / 2, legend_y + legend_height / 2,
         legend_text, fontsize=8, ha='center', va='center', color='white',
