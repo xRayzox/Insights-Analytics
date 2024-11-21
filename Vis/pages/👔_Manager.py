@@ -274,7 +274,7 @@ with col5:
             # Map teams
             manager_team_df['vs'] = manager_team_df['vs'].map(teams_df.set_index('id')['short_name'])
             manager_team_df['vs'] = manager_team_df['vs'].fillna('BLANK')
-            
+            st.write(manager_team_df)
             # Reset index of the manager's team DataFrame
             test = manager_team_df.reset_index()
 
@@ -292,7 +292,7 @@ with col5:
             )
 
             fig, ax = pitch.draw(figsize=fig_size, tight_layout=False)  # Draw the pitch
-
+            fig.set_facecolor('none')
             # Extract pitch dimensions from the figure
             pitch_length = fig.get_figheight() * 10  # Scaling factor
             pitch_width = fig.get_figwidth() * 10  # Scaling factor
@@ -311,7 +311,7 @@ with col5:
             # Filter DataFrame for players who played
             df = test[test['Played'] == True]
             total_gwp = df['GWP'].sum()
-            st.write(df)
+            
             # Create and position rectangle for Game Week
             rect = plt.Rectangle(
                 (0, pitch_length + 1.8 * zone_height),
