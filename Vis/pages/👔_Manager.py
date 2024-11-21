@@ -245,13 +245,13 @@ with col5:
                                 'total_points'] *= manager_team_df['multiplier']
             
             manager_team_df.loc[(manager_team_df['is_captain'] == True) & (manager_team_df['multiplier'] == 2),
-                                'web_name'] += ' (C)'
+                                'role'] = ' (C)'
             
             manager_team_df.loc[manager_team_df['multiplier'] == 3,
                                 'web_name'] += ' (TC)'
             
             manager_team_df.loc[manager_team_df['is_vice_captain'] == True,
-                                'web_name'] += ' (VC)'
+                                'role'] += ' (VC)'
             
             manager_team_df.loc[manager_team_df['multiplier'] != 0, 'Played'] = True
 
@@ -274,7 +274,7 @@ with col5:
             # Map teams
             manager_team_df['vs'] = manager_team_df['vs'].map(teams_df.set_index('id')['short_name'])
             manager_team_df['vs'] = manager_team_df['vs'].fillna('BLANK')
-            st.write(manager_team_df)
+            
             # Reset index of the manager's team DataFrame
             test = manager_team_df.reset_index()
 
