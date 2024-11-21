@@ -393,7 +393,7 @@ with col5:
                 name_rect_width = tp_name.get_extents().width
                 gwp_rect_width = tp_gwp.get_extents().width
 
-                default_width=15
+                default_width=10
                 rect_width = max(default_width, max(name_rect_width, gwp_rect_width)) 
                 rect_height = 2  # Height of each rectangle
 
