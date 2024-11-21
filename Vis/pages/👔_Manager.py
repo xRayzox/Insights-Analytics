@@ -311,7 +311,7 @@ with col5:
             # Filter DataFrame for players who played
             df = test[test['Played'] == True]
             total_gwp = df['GWP'].sum()
-
+            st.write(df)
             # Create and position rectangle for Game Week
             rect = plt.Rectangle(
                 (0, pitch_length + 1.8 * zone_height),
