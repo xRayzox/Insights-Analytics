@@ -872,7 +872,7 @@ def draw_player_details(ax, row, x_image, y_image, max_name_length=15):
 
 
 # Function to draw player images and details
-def draw_players(df, positions, ax, pitch):
+def draw_players(df, positions, ax, pitch, pitch_width):
     from PIL import Image
     
     # Preload all player images to avoid reloading within the loop
@@ -885,19 +885,25 @@ def draw_players(df, positions, ax, pitch):
         num_players = len(group)  # Number of players in this position
         y_image = positions[pos]  # Fixed y-coordinate for this position
         
-        # Adjust spacing dynamically
-        max_width = pitch_width * 0.5  # Max horizontal area for this row (80% of pitch width)
-        if num_players > 1:
-            gap = max_width / (num_players - 1)  # Space between players
-            start_x = (pitch_width - max_width) / 2  # Center the row
-            x_positions = [start_x + i * gap for i in range(num_players)]
-        else:
-            x_positions = [pitch_width / 2]  # Center single player
+        # Cluster players into small groups and center
+        max_cluster_size = 3  # Adjustable size for each cluster
+        num_clusters = (num_players + max_cluster_size - 1) // max_cluster_size  # Calculate clusters
+        cluster_width = pitch_width * 0.8 / num_clusters  # Divide width evenly for clusters
+        start_x = (pitch_width - (cluster_width * num_clusters)) / 2  # Center clusters horizontally
+
+        # Calculate x-coordinates for all players
+        x_positions = []
+        for cluster_idx in range(num_clusters):
+            cluster_start = start_x + cluster_idx * cluster_width
+            players_in_cluster = min(max_cluster_size, num_players - len(x_positions))
+            cluster_spacing = cluster_width / (players_in_cluster + 1)
+            cluster_positions = [cluster_start + (i + 1) * cluster_spacing for i in range(players_in_cluster)]
+            x_positions.extend(cluster_positions)
 
         # Loop through the group and place images
         for index, (i, row) in enumerate(group.iterrows()):
-            image = player_images[row['code']]
             x_image = x_positions[index]
+            image = player_images[row['code']]
 
             # Draw the player image on the pitch
             pitch.inset_image(y_image, x_image, image, height=9, ax=ax)
@@ -909,6 +915,7 @@ def draw_players(df, positions, ax, pitch):
 
             # Draw player's name and GWP points
             draw_player_details(ax, row, x_image, y_image)
+
 
 
 
