@@ -910,7 +910,7 @@ def draw_legend(ax, pitch_width, pitch_length):
     legend_height = 2  # Adjust rectangle height
 
     # Position legend rectangle in the bottom-left corner
-    legend_x = (pitch_width * 0.05) - 4  # 5% from the left edge
+    legend_x = (pitch_width * 0.05) - 3.5  # 5% from the left edge
     legend_y = (pitch_length * 0.05) + 112  # 5% from the bottom edge
 
     # Draw the legend rectangle
@@ -929,7 +929,7 @@ def draw_legend(ax, pitch_width, pitch_length):
     legend_text = "VS|TSB %"
     ax.text(
         legend_x + legend_width / 2, legend_y + legend_height / 2,
-        legend_text, fontsize=8, ha='center', va='center', color='black',
+        legend_text, fontsize=8, ha='center', va='center', color='white',
         linespacing=1.5  # Space between lines
     )
 
