@@ -375,15 +375,14 @@ with col5:
                         draw_player_details(ax, row, x_image, y_image)
             
             # Optimized Function to Draw Player Details
-            def draw_player_details(ax, row, x_image, y_image):
-                player_name = row.Player  # Access using attribute-style access
-                gwp_points = row.GWP
+            def draw_player_details(ax, row, x_image, y_image, max_name_length=15):
+                player_name = row.web_name  # Access player name
+                gwp_points = row.GWP  # Access GWP points
+                vs_name = row.vs
 
-
-                max_name_length=15
                 # Wrap player name if it's too long
                 wrapped_name = textwrap.fill(player_name, width=max_name_length)
-                gwp_text = f"{gwp_points}"
+                gwp_text = f"{vs_name}|{gwp_points}"
 
                 # Create TextPath for player name and GWP text
                 tp_name = TextPath((0, 0), wrapped_name, size=2)
@@ -396,7 +395,7 @@ with col5:
                 rect_height = 2  # Height of each rectangle
 
                 # Draw Player Name Rectangle
-                name_rect_y = y_image - rect_height - 5.5  # Adjust y position
+                name_rect_y = y_image - rect_height - 5  # Adjust y position
                 name_rect = FancyBboxPatch(
                     (x_image - rect_width / 2, name_rect_y),
                     rect_width,
