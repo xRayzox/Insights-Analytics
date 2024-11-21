@@ -248,7 +248,7 @@ with col5:
                                 'role'] = ' (C)'
             
             manager_team_df.loc[manager_team_df['multiplier'] == 3,
-                                'web_name'] += ' (TC)'
+                                'chip'] += ' (TC)'
             
             manager_team_df.loc[manager_team_df['is_vice_captain'] == True,
                                 'role'] += ' (VC)'
