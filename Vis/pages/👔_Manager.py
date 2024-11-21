@@ -370,7 +370,7 @@ with col5:
                         # Add captain badge if applicable
                         if row.role == '(C)':
                             captain_icon = Image.open('./data/captain.png')
-                            pitch.inset_image(y_image - 2, x_image - 3, captain_icon, height=2, ax=ax)
+                            pitch.inset_image(y_image - 2, x_image - 3, captain_icon, height=10, ax=ax)
                         # Draw player's name and GWP points
                         draw_player_details(ax, row, x_image, y_image)
             
