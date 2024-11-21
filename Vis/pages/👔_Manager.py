@@ -245,13 +245,13 @@ with col5:
                                 'total_points'] *= manager_team_df['multiplier']
             
             manager_team_df.loc[(manager_team_df['is_captain'] == True) & (manager_team_df['multiplier'] == 2),
-                                'role'] = ' (C)'
+                                'role'] = '(C)'
             
             manager_team_df.loc[manager_team_df['multiplier'] == 3,
-                                'web_name'] += ' (TC)'
+                                'web_name'] += '(TC)'
             
             manager_team_df.loc[manager_team_df['is_vice_captain'] == True,
-                                'role'] += ' (VC)'
+                                'role'] += '(VC)'
             
             manager_team_df.loc[manager_team_df['multiplier'] != 0, 'Played'] = True
 
