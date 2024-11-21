@@ -248,7 +248,7 @@ with col5:
                                 'role'] = '(C)'
             
             manager_team_df.loc[manager_team_df['multiplier'] == 3,
-                                'web_name'] += '(TC)'
+                                'web_name'] += ' (TC)'
             
             manager_team_df.loc[manager_team_df['is_vice_captain'] == True,
                                 'role'] += '(VC)'
@@ -364,13 +364,13 @@ with col5:
                     for index, (i, row) in enumerate(group.iterrows()):
                         image = player_images[row['code']]
                         x_image = x_positions[index]
+                        st.write(row.role)
                         # Draw the player image on the pitch
                         pitch.inset_image(y_image, x_image, image, height=9, ax=ax)
                         # Add captain badge if applicable
-                        if row['role'] == "(C)":
-                            st.error('suiii')
+                        if row.role == '(C)':
                             captain_icon = Image.open('./data/captain.png')
-                            pitch.inset_image(y_image - 2, x_image - 3, captain_icon, height=10, ax=ax)
+                            pitch.inset_image(y_image - 2, x_image - 3, captain_icon, height=2, ax=ax)
                         # Draw player's name and GWP points
                         draw_player_details(ax, row, x_image, y_image)
             
