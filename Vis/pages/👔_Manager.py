@@ -400,7 +400,7 @@ with col5:
                 name_rect = FancyBboxPatch(
                     (x_image - rect_width / 2, name_rect_y),
                     rect_width,
-                    rect_height-0.5,
+                    rect_height-1,
                     facecolor='white',
                     edgecolor='white',
                     linewidth=1,
