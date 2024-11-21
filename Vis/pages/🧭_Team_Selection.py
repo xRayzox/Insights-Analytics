@@ -886,7 +886,7 @@ def draw_players(df, positions, ax, pitch):
         y_image = positions[pos]  # Fixed y-coordinate for this position
         
         # Adjust spacing dynamically
-        max_width = pitch_width * 0.8  # Max horizontal area for this row (80% of pitch width)
+        max_width = pitch_width * 0.5  # Max horizontal area for this row (80% of pitch width)
         if num_players > 1:
             gap = max_width / (num_players - 1)  # Space between players
             start_x = (pitch_width - max_width) / 2  # Center the row
