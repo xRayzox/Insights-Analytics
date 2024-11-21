@@ -364,7 +364,7 @@ with col5:
                     for index, (i, row) in enumerate(group.iterrows()):
                         image = player_images[row['code']]
                         x_image = x_positions[index]
-
+                        st.write(row.role)
                         # Draw the player image on the pitch
                         pitch.inset_image(y_image, x_image, image, height=9, ax=ax)
                         # Add captain badge if applicable
