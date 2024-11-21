@@ -393,7 +393,7 @@ with col5:
                 name_rect_width = tp_name.get_extents().width
                 gwp_rect_width = tp_gwp.get_extents().width
                 rect_width = max(name_rect_width, gwp_rect_width)-2   # Add padding
-                rect_height = 500  # Height of each rectangle
+                rect_height = 2  # Height of each rectangle
 
                 # Draw Player Name Rectangle
                 name_rect_y = y_image - rect_height - 5  # Adjust y position
