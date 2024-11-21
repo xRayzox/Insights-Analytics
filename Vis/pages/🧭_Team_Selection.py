@@ -885,20 +885,21 @@ def draw_players(df, positions, ax, pitch):
         num_players = len(group)  # Number of players in this position
         y_image = positions[pos]  # Fixed y-coordinate for this position
         
-        # Adjust spacing dynamically
+        # Adjust spacing dynamically based on the number of players in this position
         max_width = pitch_width * 0.8  # Max horizontal area for this row (80% of pitch width)
 
-        if num_players > 1:
+        if num_players == 1:
+            # Center the player if there's only one player in this position
+            x_positions = [pitch_width / 2]
+        elif num_players == 2:
+            # If there are exactly two players, space them symmetrically around the center
+            x_positions = [pitch_width / 3, 2 * pitch_width / 3]
+        else:
+            # For more than 2 players, evenly distribute them across the available width
             gap = max_width / (num_players - 1)  # Space between players
             start_x = (pitch_width - max_width) / 2  # Center the row
             x_positions = [start_x + i * gap for i in range(num_players)]
-        elif num_players == 2:
-            # If there are exactly two players, space them symmetrically around the center
-            x_positions = [pitch_width / 3, 2 * pitch_width / 3]  # Spread across 1/3 and 2/3 of the width
         
-        else:
-            x_positions = pitch_width / 2  # Center single player
-
         # Loop through the group and place images
         for index, (i, row) in enumerate(group.iterrows()):
             image = player_images[row['code']]
