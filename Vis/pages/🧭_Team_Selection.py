@@ -892,6 +892,10 @@ def draw_players(df, positions, ax, pitch):
             gap = max_width / (num_players - 1)  # Space between players
             start_x = (pitch_width - max_width) / 2  # Center the row
             x_positions = [start_x + i * gap for i in range(num_players)]
+        elif num_players == 2:
+            # If there are exactly two players, space them symmetrically around the center
+            x_positions = [pitch_width / 3, 2 * pitch_width / 3]  # Spread across 1/3 and 2/3 of the width
+        
         else:
             x_positions = pitch_width / 2  # Center single player
 
