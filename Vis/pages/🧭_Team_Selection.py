@@ -22,6 +22,16 @@ import streamlit as st
 from matplotlib.patches import FancyBboxPatch
 from matplotlib.textpath import TextPath
 from mplsoccer import VerticalPitch
+
+
+import matplotlib.pyplot as plt
+from matplotlib.textpath import TextPath
+from matplotlib.patches import FancyBboxPatch
+import textwrap
+
+
+
+
 cwd = os.getcwd()
 # Construct the full path to the 'FPL' directory
 fpl_path = os.path.join(cwd, 'FPL')
@@ -798,10 +808,7 @@ positions = {
     'FWD': pitch_length - zone_height
 }
 
-import matplotlib.pyplot as plt
-from matplotlib.textpath import TextPath
-from matplotlib.patches import FancyBboxPatch
-import textwrap
+
 
 def draw_player_details(ax, row, x_image, y_image, max_name_length=15):
     player_name = row.web_name  # Access player name
@@ -810,15 +817,22 @@ def draw_player_details(ax, row, x_image, y_image, max_name_length=15):
 
     # Wrap player name if it's too long
     wrapped_name = textwrap.fill(player_name, width=max_name_length)
+    gwp_text = f"{vs_name}|{gwp_points}"
 
-    # Create text bounding box for player name
+    # Create TextPath for player name and GWP text
     tp_name = TextPath((0, 0), wrapped_name, size=2)
-    rect_width = tp_name.get_extents().width  # Width of the text bounding box
-    rect_height = 1
+    tp_gwp = TextPath((0, 0), gwp_text, size=2)
+
+    # Calculate bounding box dimensions for player name and GWP text
+    name_rect_width = tp_name.get_extents().width
+    gwp_rect_width = tp_gwp.get_extents().width
+    rect_width = max(name_rect_width, gwp_rect_width) + 2  # Add padding
+    rect_height = 2  # Height of each rectangle
 
     # Draw Player Name Rectangle
+    name_rect_y = y_image - rect_height - 5  # Adjust y position
     name_rect = FancyBboxPatch(
-        (x_image - rect_width / 2, y_image - rect_height - 5),
+        (x_image - rect_width / 2, name_rect_y),
         rect_width,
         rect_height,
         facecolor='white',
@@ -829,7 +843,7 @@ def draw_player_details(ax, row, x_image, y_image, max_name_length=15):
     ax.add_patch(name_rect)
 
     # Draw GWP Rectangle
-    gwp_rect_y = y_image - rect_height - 7  # Adjust y position for GWP rectangle
+    gwp_rect_y = name_rect_y - rect_height  # Below the name rectangle
     gwp_rect = FancyBboxPatch(
         (x_image - rect_width / 2, gwp_rect_y),
         rect_width,
@@ -842,13 +856,19 @@ def draw_player_details(ax, row, x_image, y_image, max_name_length=15):
     ax.add_patch(gwp_rect)
 
     # Add Text for GWP Points and Player Name
-    ax.text(x_image, gwp_rect_y + rect_height / 2, f"{vs_name}|{gwp_points}", fontsize=7, ha='center', color='white', va='center')
-    
+    ax.text(
+        x_image, gwp_rect_y + rect_height / 2,
+        gwp_text, fontsize=7, ha='center', color='white', va='center'
+    )
+
     # Split the wrapped name into multiple lines and center them
     name_lines = wrapped_name.split('\n')
-    y_offset = y_image - rect_height - 5 + rect_height / 2
+    y_offset = name_rect_y + rect_height / 2
     for i, line in enumerate(name_lines):
-        ax.text(x_image, y_offset + i * 7, line, fontsize=7, ha='center', color='black', va='center')
+        ax.text(
+            x_image, y_offset + i * 7,
+            line, fontsize=7, ha='center', color='black', va='center'
+        )
 
 
 # Function to draw player images and details
