@@ -910,7 +910,7 @@ def draw_legend(ax, pitch_width, pitch_length):
     legend_height = 2  # Adjust rectangle height
 
     # Position legend rectangle in the bottom-left corner
-    legend_x = pitch_width * 0.05 - 8  # 5% from the left edge
+    legend_x = (pitch_width * 0.05) - 4  # 5% from the left edge
     legend_y = (pitch_length * 0.05) + 112  # 5% from the bottom edge
 
     # Draw the legend rectangle
@@ -918,8 +918,8 @@ def draw_legend(ax, pitch_width, pitch_length):
         (legend_x, legend_y),
         legend_width,
         legend_height,
-        facecolor='white',
-        edgecolor='black',
+        facecolor=(55 / 255, 0 / 255, 60 / 255),
+        edgecolor='white',
         linewidth=1,
         alpha=0.8
     )
