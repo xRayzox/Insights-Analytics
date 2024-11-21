@@ -9,7 +9,7 @@ base_url = 'https://fantasy.premierleague.com/api/'
 # Set a max retry limit and delay between retries for error handling
 MAX_RETRIES = 3
 RETRY_DELAY = 1  # In seconds
-BATCH_SIZE = 1000  # Number of managers to fetch in one batch
+BATCH_SIZE = 100  # Number of managers to fetch in one batch
 
 async def fetch_bootstrap_data(session: ClientSession):
     """Fetch general data from the FPL API asynchronously."""
@@ -56,7 +56,7 @@ async def fetch_all_managers(total_players: int):
     async with aiohttp.ClientSession() as session:
         batch_start = current_count
         batch_end = min(batch_start + BATCH_SIZE - 1, total_players)
-
+        time.sleep(5)
         while batch_start <= total_players:
             print(f"Fetching managers {batch_start} to {batch_end}...")
             batch_results = await fetch_batch_managers(session, batch_start, batch_end)
