@@ -873,6 +873,8 @@ def draw_player_details(ax, row, x_image, y_image, max_name_length=15):
 
 # Function to draw player images and details
 def draw_players(df, positions, ax, pitch):
+    from PIL import Image
+    
     # Preload all player images to avoid reloading within the loop
     player_images = {row['code']: load_image(row['code']) for _, row in df.iterrows()}
     
@@ -881,12 +883,16 @@ def draw_players(df, positions, ax, pitch):
     
     for pos, group in grouped_by_position:
         num_players = len(group)  # Number of players in this position
-        y_image = positions[pos]
-        spacing_factor=num_players/11
-
-        total_width = pitch_width * (1 - (spacing_factor - 1) / num_players) if num_players > 1 else pitch_width
-        x_positions = [(total_width / (num_players + 1)) * (i + 1) if num_players > 1 else pitch_width / 2 for i in range(num_players)]
-
+        y_image = positions[pos]  # Fixed y-coordinate for this position
+        
+        # Adjust spacing dynamically
+        max_width = pitch_width * 0.8  # Max horizontal area for this row (80% of pitch width)
+        if num_players > 1:
+            gap = max_width / (num_players - 1)  # Space between players
+            start_x = (pitch_width - max_width) / 2  # Center the row
+            x_positions = [start_x + i * gap for i in range(num_players)]
+        else:
+            x_positions = [pitch_width / 2]  # Center single player
 
         # Loop through the group and place images
         for index, (i, row) in enumerate(group.iterrows()):
@@ -895,11 +901,15 @@ def draw_players(df, positions, ax, pitch):
 
             # Draw the player image on the pitch
             pitch.inset_image(y_image, x_image, image, height=9, ax=ax)
-            pic=Image.open('./data/captain.png')
-            if row.Role== 'Captain':
-                pitch.inset_image(y_image-2, x_image-3, pic, height=2, ax=ax)
+            
+            # Add captain badge if applicable
+            if row['Role'] == 'Captain':
+                captain_icon = Image.open('./data/captain.png')
+                pitch.inset_image(y_image - 2, x_image - 3, captain_icon, height=2, ax=ax)
+
             # Draw player's name and GWP points
             draw_player_details(ax, row, x_image, y_image)
+
 
 
 # Draw players who played
