@@ -251,7 +251,7 @@ with col5:
                                 'web_name'] += ' (TC)'
             
             manager_team_df.loc[manager_team_df['is_vice_captain'] == True,
-                                'role'] += '(VC)'
+                                'role'] = '(VC)'
             
             manager_team_df.loc[manager_team_df['multiplier'] != 0, 'Played'] = True
 
@@ -367,7 +367,7 @@ with col5:
                         # Draw the player image on the pitch
                         pitch.inset_image(y_image, x_image, image, height=9, ax=ax)
                         # Add captain badge if applicable
-                        if row.role == '(VC)':
+                        if row.role == '(C)':
                             captain_icon = Image.open('./data/captain.png')
                             pitch.inset_image(y_image - 2, x_image - 3, captain_icon, height=2, ax=ax)
                         # Draw player's name and GWP points
