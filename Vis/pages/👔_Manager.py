@@ -375,7 +375,7 @@ with col5:
                         draw_player_details(ax, row, x_image, y_image)
             
             # Optimized Function to Draw Player Details
-            def draw_player_details(ax, row, x_image, y_image, max_name_length=15):
+            def draw_player_details(ax, row, x_image, y_image, max_name_length=300):
                 player_name = row.Player  # Access player name
                 gwp_points = row.GWP  # Access GWP points
                 vs_name = row.vs
