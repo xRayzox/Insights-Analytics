@@ -929,8 +929,7 @@ def draw_legend(ax, pitch_width, pitch_length):
     legend_text = "VS | TSB %"
     ax.text(
         legend_x + legend_width / 2, legend_y + legend_height / 2,
-        legend_text, fontsize=8, ha='center', va='center', color='white',
-        linespacing=1.5  # Space between lines
+        legend_text, fontsize=8, ha='center', va='center', color='white'
     )
 
 
