@@ -1,4 +1,4 @@
-"""
+
 name: Run FPL Prediction
 
 on:
@@ -34,6 +34,7 @@ jobs:
       run: |
         python ./Vis/pages/Prediction/model.py
         python ./FPL/transfer_collection.py
+        python ./FPL/Total_managers.py
 
     # Commit and push changes (if any)
     - name: Commit and push changes
@@ -49,4 +50,3 @@ jobs:
         fi
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-"""
