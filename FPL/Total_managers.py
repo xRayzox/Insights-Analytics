@@ -9,7 +9,7 @@ base_url = 'https://fantasy.premierleague.com/api/'
 # Set a max retry limit and delay between retries for error handling
 MAX_RETRIES = 3
 RETRY_DELAY = 1  # In seconds
-BATCH_SIZE = 100  # Number of managers to fetch in one batch
+BATCH_SIZE = 1  # Number of managers to fetch in one batch
 
 
 async def fetch_bootstrap_data(session: ClientSession):
