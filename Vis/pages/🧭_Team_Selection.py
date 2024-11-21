@@ -857,7 +857,7 @@ def draw_player_details(ax, row, x_image, y_image, max_name_length=15):
 
     # Add Text for GWP Points and Player Name
     ax.text(
-        x_image, gwp_rect_y + rect_height / 2,
+        x_image, gwp_rect_y + rect_height / 6,
         gwp_text, fontsize=7, ha='center', color='white', va='center'
     )
 
