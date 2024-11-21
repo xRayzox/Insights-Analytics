@@ -251,7 +251,7 @@ with col5:
                                 'web_name'] += ' (TC)'
             
             manager_team_df.loc[manager_team_df['is_vice_captain'] == True,
-                                'role'] += '(VC)'
+                                'web_name'] += '(VC)'
             
             manager_team_df.loc[manager_team_df['multiplier'] != 0, 'Played'] = True
 
@@ -364,7 +364,6 @@ with col5:
                     for index, (i, row) in enumerate(group.iterrows()):
                         image = player_images[row['code']]
                         x_image = x_positions[index]
-                        st.write(row.role)
                         # Draw the player image on the pitch
                         pitch.inset_image(y_image, x_image, image, height=9, ax=ax)
                         # Add captain badge if applicable
