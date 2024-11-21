@@ -903,6 +903,39 @@ def draw_players(df, positions, ax, pitch):
 # Draw players who played
 draw_players(combined_players, positions, ax, pitch)
 
+
+# Function to draw legend
+def draw_legend(ax, pitch_width, pitch_length):
+    legend_width = pitch_width / 6  # Adjust legend size as needed
+    legend_height = 2  # Adjust rectangle height
+
+    # Position legend rectangle in the bottom-left corner
+    legend_x = pitch_width * 0.05  # 5% from the left edge
+    legend_y = pitch_length * 0.05  # 5% from the bottom edge
+
+    # Draw the legend rectangle
+    legend_rect = FancyBboxPatch(
+        (legend_x, legend_y),
+        legend_width,
+        legend_height,
+        facecolor='white',
+        edgecolor='black',
+        linewidth=1,
+        alpha=0.8
+    )
+    ax.add_patch(legend_rect)
+
+    # Add text to the legend
+    legend_text = "VS|TSB %"
+    ax.text(
+        legend_x + legend_width / 2, legend_y + legend_height / 2,
+        legend_text, fontsize=8, ha='center', va='center', color='black',
+        linespacing=1.5  # Space between lines
+    )
+
+
+# Call the legend-drawing function
+draw_legend(ax, pitch_width, pitch_length)
 st.pyplot(fig)
 
 
