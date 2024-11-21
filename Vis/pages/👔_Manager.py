@@ -487,7 +487,37 @@ with col5:
 
             # Draw bench players
             draw_bench_players(df_bench, ax, pitch)
+            # Function to draw legend
+            def draw_legend(ax, pitch_width, pitch_length):
+                legend_width = pitch_width / 6  # Adjust legend size as needed
+                legend_height = 2  # Adjust rectangle height
 
+                # Position legend rectangle in the bottom-left corner
+                legend_x = (pitch_width * 0.05) - 3.5  # 5% from the left edge
+                legend_y = (pitch_length * 0.05) + 113.5  # 5% from the bottom edge
+
+                # Draw the legend rectangle
+                legend_rect = FancyBboxPatch(
+                    (legend_x, legend_y),
+                    legend_width,
+                    legend_height,
+                    facecolor=(55 / 255, 0 / 255, 60 / 255),
+                    edgecolor='white',
+                    linewidth=1,
+                    alpha=0.8
+                )
+                ax.add_patch(legend_rect)
+
+                # Add text to the legend
+                legend_text = "VS | GW Pts"
+                ax.text(
+                    legend_x + legend_width / 2, legend_y + legend_height / 2,
+                    legend_text, fontsize=8, ha='center', va='center', color='white'
+                )
+
+
+            # Call the legend-drawing function
+            draw_legend(ax, pitch_width, pitch_length)
 
 
             st.pyplot(fig)
