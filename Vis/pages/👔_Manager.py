@@ -493,7 +493,7 @@ with col5:
                 legend_height = 2  # Adjust rectangle height
 
                 # Position legend rectangle in the bottom-left corner
-                legend_x = (pitch_width * 1) - 5  # 5% from the left edge
+                legend_x = (pitch_width * 1) - 8  # 5% from the left edge
                 legend_y = (pitch_length * 0.05) + 113.5  # 5% from the bottom edge
 
                 # Draw the legend rectangle
