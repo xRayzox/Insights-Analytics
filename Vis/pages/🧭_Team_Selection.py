@@ -892,7 +892,7 @@ def draw_players(df, positions, ax, pitch):
             start_x = (pitch_width - max_width) / 2  # Center the row
             x_positions = [start_x + i * gap for i in range(num_players)]
         else:
-            x_positions = [pitch_width / 2]  # Center single player
+            x_positions = pitch_width / 2  # Center single player
 
         # Loop through the group and place images
         for index, (i, row) in enumerate(group.iterrows()):
