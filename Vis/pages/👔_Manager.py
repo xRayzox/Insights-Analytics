@@ -383,11 +383,11 @@ with col5:
                 max_name_length=15
                 # Wrap player name if it's too long
                 wrapped_name = textwrap.fill(player_name, width=max_name_length)
-                
+                gwp_text = f"{gwp_points}"
 
                 # Create TextPath for player name and GWP text
                 tp_name = TextPath((0, 0), wrapped_name, size=2)
-                tp_gwp = TextPath((0, 0), gwp_points, size=2)
+                tp_gwp = TextPath((0, 0), gwp_text, size=2)
 
                 # Calculate bounding box dimensions for player name and GWP text
                 name_rect_width = tp_name.get_extents().width
@@ -424,7 +424,7 @@ with col5:
                 # Add Text for GWP Points and Player Name
                 ax.text(
                     x_image, gwp_rect_y + rect_height / 2,
-                    gwp_points, fontsize=7, ha='center', color='white', va='center'
+                    gwp_text, fontsize=7, ha='center', color='white', va='center'
                 )
 
                 # Split the wrapped name into multiple lines and center them
