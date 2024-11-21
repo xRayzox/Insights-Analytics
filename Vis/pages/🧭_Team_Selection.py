@@ -878,13 +878,14 @@ def draw_players(df, positions, ax, pitch):
     
     # Group players by their positions
     grouped_by_position = df.groupby('Pos')
-    
+    spacing_factor=1.5
     for pos, group in grouped_by_position:
         num_players = len(group)  # Number of players in this position
         y_image = positions[pos]
         
-        # Precompute x positions for this group of players
-        x_positions = [(pitch_width / (num_players + 1)) * (i + 1) if num_players > 1 else pitch_width / 2 for i in range(num_players)]
+        # Adjust spacing: scale the width allocation for spacing
+        total_width = pitch_width * (1 - (spacing_factor - 1) / num_players) if num_players > 1 else pitch_width
+        x_positions = [(total_width / (num_players + 1)) * (i + 1) if num_players > 1 else pitch_width / 2 for i in range(num_players)]
         
         # Loop through the group and place images
         for index, (i, row) in enumerate(group.iterrows()):
