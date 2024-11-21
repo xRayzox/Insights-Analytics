@@ -364,11 +364,11 @@ with col5:
                     for index, (i, row) in enumerate(group.iterrows()):
                         image = player_images[row['code']]
                         x_image = x_positions[index]
-                        st.write(row.role)
                         # Draw the player image on the pitch
                         pitch.inset_image(y_image, x_image, image, height=9, ax=ax)
                         # Add captain badge if applicable
                         if row.role == '(C)':
+                            st.write('suiii')
                             captain_icon = Image.open('./data/captain.png')
                             pitch.inset_image(y_image - 2, x_image - 3, captain_icon, height=10, ax=ax)
                         # Draw player's name and GWP points
