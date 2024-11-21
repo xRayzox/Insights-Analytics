@@ -826,7 +826,8 @@ def draw_player_details(ax, row, x_image, y_image, max_name_length=15):
     # Calculate bounding box dimensions for player name and GWP text
     name_rect_width = tp_name.get_extents().width
     gwp_rect_width = tp_gwp.get_extents().width
-    rect_width = max(name_rect_width, gwp_rect_width)-2   # Add padding
+    default_width=10
+    rect_width = max(default_width, max(name_rect_width, gwp_rect_width)) 
     rect_height = 2  # Height of each rectangle
 
     # Draw Player Name Rectangle
@@ -915,8 +916,6 @@ def draw_players(df, positions, ax, pitch):
 
             # Draw player's name and GWP points
             draw_player_details(ax, row, x_image, y_image)
-
-
 
 # Draw players who played
 draw_players(combined_players, positions, ax, pitch)
