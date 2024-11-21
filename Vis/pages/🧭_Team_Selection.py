@@ -882,7 +882,7 @@ def draw_players(df, positions, ax, pitch):
     for pos, group in grouped_by_position:
         num_players = len(group)  # Number of players in this position
         y_image = positions[pos]
-        spacing_factor=num_players/0.5
+        spacing_factor=num_players/11
 
         total_width = pitch_width * (1 - (spacing_factor - 1) / num_players) if num_players > 1 else pitch_width
         x_positions = [(total_width / (num_players + 1)) * (i + 1) if num_players > 1 else pitch_width / 2 for i in range(num_players)]
