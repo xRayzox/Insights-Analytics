@@ -878,7 +878,7 @@ def draw_players(df, positions, ax, pitch):
     
     # Group players by their positions
     grouped_by_position = df.groupby('Pos')
-    spacing_factor=1.5
+    spacing_factor=5
     for pos, group in grouped_by_position:
         num_players = len(group)  # Number of players in this position
         y_image = positions[pos]
