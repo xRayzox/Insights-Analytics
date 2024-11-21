@@ -911,7 +911,7 @@ def draw_legend(ax, pitch_width, pitch_length):
 
     # Position legend rectangle in the bottom-left corner
     legend_x = pitch_width * 0.05 - 10  # 5% from the left edge
-    legend_y = (pitch_length * 0.05) + 120  # 5% from the bottom edge
+    legend_y = (pitch_length * 0.05) + 115  # 5% from the bottom edge
 
     # Draw the legend rectangle
     legend_rect = FancyBboxPatch(
