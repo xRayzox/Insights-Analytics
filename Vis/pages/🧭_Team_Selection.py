@@ -866,7 +866,7 @@ def draw_player_details(ax, row, x_image, y_image, max_name_length=15):
     y_offset = name_rect_y + rect_height / 2
     for i, line in enumerate(name_lines):
         ax.text(
-            x_image, y_offset + i * 7,
+            x_image, y_offset + i * 5,
             line, fontsize=7, ha='center', color='black', va='center'
         )
 
