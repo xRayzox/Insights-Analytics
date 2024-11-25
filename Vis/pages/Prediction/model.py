@@ -351,12 +351,12 @@ teams_next_gw = pd.concat([new_fix_gw['team_a_short_name'], new_fix_gw['team_h_s
 
 # Prepare player data for filtering by game result
 filtered_players = merged_opponent.copy()  # Create a copy to avoid modifying the original
-
+"""
 # Split 'Result' into 'team_player_score' and 'vs_score', and convert to integers
 filtered_players[['team_player_score', 'vs_score']] = filtered_players['Result'].str.split('-', expand=True)
 filtered_players['team_player_score'] = filtered_players['team_player_score'].astype(int)
 filtered_players['vs_score'] = filtered_players['vs_score'].astype(int)
-
+"""
 # Drop the original 'Result' column as it's no longer needed
 filtered_players.drop(columns=['Result'], axis=1, inplace=True)
 
