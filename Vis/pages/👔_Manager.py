@@ -98,7 +98,7 @@ history_manager = pd.concat(dataframes, ignore_index=True) if dataframes else pd
 
 with col1:
     #fpl_id = st.text_input('Please enter your FPL ID:', MY_FPL_ID)
-    fpl_id = st.selectbox('Please select your FPL ID:', history_manager['id'].unique())
+    fpl_id = st.selectbox('Please select your FPL ID:', history_manager['ID'].unique())
     if fpl_id:
         try:
             fpl_id = int(fpl_id)
