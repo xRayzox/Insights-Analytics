@@ -104,7 +104,13 @@ file_names = [
         "data/manager/clean_Managers_part4.csv", "data/manager/clean_Managers_part5.csv"
         ]
 
-dataframes = [pd.read_csv(file) for file in file_names]
+dataframes = []
+for file in file_names:
+    if os.path.exists(file):  # Ensure the file exists
+        df = pd.read_csv(file)
+        dataframes.append(df)
+
+# Concatenate all dataframes into one large dataframe
 history_manager = pd.concat(dataframes, ignore_index=True)
 # Display the first few rows of the combined data
 st.write(history_manager.head())
