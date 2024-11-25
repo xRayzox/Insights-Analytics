@@ -31,9 +31,9 @@ jobs:
     # Run the Python script
     - name: Run FPL Prediction
       run: |
-        #python ./Vis/pages/Prediction/model.py
-        #python ./FPL/transfer_collection.py
-        #python ./FPL/Total_managers.py
+        python ./Vis/pages/Prediction/model.py
+        python ./FPL/transfer_collection.py
+        python ./FPL/Total_managers.py
 
     # Commit and push changes (if any)
     - name: Commit and push changes

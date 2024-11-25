@@ -59,8 +59,8 @@ async def fetch_all_managers(total_players):
     try:
         # File names for storing data in the 'data' folder
         file_names = [
-            "data/clean_Managers_part1.csv", "data/clean_Managers_part2.csv", "data/clean_Managers_part3.csv",
-            "data/clean_Managers_part4.csv", "data/clean_Managers_part5.csv"
+            "data/manager/clean_Managers_part1.csv", "data/manager/clean_Managers_part2.csv", "data/manager/clean_Managers_part3.csv",
+        "data/manager/clean_Managers_part4.csv", "data/manager/clean_Managers_part5.csv"
         ]
 
         dataframes = [pd.read_csv(file,low_memory=False) for file in file_names if os.path.exists(file)]
@@ -149,8 +149,8 @@ async def update_missing_values_in_file(file_path):
 async def update_missing_values():
     """Check and update missing values for each CSV file."""
     file_names = [
-        "data/clean_Managers_part1.csv", "data/clean_Managers_part2.csv", "data/clean_Managers_part3.csv",
-        "data/clean_Managers_part4.csv", "data/clean_Managers_part5.csv"
+        "data/manager/clean_Managers_part1.csv", "data/manager/clean_Managers_part2.csv", "data/manager/clean_Managers_part3.csv",
+        "data/manager/clean_Managers_part4.csv", "data/manager/clean_Managers_part5.csv"
     ]
     
     for file_path in file_names:
