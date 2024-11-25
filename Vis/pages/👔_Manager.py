@@ -85,16 +85,43 @@ def load_and_preprocess_fpl_data():
 ele_types_df, teams_df, ele_df = load_and_preprocess_fpl_data()
 col1, col2 = st.columns([10, 3])
 
+import pandas as pd
+import os
+import streamlit as st
+
+# List of file paths
 file_names = [
-            "data/manager/clean_Managers_part1.csv", "data/manager/clean_Managers_part2.csv", "data/manager/clean_Managers_part3.csv",
-        "data/manager/clean_Managers_part4.csv", "data/manager/clean_Managers_part5.csv"
-        ]
+    "data/manager/clean_Managers_part1.csv", 
+    "data/manager/clean_Managers_part2.csv", 
+    "data/manager/clean_Managers_part3.csv",
+    "data/manager/clean_Managers_part4.csv", 
+    "data/manager/clean_Managers_part5.csv"
+]
 
-dataframes = [pd.read_csv(file,low_memory=False) for file in file_names if os.path.exists(file)]
-history_manager = pd.concat(dataframes, ignore_index=True) if dataframes else pd.DataFrame()
+# Streamlit function to cache the data loading process
+@st.cache_data
+def load_data(file_names):
+    chunk_size = 150000  # Adjust this value based on your system's capacity
+    all_chunks = []
+    
+    # Iterate over the list of files
+    for file in file_names:
+        if os.path.exists(file):
+            chunks = []
+            for chunk in pd.read_csv(file, chunksize=chunk_size):
+                chunks.append(chunk)
+            all_chunks.append(pd.concat(chunks, axis=0))
+    
+    # Concatenate all chunks from all files
+    combined_data = pd.concat(all_chunks, ignore_index=True) if all_chunks else pd.DataFrame()
+    return combined_data
 
+# Use the function to load your data from the files
+history_manager = load_data(file_names)
 
+# Display the first few rows of the combined data
 st.write(history_manager.head())
+
 
 
 
