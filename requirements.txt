@@ -26,3 +26,4 @@ schedule
 pulp
 selenium
 webdriver-manager
+nest_asyncio
