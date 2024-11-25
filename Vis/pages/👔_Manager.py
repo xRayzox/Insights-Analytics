@@ -89,33 +89,9 @@ import pandas as pd
 import os
 import streamlit as st
 
-# List of file paths
-file_names = [
-    "data/manager/clean_Managers_part1.csv", 
-    "data/manager/clean_Managers_part2.csv", 
-    "data/manager/clean_Managers_part3.csv",
-    "data/manager/clean_Managers_part4.csv", 
-    "data/manager/clean_Managers_part5.csv"
-]
-
-# Streamlit function to cache the data loading process
-file_names = [
-    './data/manager/clean_Managers_part1.csv',
-    './data/manager/clean_Managers_part2.csv',
-    './data/manager/clean_Managers_part3.csv',
-    './data/manager/clean_Managers_part4.csv',
-    './data/manager/clean_Managers_part5.csv'
-]
-
-
-dataframes = []
-for file in file_names:
-    if os.path.exists(file):  # Ensure the file exists
-        df = pd.read_csv(file)
-        dataframes.append(df)
 
 # Concatenate all dataframes into one large dataframe
-history_manager = pd.concat(dataframes, ignore_index=True)
+history_manager = pd.read_csv('./data/manager/clean_Managers_part1.csv')
 # Display the first few rows of the combined data
 st.write(history_manager.head())
 
