@@ -85,6 +85,20 @@ def load_and_preprocess_fpl_data():
 ele_types_df, teams_df, ele_df = load_and_preprocess_fpl_data()
 col1, col2 = st.columns([10, 3])
 
+import pandas as pd
+import os
+import streamlit as st
+
+# List of file paths
+file_names = [
+    "data/manager/clean_Managers_part1.csv", 
+    "data/manager/clean_Managers_part2.csv", 
+    "data/manager/clean_Managers_part3.csv",
+    "data/manager/clean_Managers_part4.csv", 
+    "data/manager/clean_Managers_part5.csv"
+]
+
+# Streamlit function to cache the data loading process
 file_names = [
             "data/manager/clean_Managers_part1.csv", "data/manager/clean_Managers_part2.csv", "data/manager/clean_Managers_part3.csv",
         "data/manager/clean_Managers_part4.csv", "data/manager/clean_Managers_part5.csv"
@@ -92,9 +106,9 @@ file_names = [
 
 dataframes = [pd.read_csv(file,low_memory=False) for file in file_names if os.path.exists(file)]
 history_manager = pd.concat(dataframes, ignore_index=True) if dataframes else pd.DataFrame()
-
-
+# Display the first few rows of the combined data
 st.write(history_manager.head())
+
 
 
 
