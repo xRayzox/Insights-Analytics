@@ -94,11 +94,13 @@ dataframes = [pd.read_csv(file,low_memory=False) for file in file_names if os.pa
 history_manager = pd.concat(dataframes, ignore_index=True) if dataframes else pd.DataFrame()
 
 
+st.write(history_manager.head())
+
 
 
 with col1:
-    #fpl_id = st.text_input('Please enter your FPL ID:', MY_FPL_ID)
-    fpl_id = st.selectbox('Please select your FPL ID:', history_manager['ID'].unique())
+    fpl_id = st.text_input('Please enter your FPL ID:', MY_FPL_ID)
+    #fpl_id = st.selectbox('Please select your FPL ID:', history_manager['ID'].unique())
     if fpl_id:
         try:
             fpl_id = int(fpl_id)
