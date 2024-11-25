@@ -100,9 +100,13 @@ file_names = [
 
 # Streamlit function to cache the data loading process
 file_names = [
-            "data/manager/clean_Managers_part1.csv", "data/manager/clean_Managers_part2.csv", "data/manager/clean_Managers_part3.csv",
-        "data/manager/clean_Managers_part4.csv", "data/manager/clean_Managers_part5.csv"
-        ]
+    './data/clean_Managers_part1.csv',
+    './data/clean_Managers_part2.csv',
+    './data/clean_Managers_part3.csv',
+    './data/clean_Managers_part4.csv',
+    './data/clean_Managers_part5.csv'
+]
+
 
 dataframes = []
 for file in file_names:
