@@ -104,9 +104,8 @@ file_names = [
         "data/manager/clean_Managers_part4.csv", "data/manager/clean_Managers_part5.csv"
         ]
 
-
-dataframes = [pd.read_csv(file,low_memory=False) for file in file_names if os.path.exists(file)]
-history_manager = pd.concat(dataframes, ignore_index=True) if dataframes else pd.DataFrame()
+dataframes = [pd.read_csv(file) for file in file_names]
+history_manager = pd.concat(dataframes, ignore_index=True)
 # Display the first few rows of the combined data
 st.write(history_manager.head())
 
