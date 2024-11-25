@@ -85,8 +85,20 @@ def load_and_preprocess_fpl_data():
 ele_types_df, teams_df, ele_df = load_and_preprocess_fpl_data()
 col1, col2 = st.columns([10, 3])
 
+file_names = [
+            "data/manager/clean_Managers_part1.csv", "data/manager/clean_Managers_part2.csv", "data/manager/clean_Managers_part3.csv",
+        "data/manager/clean_Managers_part4.csv", "data/manager/clean_Managers_part5.csv"
+        ]
+
+dataframes = [pd.read_csv(file,low_memory=False) for file in file_names if os.path.exists(file)]
+history_manager = pd.concat(dataframes, ignore_index=True) if dataframes else pd.DataFrame()
+
+
+
+
 with col1:
-    fpl_id = st.text_input('Please enter your FPL ID:', MY_FPL_ID)
+    #fpl_id = st.text_input('Please enter your FPL ID:', MY_FPL_ID)
+    fpl_id = st.selectbox('Please select your FPL ID:', history_manager['id'].unique())
     if fpl_id:
         try:
             fpl_id = int(fpl_id)
