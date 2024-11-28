@@ -88,6 +88,35 @@ def load_and_preprocess_fpl_data():
 ele_types_df, teams_df, ele_df = load_and_preprocess_fpl_data()
 col1, col2 = st.columns([10, 3])
 
+import duckdb
+import pandas as pd
+import time
+import streamlit as st
+start_duckdb = time.time()
+
+# Cache the data loading function
+@st.cache_data
+def load_manager_data():
+    start_duckdb = time.time()
+
+    # Load all CSVs using DuckDB
+    history_manager_duckdb = duckdb.query(""" 
+        SELECT * FROM read_csv_auto('./data/manager/clean_Managers_part*.csv')
+    """).to_df()
+
+    end_duckdb = time.time()
+    print("DuckDB Runtime:", end_duckdb - start_duckdb)
+
+    return history_manager_duckdb
+
+# Call the cached function to load the data
+history_manager_pandas = load_manager_data()
+
+end_duckdb = time.time()
+print("DuckDB Runtime:", end_duckdb - start_duckdb)
+
+
+
 with col1:
     fpl_id = st.text_input('Please enter your FPL ID:', MY_FPL_ID)
     #fpl_id = st.selectbox('Please select your FPL ID:', history_manager['ID'].unique())
