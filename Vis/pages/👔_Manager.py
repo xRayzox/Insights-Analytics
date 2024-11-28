@@ -88,6 +88,34 @@ def load_and_preprocess_fpl_data():
 ele_types_df, teams_df, ele_df = load_and_preprocess_fpl_data()
 col1, col2 = st.columns([10, 3])
 
+
+
+from concurrent.futures import ThreadPoolExecutor
+import pandas as pd
+import os
+
+# Define a function for reading a CSV
+def load_csv(file, columns=None, dtypes=None):
+    if os.path.exists(file):
+        return pd.read_csv(file, usecols=columns, dtype=dtypes, low_memory=False)
+    return None
+
+file_names = [f"./data/manager/clean_Managers_part{i}.csv" for i in range(1, 21)]
+
+# Load in parallel
+with ThreadPoolExecutor() as executor:
+    dataframes = list(executor.map(lambda f: load_csv(f), file_names))
+
+# Filter out None values
+dataframes = [df for df in dataframes if df is not None]
+
+# Concatenate dataframes
+history_manager = pd.concat(dataframes, ignore_index=True) if dataframes else pd.DataFrame()
+
+st.write(history_manager.head())
+
+
+
 with col1:
     fpl_id = st.text_input('Please enter your FPL ID:', MY_FPL_ID)
     #fpl_id = st.selectbox('Please select your FPL ID:', history_manager['ID'].unique())
