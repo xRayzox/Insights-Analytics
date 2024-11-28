@@ -26,3 +26,4 @@ schedule
 pulp
 psutil
 nest_asyncio
+duckdb
