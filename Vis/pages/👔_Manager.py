@@ -90,29 +90,18 @@ col1, col2 = st.columns([10, 3])
 
 
 
-from concurrent.futures import ThreadPoolExecutor
-import pandas as pd
-import os
-@st.cache_data
-# Define a function for reading a CSV
-def load_csv(file, columns=None, dtypes=None):
-    if os.path.exists(file):
-        return pd.read_csv(file, usecols=columns, dtype=dtypes, low_memory=False)
-    return None
-
+import polars as pl
 file_names = [f"./data/manager/clean_Managers_part{i}.csv" for i in range(1, 21)]
-
-# Load in parallel
-with ThreadPoolExecutor() as executor:
-    dataframes = list(executor.map(lambda f: load_csv(f), file_names))
-
-# Filter out None values
-dataframes = [df for df in dataframes if df is not None]
+# Load multiple CSVs in parallel using Polars
+dataframes = [pl.read_csv(file) for file in file_names]
 
 # Concatenate dataframes
-history_manager = pd.concat(dataframes, ignore_index=True) if dataframes else pd.DataFrame()
+history_manager = pl.concat(dataframes)
 
-st.write(history_manager.head())
+# Convert to Pandas if needed
+history_manager_df = history_manager.to_pandas()
+
+st.write(history_manager_df.head())
 
 
 
