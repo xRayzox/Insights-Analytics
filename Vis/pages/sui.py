@@ -95,3 +95,15 @@ history_manager_pandas = load_manager_data()
 history_manager_pandas = pd.DataFrame(history_manager_pandas)
 end_duckdb = time.time()
 print("DuckDB Runtime:", end_duckdb - start_duckdb)
+
+
+test=history_manager_pandas.head(20)
+
+
+
+selected_teams = st.multiselect(
+                label='Show teams',
+                options=test['Manager'],
+                default="Wael Hcine",
+                format_func=lambda x: x,
+            )
