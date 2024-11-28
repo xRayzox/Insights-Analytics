@@ -93,7 +93,7 @@ col1, col2 = st.columns([10, 3])
 from concurrent.futures import ThreadPoolExecutor
 import pandas as pd
 import os
-
+@st.cache_data
 # Define a function for reading a CSV
 def load_csv(file, columns=None, dtypes=None):
     if os.path.exists(file):
