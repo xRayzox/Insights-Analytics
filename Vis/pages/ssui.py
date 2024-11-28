@@ -1,87 +1,86 @@
 import streamlit as st
+import datetime as dt
+import altair as alt
+import pandas as pd
+import requests
+import sys
 import os
-import subprocess
-import socket
-import psutil  # Import psutil for memory info
+import matplotlib.pyplot as plt
+import numpy as np
+from mplsoccer import VerticalPitch
+import matplotlib.patches as patches 
+from PIL import Image
+from urllib.request import urlopen
+import random
+from matplotlib.patches import FancyBboxPatch
+from matplotlib.textpath import TextPath
+from PIL import Image, ImageDraw, ImageOps
+from PIL import Image
+import textwrap
+from urllib.request import urlopen
+import io
+import requests
+from functools import lru_cache
+from io import BytesIO
 
-st.set_page_config(layout="wide")
 
-"# Available resources"
 
-## CPU Information
-"## CPU"
-"### `os.cpu_count()`"
-st.write(f"This machine has {os.cpu_count()} CPU cores available.")
 
-"### `lscpu`"
-lscpu = subprocess.run(args=["lscpu"], capture_output=True, text=True)
-st.code(lscpu.stdout)
 
-## Disk Information
-"## Disk"
-"### `df -H`"
-dfH = subprocess.run(args=["df", "-H"], capture_output=True, text=True)
-st.code(dfH.stdout)
+pd.set_option('future.no_silent_downcasting', True)
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'FPL')))
+from fpl_api_collection import (
+    get_bootstrap_data, get_manager_history_data, get_manager_team_data,
+    get_manager_details, get_player_data, get_current_season
+)
+from fpl_utils import (
+    define_sidebar, chip_converter,get_total_fpl_players
+)
+from fpl_league import (
+    fetch_league_info,
+    get_manager_details,
+    get_manager_history_data,
+    get_bootstrap_data,
 
-## Memory Information
-"## Memory"
-"### Memory Usage via psutil"
+)
 
-# Get memory details using psutil
-memory = psutil.virtual_memory()
+from fpl_params import MY_FPL_ID, BASE_URL
+st.set_page_config(page_title='Manager', page_icon=':necktie:', layout='wide')
+st.markdown(
+    """
+    <style>
+    body {
+        background-color: #181818;
+        color: #f0f0f0;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+with open('./data/wave.css') as f:
+        css = f.read()
 
-# Display memory stats
-st.write(f"Total Memory: {memory.total / (1024 ** 3):.2f} GB")
-st.write(f"Available Memory: {memory.available / (1024 ** 3):.2f} GB")
-st.write(f"Used Memory: {memory.used / (1024 ** 3):.2f} GB")
-st.write(f"Memory Percent: {memory.percent}%")
+st.markdown(f'<style>{css}</style>', unsafe_allow_html=True)
+########################################################
 
-## Processes
-"## Processes"
-"### `top -b -n 1 | head -n 30`"
+define_sidebar()
+st.title('Manager')
 
-sortBy = st.radio("Sort by", ["%MEM", "%CPU"], horizontal=True)
+import duckdb
+import pandas as pd
+import time
+import streamlit as st
 
-topn = subprocess.run(
-    args=f"top -b -n 1 -o +{sortBy}".split(),
-    capture_output=True,
-    text=True
-).stdout.splitlines()[4:50]
+# Cache the manager data
+@st.cache_data(persist="disk")
+def load_manager_data():
+    # Using DuckDB to query CSVs efficiently
+    query = """
+        SELECT * 
+        FROM read_csv_auto('./data/manager/clean_Managers_part*.csv')
+    """
+    return duckdb.query(query).to_df()
 
-st.code("\n".join(topn))
+history_manager_pandas = load_manager_data()
 
-## IP Addresses
-"## IP addresses"
-
-"From [this discussion](https://discuss.streamlit.io/t/ip-addresses-for-streamlit-community-cloud/75304/)"
-
-st.code("""35.230.127.150
-35.203.151.101
-34.19.100.134
-34.83.176.217
-35.230.58.211
-35.203.187.165
-35.185.209.55
-34.127.88.74
-34.127.0.121
-35.230.78.192
-35.247.110.67
-35.197.92.111
-34.168.247.159
-35.230.56.30
-34.127.33.101
-35.227.190.87
-35.199.156.97
-34.82.135.155""", language=None, line_numbers=True)
-
-## Python `socket` method to get IP
-"### Python `socket` method"
-
-with st.echo():
-    s = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
-    s.connect(("8.8.8.8", 1))  # Connect to a remote server
-    ip, port = s.getsockname()  # Get local IP address and port
-    s.close()
-
-    st.metric("**IP Address**", ip)
-    st.metric("**Port**", port)
+st.write(history_manager_pandas.head())
