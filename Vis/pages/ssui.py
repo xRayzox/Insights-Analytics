@@ -2,6 +2,7 @@ import streamlit as st
 import os
 import subprocess
 import socket
+import psutil  # Import psutil for memory info
 
 st.set_page_config(layout="wide")
 
@@ -24,9 +25,16 @@ st.code(dfH.stdout)
 
 ## Memory Information
 "## Memory"
-"### `free -h`"
-freeg = subprocess.run(args=["free", "-h"], capture_output=True, text=True)
-st.code(freeg.stdout)
+"### Memory Usage via psutil"
+
+# Get memory details using psutil
+memory = psutil.virtual_memory()
+
+# Display memory stats
+st.write(f"Total Memory: {memory.total / (1024 ** 3):.2f} GB")
+st.write(f"Available Memory: {memory.available / (1024 ** 3):.2f} GB")
+st.write(f"Used Memory: {memory.used / (1024 ** 3):.2f} GB")
+st.write(f"Memory Percent: {memory.percent}%")
 
 ## Processes
 "## Processes"
