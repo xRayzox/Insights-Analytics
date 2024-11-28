@@ -88,47 +88,40 @@ def load_and_preprocess_fpl_data():
 ele_types_df, teams_df, ele_df = load_and_preprocess_fpl_data()
 col1, col2 = st.columns([10, 3])
 
-import zipfile
+import duckdb
 import pandas as pd
 import time
 import streamlit as st
 
-start_zipfile = time.time()
-
 # Cache the data loading function
 @st.cache_data
 def load_manager_data():
-    start_zipfile = time.time()
+    start_duckdb = time.time()
 
-    # Path to the ZIP file containing your CSVs
-    zip_path = './data/manager/manager_data.zip'
+    # Load all CSVs using DuckDB
+    history_manager_duckdb = duckdb.query("""
+        SELECT * FROM read_csv_auto('./data/manager/clean_Managers_part*.csv')
+    """).to_df()
 
-    # List to hold the dataframes
-    dfs = []
+    end_duckdb = time.time()
+    st.write("DuckDB Runtime:", end_duckdb - start_duckdb)
 
-    # Open the ZIP file
-    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-        # Extract all CSV files inside the ZIP
-        for file_name in zip_ref.namelist():
-            if file_name.endswith('.csv'):
-                with zip_ref.open(file_name) as file:
-                    # Read each CSV file into a DataFrame
-                    df = pd.read_csv(file)
-                    dfs.append(df)
-
-    # Concatenate all dataframes into one
-    history_manager_pandas = pd.concat(dfs, ignore_index=True)
-
-    end_zipfile = time.time()
-    print("ZipFile Runtime:", end_zipfile - start_zipfile)
-
-    return history_manager_pandas
+    return history_manager_duckdb
 
 # Call the cached function to load the data
 history_manager_pandas = load_manager_data()
 
-end_zipfile = time.time()
-print("ZipFile Runtime:", end_zipfile - start_zipfile)
+# Display data sample in Streamlit
+st.dataframe(history_manager_pandas)
+
+# Additional logic for filtering/searching can be added here, for example:
+input = st.text_input(label="Search the Manager")
+
+if input:
+    filtered = history_manager_pandas[history_manager_pandas["column_name"].str.contains(input, na=False)]
+    st.dataframe(filtered)
+    st.write(f"Loaded {len(filtered)} rows")
+
 
 
 with col1:
