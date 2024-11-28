@@ -88,17 +88,21 @@ def load_and_preprocess_fpl_data():
 ele_types_df, teams_df, ele_df = load_and_preprocess_fpl_data()
 col1, col2 = st.columns([10, 3])
 
-import dask.dataframe as dd
+import pandas as pd
 import glob
 
 # Use glob to find all CSV files matching the pattern
 files = glob.glob('./data/manager/clean_Managers_part*.csv')
 
-# Load all CSV files using Dask (which can handle large data efficiently)
-ddf = dd.read_csv(files)
+chunk_size = 100000  # Adjust based on your memory capacity
+df_list = []
 
-# Compute the result to convert to pandas DataFrame for Streamlit use
-df = ddf.compute()
+for file in files:
+    for chunk in pd.read_csv(file, chunksize=chunk_size):
+        df_list.append(chunk)
+
+# Concatenate all chunks into a single DataFrame
+df = pd.concat(df_list, ignore_index=True)
 
 st.write(df.head())
 
