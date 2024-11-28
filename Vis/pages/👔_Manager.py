@@ -88,40 +88,23 @@ def load_and_preprocess_fpl_data():
 ele_types_df, teams_df, ele_df = load_and_preprocess_fpl_data()
 col1, col2 = st.columns([10, 3])
 
-import duckdb
 import pandas as pd
-import time
-import streamlit as st
+import glob
 
-# Cache the data loading function
-@st.cache_data
-def load_manager_data():
-    start_duckdb = time.time()
+# Use glob to find all CSV files matching the pattern
+files = glob.glob('./data/manager/clean_Managers_part*.csv')
 
-    # Load all CSVs using DuckDB
-    history_manager_duckdb = duckdb.query("""
-        SELECT * FROM read_csv_auto('./data/manager/clean_Managers_part*.csv')
-    """).to_df()
+chunk_size = 100000  # Adjust based on your memory capacity
+df_list = []
 
-    end_duckdb = time.time()
-    st.write("DuckDB Runtime:", end_duckdb - start_duckdb)
+for file in files:
+    for chunk in pd.read_csv(file, chunksize=chunk_size):
+        df_list.append(chunk)
 
-    return history_manager_duckdb
+# Concatenate all chunks into a single DataFrame
+df = pd.concat(df_list, ignore_index=True)
 
-# Call the cached function to load the data
-history_manager_pandas = load_manager_data()
-
-# Display data sample in Streamlit
-st.dataframe(history_manager_pandas)
-
-# Additional logic for filtering/searching can be added here, for example:
-input = st.text_input(label="Search the Manager")
-
-if input:
-    filtered = history_manager_pandas[history_manager_pandas["column_name"].str.contains(input, na=False)]
-    st.dataframe(filtered)
-    st.write(f"Loaded {len(filtered)} rows")
-
+st.write(df.head())
 
 
 with col1:
