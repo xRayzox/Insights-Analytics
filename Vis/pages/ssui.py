@@ -1,86 +1,79 @@
 import streamlit as st
 import os
 import subprocess
+import socket
 
 st.set_page_config(layout="wide")
 
 "# Available resources"
 
+## CPU Information
 "## CPU"
 "### `os.cpu_count()`"
-f"This machine has {os.cpu_count()} CPU available"
+st.write(f"This machine has {os.cpu_count()} CPU cores available.")
 
 "### `lscpu`"
-lscpu = subprocess.run(args=["lscpu"], capture_output=True).stdout.decode("utf-8")
-st.code(f"{lscpu}")
+lscpu = subprocess.run(args=["lscpu"], capture_output=True, text=True)
+st.code(lscpu.stdout)
 
+## Disk Information
 "## Disk"
 "### `df -H`"
-dfH = subprocess.run(args=["df", "-H"], capture_output=True).stdout.decode("utf-8")
-st.code(dfH)
+dfH = subprocess.run(args=["df", "-H"], capture_output=True, text=True)
+st.code(dfH.stdout)
 
+## Memory Information
 "## Memory"
 "### `free -h`"
-freeg = subprocess.run(args=["free", "-h"], capture_output=True).stdout.decode("utf-8")
-st.code(f"{freeg}")
+freeg = subprocess.run(args=["free", "-h"], capture_output=True, text=True)
+st.code(freeg.stdout)
 
+## Processes
 "## Processes"
 "### `top -b -n 1 | head -n 30`"
+
 sortBy = st.radio("Sort by", ["%MEM", "%CPU"], horizontal=True)
-topn = (
-    subprocess.run(
-        args=f"top -bc -w 300 -n 1 -o +{sortBy}".split(), capture_output=True
-    )
-    .stdout.decode("utf-8")
-    .splitlines()[4:50]
-)
+
+topn = subprocess.run(
+    args=f"top -b -n 1 -o +{sortBy}".split(),
+    capture_output=True,
+    text=True
+).stdout.splitlines()[4:50]
+
 st.code("\n".join(topn))
 
+## IP Addresses
 "## IP addresses"
 
 "From [this discussion](https://discuss.streamlit.io/t/ip-addresses-for-streamlit-community-cloud/75304/)"
 
-st.code("""
-    35.230.127.150
-    35.203.151.101
-    34.19.100.134
-    34.83.176.217
-    35.230.58.211
-    35.203.187.165
-    35.185.209.55
-    34.127.88.74
-    34.127.0.121
-    35.230.78.192
-    35.247.110.67
-    35.197.92.111
-    34.168.247.159
-    35.230.56.30
-    34.127.33.101
-    35.227.190.87
-    35.199.156.97
-    34.82.135.155
-    """,
-    language=None,
-    line_numbers=True,
-)
-# "### `ifconfig`"
-# "*requires `net-tools`*"
+st.code("""35.230.127.150
+35.203.151.101
+34.19.100.134
+34.83.176.217
+35.230.58.211
+35.203.187.165
+35.185.209.55
+34.127.88.74
+34.127.0.121
+35.230.78.192
+35.247.110.67
+35.197.92.111
+34.168.247.159
+35.230.56.30
+34.127.33.101
+35.227.190.87
+35.199.156.97
+34.82.135.155""", language=None, line_numbers=True)
 
-# ipa = subprocess.run(args=["ifconfig"], capture_output=True).stdout.decode('utf-8').splitlines()
-# st.code("\n".join(ipa))
+## Python `socket` method to get IP
+"### Python `socket` method"
 
-"### Python `socket` (?)"
 with st.echo():
-    import socket
-
-    s = socket.socket(
-        family=socket.AF_INET,  # (host, port)
-        type=socket.SOCK_DGRAM,
-    )
-
-    s.connect(("8.8.8.8", 1))
-    ip, port = s.getsockname()
-
-    st.metric("**IP**", ip)
-    st.metric("**Port**", port)
+    s = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+    s.connect(("8.8.8.8", 1))  # Connect to a remote server
+    ip, port = s.getsockname()  # Get local IP address and port
     s.close()
+
+    st.metric("**IP Address**", ip)
+    st.metric("**Port**", port)
