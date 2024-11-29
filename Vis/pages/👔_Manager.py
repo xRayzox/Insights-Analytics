@@ -135,17 +135,13 @@ if dfs_parallel:  # Ensure there are valid dataframes
 
     # Filter rows where the 'Manager' column contains "Wael Hc"
     if "Manager" in combined_df.columns:
-        # Input for FPL ID
-        fp = st.text_input('Please enter your FPL ID:')
-        # Filter the DataFrame based on the FPL ID
-        if fp:
-            # Create the regular expression dynamically based on the input
-            pattern = f"^{fp}|{fp}$"
-            
-            # Filter based on the pattern where the Manager name starts or ends with the value of 'fp'
-            filtered_df = combined_df[combined_df['Manager'].str.contains(pattern)]
-            
-            st.write(filtered_df)
+        fp = st.text_input('Please enter your FPL ID:', MY_FPL_ID)
+        filtered_df = combined_df.filter(combined_df['Manager'].str.contains("Wael"))
+        print(filtered_df)
+    else:
+        print("'Manager' column not found in the loaded data.")
+else:
+    print("No dataframes were loaded successfully.")
 
 
 st.write(filtered_df)
