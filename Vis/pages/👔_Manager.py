@@ -154,7 +154,7 @@ st.write(filtered_df)
 
 with col1:
     fpl_id = st.text_input('Please enter your FPL ID:', MY_FPL_ID)
-    #fpl_id = st.selectbox('Please select your FPL ID:', history_manager['ID'].unique())
+    fpl_id1 = st.selectbox('Please select your FPL ID:', filtered_df['ID'].unique())
     if fpl_id:
         try:
             fpl_id = int(fpl_id)
