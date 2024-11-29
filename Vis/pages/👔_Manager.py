@@ -88,9 +88,6 @@ def load_and_preprocess_fpl_data():
 ele_types_df, teams_df, ele_df = load_and_preprocess_fpl_data()
 col1, col2 = st.columns([10, 3])
 
-
-
-
 with col1:
     fpl_id = st.text_input('Please enter your FPL ID:', MY_FPL_ID)
     #fpl_id = st.selectbox('Please select your FPL ID:', history_manager['ID'].unique())
