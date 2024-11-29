@@ -42,15 +42,3 @@ def load_manager_data_optimized(data_path="./data/manager/clean_Managers_part*.c
 df_managers = load_manager_data_optimized()
 
 
-#Efficient display with Streamlit AgGrid (if df_managers is not empty)
-if not df_managers.empty:
-    import streamlit_aggrid as st_aggrid  
-    gb = st_aggrid.GridOptionsBuilder.from_dataframe(df_managers)
-    gb.configure_pagination(paginationAutoPageSize=True) 
-    gb.configure_grid_options(domLayout='normal')
-    st_aggrid.AgGrid(df_managers, gridOptions=gb.build(), height=400, width='100%')
-
-
-# Optional: Download button (if df_managers is not empty)
-if not df_managers.empty:
-    st.download_button("Download Full Data (CSV)", df_managers.to_csv(index=False).encode('utf-8'), "combined_managers.csv", "text/csv", key='download-csv')
