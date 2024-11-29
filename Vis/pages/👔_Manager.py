@@ -131,22 +131,7 @@ dfs_parallel = measure_parallel_loading()
 
 
 
-manager_names = dfs_parallel['Manager'].unique()
 
-# Add a selectbox with auto-complete feature for manager's name
-manager_name = st.selectbox('Search and select a Manager:', manager_names)
-
-# If a manager is selected, filter the dataframe and show the FPL ID
-if manager_name:
-    # Filter rows where the 'Manager' column matches the selected manager's name
-    manager_filtered_df = dfs_parallel.filter(dfs_parallel['Manager'] == manager_name)
-
-    if manager_filtered_df.shape[0] > 0:
-        # Show a selectbox to choose the FPL ID(s) for the selected manager(s)
-        fpl_id = st.selectbox('Select FPL ID:', manager_filtered_df['ID'].unique())
-        st.write(f"Selected FPL ID: {fpl_id}")
-    else:
-        st.write(f"No results found for manager: {manager_name}")
 
 
 
@@ -156,8 +141,25 @@ if manager_name:
 ######################################################
 
 with col1:
-    fpl_id = st.text_input('Please enter your FPL ID:', MY_FPL_ID)
-    fpl_id1 = st.selectbox('Please select your FPL ID:', filtered_df['ID'].unique())
+
+    manager_names = dfs_parallel['Manager'].unique()
+
+    # Add a selectbox with auto-complete feature for manager's name
+    manager_name = st.selectbox('Search and select a Manager:', manager_names)
+
+    # If a manager is selected, filter the dataframe and show the FPL ID
+    if manager_name:
+        # Filter rows where the 'Manager' column matches the selected manager's name
+        manager_filtered_df = dfs_parallel.filter(dfs_parallel['Manager'] == manager_name)
+
+        if manager_filtered_df.shape[0] > 0:
+            # Show a selectbox to choose the FPL ID(s) for the selected manager(s)
+            fpl_id = st.selectbox('Select FPL ID:', manager_filtered_df['ID'].unique())
+            st.write(f"Selected FPL ID: {fpl_id}")
+        else:
+            st.write(f"No results found for manager: {manager_name}")
+    #fpl_id = st.text_input('Please enter your FPL ID:', MY_FPL_ID)
+    #fpl_id1 = st.selectbox('Please select your FPL ID:', filtered_df['ID'].unique())
     if fpl_id:
         try:
             fpl_id = int(fpl_id)
