@@ -1,44 +1,56 @@
-import streamlit as st
-import pandas as pd
+import polars as pl
 import glob
 import os
 import time
-import dask.dataframe as dd  # Use Dask for parallel processing
+from concurrent.futures import ThreadPoolExecutor
+import streamlit as st
 
-@st.cache_data  # Cache the combined DataFrame
-def load_manager_data_optimized(data_path="./data/manager/clean_Managers_part*.csv"):
-    start_time = time.time()
-    all_files = glob.glob(data_path)  
+# Directory containing the CSV files
+converted_path = './data/manager/'
 
-    if not all_files:
-        st.error(f"No files found at path: {data_path}")  
-        return pd.DataFrame()
+# List all CSV files
+csv_files = glob.glob(os.path.join(converted_path, '*.csv'))
 
-    #Infer dtypes from the first file.
-    dtypes = pd.read_csv(all_files[0], nrows=0).dtypes.to_dict()
-
-
+# Function to load a single CSV file
+def load_csv(file):
     try:
-        # Use Dask to read CSV files in parallel with specified data types
-        df = dd.read_csv(all_files, dtypes=dtypes).compute()
-
-        # Convert string columns with repeated values to 'category' dtype
-        object_columns = df.select_dtypes(include=['object']).columns
-        for col in object_columns:
-             if df[col].nunique() / len(df) < 0.1: # Threshold for low cardinality
-                df[col] = df[col].astype('category')
-            
+        # Polars' CSV reader with optimized options
+        df = pl.read_csv(file)
+        print(f"Loaded {os.path.basename(file)}: {df.shape}")
+        return df
     except Exception as e:
-        st.error(f"Error loading data: {e}")
-        return pd.DataFrame()
+        print(f"Error loading {os.path.basename(file)}: {e}")
+        return None  # Handle errors gracefully
+
+# Measure loading time with parallelism
+def measure_parallel_loading():
+    print("Parallel CSV Loading with Polars...")
+    start_time = time.time()
+
+    # Use ThreadPoolExecutor for parallel loading
+    with ThreadPoolExecutor() as executor:
+        # Filter out any None (failed loads)
+        dataframes = [df for df in executor.map(load_csv, csv_files) if df is not None]
+
+    total_time = time.time() - start_time
+    print(f"Total time for parallel loading: {total_time:.2f} seconds\n")
+    return dataframes
+
+# Load all dataframes in parallel
+dfs_parallel = measure_parallel_loading()
+
+# Combine the dataframes efficiently
+if dfs_parallel:  # Ensure there are valid dataframes
+    combined_df = pl.concat(dfs_parallel, how='vertical')
+
+    # Filter rows where the 'Manager' column contains "Wael Hc"
+    if "Manager" in combined_df.columns:
+        filtered_df = combined_df.filter(combined_df['Manager'].str.contains("Wael"))
+        print(filtered_df)
+    else:
+        print("'Manager' column not found in the loaded data.")
+else:
+    print("No dataframes were loaded successfully.")
 
 
-    end_time = time.time()
-    st.info(f"Data loaded in {end_time - start_time:.2f} seconds.  Shape: {df.shape}")
-    return df
-
-
-# Load the data using the optimized function
-df_managers = load_manager_data_optimized()
-
-
+st.write(filtered_df)
