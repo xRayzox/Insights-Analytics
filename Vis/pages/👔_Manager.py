@@ -139,7 +139,12 @@ if dfs_parallel:  # Ensure there are valid dataframes
         fp = st.text_input('Please enter your FPL ID:')
         # Filter the DataFrame based on the FPL ID
         if fp:
-            filtered_df = combined_df[combined_df['Manager'].str.contains(fp)]
+            # Create the regular expression dynamically based on the input
+            pattern = f"^{fp}|{fp}$"
+            
+            # Filter based on the pattern where the Manager name starts or ends with the value of 'fp'
+            filtered_df = combined_df[combined_df['Manager'].str.contains(pattern, case=False, na=False)]
+            
             st.write(filtered_df)
 
 
