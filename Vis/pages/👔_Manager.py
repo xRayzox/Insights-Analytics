@@ -143,7 +143,6 @@ else:
     print("No dataframes were loaded successfully.")
 
 
-st.write(combined_df)
 
 
 
