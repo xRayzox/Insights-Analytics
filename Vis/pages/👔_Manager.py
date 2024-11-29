@@ -129,21 +129,24 @@ def measure_parallel_loading():
 # Load all dataframes in parallel
 dfs_parallel = measure_parallel_loading()
 
-# Combine the dataframes efficiently
-if dfs_parallel:  # Ensure there are valid dataframes
-    combined_df = pl.concat(dfs_parallel, how='vertical')
 
-    # Filter rows where the 'Manager' column contains "Wael Hc"
-    if "Manager" in combined_df.columns:
-        filtered_df = combined_df.filter(combined_df['Manager'].str.contains("Wael"))
-        print(filtered_df)
+
+manager_names = dfs_parallel['Manager'].unique()
+
+# Add a selectbox with auto-complete feature for manager's name
+manager_name = st.selectbox('Search and select a Manager:', manager_names)
+
+# If a manager is selected, filter the dataframe and show the FPL ID
+if manager_name:
+    # Filter rows where the 'Manager' column matches the selected manager's name
+    manager_filtered_df = dfs_parallel.filter(dfs_parallel['Manager'] == manager_name)
+
+    if manager_filtered_df.shape[0] > 0:
+        # Show a selectbox to choose the FPL ID(s) for the selected manager(s)
+        fpl_id = st.selectbox('Select FPL ID:', manager_filtered_df['ID'].unique())
+        st.write(f"Selected FPL ID: {fpl_id}")
     else:
-        print("'Manager' column not found in the loaded data.")
-else:
-    print("No dataframes were loaded successfully.")
-
-
-st.write(filtered_df)
+        st.write(f"No results found for manager: {manager_name}")
 
 
 
