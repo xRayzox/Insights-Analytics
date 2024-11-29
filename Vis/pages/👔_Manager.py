@@ -147,7 +147,6 @@ else:
     print("No dataframes were loaded successfully.")
 
 
-st.write(filtered_df)
 
 
 
@@ -158,16 +157,19 @@ st.write(filtered_df)
 
 with col1:
     fpl_id = st.text_input('Please enter your FPL ID:', MY_FPL_ID)
-    fpl_id1_search = st.text_input('Search your FPL Manager:')
+   # Create a container for the UI elements
+    with st.container():
+        # Input field for searching the FPL Manager
+        fpl_id1_search = st.text_input('Search your FPL Manager:')
 
-    # Filtering the DataFrame and handling case insensitivity
-    filtered_ids = combined_df.filter(
-        combined_df['Manager'].is_not_null() & 
-        combined_df['Manager'].str.to_lowercase().str.contains(fpl_id1_search.lower())
-    ).select('ID').to_pandas()['ID'].unique()
-
-    # Providing the selectbox for the filtered IDs
-    fpl_id2 = st.selectbox('Please select your FPL ID:', filtered_ids)
+        # Filtering the DataFrame and handling case insensitivity
+        filtered_ids = combined_df.filter(
+            combined_df['Manager'].is_not_null() & 
+            combined_df['Manager'].str.to_lowercase().str.contains(fpl_id1_search.lower())
+        ).select('ID').to_pandas()['ID'].unique()
+        st.write(filtered_ids)
+        # Providing the selectbox for the filtered IDs
+        fpl_id2 = st.selectbox('Please select your FPL ID:', filtered_ids)
     if fpl_id:
         try:
             fpl_id = int(fpl_id)
