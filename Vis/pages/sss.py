@@ -45,12 +45,26 @@ if dfs_parallel:  # Ensure there are valid dataframes
 
     # Filter rows where the 'Manager' column contains "Wael Hc"
     if "Manager" in combined_df.columns:
-        filtered_df = combined_df.filter(combined_df['Manager'].str.contains("Wael"))
-        print(filtered_df)
+        #fp = st.text_input('Please enter your FPLdazdazdaz ID:', MY_FPL_ID)
+        filtered_df = combined_df.filter(
+    combined_df['Manager'].is_not_null() & 
+    combined_df['Manager'].str.to_lowercase().str.contains("wael")
+)
+        
     else:
         print("'Manager' column not found in the loaded data.")
 else:
     print("No dataframes were loaded successfully.")
 
+with st.container():
+        # Input field for searching the FPL Manager
+        fpl_id1_search = st.text_input('Search your FPL Manager:')
 
-st.write(filtered_df)
+        # Filtering the DataFrame and handling case insensitivity
+        filtered_ids = combined_df.filter(
+            combined_df['Manager'].is_not_null() & 
+            combined_df['Manager'].str.to_lowercase().str.contains(fpl_id1_search.lower())
+        ).select('ID').to_pandas()['ID'].unique()
+        st.write(filtered_ids)
+        # Providing the selectbox for the filtered IDs
+        fpl_id2 = st.selectbox('Please select your FPL ID:', filtered_ids)
