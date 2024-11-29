@@ -152,23 +152,26 @@ else:
 ######################################################
 
 with col1:
-    fpl_id1 = st.text_input('Please enter your FPL ID:', "Wael Hcine")
+    with st.container():
+        # User input for FPL ID
+        fpl_id1 = st.text_input('Please enter your FPL ID:', "Wael Hcine")
 
-        # Combine the dataframes efficiently
-    if dfs_parallel:  # Ensure there are valid dataframes
-        combined_df = pl.concat(dfs_parallel, how='vertical')
+        # Combine the dataframes and filter them based on the input FPL ID
+        if dfs_parallel:  # Ensure there are valid dataframes
+            combined_df = pl.concat(dfs_parallel, how='vertical')
 
-        # Filter rows where the 'Manager' column contains "Wael Hc"
-        if "Manager" in combined_df.columns:
-            filtered_df = combined_df.filter(combined_df['Manager'].str.contains(fpl_id1))
-            print(filtered_df)
+            # Filter rows where the 'Manager' column contains the entered FPL ID
+            if "Manager" in combined_df.columns:
+                filtered_df = combined_df.filter(combined_df['Manager'].str.contains(fpl_id1))
+                st.write(filtered_df)  # Display the filtered dataframe in Streamlit
+            else:
+                st.error("'Manager' column not found in the loaded data.")
         else:
-            print("'Manager' column not found in the loaded data.")
-    else:
-        print("No dataframes were loaded successfully.")
+            st.error("No dataframes were loaded successfully.")
 
-
-    fpl_id = st.selectbox('Please select your FPL ID:', filtered_df['ID'].unique())
+        # Select box for choosing an FPL ID from the filtered dataframe
+        if filtered_df:
+            fpl_id = st.selectbox('Please select your FPL ID:', filtered_df['ID'].unique())
     if fpl_id:
         try:
             fpl_id = int(fpl_id)
