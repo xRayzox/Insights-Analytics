@@ -143,7 +143,7 @@ if dfs_parallel:  # Ensure there are valid dataframes
             pattern = f"^{fp}|{fp}$"
             
             # Filter based on the pattern where the Manager name starts or ends with the value of 'fp'
-            filtered_df = combined_df[combined_df['Manager'].str.contains(pattern, case=False, na=False)]
+            filtered_df = combined_df[combined_df['Manager'].str.contains(pattern)]
             
             st.write(filtered_df)
 
