@@ -27,3 +27,4 @@ pulp
 psutil
 nest_asyncio
 duckdb
+polars
