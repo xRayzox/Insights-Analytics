@@ -2,6 +2,8 @@ import pandas as pd
 import requests
 from concurrent.futures import ThreadPoolExecutor
 import streamlit as st
+import polars as pl
+
 base_url = 'https://fantasy.premierleague.com/api/'
 
 # Function to get general data (bootstrap data) from the FPL API
@@ -66,33 +68,56 @@ def get_total_fpl_players():
 
 
 # Function to filter out players who have left their clubs or are on loan
-def remove_moved_players(df):
+def remove_moved_players(df: pl.DataFrame) -> pl.DataFrame:
+    # List of strings to check in the 'news' column
     strings = ['loan', 'Loan', 'Contract cancelled', 'Left the club',
                'Permanent', 'Released', 'Signed for', 'Transferred',
                'Season long', 'Not training', 'permanent', 'transferred']
-    df_copy = df.loc[~df['news'].str.contains('|'.join(strings), case=False)]
+    
+    # Use the 'str.contains' function from Polars to filter out rows
+    pattern = '|'.join(strings)
+    df_copy = df.filter(~df['news'].str.contains(pattern, case=False))
+    
     return df_copy
+
 
 # Function to create a dictionary mapping player IDs to their names
 def get_player_id_dict(order_by_col, web_name=True) -> dict:
-    ele_df = pd.DataFrame(get_bootstrap_data()['elements'])
+    # Get the player and team data
+    elements = get_bootstrap_data()['elements']
+    teams = get_bootstrap_data()['teams']
+    
+    # Convert the JSON data to Polars DataFrames
+    ele_df = pl.DataFrame(elements)
+    teams_df = pl.DataFrame(teams)
+    
+    # Remove moved players
     ele_df = remove_moved_players(ele_df)
-    teams_df = pd.DataFrame(get_bootstrap_data()['teams'])
-    ele_df['team_name'] = ele_df['team'].map(teams_df.set_index('id')['short_name'])
-    ele_df.sort_values(order_by_col, ascending=False, inplace=True)
-    if web_name == True:
+    
+    # Join teams_df with ele_df based on the team ID and get the team names
+    teams_df = teams_df.select(['id', 'short_name']).rename({'id': 'team'})
+    ele_df = ele_df.join(teams_df, on='team', how='left')
+    
+    # Sort by the specified column
+    ele_df = ele_df.sort(by=order_by_col, reverse=True)
+    
+    # Create the id_dict based on web_name or full_name
+    if web_name:
         id_dict = dict(zip(ele_df['id'], ele_df['web_name']))
     else:
-        ele_df['full_name'] = ele_df['first_name'] + ' ' + \
-            ele_df['second_name'] + ' (' + ele_df['team_name'] + ')'
+        ele_df = ele_df.with_columns(
+            (ele_df['first_name'] + ' ' + ele_df['second_name'] + ' (' + ele_df['short_name'] + ')').alias('full_name')
+        )
         id_dict = dict(zip(ele_df['id'], ele_df['full_name']))
+    
     return id_dict
 
 # Function to gather historic gameweek data for all players
 
-def collate_player_hist():
+def collate_player_hist() -> pl.DataFrame:
     res = []
     p_dict = get_player_id_dict()
+
     # Use ThreadPoolExecutor to fetch player data in parallel
     with ThreadPoolExecutor() as executor:
         futures = {executor.submit(get_player_data, p_id): p_name for p_id, p_name in p_dict.items()}
@@ -100,10 +125,14 @@ def collate_player_hist():
             p_name = futures[future]
             try:
                 resp = future.result()
+                # Append history data to the result list
                 res.append(resp['history'])
             except Exception as e:
                 print(f'Request to {p_name} data failed: {e}')
-    return pd.DataFrame(res)
+
+    # Convert the list of histories into a Polars DataFrame
+    # Flatten the list if necessary to make sure it is in the right structure
+    return pl.DataFrame(res)
 
 
 # Team, games_played, wins, losses, draws, goals_for, goals_against, GD,
