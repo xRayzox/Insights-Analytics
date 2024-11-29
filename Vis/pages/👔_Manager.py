@@ -160,7 +160,7 @@ with col1:
 
         # Filter rows where the 'Manager' column contains "Wael Hc"
         if "Manager" in combined_df.columns:
-            filtered_df = combined_df.filter(combined_df['Manager'].str.contains("fpl_id"))
+            filtered_df = combined_df.filter(combined_df['Manager'].str.contains(fpl_id1))
             print(filtered_df)
         else:
             print("'Manager' column not found in the loaded data.")
