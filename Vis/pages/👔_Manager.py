@@ -152,8 +152,23 @@ else:
 ######################################################
 
 with col1:
-    fpl_id = st.text_input('Please enter your FPL ID:', MY_FPL_ID)
-    fpl_id1 = st.selectbox('Please select your FPL ID:', filtered_df['ID'].unique())
+    fpl_id1 = st.text_input('Please enter your FPL ID:', "Wael Hcine")
+
+        # Combine the dataframes efficiently
+    if dfs_parallel:  # Ensure there are valid dataframes
+        combined_df = pl.concat(dfs_parallel, how='vertical')
+
+        # Filter rows where the 'Manager' column contains "Wael Hc"
+        if "Manager" in combined_df.columns:
+            filtered_df = combined_df.filter(combined_df['Manager'].str.contains("fpl_id"))
+            print(filtered_df)
+        else:
+            print("'Manager' column not found in the loaded data.")
+    else:
+        print("No dataframes were loaded successfully.")
+
+
+    fpl_id = st.selectbox('Please select your FPL ID:', filtered_df['ID'].unique())
     if fpl_id:
         try:
             fpl_id = int(fpl_id)
