@@ -139,7 +139,7 @@ if dfs_parallel:  # Ensure there are valid dataframes
         fp = st.text_input('Please enter your FPL ID:')
         # Filter the DataFrame based on the FPL ID
         if fp:
-            filtered_df = combined_df[combined_df['Manager'].str.contains(fp, na=False)]
+            filtered_df = combined_df[combined_df['Manager'].str.contains(fp)]
             st.write(filtered_df)
 
 
