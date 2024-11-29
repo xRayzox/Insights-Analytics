@@ -135,7 +135,7 @@ if dfs_parallel:  # Ensure there are valid dataframes
 
     # Filter rows where the 'Manager' column contains "Wael Hc"
     if "Manager" in combined_df.columns:
-        fp = st.text_input('Please enter your FPL ID:', MY_FPL_ID)
+        #fp = st.text_input('Please enter your FPL ID:', MY_FPL_ID)
         filtered_df = combined_df.filter(combined_df['Manager'].str.contains("Wael"))
         print(filtered_df)
     else:
